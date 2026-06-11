@@ -18,7 +18,10 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
       <div className="mx-auto flex w-full max-w-[1600px] flex-col px-4 sm:px-6 lg:px-8 xl:px-10">
         {header}
 
-        <nav className="flex flex-wrap border-b border-[var(--border)]" aria-label="Primary">
+        <nav
+          className="sticky top-0 z-20 flex flex-wrap border-b border-[var(--border)] bg-[color:color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur"
+          aria-label="Primary"
+        >
           {tabs.map((tab) => (
             <NavLink
               key={tab.to}
