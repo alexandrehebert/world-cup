@@ -11,7 +11,7 @@ export const fr: TranslationSet = {
   },
   headings: {
     groups: 'Groupes',
-    upcomingMatches: 'Matchs à venir',
+    upcomingMatches: 'Programmation',
     bracket: 'Arbre éliminatoire',
   },
   overview: {
