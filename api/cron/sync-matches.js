@@ -144,14 +144,23 @@ const recomputeGroups = (groups, matches) => {
 }
 
 export default async function handler(request, response) {
+  const isVercelCronCall = typeof request.headers['x-vercel-cron'] === 'string'
+  const isVercelRuntime = process.env.VERCEL === '1' || typeof process.env.VERCEL_ENV === 'string'
   const cronSecret = process.env.CRON_SECRET
 
-  if (cronSecret) {
-    const authorization = request.headers.authorization
+  if (!isVercelCronCall && cronSecret) {
+    const authorization = request.headers.authorization ?? ''
 
     if (authorization !== `Bearer ${cronSecret}`) {
       return response.status(401).json({ error: 'Unauthorized cron call' })
     }
+  }
+
+  if (isVercelRuntime && !process.env.BLOB_READ_WRITE_TOKEN) {
+    return response.status(500).json({
+      error: 'BLOB_READ_WRITE_TOKEN is not configured',
+      details: 'Cron updates cannot be persisted on Vercel without Blob storage token.',
+    })
   }
 
   const resultsUrl = process.env.MATCH_RESULTS_URL

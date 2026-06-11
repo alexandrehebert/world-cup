@@ -86,7 +86,9 @@ This project now supports a Vercel cron that runs every 5 minutes and updates ma
 
 - `BLOB_READ_WRITE_TOKEN`: token for Vercel Blob read/write.
 - `MATCH_RESULTS_URL`: upstream endpoint that returns match result updates.
-- `CRON_SECRET`: secret used to protect cron endpoint calls.
+- `CRON_SECRET` (optional): secret used for manual or external cron endpoint calls.
+
+Vercel scheduled cron calls are identified via the `x-vercel-cron` header and do not automatically include your custom `Authorization` header.
 
 ### Cron endpoint
 
