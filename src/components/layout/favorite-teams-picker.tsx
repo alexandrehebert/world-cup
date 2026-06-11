@@ -63,7 +63,7 @@ export const FavoriteTeamsPicker = () => {
       </button>
 
       {isOpen ? (
-        <div className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[min(24rem,calc(100vw-2rem))] border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-lg">
+        <div className="absolute left-0 top-[calc(100%+0.5rem)] z-50 w-[min(24rem,calc(100vw-2rem))] border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-lg sm:left-auto sm:right-0">
           <div className="space-y-2 border-b border-[var(--border)] pb-3">
             <p className="text-sm font-semibold text-[var(--text-strong)]">{t.labels.favoriteTeams}</p>
             <p className="text-xs text-[var(--text-soft)]">{t.labels.favoriteTeamsHint}</p>
