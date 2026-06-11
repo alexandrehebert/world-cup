@@ -43,7 +43,7 @@ const scoreLabel = (match: MatchRecord) => {
 }
 
 export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
-  const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
+  const { isFavoriteTeam, setSelectedMatchId, favoriteTeamIds } = useDashboard()
   const { locale, t } = useLocale()
   const { teamsById } = useTournament()
   const dateLocale = getDateLocale(locale)
@@ -120,6 +120,12 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
 
   const monthDayMatches = cells.filter((cell): cell is { day: number; matches: MatchRecord[] } => Boolean(cell))
 
+  const anyFavoriteInMonth = favoriteTeamIds.length > 0 && cells.some(
+    (cell) => cell?.matches.some(
+      (m) => (m.home.teamId && favoriteTeamIds.includes(m.home.teamId)) || (m.away.teamId && favoriteTeamIds.includes(m.away.teamId)),
+    ),
+  )
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between bg-[var(--surface)] px-4 py-3">
@@ -169,7 +175,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     }).format(new Date(match.kickoff))
 
                     return (
-                      <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:brightness-110 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-1 outline-[var(--accent-border)]' : statusBadgeClass[match.status]}`}>
+                      <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:opacity-100 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]' : (anyFavoriteInMonth ? 'opacity-75 ' : '') + statusBadgeClass[match.status]}`}>
                         <div className="flex items-center justify-between gap-1">
                           <span className="inline-flex min-w-0 items-center gap-1 font-semibold text-[var(--text-strong)]">
                             {homeTeam ? <FlagAvatar team={homeTeam} className="h-4 w-4" /> : <span className="h-4 w-4 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
@@ -225,7 +231,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                   }).format(new Date(match.kickoff))
 
                   return (
-                    <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:brightness-110 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-1 outline-[var(--accent-border)]' : statusBadgeClass[match.status]}`}>
+                    <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]' : (anyFavoriteInMonth ? 'opacity-75 ' : '') + statusBadgeClass[match.status]}`}>
                       <div className="flex w-full items-center justify-center gap-2 font-semibold text-[var(--text-strong)]">
                         <span className="inline-flex min-w-0 items-center gap-1.5">
                           {homeTeam ? <FlagAvatar team={homeTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}

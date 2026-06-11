@@ -80,7 +80,11 @@ export const BracketBoard = ({
                               />
                             ) : null}
 
-                            <div className={`relative h-[196px] overflow-hidden p-3 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-1 outline-[var(--accent-border)]' : 'bg-[var(--surface-soft)]'}`}>
+                            <div className={`relative h-[196px] overflow-hidden p-3 ${
+                              hasFavorite
+                                ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]'
+                                : 'bg-[var(--surface-soft)]'
+                            }`}>
                               <div className="space-y-2">
                                 <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
                                   {homeTeam ? (
@@ -151,7 +155,11 @@ export const BracketBoard = ({
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
 
                         return (
-                          <div key={match.id} className={`p-3 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-1 outline-[var(--accent-border)]' : 'bg-[var(--surface-soft)]'}`}>
+                          <div key={match.id} className={`p-3 ${
+                            hasFavorite
+                              ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]'
+                              : 'bg-[var(--surface-soft)]'
+                          }`}>
                             <div className="space-y-2">
                               <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
                                 {homeTeam ? (

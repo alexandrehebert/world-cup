@@ -7,9 +7,10 @@ import { FlagAvatar } from '../ui/flag-avatar'
 
 export const GroupCard = ({ groupId }: { groupId: string }) => {
   const { locale, t } = useLocale()
-  const { isFavoriteTeam } = useDashboard()
+  const { isFavoriteTeam, favoriteTeamIds } = useDashboard()
   const { groupsById, teamsById } = useTournament()
   const group = groupsById[groupId]
+  const anyFavoriteInGroup = favoriteTeamIds.length > 0 && group.standings.some((s) => favoriteTeamIds.includes(s.teamId))
 
   return (
     <div className="bg-[var(--surface)]">
@@ -39,7 +40,11 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
             return (
               <div
                 key={standing.teamId}
-                className={`grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] items-center gap-1 px-3 py-3 text-sm transition hover:bg-[var(--accent-muted)] sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 ${isQualifier ? 'border-l-2 border-l-[var(--accent)]' : 'border-l-2 border-l-transparent'} ${isFavorite ? 'bg-[var(--accent-muted)]' : ''}`}
+                className={`grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] items-center gap-1 px-3 py-3 text-sm transition hover:bg-[var(--accent-muted)] sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 ${
+                  isFavorite
+                    ? (isQualifier ? 'border-l-4 border-l-[var(--accent)]' : 'border-l-4 border-l-[var(--accent)]') + ' bg-[var(--accent-muted)]'
+                    : (isQualifier ? 'border-l-2 border-l-[var(--accent)]' : 'border-l-2 border-l-transparent') + (anyFavoriteInGroup ? ' opacity-75' : '')
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <span className="w-4 text-xs font-semibold text-[var(--text-soft)]">{index + 1}</span>
