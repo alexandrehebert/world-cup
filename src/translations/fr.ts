@@ -2,7 +2,7 @@ import type { TranslationSet } from './types'
 
 export const fr: TranslationSet = {
   locale: 'Français',
-  appName: 'Tableau de bord Coupe du monde',
+  appName: 'Coupe du monde FIFA 2026',
   sections: {
     overview: 'Vue d’ensemble',
     groups: 'Groupes',
@@ -15,7 +15,7 @@ export const fr: TranslationSet = {
     bracket: 'Arbre éliminatoire',
   },
   overview: {
-    title: 'Tableau de bord Coupe du monde',
+    title: 'Coupe du monde FIFA 2026',
     copy: '',
     stats: {
       matches: 'matchs',

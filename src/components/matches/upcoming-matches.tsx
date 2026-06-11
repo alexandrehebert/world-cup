@@ -94,7 +94,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">{group.dayLabel}</p>
             <span className="flex-1 border-t border-[var(--border)]" />
           </div>
-          <div className={`grid gap-3 ${compact ? 'lg:grid-cols-2' : 'xl:grid-cols-2'}`}>
+          <div className={`grid grid-cols-1 gap-3 ${compact ? 'lg:grid-cols-2' : 'xl:grid-cols-2'}`}>
             {group.matches.map((match) => {
               const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
               const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
@@ -104,7 +104,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
               return (
                 <div
                   key={match.id}
-                  className={`relative bg-[var(--surface)] px-5 py-4 transition hover:bg-[var(--surface-strong)] ${isLive ? 'border-l-2 border-l-[var(--accent)]' : ''}`}
+                  className={`relative w-full bg-[var(--surface)] px-5 py-4 transition hover:bg-[var(--surface-strong)] ${isLive ? 'border-l-2 border-l-[var(--accent)]' : ''}`}
                 >
                   <div className="flex w-full flex-col gap-4 text-left">
                     <div className="flex items-start justify-between gap-3">
@@ -117,11 +117,11 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                       <StatusPill status={match.status} label={statusLabel(match.status, t.labels)} />
                     </div>
 
-                    <div className="flex items-center gap-2 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-3">
-                      <div className="flex min-w-0 flex-1 items-center gap-3">
-                        {homeTeam && <FlagAvatar team={homeTeam} />}
+                    <div className="flex flex-nowrap items-center gap-2 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-3">
+                      <div className="flex min-w-0 flex-1 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
+                        {homeTeam && <FlagAvatar team={homeTeam} className="h-6 w-6 sm:h-12 sm:w-12" />}
                         <div className="min-w-0">
-                          <p className="truncate font-semibold text-[var(--text-strong)]">
+                          <p className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
                             {homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
@@ -132,16 +132,16 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                       <div className="shrink-0 px-2 py-1 text-center text-xs uppercase tracking-[0.24em] text-[var(--text-soft)] sm:px-3">
                         vs
                       </div>
-                      <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
-                        <div className="min-w-0 text-right">
-                          <p className="truncate font-semibold text-[var(--text-strong)]">
+                      <div className="flex min-w-0 flex-1 flex-col items-end gap-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+                        <div className="order-2 min-w-0 text-right sm:order-1">
+                          <p className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
                             {awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
                             {awayTeam?.code ?? 'TBD'}
                           </p>
                         </div>
-                        {awayTeam && <FlagAvatar team={awayTeam} />}
+                        {awayTeam && <FlagAvatar team={awayTeam} className="order-1 h-6 w-6 sm:order-2 sm:h-12 sm:w-12" />}
                       </div>
                     </div>
 
