@@ -18,7 +18,7 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
       </div>
 
       <div>
-        <div className="grid grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] gap-3 border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--text-soft)]">
+        <div className="grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] gap-1 border-b border-[var(--border)] bg-[var(--surface-soft)] px-3 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-soft)] sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 sm:text-[11px] sm:tracking-[0.22em]">
           <span>{t.labels.standings}</span>
           <span className="text-center">{t.labels.played}</span>
           <span className="text-center">{t.labels.won}</span>
@@ -35,11 +35,11 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
             return (
               <div
                 key={standing.teamId}
-                className={`grid grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] items-center gap-3 px-5 py-3 text-sm transition hover:bg-[var(--accent-muted)] ${isQualifier ? 'border-l-2 border-l-[var(--accent)]' : 'border-l-2 border-l-transparent'}`}
+                className={`grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] items-center gap-1 px-3 py-3 text-sm transition hover:bg-[var(--accent-muted)] sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 ${isQualifier ? 'border-l-2 border-l-[var(--accent)]' : 'border-l-2 border-l-transparent'}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="w-4 text-xs font-semibold text-[var(--text-soft)]">{index + 1}</span>
-                  <FlagAvatar team={team} />
+                  <FlagAvatar team={team} className="h-8 w-8 sm:h-12 sm:w-12" />
                   <div>
                     <p className="font-semibold text-[var(--text-strong)]">{getLocalizedText(team.name, locale)}</p>
                     <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{team.code}</p>

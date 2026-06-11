@@ -71,5 +71,7 @@ export const en: TranslationSet = {
     noMatchesForCountries: 'No upcoming matches for selected countries.',
     searchCountryPlaceholder: 'Search countries',
     noCountrySearchResults: 'No countries found.',
+    previous: 'Prev',
+    next: 'Next',
   },
 }

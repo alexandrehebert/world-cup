@@ -42,7 +42,7 @@ const scoreLabel = (match: MatchRecord) => {
 }
 
 export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
-  const { locale } = useLocale()
+  const { locale, t } = useLocale()
   const { teamsById } = useTournament()
   const dateLocale = getDateLocale(locale)
 
@@ -128,7 +128,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
           className="inline-flex items-center gap-1 px-2 py-1 text-sm text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Icon name="chevron_left" className="text-[18px]" />
-          <span>Prev</span>
+          <span>{t.labels.previous}</span>
         </button>
         <h3 className="text-lg font-semibold capitalize text-[var(--text-strong)]">{monthLabel}</h3>
         <button
@@ -137,7 +137,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
           disabled={activeMonthIndex === calendarData.monthKeys.length - 1}
           className="inline-flex items-center gap-1 px-2 py-1 text-sm text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          <span>Next</span>
+          <span>{t.labels.next}</span>
           <Icon name="chevron_right" className="text-[18px]" />
         </button>
       </div>

@@ -71,5 +71,7 @@ export const fr: TranslationSet = {
     noMatchesForCountries: 'Aucun match a venir pour les pays selectionnes.',
     searchCountryPlaceholder: 'Rechercher des pays',
     noCountrySearchResults: 'Aucun pays trouve.',
+    previous: 'Prec.',
+    next: 'Suiv.',
   },
 }

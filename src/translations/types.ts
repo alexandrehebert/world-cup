@@ -69,5 +69,7 @@ export interface TranslationSet {
     noMatchesForCountries: string
     searchCountryPlaceholder: string
     noCountrySearchResults: string
+    previous: string
+    next: string
   }
 }
