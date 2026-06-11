@@ -229,6 +229,10 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     minute: '2-digit',
                     timeZone: match.venue.timeZone ?? 'UTC',
                   }).format(new Date(match.kickoff))
+                  const footerValue =
+                    match.status === 'finished'
+                      ? `${t.labels.finished} · ${scoreLabel(match)}`
+                      : kickoffTime
 
                   return (
                     <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]' : (anyFavoriteInMonth ? 'opacity-75 ' : '') + statusBadgeClass[match.status]}`}>
@@ -245,7 +249,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                           {awayTeam ? <FlagAvatar team={awayTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                         </span>
                       </div>
-                      <p className="text-center">{kickoffTime}</p>
+                      <p className="text-center">{footerValue}</p>
                     </button>
                   )
                 })}
