@@ -1,10 +1,13 @@
 import { useTournament } from '../../contexts/tournament-context'
+import { useDashboard } from '../../contexts/dashboard-context'
 import { getLocalizedText } from '../../lib/format'
 import { useLocale } from '../../contexts/locale-context'
+import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 
 export const GroupRecap = () => {
   const { locale } = useLocale()
+  const { isFavoriteTeam } = useDashboard()
   const { groups, teamsById } = useTournament()
 
   return (
@@ -26,14 +29,18 @@ export const GroupRecap = () => {
             <div className="divide-y divide-[var(--border)]">
               {topTeams.map((standing, index) => {
                 const team = teamsById[standing.teamId]
+                const isFavorite = isFavoriteTeam(team.id)
 
                 return (
-                  <div key={standing.teamId} className="flex items-center justify-between gap-3 border-l-2 border-l-[var(--accent)] px-5 py-3 transition hover:bg-[var(--accent-muted)]">
+                  <div key={standing.teamId} className={`flex items-center justify-between gap-3 border-l-2 border-l-[var(--accent)] px-5 py-3 transition hover:bg-[var(--accent-muted)] ${isFavorite ? 'bg-[var(--accent-muted)]' : ''}`}>
                     <div className="flex items-center gap-3">
                       <span className="w-4 text-xs font-semibold text-[var(--text-soft)]">{index + 1}</span>
                       <FlagAvatar team={team} />
                       <div>
-                        <p className="font-semibold text-[var(--text-strong)]">{getLocalizedText(team.name, locale)}</p>
+                        <p className="inline-flex items-center gap-1.5 font-semibold text-[var(--text-strong)]">
+                          <span>{getLocalizedText(team.name, locale)}</span>
+                          {isFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+                        </p>
                         <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{team.code}</p>
                       </div>
                     </div>

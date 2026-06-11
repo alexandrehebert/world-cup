@@ -17,7 +17,7 @@ const stageLabel = (stage: 'group' | 'roundOf16' | 'quarterFinal' | 'semiFinal' 
 }
 
 export const MatchModal = () => {
-  const { selectedMatchId, setSelectedMatchId } = useDashboard()
+  const { isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
   const { locale, t } = useLocale()
   const { matchesById, teamsById } = useTournament()
 
@@ -48,7 +48,10 @@ export const MatchModal = () => {
   const match = matchesById[selectedMatchId]
   const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-  const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
+  const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
+  const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
+  const hasScore = typeof match.home.score === 'number' && typeof match.away.score === 'number'
+  const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
 
   return (
     <div
@@ -77,7 +80,7 @@ export const MatchModal = () => {
           </button>
         </div>
 
-        <div className="space-y-4 px-5 py-5 sm:px-6">
+        <div className="space-y-5 px-5 py-5 sm:px-6">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.status}</p>
@@ -100,9 +103,47 @@ export const MatchModal = () => {
             </div>
           </div>
 
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
-            <p className="mt-2 text-sm text-[var(--text)]">{t.meta.localTime} · {localTime}</p>
+          <div className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
+            <p className="text-center text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
+
+            <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+              <div className={`min-w-0 p-2 text-center ${homeIsFavorite ? 'bg-[var(--accent-muted)]' : ''}`}>
+                <div className="mx-auto mb-2 w-fit">
+                  {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
+                </div>
+                <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
+                  <span className="truncate">{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
+                  {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+                </p>
+                <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? 'TBD'}</p>
+              </div>
+
+              <div className="flex flex-col items-center gap-1 px-2">
+                {hasScore ? (
+                  <>
+                    <p className="text-3xl font-black leading-none text-[var(--text-strong)] sm:text-4xl">
+                      {match.home.score} - {match.away.score}
+                    </p>
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{match.status === 'finished' ? t.labels.finished : t.labels.live}</p>
+                  </>
+                ) : (
+                  <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">VS</p>
+                )}
+                <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{t.meta.localTime}</p>
+                <p className="text-sm font-semibold text-[var(--text-strong)]">{localTime}</p>
+              </div>
+
+              <div className={`min-w-0 p-2 text-center ${awayIsFavorite ? 'bg-[var(--accent-muted)]' : ''}`}>
+                <div className="mx-auto mb-2 w-fit">
+                  {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
+                </div>
+                <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
+                  <span className="truncate">{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
+                  {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+                </p>
+                <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? 'TBD'}</p>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -111,23 +152,6 @@ export const MatchModal = () => {
             <p className="mt-1 text-sm text-[var(--text)]">
               {getLocalizedText(match.venue.city, locale)}, {getLocalizedText(match.venue.country, locale)}
             </p>
-          </div>
-
-          <div className="grid gap-3 pt-1">
-            <div className="flex items-center gap-3 border-b border-[var(--border)] py-3">
-              {homeTeam && <FlagAvatar team={homeTeam} />}
-              <div>
-                <p className="font-semibold text-[var(--text-strong)]">{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</p>
-                <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? 'TBD'}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 py-3">
-              {awayTeam && <FlagAvatar team={awayTeam} />}
-              <div>
-                <p className="font-semibold text-[var(--text-strong)]">{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</p>
-                <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? 'TBD'}</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>

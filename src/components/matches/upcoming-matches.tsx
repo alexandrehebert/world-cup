@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
+import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, getLocalizedText } from '../../lib/format'
+import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
 import type { MatchRecord } from '../../types/tournament'
@@ -61,10 +63,12 @@ const hasScore = (match: MatchRecord) =>
 
 export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
   const { locale, t } = useLocale()
+  const { isFavoriteTeam } = useDashboard()
   const { teamsById } = useTournament()
   const groupedMatches = useMemo(() => {
     const dateLocale = getDateLocale(locale)
     const groups = new Map<string, { dayLabel: string; matches: MatchRecord[] }>()
+    const todayKey = getMatchDayKey(new Date().toISOString())
 
     for (const match of matches) {
       const date = new Date(match.kickoff)
@@ -78,16 +82,18 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
       }
 
       groups.set(dayKey, {
-        dayLabel: new Intl.DateTimeFormat(dateLocale, {
-          dateStyle: 'full',
-          timeZone: resolvedTimeZone,
-        }).format(date),
+        dayLabel: dayKey === todayKey
+          ? t.labels.today
+          : new Intl.DateTimeFormat(dateLocale, {
+              dateStyle: 'full',
+              timeZone: resolvedTimeZone,
+            }).format(date),
         matches: [match],
       })
     }
 
     return [...groups.values()]
-  }, [locale, matches])
+  }, [locale, matches, t.labels.today])
 
   return (
     <div className="space-y-6">
@@ -101,10 +107,13 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
             {group.matches.map((match) => {
               const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
               const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-              const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
+              const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
               const isLive = match.status === 'live'
               const isFinished = match.status === 'finished'
               const displayScore = hasScore(match)
+              const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
+              const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
+              const hasFavorite = homeIsFavorite || awayIsFavorite
 
               return (
                 <div
@@ -112,8 +121,10 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                   className={`relative w-full px-5 py-4 transition ${
                     isFinished
                       ? 'bg-[var(--surface-soft)] opacity-70 saturate-50'
-                      : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)]'
-                  } ${isLive ? 'border-l-2 border-l-[var(--accent)]' : ''}`}
+                      : hasFavorite
+                        ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)]'
+                        : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)]'
+                  } ${isLive || hasFavorite ? 'border-l-2 border-l-[var(--accent)]' : ''}`}
                 >
                   <div className="flex w-full flex-col gap-4 text-left">
                     <div className="flex items-start justify-between gap-3">
@@ -130,8 +141,9 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                       <div className="flex min-w-0 flex-1 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
                         {homeTeam && <FlagAvatar team={homeTeam} className="h-6 w-6 sm:h-12 sm:w-12" />}
                         <div className="min-w-0">
-                          <p className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            {homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}
+                          <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
+                            <span>{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
+                            {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
                             {homeTeam?.code ?? 'TBD'}
@@ -149,8 +161,9 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                       </div>
                       <div className="flex min-w-0 flex-1 flex-col items-end gap-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
                         <div className="order-2 min-w-0 text-right sm:order-1">
-                          <p className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            {awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}
+                          <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
+                            <span>{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
+                            {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
                             {awayTeam?.code ?? 'TBD'}

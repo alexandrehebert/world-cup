@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { getLocalizedText } from '../../lib/format'
@@ -42,6 +43,7 @@ const scoreLabel = (match: MatchRecord) => {
 }
 
 export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
+  const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
   const { locale, t } = useLocale()
   const { teamsById } = useTournament()
   const dateLocale = getDateLocale(locale)
@@ -157,6 +159,9 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                   {cell.matches.map((match) => {
                     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                     const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
+                    const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
+                    const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
+                    const hasFavorite = homeIsFavorite || awayIsFavorite
                     const kickoffTime = new Intl.DateTimeFormat(dateLocale, {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -164,20 +169,22 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     }).format(new Date(match.kickoff))
 
                     return (
-                      <div key={match.id} className={`space-y-1 px-2 py-1.5 text-xs ${statusBadgeClass[match.status]}`}>
+                      <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:brightness-110 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-1 outline-[var(--accent-border)]' : statusBadgeClass[match.status]}`}>
                         <div className="flex items-center justify-between gap-1">
                           <span className="inline-flex min-w-0 items-center gap-1 font-semibold text-[var(--text-strong)]">
                             {homeTeam ? <FlagAvatar team={homeTeam} className="h-4 w-4" /> : <span className="h-4 w-4 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                             <span>{homeTeam ? homeTeam.code : 'TBD'}</span>
+                            {homeIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}
                           </span>
                           <span className="font-semibold text-[var(--text-strong)]">{scoreLabel(match)}</span>
                           <span className="inline-flex min-w-0 items-center gap-1 font-semibold text-[var(--text-strong)]">
                             <span>{awayTeam ? awayTeam.code : 'TBD'}</span>
+                            {awayIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}
                             {awayTeam ? <FlagAvatar team={awayTeam} className="h-4 w-4" /> : <span className="h-4 w-4 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                           </span>
                         </div>
                         <p>{kickoffTime}</p>
-                      </div>
+                      </button>
                     )
                   })}
                 </div>
@@ -208,6 +215,9 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                 {dayCell.matches.map((match) => {
                   const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
+                  const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
+                  const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
+                  const hasFavorite = homeIsFavorite || awayIsFavorite
                   const kickoffTime = new Intl.DateTimeFormat(dateLocale, {
                     hour: '2-digit',
                     minute: '2-digit',
@@ -215,20 +225,22 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                   }).format(new Date(match.kickoff))
 
                   return (
-                    <div key={match.id} className={`flex flex-col items-center gap-2 px-2 py-2 text-xs ${statusBadgeClass[match.status]}`}>
+                    <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:brightness-110 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-1 outline-[var(--accent-border)]' : statusBadgeClass[match.status]}`}>
                       <div className="flex w-full items-center justify-center gap-2 font-semibold text-[var(--text-strong)]">
                         <span className="inline-flex min-w-0 items-center gap-1.5">
                           {homeTeam ? <FlagAvatar team={homeTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                           <span className="truncate">{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
+                          {homeIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}
                         </span>
                         <span>{scoreLabel(match)}</span>
                         <span className="inline-flex min-w-0 items-center gap-1.5">
                           <span className="truncate">{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
+                          {awayIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}
                           {awayTeam ? <FlagAvatar team={awayTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                         </span>
                       </div>
                       <p className="text-center">{kickoffTime}</p>
-                    </div>
+                    </button>
                   )
                 })}
               </div>

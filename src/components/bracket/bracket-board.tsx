@@ -1,6 +1,8 @@
 import { useLocale } from '../../contexts/locale-context'
+import { useDashboard } from '../../contexts/dashboard-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, getLocalizedText } from '../../lib/format'
+import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 
 const NODE_HEIGHT = 196
@@ -23,6 +25,7 @@ export const BracketBoard = ({
   rounds: { id: string; label: { en: string; fr: string }; matchIds: string[] }[]
 }) => {
   const { locale, t } = useLocale()
+  const { isFavoriteTeam } = useDashboard()
   const { matchesById, teamsById } = useTournament()
 
   const thirdPlaceRound = rounds.find((round) => round.id === 'thirdPlace')
@@ -54,6 +57,9 @@ export const BracketBoard = ({
                         const match = matchesById[matchId]
                         const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                         const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
+                        const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
+                        const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
+                        const hasFavorite = homeIsFavorite || awayIsFavorite
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
                         const showVerticalBridge =
                           hasNextRound && matchIndex % 2 === 0 && matchIndex + 1 < round.matchIds.length
@@ -74,7 +80,7 @@ export const BracketBoard = ({
                               />
                             ) : null}
 
-                            <div className="relative h-[196px] overflow-hidden bg-[var(--surface-soft)] p-3">
+                            <div className={`relative h-[196px] overflow-hidden p-3 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-1 outline-[var(--accent-border)]' : 'bg-[var(--surface-soft)]'}`}>
                               <div className="space-y-2">
                                 <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
                                   {homeTeam ? (
@@ -82,10 +88,13 @@ export const BracketBoard = ({
                                   ) : (
                                     <div className="h-10 w-10 rounded-full border border-dashed border-[var(--border)]" />
                                   )}
-                                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--text-strong)]">
-                                    {homeTeam
-                                      ? getLocalizedText(homeTeam.name, locale)
-                                      : getLocalizedText(match.home.placeholder!, locale)}
+                                  <span className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
+                                    <span className="truncate">
+                                      {homeTeam
+                                        ? getLocalizedText(homeTeam.name, locale)
+                                        : getLocalizedText(match.home.placeholder!, locale)}
+                                    </span>
+                                    {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                   </span>
                                 </div>
                                 <div className="flex min-w-0 items-center gap-2.5 pb-1">
@@ -94,10 +103,13 @@ export const BracketBoard = ({
                                   ) : (
                                     <div className="h-10 w-10 rounded-full border border-dashed border-[var(--border)]" />
                                   )}
-                                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--text-strong)]">
-                                    {awayTeam
-                                      ? getLocalizedText(awayTeam.name, locale)
-                                      : getLocalizedText(match.away.placeholder!, locale)}
+                                  <span className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
+                                    <span className="truncate">
+                                      {awayTeam
+                                        ? getLocalizedText(awayTeam.name, locale)
+                                        : getLocalizedText(match.away.placeholder!, locale)}
+                                    </span>
+                                    {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                   </span>
                                 </div>
                               </div>
@@ -133,10 +145,13 @@ export const BracketBoard = ({
                         const match = matchesById[matchId]
                         const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                         const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
+                        const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
+                        const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
+                        const hasFavorite = homeIsFavorite || awayIsFavorite
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
 
                         return (
-                          <div key={match.id} className="bg-[var(--surface-soft)] p-3">
+                          <div key={match.id} className={`p-3 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-1 outline-[var(--accent-border)]' : 'bg-[var(--surface-soft)]'}`}>
                             <div className="space-y-2">
                               <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
                                 {homeTeam ? (
@@ -144,10 +159,13 @@ export const BracketBoard = ({
                                 ) : (
                                   <div className="h-10 w-10 rounded-full border border-dashed border-[var(--border)]" />
                                 )}
-                                <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--text-strong)]">
-                                  {homeTeam
-                                    ? getLocalizedText(homeTeam.name, locale)
-                                    : getLocalizedText(match.home.placeholder!, locale)}
+                                <span className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
+                                  <span className="truncate">
+                                    {homeTeam
+                                      ? getLocalizedText(homeTeam.name, locale)
+                                      : getLocalizedText(match.home.placeholder!, locale)}
+                                  </span>
+                                  {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                 </span>
                               </div>
                               <div className="flex min-w-0 items-center gap-2.5 pb-1">
@@ -156,10 +174,13 @@ export const BracketBoard = ({
                                 ) : (
                                   <div className="h-10 w-10 rounded-full border border-dashed border-[var(--border)]" />
                                 )}
-                                <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--text-strong)]">
-                                  {awayTeam
-                                    ? getLocalizedText(awayTeam.name, locale)
-                                    : getLocalizedText(match.away.placeholder!, locale)}
+                                <span className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
+                                  <span className="truncate">
+                                    {awayTeam
+                                      ? getLocalizedText(awayTeam.name, locale)
+                                      : getLocalizedText(match.away.placeholder!, locale)}
+                                  </span>
+                                  {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                 </span>
                               </div>
                             </div>

@@ -71,5 +71,15 @@ export interface TranslationSet {
     noCountrySearchResults: string
     previous: string
     next: string
+    favoriteTeams: string
+    favoriteTeamsHint: string
+    searchTeamsPlaceholder: string
+    clearFavorites: string
+    noFavoriteSearchResults: string
+    favoritesCount: string
+    favorite: string
+    today: string
+    filterByFavorites: string
+    noMatchesForFavorites: string
   }
 }

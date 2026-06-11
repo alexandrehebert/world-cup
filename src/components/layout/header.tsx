@@ -2,6 +2,7 @@ import { useLocale } from '../../contexts/locale-context'
 import { Icon } from '../../lib/icons'
 import { LocaleSwitcher } from './locale-switcher'
 import { ThemeToggle } from './theme-toggle'
+import { FavoriteTeamsPicker } from './favorite-teams-picker'
 import type { TournamentMeta } from '../../types/tournament'
 
 export const Header = ({ meta }: { meta?: TournamentMeta }) => {
@@ -28,6 +29,7 @@ export const Header = ({ meta }: { meta?: TournamentMeta }) => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          <FavoriteTeamsPicker />
           <ThemeToggle />
           <LocaleSwitcher />
         </div>

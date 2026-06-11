@@ -1,10 +1,13 @@
 import { useLocale } from '../../contexts/locale-context'
+import { useDashboard } from '../../contexts/dashboard-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { getLocalizedText } from '../../lib/format'
+import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 
 export const GroupCard = ({ groupId }: { groupId: string }) => {
   const { locale, t } = useLocale()
+  const { isFavoriteTeam } = useDashboard()
   const { groupsById, teamsById } = useTournament()
   const group = groupsById[groupId]
 
@@ -31,17 +34,21 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
           {group.standings.map((standing, index) => {
             const team = teamsById[standing.teamId]
             const isQualifier = index < 2
+            const isFavorite = isFavoriteTeam(team.id)
 
             return (
               <div
                 key={standing.teamId}
-                className={`grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] items-center gap-1 px-3 py-3 text-sm transition hover:bg-[var(--accent-muted)] sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 ${isQualifier ? 'border-l-2 border-l-[var(--accent)]' : 'border-l-2 border-l-transparent'}`}
+                className={`grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] items-center gap-1 px-3 py-3 text-sm transition hover:bg-[var(--accent-muted)] sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 ${isQualifier ? 'border-l-2 border-l-[var(--accent)]' : 'border-l-2 border-l-transparent'} ${isFavorite ? 'bg-[var(--accent-muted)]' : ''}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="w-4 text-xs font-semibold text-[var(--text-soft)]">{index + 1}</span>
                   <FlagAvatar team={team} className="h-8 w-8 sm:h-12 sm:w-12" />
                   <div>
-                    <p className="font-semibold text-[var(--text-strong)]">{getLocalizedText(team.name, locale)}</p>
+                    <p className="inline-flex items-center gap-1.5 font-semibold text-[var(--text-strong)]">
+                      <span>{getLocalizedText(team.name, locale)}</span>
+                      {isFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+                    </p>
                     <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{team.code}</p>
                   </div>
                 </div>

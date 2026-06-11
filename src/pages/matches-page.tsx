@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useDashboard } from '../contexts/dashboard-context'
 import { useLocale } from '../contexts/locale-context'
 import { useTournament } from '../contexts/tournament-context'
 import { UpcomingMatches } from '../components/matches/upcoming-matches'
@@ -7,7 +8,9 @@ import { Icon } from '../lib/icons'
 
 export const MatchesPage = () => {
   const { locale, t } = useLocale()
+  const { favoriteTeamIds } = useDashboard()
   const { upcomingMatches, teamsById } = useTournament()
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
   const [selectedTeamIds, setSelectedTeamIds] = useState<string[]>([])
   const [countryQuery, setCountryQuery] = useState('')
   const [isCountryMenuOpen, setIsCountryMenuOpen] = useState(false)
@@ -34,18 +37,28 @@ export const MatchesPage = () => {
   }, [locale, teamsById, upcomingMatches])
 
   const filteredMatches = useMemo(() => {
-    if (selectedTeamIds.length === 0) {
-      return upcomingMatches
+    let matches = upcomingMatches
+
+    if (favoritesOnly && favoriteTeamIds.length > 0) {
+      const favorites = new Set(favoriteTeamIds)
+      matches = matches.filter((match) => {
+        const homeId = match.home.teamId
+        const awayId = match.away.teamId
+        return (homeId !== undefined && favorites.has(homeId)) || (awayId !== undefined && favorites.has(awayId))
+      })
     }
 
-    const selected = new Set(selectedTeamIds)
+    if (selectedTeamIds.length > 0) {
+      const selected = new Set(selectedTeamIds)
+      matches = matches.filter((match) => {
+        const homeId = match.home.teamId
+        const awayId = match.away.teamId
+        return (homeId !== undefined && selected.has(homeId)) || (awayId !== undefined && selected.has(awayId))
+      })
+    }
 
-    return upcomingMatches.filter((match) => {
-      const homeId = match.home.teamId
-      const awayId = match.away.teamId
-      return (homeId !== undefined && selected.has(homeId)) || (awayId !== undefined && selected.has(awayId))
-    })
-  }, [selectedTeamIds, upcomingMatches])
+    return matches
+  }, [favoritesOnly, favoriteTeamIds, selectedTeamIds, upcomingMatches])
 
   const selectedCountries = useMemo(() => {
     return selectedTeamIds
@@ -95,10 +108,25 @@ export const MatchesPage = () => {
         <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.upcomingMatches}</h2>
       </div>
 
-      <div ref={countryFilterRef} className="relative z-40">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+        <button
+          type="button"
+          onClick={() => setFavoritesOnly((current) => !current)}
+          disabled={favoriteTeamIds.length === 0}
+          className={`inline-flex w-full shrink-0 items-center gap-2 border px-3 py-0 h-10 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto ${
+            favoritesOnly
+              ? 'border-[var(--accent-border)] bg-[var(--accent-muted)] text-[var(--accent-text)]'
+              : 'border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--surface)]'
+          }`}
+        >
+          <Icon name="star" className="text-[16px]" />
+          <span>{t.labels.filterByFavorites}</span>
+        </button>
+
+        <div ref={countryFilterRef} className="relative z-40 min-w-0 flex-1">
           <div className="relative z-50">
             <div
-              className="w-full border border-[var(--border)] bg-[var(--surface)] pl-3 pr-10 transition focus-within:border-[var(--accent-border)]"
+              className="flex min-h-10 w-full flex-wrap items-center gap-2 border border-[var(--border)] bg-[var(--surface)] pl-3 pr-10 transition focus-within:border-[var(--accent-border)]"
               role="combobox"
               aria-expanded={isCountryMenuOpen}
               aria-label={t.labels.filterByCountries}
@@ -107,7 +135,7 @@ export const MatchesPage = () => {
                 countryInputRef.current?.focus()
               }}
             >
-              <div className="flex flex-wrap items-center gap-2 py-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Icon name="search" className="text-[18px] leading-none text-[var(--text-soft)]" />
                 {selectedCountries.map((team) => (
                   <button
@@ -117,7 +145,7 @@ export const MatchesPage = () => {
                       event.stopPropagation()
                       toggleTeamFilter(team.id)
                     }}
-                    className="inline-flex items-center gap-2 border border-[var(--accent-border)] bg-[var(--accent-muted)] px-2 py-1 text-xs text-[var(--accent-text)]"
+                    className="inline-flex items-center gap-1.5 border border-[var(--accent-border)] bg-[var(--accent-muted)] px-1.5 py-0.5 text-xs text-[var(--accent-text)]"
                     title={getLocalizedText(team.name, locale)}
                   >
                     <span className={`fi fi-${team.flagCode} inline-block h-4 w-4 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
@@ -153,7 +181,7 @@ export const MatchesPage = () => {
                       setIsCountryMenuOpen(true)
                     }
                   }}
-                  className="min-w-[9rem] flex-1 bg-transparent py-1 text-sm text-[var(--text-strong)] outline-none"
+                  className="min-w-[9rem] flex-1 bg-transparent text-sm text-[var(--text-strong)] outline-none"
                 />
               </div>
 
@@ -210,6 +238,7 @@ export const MatchesPage = () => {
               </div>
             )}
           </div>
+        </div>
       </div>
 
       {filteredMatches.length > 0 ? (
@@ -218,7 +247,7 @@ export const MatchesPage = () => {
         </div>
       ) : (
         <div className="bg-[var(--surface)] px-6 py-6 text-center text-sm text-[var(--text-muted)]">
-          {t.labels.noMatchesForCountries}
+          {favoritesOnly && favoriteTeamIds.length > 0 ? t.labels.noMatchesForFavorites : t.labels.noMatchesForCountries}
         </div>
       )}
     </section>

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
+import { MatchModal } from '../matches/match-modal'
 
 const tabs = [
   { to: '/overview', labelKey: 'overview' },
@@ -40,6 +41,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
         </main>
       </div>
 
+      <MatchModal />
     </div>
   )
 }

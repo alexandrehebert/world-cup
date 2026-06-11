@@ -2,16 +2,31 @@ import type { LocaleCode, LocalizedText, MatchRecord } from '../types/tournament
 
 export const getLocalizedText = (value: LocalizedText, locale: LocaleCode) => value[locale]
 
-export const formatMatchDate = (kickoff: string, locale: LocaleCode, timeZone?: string) => {
+const getTodayKey = (timeZone: string) =>
+  new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date())
+
+const getDateKey = (kickoff: string, timeZone: string) =>
+  new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date(kickoff))
+
+export const formatMatchDate = (kickoff: string, locale: LocaleCode, timeZone?: string, todayLabel?: string) => {
   const date = new Date(kickoff)
   const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
   const resolvedTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+  const isToday = getDateKey(kickoff, resolvedTimeZone) === getTodayKey(resolvedTimeZone)
 
-  const localDateTime = new Intl.DateTimeFormat(dateLocale, {
-    dateStyle: 'full',
-    timeStyle: 'short',
+  const timeOnly = new Intl.DateTimeFormat(dateLocale, {
+    hour: '2-digit',
+    minute: '2-digit',
     timeZone: resolvedTimeZone,
   }).format(date)
+
+  const localDateTime = isToday && todayLabel
+    ? `${todayLabel}, ${timeOnly}`
+    : new Intl.DateTimeFormat(dateLocale, {
+        dateStyle: 'full',
+        timeStyle: 'short',
+        timeZone: resolvedTimeZone,
+      }).format(date)
 
   const localTime = new Intl.DateTimeFormat(dateLocale, {
     hour: '2-digit',
