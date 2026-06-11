@@ -1,0 +1,3826 @@
+{
+  "meta": {
+    "edition": "FIFA World Cup 2026",
+    "season": "2026",
+    "host": "Canada, Mexico, United States",
+    "updatedAt": "2026-06-11T16:54:00Z",
+    "venueCountry": "Canada, Mexico, United States"
+  },
+  "teams": [
+    {
+      "id": "mex",
+      "code": "MEX",
+      "name": {
+        "en": "Mexico",
+        "fr": "Mexique"
+      },
+      "flagCode": "mx"
+    },
+    {
+      "id": "zaf",
+      "code": "RSA",
+      "name": {
+        "en": "South Africa",
+        "fr": "Afrique du Sud"
+      },
+      "flagCode": "za"
+    },
+    {
+      "id": "kor",
+      "code": "KOR",
+      "name": {
+        "en": "South Korea",
+        "fr": "Coree du Sud"
+      },
+      "flagCode": "kr"
+    },
+    {
+      "id": "cze",
+      "code": "CZE",
+      "name": {
+        "en": "Czech Republic",
+        "fr": "Republique tcheque"
+      },
+      "flagCode": "cz"
+    },
+    {
+      "id": "can",
+      "code": "CAN",
+      "name": {
+        "en": "Canada",
+        "fr": "Canada"
+      },
+      "flagCode": "ca"
+    },
+    {
+      "id": "bih",
+      "code": "BIH",
+      "name": {
+        "en": "Bosnia and Herzegovina",
+        "fr": "Bosnie-Herzegovine"
+      },
+      "flagCode": "ba"
+    },
+    {
+      "id": "qat",
+      "code": "QAT",
+      "name": {
+        "en": "Qatar",
+        "fr": "Qatar"
+      },
+      "flagCode": "qa"
+    },
+    {
+      "id": "sui",
+      "code": "SUI",
+      "name": {
+        "en": "Switzerland",
+        "fr": "Suisse"
+      },
+      "flagCode": "ch"
+    },
+    {
+      "id": "bra",
+      "code": "BRA",
+      "name": {
+        "en": "Brazil",
+        "fr": "Bresil"
+      },
+      "flagCode": "br"
+    },
+    {
+      "id": "mar",
+      "code": "MAR",
+      "name": {
+        "en": "Morocco",
+        "fr": "Maroc"
+      },
+      "flagCode": "ma"
+    },
+    {
+      "id": "hti",
+      "code": "HAI",
+      "name": {
+        "en": "Haiti",
+        "fr": "Haiti"
+      },
+      "flagCode": "ht"
+    },
+    {
+      "id": "sco",
+      "code": "SCO",
+      "name": {
+        "en": "Scotland",
+        "fr": "Ecosse"
+      },
+      "flagCode": "gb-sct"
+    },
+    {
+      "id": "usa",
+      "code": "USA",
+      "name": {
+        "en": "United States",
+        "fr": "Etats-Unis"
+      },
+      "flagCode": "us"
+    },
+    {
+      "id": "par",
+      "code": "PAR",
+      "name": {
+        "en": "Paraguay",
+        "fr": "Paraguay"
+      },
+      "flagCode": "py"
+    },
+    {
+      "id": "aus",
+      "code": "AUS",
+      "name": {
+        "en": "Australia",
+        "fr": "Australie"
+      },
+      "flagCode": "au"
+    },
+    {
+      "id": "tur",
+      "code": "TUR",
+      "name": {
+        "en": "Turkey",
+        "fr": "Turquie"
+      },
+      "flagCode": "tr"
+    },
+    {
+      "id": "ger",
+      "code": "GER",
+      "name": {
+        "en": "Germany",
+        "fr": "Allemagne"
+      },
+      "flagCode": "de"
+    },
+    {
+      "id": "cuw",
+      "code": "CUW",
+      "name": {
+        "en": "Curacao",
+        "fr": "Curacao"
+      },
+      "flagCode": "cw"
+    },
+    {
+      "id": "civ",
+      "code": "CIV",
+      "name": {
+        "en": "Ivory Coast",
+        "fr": "Cote d Ivoire"
+      },
+      "flagCode": "ci"
+    },
+    {
+      "id": "ecu",
+      "code": "ECU",
+      "name": {
+        "en": "Ecuador",
+        "fr": "Equateur"
+      },
+      "flagCode": "ec"
+    },
+    {
+      "id": "ned",
+      "code": "NED",
+      "name": {
+        "en": "Netherlands",
+        "fr": "Pays-Bas"
+      },
+      "flagCode": "nl"
+    },
+    {
+      "id": "jpn",
+      "code": "JPN",
+      "name": {
+        "en": "Japan",
+        "fr": "Japon"
+      },
+      "flagCode": "jp"
+    },
+    {
+      "id": "swe",
+      "code": "SWE",
+      "name": {
+        "en": "Sweden",
+        "fr": "Suede"
+      },
+      "flagCode": "se"
+    },
+    {
+      "id": "tun",
+      "code": "TUN",
+      "name": {
+        "en": "Tunisia",
+        "fr": "Tunisie"
+      },
+      "flagCode": "tn"
+    },
+    {
+      "id": "bel",
+      "code": "BEL",
+      "name": {
+        "en": "Belgium",
+        "fr": "Belgique"
+      },
+      "flagCode": "be"
+    },
+    {
+      "id": "egy",
+      "code": "EGY",
+      "name": {
+        "en": "Egypt",
+        "fr": "Egypte"
+      },
+      "flagCode": "eg"
+    },
+    {
+      "id": "irn",
+      "code": "IRN",
+      "name": {
+        "en": "Iran",
+        "fr": "Iran"
+      },
+      "flagCode": "ir"
+    },
+    {
+      "id": "nzl",
+      "code": "NZL",
+      "name": {
+        "en": "New Zealand",
+        "fr": "Nouvelle-Zelande"
+      },
+      "flagCode": "nz"
+    },
+    {
+      "id": "esp",
+      "code": "ESP",
+      "name": {
+        "en": "Spain",
+        "fr": "Espagne"
+      },
+      "flagCode": "es"
+    },
+    {
+      "id": "cpv",
+      "code": "CPV",
+      "name": {
+        "en": "Cape Verde",
+        "fr": "Cap-Vert"
+      },
+      "flagCode": "cv"
+    },
+    {
+      "id": "sau",
+      "code": "KSA",
+      "name": {
+        "en": "Saudi Arabia",
+        "fr": "Arabie saoudite"
+      },
+      "flagCode": "sa"
+    },
+    {
+      "id": "uru",
+      "code": "URU",
+      "name": {
+        "en": "Uruguay",
+        "fr": "Uruguay"
+      },
+      "flagCode": "uy"
+    },
+    {
+      "id": "fra",
+      "code": "FRA",
+      "name": {
+        "en": "France",
+        "fr": "France"
+      },
+      "flagCode": "fr"
+    },
+    {
+      "id": "sen",
+      "code": "SEN",
+      "name": {
+        "en": "Senegal",
+        "fr": "Senegal"
+      },
+      "flagCode": "sn"
+    },
+    {
+      "id": "irq",
+      "code": "IRQ",
+      "name": {
+        "en": "Iraq",
+        "fr": "Irak"
+      },
+      "flagCode": "iq"
+    },
+    {
+      "id": "nor",
+      "code": "NOR",
+      "name": {
+        "en": "Norway",
+        "fr": "Norvege"
+      },
+      "flagCode": "no"
+    },
+    {
+      "id": "arg",
+      "code": "ARG",
+      "name": {
+        "en": "Argentina",
+        "fr": "Argentine"
+      },
+      "flagCode": "ar"
+    },
+    {
+      "id": "dza",
+      "code": "ALG",
+      "name": {
+        "en": "Algeria",
+        "fr": "Algerie"
+      },
+      "flagCode": "dz"
+    },
+    {
+      "id": "aut",
+      "code": "AUT",
+      "name": {
+        "en": "Austria",
+        "fr": "Autriche"
+      },
+      "flagCode": "at"
+    },
+    {
+      "id": "jor",
+      "code": "JOR",
+      "name": {
+        "en": "Jordan",
+        "fr": "Jordanie"
+      },
+      "flagCode": "jo"
+    },
+    {
+      "id": "por",
+      "code": "POR",
+      "name": {
+        "en": "Portugal",
+        "fr": "Portugal"
+      },
+      "flagCode": "pt"
+    },
+    {
+      "id": "cod",
+      "code": "COD",
+      "name": {
+        "en": "DR Congo",
+        "fr": "RD Congo"
+      },
+      "flagCode": "cd"
+    },
+    {
+      "id": "uzb",
+      "code": "UZB",
+      "name": {
+        "en": "Uzbekistan",
+        "fr": "Ouzbekistan"
+      },
+      "flagCode": "uz"
+    },
+    {
+      "id": "col",
+      "code": "COL",
+      "name": {
+        "en": "Colombia",
+        "fr": "Colombie"
+      },
+      "flagCode": "co"
+    },
+    {
+      "id": "eng",
+      "code": "ENG",
+      "name": {
+        "en": "England",
+        "fr": "Angleterre"
+      },
+      "flagCode": "gb-eng"
+    },
+    {
+      "id": "cro",
+      "code": "CRO",
+      "name": {
+        "en": "Croatia",
+        "fr": "Croatie"
+      },
+      "flagCode": "hr"
+    },
+    {
+      "id": "gha",
+      "code": "GHA",
+      "name": {
+        "en": "Ghana",
+        "fr": "Ghana"
+      },
+      "flagCode": "gh"
+    },
+    {
+      "id": "pan",
+      "code": "PAN",
+      "name": {
+        "en": "Panama",
+        "fr": "Panama"
+      },
+      "flagCode": "pa"
+    }
+  ],
+  "groups": [
+    {
+      "id": "A",
+      "label": {
+        "en": "Group A",
+        "fr": "Groupe A"
+      },
+      "teamIds": [
+        "mex",
+        "zaf",
+        "kor",
+        "cze"
+      ],
+      "standings": [
+        {
+          "teamId": "mex",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "zaf",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "kor",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "cze",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m1",
+        "m2",
+        "m25",
+        "m28",
+        "m53",
+        "m54"
+      ]
+    },
+    {
+      "id": "B",
+      "label": {
+        "en": "Group B",
+        "fr": "Groupe B"
+      },
+      "teamIds": [
+        "can",
+        "bih",
+        "qat",
+        "sui"
+      ],
+      "standings": [
+        {
+          "teamId": "can",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "bih",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "qat",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "sui",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m3",
+        "m8",
+        "m26",
+        "m27",
+        "m51",
+        "m52"
+      ]
+    },
+    {
+      "id": "C",
+      "label": {
+        "en": "Group C",
+        "fr": "Groupe C"
+      },
+      "teamIds": [
+        "bra",
+        "mar",
+        "hti",
+        "sco"
+      ],
+      "standings": [
+        {
+          "teamId": "bra",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "mar",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "hti",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "sco",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m5",
+        "m7",
+        "m29",
+        "m30",
+        "m49",
+        "m50"
+      ]
+    },
+    {
+      "id": "D",
+      "label": {
+        "en": "Group D",
+        "fr": "Groupe D"
+      },
+      "teamIds": [
+        "usa",
+        "par",
+        "aus",
+        "tur"
+      ],
+      "standings": [
+        {
+          "teamId": "usa",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "par",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "aus",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "tur",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m4",
+        "m6",
+        "m31",
+        "m32",
+        "m59",
+        "m60"
+      ]
+    },
+    {
+      "id": "E",
+      "label": {
+        "en": "Group E",
+        "fr": "Groupe E"
+      },
+      "teamIds": [
+        "ger",
+        "cuw",
+        "civ",
+        "ecu"
+      ],
+      "standings": [
+        {
+          "teamId": "ger",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "cuw",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "civ",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "ecu",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m9",
+        "m10",
+        "m33",
+        "m34",
+        "m55",
+        "m56"
+      ]
+    },
+    {
+      "id": "F",
+      "label": {
+        "en": "Group F",
+        "fr": "Groupe F"
+      },
+      "teamIds": [
+        "ned",
+        "jpn",
+        "swe",
+        "tun"
+      ],
+      "standings": [
+        {
+          "teamId": "ned",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "jpn",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "swe",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "tun",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m11",
+        "m12",
+        "m35",
+        "m36",
+        "m57",
+        "m58"
+      ]
+    },
+    {
+      "id": "G",
+      "label": {
+        "en": "Group G",
+        "fr": "Groupe G"
+      },
+      "teamIds": [
+        "bel",
+        "egy",
+        "irn",
+        "nzl"
+      ],
+      "standings": [
+        {
+          "teamId": "bel",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "egy",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "irn",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "nzl",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m15",
+        "m16",
+        "m39",
+        "m40",
+        "m63",
+        "m64"
+      ]
+    },
+    {
+      "id": "H",
+      "label": {
+        "en": "Group H",
+        "fr": "Groupe H"
+      },
+      "teamIds": [
+        "esp",
+        "cpv",
+        "sau",
+        "uru"
+      ],
+      "standings": [
+        {
+          "teamId": "esp",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "cpv",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "sau",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "uru",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m13",
+        "m14",
+        "m37",
+        "m38",
+        "m65",
+        "m66"
+      ]
+    },
+    {
+      "id": "I",
+      "label": {
+        "en": "Group I",
+        "fr": "Groupe I"
+      },
+      "teamIds": [
+        "fra",
+        "sen",
+        "irq",
+        "nor"
+      ],
+      "standings": [
+        {
+          "teamId": "fra",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "sen",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "irq",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "nor",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m17",
+        "m18",
+        "m41",
+        "m42",
+        "m61",
+        "m62"
+      ]
+    },
+    {
+      "id": "J",
+      "label": {
+        "en": "Group J",
+        "fr": "Groupe J"
+      },
+      "teamIds": [
+        "arg",
+        "dza",
+        "aut",
+        "jor"
+      ],
+      "standings": [
+        {
+          "teamId": "arg",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "dza",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "aut",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "jor",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m19",
+        "m20",
+        "m43",
+        "m44",
+        "m69",
+        "m70"
+      ]
+    },
+    {
+      "id": "K",
+      "label": {
+        "en": "Group K",
+        "fr": "Groupe K"
+      },
+      "teamIds": [
+        "por",
+        "cod",
+        "uzb",
+        "col"
+      ],
+      "standings": [
+        {
+          "teamId": "por",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "cod",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "uzb",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "col",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m23",
+        "m24",
+        "m47",
+        "m48",
+        "m71",
+        "m72"
+      ]
+    },
+    {
+      "id": "L",
+      "label": {
+        "en": "Group L",
+        "fr": "Groupe L"
+      },
+      "teamIds": [
+        "eng",
+        "cro",
+        "gha",
+        "pan"
+      ],
+      "standings": [
+        {
+          "teamId": "eng",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "cro",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "gha",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "pan",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "m21",
+        "m22",
+        "m45",
+        "m46",
+        "m67",
+        "m68"
+      ]
+    }
+  ],
+  "matches": [
+    {
+      "id": "m1",
+      "stage": "group",
+      "groupId": "A",
+      "home": {
+        "teamId": "mex"
+      },
+      "away": {
+        "teamId": "zaf"
+      },
+      "kickoff": "2026-06-11T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Mexico City Stadium",
+          "fr": "Mexico City Stadium"
+        },
+        "city": {
+          "en": "Mexico City",
+          "fr": "Mexico City"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Mexico_City"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m2",
+      "stage": "group",
+      "groupId": "A",
+      "home": {
+        "teamId": "kor"
+      },
+      "away": {
+        "teamId": "cze"
+      },
+      "kickoff": "2026-06-12T02:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Zapopan Stadium",
+          "fr": "Zapopan Stadium"
+        },
+        "city": {
+          "en": "Zapopan",
+          "fr": "Zapopan"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Mexico_City"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m3",
+      "stage": "group",
+      "groupId": "B",
+      "home": {
+        "teamId": "can"
+      },
+      "away": {
+        "teamId": "bih"
+      },
+      "kickoff": "2026-06-12T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Toronto Stadium",
+          "fr": "Toronto Stadium"
+        },
+        "city": {
+          "en": "Toronto",
+          "fr": "Toronto"
+        },
+        "country": {
+          "en": "Canada",
+          "fr": "Canada"
+        },
+        "timeZone": "America/Toronto"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m4",
+      "stage": "group",
+      "groupId": "D",
+      "home": {
+        "teamId": "usa"
+      },
+      "away": {
+        "teamId": "par"
+      },
+      "kickoff": "2026-06-13T01:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Inglewood Stadium",
+          "fr": "Inglewood Stadium"
+        },
+        "city": {
+          "en": "Inglewood",
+          "fr": "Inglewood"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m5",
+      "stage": "group",
+      "groupId": "C",
+      "home": {
+        "teamId": "hti"
+      },
+      "away": {
+        "teamId": "sco"
+      },
+      "kickoff": "2026-06-14T01:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Foxborough Stadium",
+          "fr": "Foxborough Stadium"
+        },
+        "city": {
+          "en": "Foxborough",
+          "fr": "Foxborough"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m6",
+      "stage": "group",
+      "groupId": "D",
+      "home": {
+        "teamId": "aus"
+      },
+      "away": {
+        "teamId": "tur"
+      },
+      "kickoff": "2026-06-14T04:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Inglewood Stadium",
+          "fr": "Inglewood Stadium"
+        },
+        "city": {
+          "en": "Inglewood",
+          "fr": "Inglewood"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m7",
+      "stage": "group",
+      "groupId": "C",
+      "home": {
+        "teamId": "bra"
+      },
+      "away": {
+        "teamId": "mar"
+      },
+      "kickoff": "2026-06-13T22:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "East Rutherford Stadium",
+          "fr": "East Rutherford Stadium"
+        },
+        "city": {
+          "en": "East Rutherford",
+          "fr": "East Rutherford"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m8",
+      "stage": "group",
+      "groupId": "B",
+      "home": {
+        "teamId": "qat"
+      },
+      "away": {
+        "teamId": "sui"
+      },
+      "kickoff": "2026-06-13T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Santa Clara Stadium",
+          "fr": "Santa Clara Stadium"
+        },
+        "city": {
+          "en": "Santa Clara",
+          "fr": "Santa Clara"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m9",
+      "stage": "group",
+      "groupId": "E",
+      "home": {
+        "teamId": "civ"
+      },
+      "away": {
+        "teamId": "ecu"
+      },
+      "kickoff": "2026-06-14T23:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Houston Stadium",
+          "fr": "Houston Stadium"
+        },
+        "city": {
+          "en": "Houston",
+          "fr": "Houston"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m10",
+      "stage": "group",
+      "groupId": "E",
+      "home": {
+        "teamId": "ger"
+      },
+      "away": {
+        "teamId": "cuw"
+      },
+      "kickoff": "2026-06-14T17:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Dallas Stadium",
+          "fr": "Dallas Stadium"
+        },
+        "city": {
+          "en": "Dallas",
+          "fr": "Dallas"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m11",
+      "stage": "group",
+      "groupId": "F",
+      "home": {
+        "teamId": "ned"
+      },
+      "away": {
+        "teamId": "jpn"
+      },
+      "kickoff": "2026-06-14T20:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Arlington Stadium",
+          "fr": "Arlington Stadium"
+        },
+        "city": {
+          "en": "Arlington",
+          "fr": "Arlington"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m12",
+      "stage": "group",
+      "groupId": "F",
+      "home": {
+        "teamId": "swe"
+      },
+      "away": {
+        "teamId": "tun"
+      },
+      "kickoff": "2026-06-15T02:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Arlington Stadium",
+          "fr": "Arlington Stadium"
+        },
+        "city": {
+          "en": "Arlington",
+          "fr": "Arlington"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m13",
+      "stage": "group",
+      "groupId": "H",
+      "home": {
+        "teamId": "sau"
+      },
+      "away": {
+        "teamId": "uru"
+      },
+      "kickoff": "2026-06-15T22:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Atlanta Stadium",
+          "fr": "Atlanta Stadium"
+        },
+        "city": {
+          "en": "Atlanta",
+          "fr": "Atlanta"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m14",
+      "stage": "group",
+      "groupId": "H",
+      "home": {
+        "teamId": "esp"
+      },
+      "away": {
+        "teamId": "cpv"
+      },
+      "kickoff": "2026-06-15T16:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Miami Gardens Stadium",
+          "fr": "Miami Gardens Stadium"
+        },
+        "city": {
+          "en": "Miami Gardens",
+          "fr": "Miami Gardens"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m15",
+      "stage": "group",
+      "groupId": "G",
+      "home": {
+        "teamId": "irn"
+      },
+      "away": {
+        "teamId": "nzl"
+      },
+      "kickoff": "2026-06-16T01:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Seattle Stadium",
+          "fr": "Seattle Stadium"
+        },
+        "city": {
+          "en": "Seattle",
+          "fr": "Seattle"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m16",
+      "stage": "group",
+      "groupId": "G",
+      "home": {
+        "teamId": "bel"
+      },
+      "away": {
+        "teamId": "egy"
+      },
+      "kickoff": "2026-06-15T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Seattle Stadium",
+          "fr": "Seattle Stadium"
+        },
+        "city": {
+          "en": "Seattle",
+          "fr": "Seattle"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m17",
+      "stage": "group",
+      "groupId": "I",
+      "home": {
+        "teamId": "fra"
+      },
+      "away": {
+        "teamId": "sen"
+      },
+      "kickoff": "2026-06-16T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "East Rutherford Stadium",
+          "fr": "East Rutherford Stadium"
+        },
+        "city": {
+          "en": "East Rutherford",
+          "fr": "East Rutherford"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m18",
+      "stage": "group",
+      "groupId": "I",
+      "home": {
+        "teamId": "irq"
+      },
+      "away": {
+        "teamId": "nor"
+      },
+      "kickoff": "2026-06-16T22:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "East Rutherford Stadium",
+          "fr": "East Rutherford Stadium"
+        },
+        "city": {
+          "en": "East Rutherford",
+          "fr": "East Rutherford"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m19",
+      "stage": "group",
+      "groupId": "J",
+      "home": {
+        "teamId": "arg"
+      },
+      "away": {
+        "teamId": "dza"
+      },
+      "kickoff": "2026-06-17T01:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Kansas City Stadium",
+          "fr": "Kansas City Stadium"
+        },
+        "city": {
+          "en": "Kansas City",
+          "fr": "Kansas City"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m20",
+      "stage": "group",
+      "groupId": "J",
+      "home": {
+        "teamId": "aut"
+      },
+      "away": {
+        "teamId": "jor"
+      },
+      "kickoff": "2026-06-17T04:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Santa Clara Stadium",
+          "fr": "Santa Clara Stadium"
+        },
+        "city": {
+          "en": "Santa Clara",
+          "fr": "Santa Clara"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m21",
+      "stage": "group",
+      "groupId": "L",
+      "home": {
+        "teamId": "gha"
+      },
+      "away": {
+        "teamId": "pan"
+      },
+      "kickoff": "2026-06-17T23:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Arlington Stadium",
+          "fr": "Arlington Stadium"
+        },
+        "city": {
+          "en": "Arlington",
+          "fr": "Arlington"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m22",
+      "stage": "group",
+      "groupId": "L",
+      "home": {
+        "teamId": "eng"
+      },
+      "away": {
+        "teamId": "cro"
+      },
+      "kickoff": "2026-06-17T20:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Arlington Stadium",
+          "fr": "Arlington Stadium"
+        },
+        "city": {
+          "en": "Arlington",
+          "fr": "Arlington"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m23",
+      "stage": "group",
+      "groupId": "K",
+      "home": {
+        "teamId": "por"
+      },
+      "away": {
+        "teamId": "cod"
+      },
+      "kickoff": "2026-06-17T17:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Houston Stadium",
+          "fr": "Houston Stadium"
+        },
+        "city": {
+          "en": "Houston",
+          "fr": "Houston"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m24",
+      "stage": "group",
+      "groupId": "K",
+      "home": {
+        "teamId": "uzb"
+      },
+      "away": {
+        "teamId": "col"
+      },
+      "kickoff": "2026-06-18T02:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Houston Stadium",
+          "fr": "Houston Stadium"
+        },
+        "city": {
+          "en": "Houston",
+          "fr": "Houston"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m25",
+      "stage": "group",
+      "groupId": "A",
+      "home": {
+        "teamId": "cze"
+      },
+      "away": {
+        "teamId": "zaf"
+      },
+      "kickoff": "2026-06-18T16:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Atlanta Stadium",
+          "fr": "Atlanta Stadium"
+        },
+        "city": {
+          "en": "Atlanta",
+          "fr": "Atlanta"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m26",
+      "stage": "group",
+      "groupId": "B",
+      "home": {
+        "teamId": "sui"
+      },
+      "away": {
+        "teamId": "bih"
+      },
+      "kickoff": "2026-06-18T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Inglewood Stadium",
+          "fr": "Inglewood Stadium"
+        },
+        "city": {
+          "en": "Inglewood",
+          "fr": "Inglewood"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m27",
+      "stage": "group",
+      "groupId": "B",
+      "home": {
+        "teamId": "can"
+      },
+      "away": {
+        "teamId": "qat"
+      },
+      "kickoff": "2026-06-18T22:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Inglewood Stadium",
+          "fr": "Inglewood Stadium"
+        },
+        "city": {
+          "en": "Inglewood",
+          "fr": "Inglewood"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m28",
+      "stage": "group",
+      "groupId": "A",
+      "home": {
+        "teamId": "mex"
+      },
+      "away": {
+        "teamId": "kor"
+      },
+      "kickoff": "2026-06-19T01:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Zapopan Stadium",
+          "fr": "Zapopan Stadium"
+        },
+        "city": {
+          "en": "Zapopan",
+          "fr": "Zapopan"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Mexico_City"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m29",
+      "stage": "group",
+      "groupId": "C",
+      "home": {
+        "teamId": "bra"
+      },
+      "away": {
+        "teamId": "hti"
+      },
+      "kickoff": "2026-06-20T00:30:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Foxborough Stadium",
+          "fr": "Foxborough Stadium"
+        },
+        "city": {
+          "en": "Foxborough",
+          "fr": "Foxborough"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m30",
+      "stage": "group",
+      "groupId": "C",
+      "home": {
+        "teamId": "sco"
+      },
+      "away": {
+        "teamId": "mar"
+      },
+      "kickoff": "2026-06-19T22:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Foxborough Stadium",
+          "fr": "Foxborough Stadium"
+        },
+        "city": {
+          "en": "Foxborough",
+          "fr": "Foxborough"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m31",
+      "stage": "group",
+      "groupId": "D",
+      "home": {
+        "teamId": "tur"
+      },
+      "away": {
+        "teamId": "par"
+      },
+      "kickoff": "2026-06-20T03:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Seattle Stadium",
+          "fr": "Seattle Stadium"
+        },
+        "city": {
+          "en": "Seattle",
+          "fr": "Seattle"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m32",
+      "stage": "group",
+      "groupId": "D",
+      "home": {
+        "teamId": "usa"
+      },
+      "away": {
+        "teamId": "aus"
+      },
+      "kickoff": "2026-06-19T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Vancouver Stadium",
+          "fr": "Vancouver Stadium"
+        },
+        "city": {
+          "en": "Vancouver",
+          "fr": "Vancouver"
+        },
+        "country": {
+          "en": "Canada",
+          "fr": "Canada"
+        },
+        "timeZone": "America/Vancouver"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m33",
+      "stage": "group",
+      "groupId": "E",
+      "home": {
+        "teamId": "ger"
+      },
+      "away": {
+        "teamId": "civ"
+      },
+      "kickoff": "2026-06-20T20:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Philadelphia Stadium",
+          "fr": "Philadelphia Stadium"
+        },
+        "city": {
+          "en": "Philadelphia",
+          "fr": "Philadelphia"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m34",
+      "stage": "group",
+      "groupId": "E",
+      "home": {
+        "teamId": "ecu"
+      },
+      "away": {
+        "teamId": "cuw"
+      },
+      "kickoff": "2026-06-21T00:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Toronto Stadium",
+          "fr": "Toronto Stadium"
+        },
+        "city": {
+          "en": "Toronto",
+          "fr": "Toronto"
+        },
+        "country": {
+          "en": "Canada",
+          "fr": "Canada"
+        },
+        "timeZone": "America/Toronto"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m35",
+      "stage": "group",
+      "groupId": "F",
+      "home": {
+        "teamId": "ned"
+      },
+      "away": {
+        "teamId": "swe"
+      },
+      "kickoff": "2026-06-20T17:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Guadalupe Stadium",
+          "fr": "Guadalupe Stadium"
+        },
+        "city": {
+          "en": "Guadalupe",
+          "fr": "Guadalupe"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Monterrey"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m36",
+      "stage": "group",
+      "groupId": "F",
+      "home": {
+        "teamId": "tun"
+      },
+      "away": {
+        "teamId": "jpn"
+      },
+      "kickoff": "2026-06-21T04:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Houston Stadium",
+          "fr": "Houston Stadium"
+        },
+        "city": {
+          "en": "Houston",
+          "fr": "Houston"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m37",
+      "stage": "group",
+      "groupId": "H",
+      "home": {
+        "teamId": "uru"
+      },
+      "away": {
+        "teamId": "cpv"
+      },
+      "kickoff": "2026-06-21T22:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Atlanta Stadium",
+          "fr": "Atlanta Stadium"
+        },
+        "city": {
+          "en": "Atlanta",
+          "fr": "Atlanta"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m38",
+      "stage": "group",
+      "groupId": "H",
+      "home": {
+        "teamId": "esp"
+      },
+      "away": {
+        "teamId": "sau"
+      },
+      "kickoff": "2026-06-21T16:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Miami Gardens Stadium",
+          "fr": "Miami Gardens Stadium"
+        },
+        "city": {
+          "en": "Miami Gardens",
+          "fr": "Miami Gardens"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m39",
+      "stage": "group",
+      "groupId": "G",
+      "home": {
+        "teamId": "bel"
+      },
+      "away": {
+        "teamId": "irn"
+      },
+      "kickoff": "2026-06-21T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Inglewood Stadium",
+          "fr": "Inglewood Stadium"
+        },
+        "city": {
+          "en": "Inglewood",
+          "fr": "Inglewood"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m40",
+      "stage": "group",
+      "groupId": "G",
+      "home": {
+        "teamId": "nzl"
+      },
+      "away": {
+        "teamId": "egy"
+      },
+      "kickoff": "2026-06-22T01:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Inglewood Stadium",
+          "fr": "Inglewood Stadium"
+        },
+        "city": {
+          "en": "Inglewood",
+          "fr": "Inglewood"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m41",
+      "stage": "group",
+      "groupId": "I",
+      "home": {
+        "teamId": "nor"
+      },
+      "away": {
+        "teamId": "sen"
+      },
+      "kickoff": "2026-06-23T00:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Philadelphia Stadium",
+          "fr": "Philadelphia Stadium"
+        },
+        "city": {
+          "en": "Philadelphia",
+          "fr": "Philadelphia"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m42",
+      "stage": "group",
+      "groupId": "I",
+      "home": {
+        "teamId": "fra"
+      },
+      "away": {
+        "teamId": "irq"
+      },
+      "kickoff": "2026-06-22T21:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Foxborough Stadium",
+          "fr": "Foxborough Stadium"
+        },
+        "city": {
+          "en": "Foxborough",
+          "fr": "Foxborough"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m43",
+      "stage": "group",
+      "groupId": "J",
+      "home": {
+        "teamId": "arg"
+      },
+      "away": {
+        "teamId": "aut"
+      },
+      "kickoff": "2026-06-22T17:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Santa Clara Stadium",
+          "fr": "Santa Clara Stadium"
+        },
+        "city": {
+          "en": "Santa Clara",
+          "fr": "Santa Clara"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m44",
+      "stage": "group",
+      "groupId": "J",
+      "home": {
+        "teamId": "jor"
+      },
+      "away": {
+        "teamId": "dza"
+      },
+      "kickoff": "2026-06-23T03:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Arlington Stadium",
+          "fr": "Arlington Stadium"
+        },
+        "city": {
+          "en": "Arlington",
+          "fr": "Arlington"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m45",
+      "stage": "group",
+      "groupId": "L",
+      "home": {
+        "teamId": "eng"
+      },
+      "away": {
+        "teamId": "gha"
+      },
+      "kickoff": "2026-06-23T20:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Toronto Stadium",
+          "fr": "Toronto Stadium"
+        },
+        "city": {
+          "en": "Toronto",
+          "fr": "Toronto"
+        },
+        "country": {
+          "en": "Canada",
+          "fr": "Canada"
+        },
+        "timeZone": "America/Toronto"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m46",
+      "stage": "group",
+      "groupId": "L",
+      "home": {
+        "teamId": "pan"
+      },
+      "away": {
+        "teamId": "cro"
+      },
+      "kickoff": "2026-06-23T23:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Foxborough Stadium",
+          "fr": "Foxborough Stadium"
+        },
+        "city": {
+          "en": "Foxborough",
+          "fr": "Foxborough"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m47",
+      "stage": "group",
+      "groupId": "K",
+      "home": {
+        "teamId": "por"
+      },
+      "away": {
+        "teamId": "uzb"
+      },
+      "kickoff": "2026-06-23T17:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Mexico City Stadium",
+          "fr": "Mexico City Stadium"
+        },
+        "city": {
+          "en": "Mexico City",
+          "fr": "Mexico City"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Mexico_City"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m48",
+      "stage": "group",
+      "groupId": "K",
+      "home": {
+        "teamId": "col"
+      },
+      "away": {
+        "teamId": "cod"
+      },
+      "kickoff": "2026-06-24T02:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Houston Stadium",
+          "fr": "Houston Stadium"
+        },
+        "city": {
+          "en": "Houston",
+          "fr": "Houston"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m49",
+      "stage": "group",
+      "groupId": "C",
+      "home": {
+        "teamId": "sco"
+      },
+      "away": {
+        "teamId": "bra"
+      },
+      "kickoff": "2026-06-24T22:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Philadelphia Stadium",
+          "fr": "Philadelphia Stadium"
+        },
+        "city": {
+          "en": "Philadelphia",
+          "fr": "Philadelphia"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m50",
+      "stage": "group",
+      "groupId": "C",
+      "home": {
+        "teamId": "mar"
+      },
+      "away": {
+        "teamId": "hti"
+      },
+      "kickoff": "2026-06-24T22:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Miami Gardens Stadium",
+          "fr": "Miami Gardens Stadium"
+        },
+        "city": {
+          "en": "Miami Gardens",
+          "fr": "Miami Gardens"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m51",
+      "stage": "group",
+      "groupId": "B",
+      "home": {
+        "teamId": "sui"
+      },
+      "away": {
+        "teamId": "can"
+      },
+      "kickoff": "2026-06-24T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Vancouver Stadium",
+          "fr": "Vancouver Stadium"
+        },
+        "city": {
+          "en": "Vancouver",
+          "fr": "Vancouver"
+        },
+        "country": {
+          "en": "Canada",
+          "fr": "Canada"
+        },
+        "timeZone": "America/Vancouver"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m52",
+      "stage": "group",
+      "groupId": "B",
+      "home": {
+        "teamId": "bih"
+      },
+      "away": {
+        "teamId": "qat"
+      },
+      "kickoff": "2026-06-24T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Vancouver Stadium",
+          "fr": "Vancouver Stadium"
+        },
+        "city": {
+          "en": "Vancouver",
+          "fr": "Vancouver"
+        },
+        "country": {
+          "en": "Canada",
+          "fr": "Canada"
+        },
+        "timeZone": "America/Vancouver"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m53",
+      "stage": "group",
+      "groupId": "A",
+      "home": {
+        "teamId": "cze"
+      },
+      "away": {
+        "teamId": "mex"
+      },
+      "kickoff": "2026-06-25T01:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Zapopan Stadium",
+          "fr": "Zapopan Stadium"
+        },
+        "city": {
+          "en": "Zapopan",
+          "fr": "Zapopan"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Mexico_City"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m54",
+      "stage": "group",
+      "groupId": "A",
+      "home": {
+        "teamId": "zaf"
+      },
+      "away": {
+        "teamId": "kor"
+      },
+      "kickoff": "2026-06-25T01:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Mexico City Stadium",
+          "fr": "Mexico City Stadium"
+        },
+        "city": {
+          "en": "Mexico City",
+          "fr": "Mexico City"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Mexico_City"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m55",
+      "stage": "group",
+      "groupId": "E",
+      "home": {
+        "teamId": "cuw"
+      },
+      "away": {
+        "teamId": "civ"
+      },
+      "kickoff": "2026-06-25T20:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Kansas City Stadium",
+          "fr": "Kansas City Stadium"
+        },
+        "city": {
+          "en": "Kansas City",
+          "fr": "Kansas City"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m56",
+      "stage": "group",
+      "groupId": "E",
+      "home": {
+        "teamId": "ecu"
+      },
+      "away": {
+        "teamId": "ger"
+      },
+      "kickoff": "2026-06-25T20:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Philadelphia Stadium",
+          "fr": "Philadelphia Stadium"
+        },
+        "city": {
+          "en": "Philadelphia",
+          "fr": "Philadelphia"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m57",
+      "stage": "group",
+      "groupId": "F",
+      "home": {
+        "teamId": "jpn"
+      },
+      "away": {
+        "teamId": "swe"
+      },
+      "kickoff": "2026-06-25T23:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Guadalupe Stadium",
+          "fr": "Guadalupe Stadium"
+        },
+        "city": {
+          "en": "Guadalupe",
+          "fr": "Guadalupe"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Monterrey"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m58",
+      "stage": "group",
+      "groupId": "F",
+      "home": {
+        "teamId": "tun"
+      },
+      "away": {
+        "teamId": "ned"
+      },
+      "kickoff": "2026-06-25T23:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Arlington Stadium",
+          "fr": "Arlington Stadium"
+        },
+        "city": {
+          "en": "Arlington",
+          "fr": "Arlington"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m59",
+      "stage": "group",
+      "groupId": "D",
+      "home": {
+        "teamId": "tur"
+      },
+      "away": {
+        "teamId": "usa"
+      },
+      "kickoff": "2026-06-26T02:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Santa Clara Stadium",
+          "fr": "Santa Clara Stadium"
+        },
+        "city": {
+          "en": "Santa Clara",
+          "fr": "Santa Clara"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m60",
+      "stage": "group",
+      "groupId": "D",
+      "home": {
+        "teamId": "par"
+      },
+      "away": {
+        "teamId": "aus"
+      },
+      "kickoff": "2026-06-26T02:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Inglewood Stadium",
+          "fr": "Inglewood Stadium"
+        },
+        "city": {
+          "en": "Inglewood",
+          "fr": "Inglewood"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m61",
+      "stage": "group",
+      "groupId": "I",
+      "home": {
+        "teamId": "nor"
+      },
+      "away": {
+        "teamId": "fra"
+      },
+      "kickoff": "2026-06-26T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "East Rutherford Stadium",
+          "fr": "East Rutherford Stadium"
+        },
+        "city": {
+          "en": "East Rutherford",
+          "fr": "East Rutherford"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m62",
+      "stage": "group",
+      "groupId": "I",
+      "home": {
+        "teamId": "sen"
+      },
+      "away": {
+        "teamId": "irq"
+      },
+      "kickoff": "2026-06-26T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Foxborough Stadium",
+          "fr": "Foxborough Stadium"
+        },
+        "city": {
+          "en": "Foxborough",
+          "fr": "Foxborough"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m63",
+      "stage": "group",
+      "groupId": "G",
+      "home": {
+        "teamId": "egy"
+      },
+      "away": {
+        "teamId": "irn"
+      },
+      "kickoff": "2026-06-27T03:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Vancouver Stadium",
+          "fr": "Vancouver Stadium"
+        },
+        "city": {
+          "en": "Vancouver",
+          "fr": "Vancouver"
+        },
+        "country": {
+          "en": "Canada",
+          "fr": "Canada"
+        },
+        "timeZone": "America/Vancouver"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m64",
+      "stage": "group",
+      "groupId": "G",
+      "home": {
+        "teamId": "nzl"
+      },
+      "away": {
+        "teamId": "bel"
+      },
+      "kickoff": "2026-06-27T03:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Seattle Stadium",
+          "fr": "Seattle Stadium"
+        },
+        "city": {
+          "en": "Seattle",
+          "fr": "Seattle"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m65",
+      "stage": "group",
+      "groupId": "H",
+      "home": {
+        "teamId": "cpv"
+      },
+      "away": {
+        "teamId": "sau"
+      },
+      "kickoff": "2026-06-27T00:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Miami Gardens Stadium",
+          "fr": "Miami Gardens Stadium"
+        },
+        "city": {
+          "en": "Miami Gardens",
+          "fr": "Miami Gardens"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m66",
+      "stage": "group",
+      "groupId": "H",
+      "home": {
+        "teamId": "uru"
+      },
+      "away": {
+        "teamId": "esp"
+      },
+      "kickoff": "2026-06-27T00:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Houston Stadium",
+          "fr": "Houston Stadium"
+        },
+        "city": {
+          "en": "Houston",
+          "fr": "Houston"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m67",
+      "stage": "group",
+      "groupId": "L",
+      "home": {
+        "teamId": "pan"
+      },
+      "away": {
+        "teamId": "eng"
+      },
+      "kickoff": "2026-06-27T21:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Toronto Stadium",
+          "fr": "Toronto Stadium"
+        },
+        "city": {
+          "en": "Toronto",
+          "fr": "Toronto"
+        },
+        "country": {
+          "en": "Canada",
+          "fr": "Canada"
+        },
+        "timeZone": "America/Toronto"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m68",
+      "stage": "group",
+      "groupId": "L",
+      "home": {
+        "teamId": "cro"
+      },
+      "away": {
+        "teamId": "gha"
+      },
+      "kickoff": "2026-06-27T21:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "East Rutherford Stadium",
+          "fr": "East Rutherford Stadium"
+        },
+        "city": {
+          "en": "East Rutherford",
+          "fr": "East Rutherford"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m69",
+      "stage": "group",
+      "groupId": "J",
+      "home": {
+        "teamId": "dza"
+      },
+      "away": {
+        "teamId": "aut"
+      },
+      "kickoff": "2026-06-28T02:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Santa Clara Stadium",
+          "fr": "Santa Clara Stadium"
+        },
+        "city": {
+          "en": "Santa Clara",
+          "fr": "Santa Clara"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m70",
+      "stage": "group",
+      "groupId": "J",
+      "home": {
+        "teamId": "jor"
+      },
+      "away": {
+        "teamId": "arg"
+      },
+      "kickoff": "2026-06-28T02:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Kansas City Stadium",
+          "fr": "Kansas City Stadium"
+        },
+        "city": {
+          "en": "Kansas City",
+          "fr": "Kansas City"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m71",
+      "stage": "group",
+      "groupId": "K",
+      "home": {
+        "teamId": "col"
+      },
+      "away": {
+        "teamId": "por"
+      },
+      "kickoff": "2026-06-27T23:30:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Zapopan Stadium",
+          "fr": "Zapopan Stadium"
+        },
+        "city": {
+          "en": "Zapopan",
+          "fr": "Zapopan"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Mexico_City"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m72",
+      "stage": "group",
+      "groupId": "K",
+      "home": {
+        "teamId": "cod"
+      },
+      "away": {
+        "teamId": "uzb"
+      },
+      "kickoff": "2026-06-27T23:30:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Miami Gardens Stadium",
+          "fr": "Miami Gardens Stadium"
+        },
+        "city": {
+          "en": "Miami Gardens",
+          "fr": "Miami Gardens"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m89",
+      "stage": "roundOf16",
+      "roundId": "roundOf16",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 74",
+          "fr": "Vainqueur match 74"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 77",
+          "fr": "Vainqueur match 77"
+        }
+      },
+      "kickoff": "2026-07-04T22:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Philadelphia Stadium",
+          "fr": "Philadelphia Stadium"
+        },
+        "city": {
+          "en": "Philadelphia",
+          "fr": "Philadelphia"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m90",
+      "stage": "roundOf16",
+      "roundId": "roundOf16",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 73",
+          "fr": "Vainqueur match 73"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 75",
+          "fr": "Vainqueur match 75"
+        }
+      },
+      "kickoff": "2026-07-04T17:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Houston Stadium",
+          "fr": "Houston Stadium"
+        },
+        "city": {
+          "en": "Houston",
+          "fr": "Houston"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m91",
+      "stage": "roundOf16",
+      "roundId": "roundOf16",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 76",
+          "fr": "Vainqueur match 76"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 78",
+          "fr": "Vainqueur match 78"
+        }
+      },
+      "kickoff": "2026-07-05T20:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "East Rutherford Stadium",
+          "fr": "East Rutherford Stadium"
+        },
+        "city": {
+          "en": "East Rutherford",
+          "fr": "East Rutherford"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m92",
+      "stage": "roundOf16",
+      "roundId": "roundOf16",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 79",
+          "fr": "Vainqueur match 79"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 80",
+          "fr": "Vainqueur match 80"
+        }
+      },
+      "kickoff": "2026-07-06T00:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Mexico City Stadium",
+          "fr": "Mexico City Stadium"
+        },
+        "city": {
+          "en": "Mexico City",
+          "fr": "Mexico City"
+        },
+        "country": {
+          "en": "Mexico",
+          "fr": "Mexico"
+        },
+        "timeZone": "America/Mexico_City"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m93",
+      "stage": "roundOf16",
+      "roundId": "roundOf16",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 83",
+          "fr": "Vainqueur match 83"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 84",
+          "fr": "Vainqueur match 84"
+        }
+      },
+      "kickoff": "2026-07-06T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Arlington Stadium",
+          "fr": "Arlington Stadium"
+        },
+        "city": {
+          "en": "Arlington",
+          "fr": "Arlington"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m94",
+      "stage": "roundOf16",
+      "roundId": "roundOf16",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 81",
+          "fr": "Vainqueur match 81"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 82",
+          "fr": "Vainqueur match 82"
+        }
+      },
+      "kickoff": "2026-07-07T00:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Seattle Stadium",
+          "fr": "Seattle Stadium"
+        },
+        "city": {
+          "en": "Seattle",
+          "fr": "Seattle"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m95",
+      "stage": "roundOf16",
+      "roundId": "roundOf16",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 86",
+          "fr": "Vainqueur match 86"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 88",
+          "fr": "Vainqueur match 88"
+        }
+      },
+      "kickoff": "2026-07-07T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Atlanta Stadium",
+          "fr": "Atlanta Stadium"
+        },
+        "city": {
+          "en": "Atlanta",
+          "fr": "Atlanta"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m96",
+      "stage": "roundOf16",
+      "roundId": "roundOf16",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 85",
+          "fr": "Vainqueur match 85"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 87",
+          "fr": "Vainqueur match 87"
+        }
+      },
+      "kickoff": "2026-07-08T00:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Vancouver Stadium",
+          "fr": "Vancouver Stadium"
+        },
+        "city": {
+          "en": "Vancouver",
+          "fr": "Vancouver"
+        },
+        "country": {
+          "en": "Canada",
+          "fr": "Canada"
+        },
+        "timeZone": "America/Vancouver"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m97",
+      "stage": "quarterFinal",
+      "roundId": "quarterFinal",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 89",
+          "fr": "Vainqueur match 89"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 90",
+          "fr": "Vainqueur match 90"
+        }
+      },
+      "kickoff": "2026-07-09T20:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Foxborough Stadium",
+          "fr": "Foxborough Stadium"
+        },
+        "city": {
+          "en": "Foxborough",
+          "fr": "Foxborough"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m98",
+      "stage": "quarterFinal",
+      "roundId": "quarterFinal",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 93",
+          "fr": "Vainqueur match 93"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 94",
+          "fr": "Vainqueur match 94"
+        }
+      },
+      "kickoff": "2026-07-10T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Inglewood Stadium",
+          "fr": "Inglewood Stadium"
+        },
+        "city": {
+          "en": "Inglewood",
+          "fr": "Inglewood"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m99",
+      "stage": "quarterFinal",
+      "roundId": "quarterFinal",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 91",
+          "fr": "Vainqueur match 91"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 92",
+          "fr": "Vainqueur match 92"
+        }
+      },
+      "kickoff": "2026-07-11T21:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Miami Gardens Stadium",
+          "fr": "Miami Gardens Stadium"
+        },
+        "city": {
+          "en": "Miami Gardens",
+          "fr": "Miami Gardens"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m100",
+      "stage": "quarterFinal",
+      "roundId": "quarterFinal",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 95",
+          "fr": "Vainqueur match 95"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 96",
+          "fr": "Vainqueur match 96"
+        }
+      },
+      "kickoff": "2026-07-12T01:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Kansas City Stadium",
+          "fr": "Kansas City Stadium"
+        },
+        "city": {
+          "en": "Kansas City",
+          "fr": "Kansas City"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m101",
+      "stage": "semiFinal",
+      "roundId": "semiFinal",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 97",
+          "fr": "Vainqueur match 97"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 98",
+          "fr": "Vainqueur match 98"
+        }
+      },
+      "kickoff": "2026-07-14T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Arlington Stadium",
+          "fr": "Arlington Stadium"
+        },
+        "city": {
+          "en": "Arlington",
+          "fr": "Arlington"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m102",
+      "stage": "semiFinal",
+      "roundId": "semiFinal",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 99",
+          "fr": "Vainqueur match 99"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 100",
+          "fr": "Vainqueur match 100"
+        }
+      },
+      "kickoff": "2026-07-15T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Atlanta Stadium",
+          "fr": "Atlanta Stadium"
+        },
+        "city": {
+          "en": "Atlanta",
+          "fr": "Atlanta"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m103",
+      "stage": "thirdPlace",
+      "roundId": "thirdPlace",
+      "home": {
+        "placeholder": {
+          "en": "Loser Match 101",
+          "fr": "Perdant match 101"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Loser Match 102",
+          "fr": "Perdant match 102"
+        }
+      },
+      "kickoff": "2026-07-18T21:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "Miami Gardens Stadium",
+          "fr": "Miami Gardens Stadium"
+        },
+        "city": {
+          "en": "Miami Gardens",
+          "fr": "Miami Gardens"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m104",
+      "stage": "final",
+      "roundId": "final",
+      "home": {
+        "placeholder": {
+          "en": "Winner Match 101",
+          "fr": "Vainqueur match 101"
+        }
+      },
+      "away": {
+        "placeholder": {
+          "en": "Winner Match 102",
+          "fr": "Vainqueur match 102"
+        }
+      },
+      "kickoff": "2026-07-19T19:00:00Z",
+      "venue": {
+        "stadium": {
+          "en": "East Rutherford Stadium",
+          "fr": "East Rutherford Stadium"
+        },
+        "city": {
+          "en": "East Rutherford",
+          "fr": "East Rutherford"
+        },
+        "country": {
+          "en": "United States",
+          "fr": "United States"
+        },
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    }
+  ],
+  "bracketRounds": [
+    {
+      "id": "roundOf16",
+      "label": {
+        "en": "Round of 16",
+        "fr": "Huitiemes de finale"
+      },
+      "matchIds": [
+        "m89",
+        "m90",
+        "m91",
+        "m92",
+        "m93",
+        "m94",
+        "m95",
+        "m96"
+      ]
+    },
+    {
+      "id": "quarterFinal",
+      "label": {
+        "en": "Quarter-finals",
+        "fr": "Quarts de finale"
+      },
+      "matchIds": [
+        "m97",
+        "m98",
+        "m99",
+        "m100"
+      ]
+    },
+    {
+      "id": "semiFinal",
+      "label": {
+        "en": "Semi-finals",
+        "fr": "Demi-finales"
+      },
+      "matchIds": [
+        "m101",
+        "m102"
+      ]
+    },
+    {
+      "id": "thirdPlace",
+      "label": {
+        "en": "Third place",
+        "fr": "Petite finale"
+      },
+      "matchIds": [
+        "m103"
+      ]
+    },
+    {
+      "id": "final",
+      "label": {
+        "en": "Final",
+        "fr": "Finale"
+      },
+      "matchIds": [
+        "m104"
+      ]
+    }
+  ]
+}

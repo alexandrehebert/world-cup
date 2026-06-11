@@ -1,0 +1,180 @@
+@import 'tailwindcss';
+
+:root {
+  --bg: #0f0f0f;
+  --surface: #181818;
+  --surface-strong: #212121;
+  --surface-soft: #131313;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.13);
+  --text: #c5cdd8;
+  --text-strong: #eef1f5;
+  --text-muted: #8591a0;
+  --text-soft: #505a67;
+  /* Football accent – pitch green */
+  --accent: #4d9966;
+  --accent-muted: rgba(77, 153, 102, 0.10);
+  --accent-text: #6cbe84;
+  --accent-border: rgba(77, 153, 102, 0.28);
+  /* Interactive states */
+  --tab-active-bg: var(--accent-muted);
+  --tab-active-text: var(--accent-text);
+  --tab-active-border: var(--accent-border);
+  --tab-idle-hover-bg: rgba(255, 255, 255, 0.04);
+  --font-sans: 'Manrope', sans-serif;
+  --page-bg: #0f0f0f;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #eef0f3;
+    --surface: #ffffff;
+    --surface-strong: #f9fafb;
+    --surface-soft: #f3f5f8;
+    --border: rgba(0, 0, 0, 0.07);
+    --border-strong: rgba(0, 0, 0, 0.13);
+    --text: #374151;
+    --text-strong: #111827;
+    --text-muted: #6b7280;
+    --text-soft: #9ca3af;
+    --accent: #2a6b3f;
+    --accent-muted: rgba(42, 107, 63, 0.08);
+    --accent-text: #2a6b3f;
+    --accent-border: rgba(42, 107, 63, 0.22);
+    --tab-active-bg: var(--accent-muted);
+    --tab-active-text: var(--accent-text);
+    --tab-active-border: var(--accent-border);
+    --tab-idle-hover-bg: rgba(0, 0, 0, 0.04);
+    --page-bg: #eef0f3;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #0f0f0f;
+  --surface: #181818;
+  --surface-strong: #212121;
+  --surface-soft: #131313;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.13);
+  --text: #c5cdd8;
+  --text-strong: #eef1f5;
+  --text-muted: #8591a0;
+  --text-soft: #505a67;
+  --accent: #4d9966;
+  --accent-muted: rgba(77, 153, 102, 0.10);
+  --accent-text: #6cbe84;
+  --accent-border: rgba(77, 153, 102, 0.28);
+  --tab-active-bg: var(--accent-muted);
+  --tab-active-text: var(--accent-text);
+  --tab-active-border: var(--accent-border);
+  --tab-idle-hover-bg: rgba(255, 255, 255, 0.04);
+  --page-bg: #0f0f0f;
+}
+
+:root[data-theme='light'] {
+  --bg: #eef0f3;
+  --surface: #ffffff;
+  --surface-strong: #f9fafb;
+  --surface-soft: #f3f5f8;
+  --border: rgba(0, 0, 0, 0.07);
+  --border-strong: rgba(0, 0, 0, 0.13);
+  --text: #374151;
+  --text-strong: #111827;
+  --text-muted: #6b7280;
+  --text-soft: #9ca3af;
+  --accent: #2a6b3f;
+  --accent-muted: rgba(42, 107, 63, 0.08);
+  --accent-text: #2a6b3f;
+  --accent-border: rgba(42, 107, 63, 0.22);
+  --tab-active-bg: var(--accent-muted);
+  --tab-active-text: var(--accent-text);
+  --tab-active-border: var(--accent-border);
+  --tab-idle-hover-bg: rgba(0, 0, 0, 0.04);
+  --page-bg: #eef0f3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--page-bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.shadow,
+[class*='shadow-'],
+.drop-shadow,
+[class*='drop-shadow-'] {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.flag-avatar-fill {
+  width: 100% !important;
+  height: 100% !important;
+  line-height: 0;
+  background-position: center;
+  background-size: cover;
+}
+
+.flag-avatar-fill::before {
+  content: none;
+}
+
+[data-theme='dark'] .logo-soccer {
+  color: var(--accent-text);
+}
+
+[data-theme='light'] .logo-soccer {
+  color: var(--accent);
+}
+
+.logo-soccer {
+  font-size: 42px !important;
+  line-height: 1;
+  color: var(--accent-text);
+}
+
+@media (min-width: 640px) {
+  .logo-soccer {
+    font-size: 50px !important;
+  }
+}
+
+.logo-soccer-wrap {
+}
