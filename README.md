@@ -71,3 +71,49 @@ export default defineConfig([
   },
 ])
 ```
+
+## Vercel Match Sync
+
+This project now supports a Vercel cron that runs every 5 minutes and updates match statuses in Vercel Blob storage.
+
+### Runtime behavior
+
+- Local development (`vite dev`) keeps using the bundled file at `src/data/worldcup.json`.
+- Production loads tournament data from `GET /api/tournament`.
+- The API reads from Blob (`worldcup/worldcup.json`) and falls back to the local file if Blob is not configured.
+
+### Required Vercel environment variables
+
+- `BLOB_READ_WRITE_TOKEN`: token for Vercel Blob read/write.
+- `MATCH_RESULTS_URL`: upstream endpoint that returns match result updates.
+- `CRON_SECRET`: secret used to protect cron endpoint calls.
+
+### Cron endpoint
+
+- Path: `/api/cron/sync-matches`
+- Schedule: `*/5 * * * *`
+
+### Upstream payload format
+
+The sync endpoint expects one of these JSON shapes:
+
+```json
+{
+  "updatedAt": "2026-06-11T18:45:00Z",
+  "matches": [
+    { "id": "m1", "status": "finished" },
+    { "id": "m2", "status": "live" }
+  ]
+}
+```
+
+or:
+
+```json
+[
+  { "id": "m1", "status": "finished" },
+  { "id": "m2", "status": "live" }
+]
+```
+
+Only known statuses are applied: `scheduled`, `live`, `finished`.

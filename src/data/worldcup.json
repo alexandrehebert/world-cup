@@ -3,7 +3,7 @@
     "edition": "FIFA World Cup 2026",
     "season": "2026",
     "host": "Canada, Mexico, United States",
-    "updatedAt": "2026-06-11T16:54:00Z",
+    "updatedAt": "2026-06-11T22:00:00Z",
     "venueCountry": "Canada, Mexico, United States"
   },
   "teams": [
@@ -456,23 +456,13 @@
       "standings": [
         {
           "teamId": "mex",
-          "played": 0,
-          "won": 0,
+          "played": 1,
+          "won": 1,
           "drawn": 0,
           "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
-          "points": 0
-        },
-        {
-          "teamId": "zaf",
-          "played": 0,
-          "won": 0,
-          "drawn": 0,
-          "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
-          "points": 0
+          "goalsFor": 2,
+          "goalsAgainst": 1,
+          "points": 3
         },
         {
           "teamId": "kor",
@@ -492,6 +482,16 @@
           "lost": 0,
           "goalsFor": 0,
           "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "zaf",
+          "played": 1,
+          "won": 0,
+          "drawn": 0,
+          "lost": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 2,
           "points": 0
         }
       ],
@@ -1204,10 +1204,12 @@
       "stage": "group",
       "groupId": "A",
       "home": {
-        "teamId": "mex"
+        "teamId": "mex",
+        "score": 2
       },
       "away": {
-        "teamId": "zaf"
+        "teamId": "zaf",
+        "score": 1
       },
       "kickoff": "2026-06-11T19:00:00Z",
       "venue": {
@@ -1225,7 +1227,7 @@
         },
         "timeZone": "America/Mexico_City"
       },
-      "status": "scheduled"
+      "status": "finished"
     },
     {
       "id": "m2",

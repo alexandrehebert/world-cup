@@ -56,6 +56,9 @@ const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLo
   return labels.stageFinal
 }
 
+const hasScore = (match: MatchRecord) =>
+  Number.isFinite(match.home.score) && Number.isFinite(match.away.score)
+
 export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
   const { locale, t } = useLocale()
   const { teamsById } = useTournament()
@@ -100,11 +103,17 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
               const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
               const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
               const isLive = match.status === 'live'
+              const isFinished = match.status === 'finished'
+              const displayScore = hasScore(match)
 
               return (
                 <div
                   key={match.id}
-                  className={`relative w-full bg-[var(--surface)] px-5 py-4 transition hover:bg-[var(--surface-strong)] ${isLive ? 'border-l-2 border-l-[var(--accent)]' : ''}`}
+                  className={`relative w-full px-5 py-4 transition ${
+                    isFinished
+                      ? 'bg-[var(--surface-soft)] opacity-70 saturate-50'
+                      : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)]'
+                  } ${isLive ? 'border-l-2 border-l-[var(--accent)]' : ''}`}
                 >
                   <div className="flex w-full flex-col gap-4 text-left">
                     <div className="flex items-start justify-between gap-3">
@@ -129,8 +138,14 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                           </p>
                         </div>
                       </div>
-                      <div className="shrink-0 px-2 py-1 text-center text-xs uppercase tracking-[0.24em] text-[var(--text-soft)] sm:px-3">
-                        vs
+                      <div className="shrink-0 px-2 py-1 text-center sm:px-3">
+                        {displayScore ? (
+                          <p className="text-base font-semibold text-[var(--text-strong)] sm:text-lg">
+                            {match.home.score} - {match.away.score}
+                          </p>
+                        ) : (
+                          <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-soft)]">vs</p>
+                        )}
                       </div>
                       <div className="flex min-w-0 flex-1 flex-col items-end gap-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
                         <div className="order-2 min-w-0 text-right sm:order-1">

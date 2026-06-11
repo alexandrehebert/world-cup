@@ -41,6 +41,7 @@ export interface GroupRecord {
 export interface ParticipantRef {
   teamId?: string
   placeholder?: LocalizedText
+  score?: number
 }
 
 export interface MatchVenue {

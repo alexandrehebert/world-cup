@@ -19,9 +19,7 @@ export const buildTournamentModel = (data: TournamentData): TournamentModel => {
   const groupsById = Object.fromEntries(data.groups.map((group) => [group.id, group]))
   const matchesById = Object.fromEntries(data.matches.map((match) => [match.id, match]))
   const roundsById = Object.fromEntries(data.bracketRounds.map((round) => [round.id, round]))
-  const upcomingMatches = [...data.matches]
-    .filter((match) => match.status === 'scheduled' || match.status === 'live')
-    .sort((first, second) => first.kickoff.localeCompare(second.kickoff))
+  const upcomingMatches = [...data.matches].sort((first, second) => first.kickoff.localeCompare(second.kickoff))
 
   return {
     ...data,
