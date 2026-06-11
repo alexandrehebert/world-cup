@@ -9,6 +9,13 @@ import type { MatchRecord } from '../../types/tournament'
 
 const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : 'en-GB')
 
+const startOfIsoWeekUtc = (date: Date) => {
+  const utcDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
+  const day = utcDate.getUTCDay() || 7
+  utcDate.setUTCDate(utcDate.getUTCDate() - (day - 1))
+  return utcDate
+}
+
 const getDateParts = (date: Date, timeZone: string) => {
   const formatter = new Intl.DateTimeFormat('en-CA', {
     year: 'numeric',
@@ -72,6 +79,27 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
     return { byDay, monthKeys }
   }, [matches])
 
+  const tournamentStartWeek = useMemo(() => {
+    if (matches.length === 0) {
+      return null
+    }
+
+    let earliestKickoff = Number.POSITIVE_INFINITY
+
+    for (const match of matches) {
+      const kickoffTime = new Date(match.kickoff).getTime()
+      if (Number.isFinite(kickoffTime) && kickoffTime < earliestKickoff) {
+        earliestKickoff = kickoffTime
+      }
+    }
+
+    if (!Number.isFinite(earliestKickoff)) {
+      return null
+    }
+
+    return startOfIsoWeekUtc(new Date(earliestKickoff))
+  }, [matches])
+
   const todayParts = getDateParts(new Date(), Intl.DateTimeFormat().resolvedOptions().timeZone)
   const todayMonthKey = toMonthKey(todayParts.year, todayParts.month)
   const fallbackIndex = calendarData.monthKeys.length > 0 ? 0 : -1
@@ -118,7 +146,51 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
     cells.push({ day, matches: calendarData.byDay.get(dayKey) ?? [] })
   }
 
-  const monthDayMatches = cells.filter((cell): cell is { day: number; matches: MatchRecord[] } => Boolean(cell))
+  const weekLabelPrefix = locale === 'fr' ? 'Semaine du tournoi' : 'Tournament Week'
+
+  const monthAgendaItems: Array<
+    | { type: 'separator'; key: string; weekNumber: number }
+    | { type: 'day'; key: string; day: number; matches: MatchRecord[] }
+  > = []
+
+  for (let weekStart = 0; weekStart < cells.length; weekStart += 7) {
+    const weekCells = cells.slice(weekStart, weekStart + 7)
+    const firstDayCell = weekCells.find((cell): cell is { day: number; matches: MatchRecord[] } => Boolean(cell))
+    const hasMatchesInWeek = weekCells.some((cell) => Boolean(cell && cell.matches.length > 0))
+
+    if (!firstDayCell || !hasMatchesInWeek) {
+      continue
+    }
+
+    const weekDate = new Date(Date.UTC(year, month - 1, firstDayCell.day))
+    const weekStartDate = startOfIsoWeekUtc(weekDate)
+    const weekNumber = tournamentStartWeek
+      ? Math.floor((weekStartDate.getTime() - tournamentStartWeek.getTime()) / 604800000) + 1
+      : 1
+
+    if (weekNumber < 1) {
+      continue
+    }
+
+    monthAgendaItems.push({
+      type: 'separator',
+      key: `${monthKey}-week-${weekNumber}-${weekStart}`,
+      weekNumber,
+    })
+
+    for (const dayCell of weekCells) {
+      if (!dayCell || dayCell.matches.length === 0) {
+        continue
+      }
+
+      monthAgendaItems.push({
+        type: 'day',
+        key: `${monthKey}-mobile-${dayCell.day}`,
+        day: dayCell.day,
+        matches: dayCell.matches,
+      })
+    }
+  }
 
   const anyFavoriteInMonth = favoriteTeamIds.length > 0 && cells.some(
     (cell) => cell?.matches.some(
@@ -150,7 +222,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
         </button>
       </div>
 
-      <div className="hidden gap-px bg-[var(--border)] md:grid md:grid-cols-7">
+      <div className="hidden gap-px bg-[var(--border)] xl:grid xl:grid-cols-7">
         {weekdays.map((weekday) => (
           <div key={weekday} className="bg-[var(--surface-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">
             {weekday}
@@ -200,25 +272,42 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
         ))}
       </div>
 
-      <div className="space-y-2 md:hidden">
-        {monthDayMatches.map((dayCell) => {
-          if (dayCell.matches.length === 0) {
-            return null
+      <div className="space-y-2 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 xl:hidden">
+        {monthAgendaItems.map((item) => {
+          if (item.type === 'separator') {
+            return (
+              <div
+                key={item.key}
+                  className="border-y border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 md:col-span-2"
+              >
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">
+                    {weekLabelPrefix} {item.weekNumber}
+                </p>
+              </div>
+            )
           }
 
-          const dayDate = new Date(Date.UTC(year, month - 1, dayCell.day))
+          const dayDate = new Date(Date.UTC(year, month - 1, item.day))
           const dayLabel = new Intl.DateTimeFormat(dateLocale, {
             weekday: 'long',
             day: 'numeric',
             month: 'long',
             timeZone: 'UTC',
           }).format(dayDate)
+          const isToday = year === todayParts.year && month === todayParts.month && item.day === todayParts.day
 
           return (
-            <section key={`${monthKey}-mobile-${dayCell.day}`} className="bg-[var(--surface)] p-3">
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-soft)]">{dayLabel}</h4>
+            <section key={item.key} className="bg-[var(--surface)] p-3">
+              <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-soft)]">
+                {isToday ? (
+                  <span className="rounded-full border border-[var(--accent-border)] bg-[var(--accent-muted)] px-2 py-0.5 text-[10px] tracking-[0.12em] text-[var(--accent-text)]">
+                    {t.labels.today}
+                  </span>
+                ) : null}
+                <span>{dayLabel}</span>
+              </h4>
               <div className="space-y-2">
-                {dayCell.matches.map((match) => {
+                {item.matches.map((match) => {
                   const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
                   const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
@@ -235,8 +324,8 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                       : kickoffTime
 
                   return (
-                    <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]' : (anyFavoriteInMonth ? 'opacity-75 ' : '') + statusBadgeClass[match.status]}`}>
-                      <div className="flex w-full items-center justify-center gap-2 font-semibold text-[var(--text-strong)]">
+                    <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 md:items-stretch ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]' : (anyFavoriteInMonth ? 'opacity-75 ' : '') + statusBadgeClass[match.status]}`}>
+                      <div className="flex w-full items-center justify-center gap-2 font-semibold text-[var(--text-strong)] md:justify-between">
                         <span className="inline-flex min-w-0 items-center gap-1.5">
                           {homeTeam ? <FlagAvatar team={homeTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                           <span className="truncate">{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
