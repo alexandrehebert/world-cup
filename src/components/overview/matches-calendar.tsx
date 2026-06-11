@@ -231,7 +231,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                   }).format(new Date(match.kickoff))
                   const footerValue =
                     match.status === 'finished'
-                      ? `${t.labels.finished} · ${scoreLabel(match)}`
+                      ? t.labels.finished
                       : kickoffTime
 
                   return (
