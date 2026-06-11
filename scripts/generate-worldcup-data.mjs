@@ -20,7 +20,7 @@ const teams = [
   ['tur', 'TUR', 'Turkey', 'Turquie', 'tr'],
   ['ger', 'GER', 'Germany', 'Allemagne', 'de'],
   ['cuw', 'CUW', 'Curacao', 'Curacao', 'cw'],
-  ['civ', 'CIV', 'Ivory Coast', 'Cote d Ivoire', 'ci'],
+  ['civ', 'CIV', 'Ivory Coast', "Cote d'Ivoire", 'ci'],
   ['ecu', 'ECU', 'Ecuador', 'Equateur', 'ec'],
   ['ned', 'NED', 'Netherlands', 'Pays-Bas', 'nl'],
   ['jpn', 'JPN', 'Japan', 'Japon', 'jp'],
