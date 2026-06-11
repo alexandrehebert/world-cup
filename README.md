@@ -85,10 +85,14 @@ This project now supports a Vercel cron that runs every 5 minutes and updates ma
 ### Required Vercel environment variables
 
 - `BLOB_READ_WRITE_TOKEN`: token for Vercel Blob read/write.
-- `MATCH_RESULTS_URL`: upstream endpoint that returns match result updates.
+- `MATCH_RESULTS_URL` (optional): override source URL for match result updates.
 - `CRON_SECRET` (optional): secret used for manual or external cron endpoint calls.
 
 Vercel scheduled cron calls are identified via the `x-vercel-cron` header and do not automatically include your custom `Authorization` header.
+
+If `MATCH_RESULTS_URL` is not set, the cron defaults to:
+
+- `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard`
 
 ### Cron endpoint
 

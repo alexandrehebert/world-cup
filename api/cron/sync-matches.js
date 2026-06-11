@@ -1,6 +1,102 @@
 import { loadTournamentData, saveTournamentData } from '../_lib/tournament-data.js'
 
-const toMatchUpdates = (payload) => {
+const DEFAULT_MATCH_RESULTS_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard'
+
+const normalizeEspnState = (state, completed) => {
+  if (completed === true || state === 'post') {
+    return 'finished'
+  }
+
+  if (state === 'in') {
+    return 'live'
+  }
+
+  if (state === 'pre') {
+    return 'scheduled'
+  }
+
+  return undefined
+}
+
+const buildMatchIndexes = (data) => {
+  const teamCodeById = new Map(data.teams.map((team) => [team.id, team.code]))
+  const byExact = new Map()
+  const byPair = new Map()
+
+  for (const match of data.matches) {
+    const homeId = match.home?.teamId
+    const awayId = match.away?.teamId
+
+    if (!homeId || !awayId) {
+      continue
+    }
+
+    const homeCode = teamCodeById.get(homeId)
+    const awayCode = teamCodeById.get(awayId)
+
+    if (!homeCode || !awayCode) {
+      continue
+    }
+
+    const kickoffDay = match.kickoff.slice(0, 10)
+    const exactKey = `${homeCode}::${awayCode}::${kickoffDay}`
+    const pairKey = `${homeCode}::${awayCode}`
+
+    byExact.set(exactKey, match.id)
+
+    const pairMatches = byPair.get(pairKey) ?? []
+    pairMatches.push(match.id)
+    byPair.set(pairKey, pairMatches)
+  }
+
+  return { byExact, byPair }
+}
+
+const toEspnMatchUpdates = (payload, data) => {
+  if (!payload || !Array.isArray(payload.events)) {
+    return []
+  }
+
+  const { byExact, byPair } = buildMatchIndexes(data)
+  const updates = []
+
+  for (const event of payload.events) {
+    const competition = Array.isArray(event?.competitions) ? event.competitions[0] : undefined
+    const competitors = Array.isArray(competition?.competitors) ? competition.competitors : []
+    const home = competitors.find((competitor) => competitor?.homeAway === 'home')
+    const away = competitors.find((competitor) => competitor?.homeAway === 'away')
+    const homeCode = home?.team?.abbreviation
+    const awayCode = away?.team?.abbreviation
+
+    if (!homeCode || !awayCode) {
+      continue
+    }
+
+    const eventDay = typeof event?.date === 'string' ? new Date(event.date).toISOString().slice(0, 10) : ''
+    const exactKey = `${homeCode}::${awayCode}::${eventDay}`
+    const pairKey = `${homeCode}::${awayCode}`
+    const matchId = byExact.get(exactKey) ?? (byPair.get(pairKey)?.length === 1 ? byPair.get(pairKey)[0] : undefined)
+
+    if (!matchId) {
+      continue
+    }
+
+    updates.push({
+      id: matchId,
+      status: normalizeEspnState(competition?.status?.type?.state, competition?.status?.type?.completed),
+      homeScore: home?.score,
+      awayScore: away?.score,
+    })
+  }
+
+  return updates
+}
+
+const toMatchUpdates = (payload, data) => {
+  if (payload && Array.isArray(payload.events)) {
+    return toEspnMatchUpdates(payload, data)
+  }
+
   if (Array.isArray(payload)) {
     return payload
   }
@@ -163,13 +259,10 @@ export default async function handler(request, response) {
     })
   }
 
-  const resultsUrl = process.env.MATCH_RESULTS_URL
-
-  if (!resultsUrl) {
-    return response.status(500).json({ error: 'MATCH_RESULTS_URL is not configured' })
-  }
+  const resultsUrl = process.env.MATCH_RESULTS_URL ?? DEFAULT_MATCH_RESULTS_URL
 
   try {
+    const currentData = await loadTournamentData()
     const upstreamResponse = await fetch(resultsUrl, { cache: 'no-store' })
 
     if (!upstreamResponse.ok) {
@@ -179,7 +272,7 @@ export default async function handler(request, response) {
     }
 
     const payload = await upstreamResponse.json()
-    const updates = toMatchUpdates(payload)
+    const updates = toMatchUpdates(payload, currentData)
     const updateMap = new Map(
       updates
         .filter((entry) => entry && typeof entry.id === 'string')
@@ -189,7 +282,6 @@ export default async function handler(request, response) {
         }),
     )
 
-    const currentData = await loadTournamentData()
     let updatedCount = 0
 
     const nextMatches = currentData.matches.map((match) => {
