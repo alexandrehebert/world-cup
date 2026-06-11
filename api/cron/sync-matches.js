@@ -81,11 +81,14 @@ const toEspnMatchUpdates = (payload, data) => {
       continue
     }
 
+    const nextStatus = normalizeEspnState(competition?.status?.type?.state, competition?.status?.type?.completed)
+    const hasPlayableStatus = nextStatus === 'live' || nextStatus === 'finished'
+
     updates.push({
       id: matchId,
-      status: normalizeEspnState(competition?.status?.type?.state, competition?.status?.type?.completed),
-      homeScore: home?.score,
-      awayScore: away?.score,
+      status: nextStatus,
+      homeScore: hasPlayableStatus ? home?.score : undefined,
+      awayScore: hasPlayableStatus ? away?.score : undefined,
     })
   }
 
@@ -165,7 +168,7 @@ const recomputeGroups = (groups, matches) => {
     )
 
     for (const match of matches) {
-      if (match.stage !== 'group' || match.groupId !== group.id) {
+      if (match.stage !== 'group' || match.groupId !== group.id || match.status !== 'finished') {
         continue
       }
 

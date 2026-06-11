@@ -3,7 +3,7 @@
     "edition": "FIFA World Cup 2026",
     "season": "2026",
     "host": "Canada, Mexico, United States",
-    "updatedAt": "2026-06-11T22:26:06.746Z",
+    "updatedAt": "2026-06-11T22:30:26.224Z",
     "venueCountry": "Canada, Mexico, United States"
   },
   "teams": [
@@ -466,23 +466,23 @@
         },
         {
           "teamId": "kor",
-          "played": 1,
+          "played": 0,
           "won": 0,
-          "drawn": 1,
+          "drawn": 0,
           "lost": 0,
           "goalsFor": 0,
           "goalsAgainst": 0,
-          "points": 1
+          "points": 0
         },
         {
           "teamId": "cze",
-          "played": 1,
+          "played": 0,
           "won": 0,
-          "drawn": 1,
+          "drawn": 0,
           "lost": 0,
           "goalsFor": 0,
           "goalsAgainst": 0,
-          "points": 1
+          "points": 0
         },
         {
           "teamId": "zaf",
