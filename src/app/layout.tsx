@@ -5,6 +5,13 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'FIFA World Cup 2026',
   description: 'World Cup dashboard with live results, fixtures, groups, and bracket.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: ['/icon.svg'],
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
