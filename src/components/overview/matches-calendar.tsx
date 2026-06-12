@@ -6,6 +6,7 @@ import { useTournament } from '../../contexts/tournament-context'
 import { getDisplayMatchStatus, getMatchDisplayTime, getLocalizedText } from '../../lib/format'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { Icon } from '../../lib/icons'
+import { LivePulse } from '../ui/live-pulse'
 import type { MatchRecord } from '../../types/tournament'
 
 const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : 'en-GB')
@@ -38,7 +39,7 @@ const toDayKey = (year: number, month: number, day: number) => `${toMonthKey(yea
 
 const statusBadgeClass: Record<MatchRecord['status'], string> = {
   scheduled: 'bg-[var(--surface-strong)] text-[var(--text-soft)] hover:bg-[var(--calendar-scheduled-hover-bg)]',
-  live: 'bg-[var(--calendar-live-bg)] text-[var(--text-soft)] hover:bg-[var(--calendar-live-hover-bg)]',
+  live: 'bg-[var(--surface-strong)] text-[var(--text-soft)] hover:bg-[var(--calendar-scheduled-hover-bg)]',
   finished: 'past-match-stripes bg-[var(--surface-soft)] text-[var(--text-muted)] hover:bg-[var(--calendar-finished-hover-bg)]',
 }
 
@@ -259,6 +260,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                       minute: '2-digit',
                       timeZone: localTimeZone,
                     }).format(new Date(match.kickoff))
+                    const displayTiming = getMatchDisplayTime(match, t.labels, nowMs)
 
                     return (
                       <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[var(--calendar-favorite-hover-bg)]' : statusBadgeClass[displayStatus]}`}>
@@ -275,7 +277,10 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                             {awayTeam ? <FlagAvatar team={awayTeam} className="h-4 w-4" /> : <span className="h-4 w-4 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                           </span>
                         </div>
-                        <p>{kickoffTime}</p>
+                        <p className="inline-flex items-center gap-1">
+                          {displayStatus === 'live' ? <LivePulse className="h-2.5 w-2.5" /> : null}
+                          <span>{displayTiming ?? kickoffTime}</span>
+                        </p>
                       </button>
                     )
                   })}
@@ -373,7 +378,10 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                       </div>
                       <div className="space-y-0.5 text-center">
                         <p>{footerValue}</p>
-                        <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--text-soft)]">{footerStatus}</p>
+                        <p className="inline-flex items-center justify-center gap-1 text-[10px] uppercase tracking-[0.18em] text-[var(--text-soft)]">
+                          {displayStatus === 'live' ? <LivePulse className="h-2.5 w-2.5" /> : null}
+                          <span>{footerStatus}</span>
+                        </p>
                       </div>
                     </button>
                   )

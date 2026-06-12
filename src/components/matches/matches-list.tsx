@@ -6,6 +6,7 @@ import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, getLocalizedText } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
+import { LivePulse } from '../ui/live-pulse'
 import { StatusPill } from '../ui/status-pill'
 import type { MatchRecord } from '../../types/tournament'
 
@@ -167,7 +168,11 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                       </div>
                       <StatusPill
                         status={displayStatus}
-                        label={statusLabel(displayStatus, t.labels)}
+                        label={
+                          displayStatus === 'live'
+                            ? <span className="inline-flex items-center gap-1.5"><LivePulse className="h-3 w-3" /><span>{statusLabel(displayStatus, t.labels)}</span></span>
+                            : statusLabel(displayStatus, t.labels)
+                        }
                       />
                     </div>
 
