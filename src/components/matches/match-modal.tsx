@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
+import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
+import { LivePulse } from '../ui/live-pulse'
 import { StatusPill } from '../ui/status-pill'
 
 const stageLabel = (stage: 'group' | 'roundOf32' | 'roundOf16' | 'quarterFinal' | 'semiFinal' | 'final' | 'thirdPlace', labels: ReturnType<typeof useLocale>['t']['labels']) => {
@@ -20,6 +22,7 @@ const stageLabel = (stage: 'group' | 'roundOf32' | 'roundOf16' | 'quarterFinal' 
 export const MatchModal = () => {
   const { isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
   const { locale, t } = useLocale()
+  const nowMs = useNow()
   const { matchesById, teamsById } = useTournament()
   const match = selectedMatchId ? matchesById[selectedMatchId] : undefined
 
@@ -58,10 +61,12 @@ export const MatchModal = () => {
   const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
   const hasScore = typeof match.home.score === 'number' && typeof match.away.score === 'number'
   const displayStatus = getDisplayMatchStatus(match)
+  const liveMatchInfo = getMatchDisplayTime(match, t.labels, nowMs, locale)
   const homeWon = displayStatus === 'finished' && hasScore && (match.home.score ?? 0) > (match.away.score ?? 0)
   const awayWon = displayStatus === 'finished' && hasScore && (match.away.score ?? 0) > (match.home.score ?? 0)
   const { localDateTime } = formatMatchDate(match.kickoff, locale, undefined, t.labels.today)
   const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
+  const syncedAt = match.live?.syncedAt ? formatMatchDate(match.live.syncedAt, locale, undefined).utcDateTime : null
 
   return (
     <div
@@ -73,10 +78,10 @@ export const MatchModal = () => {
         role="dialog"
         aria-modal="true"
         aria-labelledby="match-modal-title"
-        className="w-full max-w-2xl border border-[var(--border-strong)] bg-[var(--surface-strong)]"
+        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-strong)] shadow-2xl shadow-slate-950/30"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-5 py-4 sm:px-6">
+        <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)]/70 px-5 py-4 backdrop-blur sm:px-6">
           <h3 id="match-modal-title" className="text-lg font-semibold text-[var(--text-strong)]">
             {t.labels.details}
           </h3>
@@ -99,7 +104,7 @@ export const MatchModal = () => {
                   status={displayStatus}
                   label={
                     displayStatus === 'live'
-                      ? t.labels.live
+                      ? <span className="inline-flex items-center gap-1.5"><LivePulse className="h-3 w-3" /><span>{t.labels.live}</span></span>
                       : displayStatus === 'finished'
                         ? t.labels.finished
                         : t.labels.scheduled
@@ -112,6 +117,28 @@ export const MatchModal = () => {
               <p className="mt-2 text-sm font-semibold text-[var(--text-strong)]">{localDateTime}</p>
             </div>
           </div>
+
+          {displayStatus === 'live' ? (
+            <div className="grid gap-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-[var(--accent-text)]">
+                  <LivePulse className="h-3.5 w-3.5" />
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em]">{t.labels.live}</p>
+                </div>
+                <p className="text-lg font-semibold text-[var(--text-strong)]">{liveMatchInfo ?? t.labels.live}</p>
+                <p className="text-sm text-[var(--text-soft)]">
+                  {match.live?.shortDetail ?? match.live?.detail ?? t.meta.localTime}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-left sm:text-right">
+                <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.updated}</p>
+                <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">
+                  {syncedAt ?? match.live?.displayClock ?? t.labels.live}
+                </p>
+              </div>
+            </div>
+          ) : null}
 
           <div className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
             <p className="text-center text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
@@ -134,7 +161,9 @@ export const MatchModal = () => {
                     <p className="text-3xl font-black leading-none text-[var(--text-strong)] sm:text-4xl">
                       {match.home.score} - {match.away.score}
                     </p>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{displayStatus === 'finished' ? t.labels.finished : t.labels.live}</p>
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">
+                      {displayStatus === 'finished' ? t.labels.finished : liveMatchInfo ?? t.labels.live}
+                    </p>
                   </>
                 ) : (
                   <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">VS</p>
@@ -162,6 +191,11 @@ export const MatchModal = () => {
             <p className="mt-1 text-sm text-[var(--text)]">
               {match.venue.city}, {match.venue.country}
             </p>
+            {displayStatus === 'live' && match.live?.period ? (
+              <p className="mt-2 text-sm text-[var(--text-soft)]">
+                {match.live.shortDetail ?? match.live.detail ?? liveMatchInfo}
+              </p>
+            ) : null}
           </div>
         </div>
       </div>
