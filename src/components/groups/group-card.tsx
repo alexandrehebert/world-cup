@@ -40,7 +40,11 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
             return (
               <div
                 key={standing.teamId}
-                className={`grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] items-center gap-1 px-3 py-3 text-sm transition hover:bg-[var(--accent-muted)] sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 ${
+                className={`grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] items-center gap-1 px-3 py-3 text-sm transition ${
+                  isFavorite
+                    ? 'hover:bg-[color:color-mix(in_srgb,var(--accent)_20%,var(--surface)_80%)]'
+                    : 'hover:bg-[var(--tab-idle-hover-bg)]'
+                } sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 ${
                   isFavorite
                     ? (isQualifier ? 'border-l-4 border-l-[var(--accent)]' : 'border-l-4 border-l-[var(--accent)]') + ' bg-[var(--accent-muted)]'
                     : (isQualifier ? 'border-l-2 border-l-[var(--accent)]' : 'border-l-2 border-l-transparent') + (anyFavoriteInGroup ? ' opacity-75' : '')

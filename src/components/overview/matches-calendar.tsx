@@ -36,9 +36,9 @@ const toMonthKey = (year: number, month: number) => `${year}-${String(month).pad
 const toDayKey = (year: number, month: number, day: number) => `${toMonthKey(year, month)}-${String(day).padStart(2, '0')}`
 
 const statusBadgeClass: Record<MatchRecord['status'], string> = {
-  scheduled: 'bg-[var(--surface-strong)] text-[var(--text-soft)] hover:bg-[color:color-mix(in_srgb,var(--surface-strong)_93%,white_7%)]',
-  live: 'bg-[var(--accent-muted)] text-[var(--accent-text)] hover:bg-[color:color-mix(in_srgb,var(--accent-muted)_93%,white_7%)]',
-  finished: 'past-match-stripes bg-[var(--surface-soft)] text-[var(--text-muted)] hover:bg-[color:color-mix(in_srgb,var(--surface-soft)_93%,white_7%)]',
+  scheduled: 'bg-[var(--surface-strong)] text-[var(--text-soft)] hover:bg-[var(--calendar-scheduled-hover-bg)]',
+  live: 'bg-[var(--accent-muted)] text-[var(--accent-text)] hover:bg-[var(--calendar-live-hover-bg)]',
+  finished: 'past-match-stripes bg-[var(--surface-soft)] text-[var(--text-muted)] hover:bg-[var(--calendar-finished-hover-bg)]',
 }
 
 const scoreLabel = (match: MatchRecord) => {
@@ -259,7 +259,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     }).format(new Date(match.kickoff))
 
                     return (
-                      <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[color:color-mix(in_srgb,var(--accent-muted)_93%,white_7%)]' : statusBadgeClass[match.status]}`}>
+                      <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[var(--calendar-favorite-hover-bg)]' : statusBadgeClass[match.status]}`}>
                         <div className="flex items-center justify-between gap-1">
                           <span className="inline-flex min-w-0 items-center gap-1 font-semibold text-[var(--text-strong)]">
                             {homeTeam ? <FlagAvatar team={homeTeam} className="h-4 w-4" /> : <span className="h-4 w-4 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
@@ -352,7 +352,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                         : kickoffTime
 
                   return (
-                    <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none md:items-stretch ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[color:color-mix(in_srgb,var(--accent-muted)_93%,white_7%)]' : statusBadgeClass[match.status]}`}>
+                    <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none md:items-stretch ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[var(--calendar-favorite-hover-bg)]' : statusBadgeClass[match.status]}`}>
                       <div className="flex w-full items-center justify-center gap-2 font-semibold text-[var(--text-strong)] md:justify-between">
                         <span className="inline-flex min-w-0 items-center gap-1.5">
                           {homeTeam ? <FlagAvatar team={homeTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}

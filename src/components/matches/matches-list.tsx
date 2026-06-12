@@ -144,7 +144,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                   type="button"
                   key={match.id}
                   onClick={() => setSelectedMatchId(match.id)}
-                  className={`relative w-full px-5 py-4 transition focus:outline-none focus-visible:outline-none ${
+                  className={`relative w-full cursor-pointer px-5 py-4 transition focus:outline-none focus-visible:outline-none ${
                     isFinished
                       ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50'
                       : hasFavorite
