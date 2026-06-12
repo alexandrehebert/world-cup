@@ -3,7 +3,7 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
@@ -62,9 +62,6 @@ const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLo
 
   return labels.stageFinal
 }
-
-const hasScore = (match: MatchRecord) =>
-  Number.isFinite(match.home.score) && Number.isFinite(match.away.score)
 
 export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
   const { locale, t } = useLocale()
@@ -131,7 +128,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
               const displayStatus = getDisplayMatchStatus(match, nowMs)
               const isLive = displayStatus === 'live'
               const isFinished = displayStatus === 'finished'
-              const displayScore = hasScore(match)
+              const displayScore = hasDisplayScore(match, nowMs)
               const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
               const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
               const hasFavorite = homeIsFavorite || awayIsFavorite

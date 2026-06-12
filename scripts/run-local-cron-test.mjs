@@ -1,6 +1,5 @@
 import http from 'node:http'
 import fs from 'node:fs/promises'
-import handler from '../api/cron/sync-matches.js'
 
 const dataPath = new URL('../src/data/worldcup.json', import.meta.url)
 const before = JSON.parse(await fs.readFile(dataPath, 'utf8'))
@@ -27,20 +26,18 @@ await new Promise((resolve) => server.listen(4310, '127.0.0.1', resolve))
 process.env.MATCH_RESULTS_URL = 'http://127.0.0.1:4310/results'
 delete process.env.CRON_SECRET
 
-const req = { headers: {} }
-const captured = { statusCode: 200, body: null }
-const res = {
-  status(code) {
-    captured.statusCode = code
-    return this
+const endpoint = 'http://127.0.0.1:3000/api/cron/sync-matches'
+const response = await fetch(endpoint, {
+  method: 'POST',
+  headers: {
+    authorization: 'Bearer local-test',
   },
-  json(payload) {
-    captured.body = payload
-    return payload
-  },
+})
+const captured = {
+  statusCode: response.status,
+  body: await response.json(),
 }
 
-await handler(req, res)
 await new Promise((resolve) => server.close(resolve))
 
 const after = JSON.parse(await fs.readFile(dataPath, 'utf8'))

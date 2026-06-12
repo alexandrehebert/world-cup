@@ -3,7 +3,7 @@
     "edition": "FIFA World Cup 2026",
     "season": "2026",
     "host": "Canada, Mexico, United States",
-    "updatedAt": "2026-06-11T22:30:26.224Z",
+    "updatedAt": "2026-06-12T21:13:32.336Z",
     "venueCountry": "Canada, Mexico, United States"
   },
   "teams": [
@@ -319,22 +319,22 @@
         },
         {
           "teamId": "kor",
-          "played": 0,
-          "won": 0,
+          "played": 1,
+          "won": 1,
           "drawn": 0,
           "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
-          "points": 0
+          "goalsFor": 2,
+          "goalsAgainst": 1,
+          "points": 3
         },
         {
           "teamId": "cze",
-          "played": 0,
+          "played": 1,
           "won": 0,
           "drawn": 0,
-          "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
+          "lost": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 2,
           "points": 0
         },
         {
@@ -369,23 +369,23 @@
       "standings": [
         {
           "teamId": "can",
-          "played": 0,
+          "played": 1,
           "won": 0,
-          "drawn": 0,
+          "drawn": 1,
           "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
-          "points": 0
+          "goalsFor": 1,
+          "goalsAgainst": 1,
+          "points": 1
         },
         {
           "teamId": "bih",
-          "played": 0,
+          "played": 1,
           "won": 0,
-          "drawn": 0,
+          "drawn": 1,
           "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
-          "points": 0
+          "goalsFor": 1,
+          "goalsAgainst": 1,
+          "points": 1
         },
         {
           "teamId": "qat",
@@ -1038,7 +1038,18 @@
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
-      "status": "finished"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+8'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-11T19:00Z",
+        "syncedAt": "2026-06-12T21:13:32.336Z"
+      }
     },
     {
       "id": "m2",
@@ -1046,11 +1057,11 @@
       "groupId": "A",
       "home": {
         "teamId": "kor",
-        "score": 0
+        "score": 2
       },
       "away": {
         "teamId": "cze",
-        "score": 0
+        "score": 1
       },
       "kickoff": "2026-06-12T02:00:00Z",
       "venue": {
@@ -1059,17 +1070,30 @@
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+7'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-12T02:00Z",
+        "syncedAt": "2026-06-12T21:13:32.336Z"
+      }
     },
     {
       "id": "m3",
       "stage": "group",
       "groupId": "B",
       "home": {
-        "teamId": "can"
+        "teamId": "can",
+        "score": 1
       },
       "away": {
-        "teamId": "bih"
+        "teamId": "bih",
+        "score": 1
       },
       "kickoff": "2026-06-12T19:00:00Z",
       "venue": {
@@ -1078,7 +1102,18 @@
         "country": "Canada",
         "timeZone": "America/Toronto"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+7'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-12T19:00Z",
+        "syncedAt": "2026-06-12T21:13:32.336Z"
+      }
     },
     {
       "id": "m4",
@@ -1097,7 +1132,17 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Fri, June 12th at 9:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-06-13T01:00Z",
+        "syncedAt": "2026-06-12T21:13:32.336Z"
+      }
     },
     {
       "id": "m5",
@@ -1116,7 +1161,17 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Sat, June 13th at 9:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-06-14T01:00Z",
+        "syncedAt": "2026-06-12T21:13:32.336Z"
+      }
     },
     {
       "id": "m6",
@@ -1154,7 +1209,17 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Sat, June 13th at 6:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-06-13T22:00Z",
+        "syncedAt": "2026-06-12T21:13:32.336Z"
+      }
     },
     {
       "id": "m8",
@@ -1173,7 +1238,17 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Sat, June 13th at 3:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-06-13T19:00Z",
+        "syncedAt": "2026-06-12T21:13:32.336Z"
+      }
     },
     {
       "id": "m9",

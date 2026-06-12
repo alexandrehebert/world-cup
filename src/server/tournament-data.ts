@@ -1,23 +1,24 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { head, put } from '@vercel/blob'
+import type { TournamentData } from '../types/tournament'
 
 const TOURNAMENT_BLOB_PATH = 'worldcup/worldcup.json'
 
 const resolveLocalDataPath = () => path.join(process.cwd(), 'src', 'data', 'worldcup.json')
 
-export const readLocalTournamentData = async () => {
+export const readLocalTournamentData = async (): Promise<TournamentData> => {
   const filePath = resolveLocalDataPath()
   const raw = await fs.readFile(filePath, 'utf8')
-  return JSON.parse(raw)
+  return JSON.parse(raw) as TournamentData
 }
 
-export const writeLocalTournamentData = async (data) => {
+export const writeLocalTournamentData = async (data: TournamentData) => {
   const filePath = resolveLocalDataPath()
   await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8')
 }
 
-export const loadTournamentData = async () => {
+export const loadTournamentData = async (): Promise<TournamentData> => {
   const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN
 
   if (!blobReadWriteToken) {
@@ -38,13 +39,13 @@ export const loadTournamentData = async () => {
       throw new Error(`Failed to fetch blob data (${response.status})`)
     }
 
-    return response.json()
+    return (await response.json()) as TournamentData
   } catch {
     return readLocalTournamentData()
   }
 }
 
-export const saveTournamentData = async (data) => {
+export const saveTournamentData = async (data: TournamentData) => {
   const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN
 
   if (!blobReadWriteToken) {
@@ -53,8 +54,8 @@ export const saveTournamentData = async (data) => {
   }
 
   const configuredAccess = (process.env.BLOB_OBJECT_ACCESS ?? '').toLowerCase()
-  const primaryAccess = configuredAccess === 'public' ? 'public' : 'private'
-  const fallbackAccess = primaryAccess === 'public' ? 'private' : 'public'
+  const primaryAccess: 'public' | 'private' = configuredAccess === 'public' ? 'public' : 'private'
+  const fallbackAccess: 'public' | 'private' = primaryAccess === 'public' ? 'private' : 'public'
   const body = JSON.stringify(data, null, 2)
 
   try {

@@ -3,7 +3,7 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getLocalizedText, getMatchDisplayTime } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getLocalizedText, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -63,9 +63,6 @@ const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLo
 
   return labels.stageFinal
 }
-
-const hasScore = (match: MatchRecord) =>
-  Number.isFinite(match.home.score) && Number.isFinite(match.away.score)
 
 export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
   const { locale, t } = useLocale()
@@ -140,7 +137,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
               const displayTiming = getMatchDisplayTime(match, t.labels, nowMs, locale)
               const displayDateTime = displayTiming ?? (isVerySoon ? minuteLabel : localDateTime)
               const displayLocalTime = venueLocalTime
-              const displayScore = hasScore(match)
+              const displayScore = hasDisplayScore(match, nowMs)
               const homeScore = typeof match.home.score === 'number' ? match.home.score : null
               const awayScore = typeof match.away.score === 'number' ? match.away.score : null
               const homeWon = isFinished && homeScore !== null && awayScore !== null && homeScore > awayScore

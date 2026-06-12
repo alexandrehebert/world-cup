@@ -1,10 +1,14 @@
-import { cloneElement, isValidElement, useEffect, useState } from 'react'
+import { cloneElement, isValidElement, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
 import { Icon } from '../../lib/icons'
 import { MatchModal } from '../matches/match-modal'
 import { Footer } from './footer'
+
+const HEADER_COMPACT_ENTER_SCROLL = 56
+const HEADER_COMPACT_EXIT_SCROLL = 24
+const HEADER_COMPACT_SETTLE_MS = 120
 
 const tabs = [
   { to: '/overview', labelKey: 'overview', icon: 'calendar_month', iconClassName: '' },
@@ -16,17 +20,42 @@ const tabs = [
 export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   const { t } = useLocale()
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
+  const headerScrollTimeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
-    const onScroll = () => {
-      setIsHeaderCompact(window.scrollY > 40)
+    const updateHeaderMode = () => {
+      const scrollPosition = window.scrollY
+
+      setIsHeaderCompact((currentIsCompact) => {
+        if (currentIsCompact) {
+          return scrollPosition > HEADER_COMPACT_EXIT_SCROLL
+        }
+
+        return scrollPosition > HEADER_COMPACT_ENTER_SCROLL
+      })
     }
 
-    onScroll()
+    const onScroll = () => {
+      if (headerScrollTimeoutRef.current !== null) {
+        window.clearTimeout(headerScrollTimeoutRef.current)
+      }
+
+      headerScrollTimeoutRef.current = window.setTimeout(() => {
+        updateHeaderMode()
+        headerScrollTimeoutRef.current = null
+      }, HEADER_COMPACT_SETTLE_MS)
+    }
+
+    updateHeaderMode()
     window.addEventListener('scroll', onScroll, { passive: true })
 
     return () => {
       window.removeEventListener('scroll', onScroll)
+
+      if (headerScrollTimeoutRef.current !== null) {
+        window.clearTimeout(headerScrollTimeoutRef.current)
+        headerScrollTimeoutRef.current = null
+      }
     }
   }, [])
 
@@ -37,7 +66,10 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   return (
     <div className="relative min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <div className="mx-auto flex w-full max-w-[1600px] flex-col px-4 sm:px-6 lg:px-8 xl:px-10">
-        <div className="sticky top-0 z-30 bg-[color:color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur">
+        <div
+          className="sticky top-0 z-30 bg-[color:color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur"
+          style={{ overflowAnchor: 'none' }}
+        >
           {renderedHeader}
 
           <nav

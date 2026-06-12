@@ -1,10 +1,10 @@
 import { Header } from './components/layout/header'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { DashboardLayout } from './components/layout/dashboard-layout'
-import { OverviewPage } from './pages/overview-page'
-import { GroupsPage } from './pages/groups-page'
-import { MatchesPage } from './pages/matches-page'
-import { BracketPage } from './pages/bracket-page'
+import { OverviewPage } from './views/overview-page'
+import { GroupsPage } from './views/groups-page'
+import { MatchesPage } from './views/matches-page'
+import { BracketPage } from './views/bracket-page'
 
 function App() {
   return (

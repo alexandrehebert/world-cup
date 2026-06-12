@@ -3,7 +3,7 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -76,8 +76,8 @@ export const MatchModal = () => {
   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
   const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
   const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
-  const hasScore = typeof match.home.score === 'number' && typeof match.away.score === 'number'
-  const displayStatus = getDisplayMatchStatus(match)
+  const displayStatus = getDisplayMatchStatus(match, nowMs)
+  const hasScore = hasDisplayScore(match, nowMs)
   const homeWon = displayStatus === 'finished' && hasScore && (match.home.score ?? 0) > (match.away.score ?? 0)
   const awayWon = displayStatus === 'finished' && hasScore && (match.away.score ?? 0) > (match.home.score ?? 0)
   const { localDateTime } = formatMatchDate(match.kickoff, locale, undefined, t.labels.today)

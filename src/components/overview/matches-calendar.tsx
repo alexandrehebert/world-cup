@@ -3,7 +3,7 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { getDisplayMatchStatus, getMatchDisplayTime } from '../../lib/format'
+import { getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
@@ -43,8 +43,8 @@ const statusBadgeClass: Record<MatchRecord['status'], string> = {
   finished: 'past-match-stripes bg-[var(--surface-soft)] text-[var(--text-muted)] hover:bg-[var(--calendar-finished-hover-bg)]',
 }
 
-const scoreLabel = (match: MatchRecord) => {
-  if (typeof match.home.score === 'number' && typeof match.away.score === 'number') {
+const scoreLabel = (match: MatchRecord, nowMs: number) => {
+  if (hasDisplayScore(match, nowMs)) {
     return `${match.home.score}-${match.away.score}`
   }
 
@@ -270,7 +270,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                             <span className={homeWon ? 'text-[var(--accent-text)]' : ''}>{homeTeam ? homeTeam.code : 'TBD'}</span>
                             {homeIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}
                           </span>
-                          <span className="font-semibold text-[var(--text-strong)]">{scoreLabel(match)}</span>
+                          <span className="font-semibold text-[var(--text-strong)]">{scoreLabel(match, nowMs)}</span>
                           <span className="inline-flex min-w-0 items-center gap-1 font-semibold text-[var(--text-strong)]">
                             <span className={awayWon ? 'text-[var(--accent-text)]' : ''}>{awayTeam ? awayTeam.code : 'TBD'}</span>
                             {awayIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}
@@ -369,7 +369,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                           <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'TBD'}</span>
                           {homeIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}
                         </span>
-                        <span>{scoreLabel(match)}</span>
+                        <span>{scoreLabel(match, nowMs)}</span>
                         <span className="inline-flex min-w-0 items-center gap-1.5">
                           <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'TBD'}</span>
                           {awayIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}

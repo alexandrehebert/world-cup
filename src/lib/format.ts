@@ -1,6 +1,8 @@
 import type { LocaleCode, MatchRecord } from '../types/tournament'
 import type { TranslationSet } from '../translations/types'
 
+const LIVE_INFERENCE_WINDOW_MS = 3 * 60 * 60 * 1000
+
 const getTodayKey = (timeZone: string) =>
   new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date())
 
@@ -85,11 +87,33 @@ export const formatPlaceholder = (key: string, t: TranslationSet): string => {
 export const getDisplayMatchStatus = (match: MatchRecord, nowMs = Date.now()) => {
   const kickoffMs = new Date(match.kickoff).getTime()
 
-  if (match.status === 'scheduled' && Number.isFinite(kickoffMs) && nowMs >= kickoffMs) {
-    return 'live'
+  if (match.status === 'scheduled' && Number.isFinite(kickoffMs)) {
+    if (nowMs < kickoffMs) {
+      return 'scheduled'
+    }
+
+    if (nowMs <= kickoffMs + LIVE_INFERENCE_WINDOW_MS) {
+      return 'live'
+    }
+
+    if (typeof match.home.score === 'number' && typeof match.away.score === 'number') {
+      return 'finished'
+    }
+
+    return 'scheduled'
   }
 
   return match.status
+}
+
+export const hasDisplayScore = (match: MatchRecord, nowMs = Date.now()) => {
+  const displayStatus = getDisplayMatchStatus(match, nowMs)
+
+  return (
+    displayStatus !== 'scheduled' &&
+    Number.isFinite(match.home.score) &&
+    Number.isFinite(match.away.score)
+  )
 }
 
 export const getLocalizedText = (value: unknown, locale: LocaleCode): string | null => {
