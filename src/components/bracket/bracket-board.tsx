@@ -39,6 +39,7 @@ export const BracketBoard = ({
         <div className="flex min-w-full items-start" style={{ gap: `${CONNECTOR_WIDTH}px` }}>
           {mainRounds.map((round, roundIndex) => {
             const metrics = getRoundMetrics(roundIndex)
+            const hasPreviousRound = roundIndex > 0
             const hasNextRound = roundIndex < mainRounds.length - 1
             const isFinalRound = round.id === 'final'
 
@@ -66,6 +67,13 @@ export const BracketBoard = ({
 
                         return (
                           <div key={match.id} className="relative">
+                            {hasPreviousRound ? (
+                              <span
+                                className="pointer-events-none absolute top-1/2 -left-[16px] h-px bg-[var(--border)]"
+                                style={{ width: `${CONNECTOR_WIDTH / 2}px` }}
+                              />
+                            ) : null}
+
                             {showVerticalBridge ? (
                               <span
                                 className="pointer-events-none absolute top-1/2 -right-[16px] w-px bg-[var(--border)]"
