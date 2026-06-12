@@ -20,9 +20,16 @@ export const MatchModal = () => {
   const { isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
   const { locale, t } = useLocale()
   const { matchesById, teamsById } = useTournament()
+  const match = selectedMatchId ? matchesById[selectedMatchId] : undefined
 
   useEffect(() => {
-    if (!selectedMatchId) {
+    if (selectedMatchId && !match) {
+      setSelectedMatchId(null)
+    }
+  }, [match, selectedMatchId, setSelectedMatchId])
+
+  useEffect(() => {
+    if (!selectedMatchId || !match) {
       return
     }
 
@@ -41,16 +48,16 @@ export const MatchModal = () => {
     }
   }, [selectedMatchId, setSelectedMatchId])
 
-  if (!selectedMatchId) {
+  if (!selectedMatchId || !match) {
     return null
   }
-
-  const match = matchesById[selectedMatchId]
   const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
   const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
   const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
   const hasScore = typeof match.home.score === 'number' && typeof match.away.score === 'number'
+  const homeWon = match.status === 'finished' && hasScore && (match.home.score ?? 0) > (match.away.score ?? 0)
+  const awayWon = match.status === 'finished' && hasScore && (match.away.score ?? 0) > (match.home.score ?? 0)
   const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
 
   return (
@@ -107,12 +114,12 @@ export const MatchModal = () => {
             <p className="text-center text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
 
             <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-              <div className={`min-w-0 p-2 text-center ${homeIsFavorite ? 'bg-[var(--accent-muted)]' : ''}`}>
+              <div className="min-w-0 p-2 text-center">
                 <div className="mx-auto mb-2 w-fit">
                   {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                 </div>
                 <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className="truncate">{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
+                  <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
                   {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                 </p>
                 <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? 'TBD'}</p>
@@ -133,12 +140,12 @@ export const MatchModal = () => {
                 <p className="text-sm font-semibold text-[var(--text-strong)]">{localTime}</p>
               </div>
 
-              <div className={`min-w-0 p-2 text-center ${awayIsFavorite ? 'bg-[var(--accent-muted)]' : ''}`}>
+              <div className="min-w-0 p-2 text-center">
                 <div className="mx-auto mb-2 w-fit">
                   {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                 </div>
                 <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className="truncate">{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
+                  <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
                   {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                 </p>
                 <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? 'TBD'}</p>

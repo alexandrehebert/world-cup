@@ -194,19 +194,19 @@ select {
 .past-match-stripes {
   background-image: repeating-linear-gradient(
     -45deg,
-    rgba(255, 255, 255, 0.035) 0,
-    rgba(255, 255, 255, 0.035) 8px,
-    transparent 8px,
-    transparent 16px
+    var(--surface-strong) 0,
+    var(--surface-strong) 10px,
+    rgba(124, 188, 245, 0.24) 10px,
+    rgba(124, 188, 245, 0.24) 20px
   );
 }
 
 :root[data-theme='light'] .past-match-stripes {
   background-image: repeating-linear-gradient(
     -45deg,
-    rgba(0, 0, 0, 0.045) 0,
-    rgba(0, 0, 0, 0.045) 8px,
-    transparent 8px,
-    transparent 16px
+    var(--surface-strong) 0,
+    var(--surface-strong) 10px,
+    rgba(255, 255, 255, 0.68) 10px,
+    rgba(255, 255, 255, 0.68) 20px
   );
 }

@@ -63,7 +63,7 @@ const hasScore = (match: MatchRecord) =>
 
 export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
   const { locale, t } = useLocale()
-  const { isFavoriteTeam, favoriteTeamIds } = useDashboard()
+  const { isFavoriteTeam, favoriteTeamIds, setSelectedMatchId } = useDashboard()
   const { teamsById } = useTournament()
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const nowMs = Date.now()
@@ -131,14 +131,20 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
               const isLive = match.status === 'live'
               const isFinished = match.status === 'finished'
               const displayScore = hasScore(match)
+              const homeScore = typeof match.home.score === 'number' ? match.home.score : null
+              const awayScore = typeof match.away.score === 'number' ? match.away.score : null
+              const homeWon = isFinished && homeScore !== null && awayScore !== null && homeScore > awayScore
+              const awayWon = isFinished && homeScore !== null && awayScore !== null && awayScore > homeScore
               const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
               const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
               const hasFavorite = homeIsFavorite || awayIsFavorite
 
               return (
-                <div
+                <button
+                  type="button"
                   key={match.id}
-                  className={`relative w-full px-5 py-4 transition ${
+                  onClick={() => setSelectedMatchId(match.id)}
+                  className={`relative w-full px-5 py-4 transition focus:outline-none focus-visible:outline-none ${
                     isFinished
                       ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50'
                       : hasFavorite
@@ -164,7 +170,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                         {homeTeam && <FlagAvatar team={homeTeam} className="h-6 w-6 sm:h-12 sm:w-12" />}
                         <div className="min-w-0">
                           <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            <span>{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
+                            <span className={homeWon ? 'text-[var(--accent-text)]' : ''}>{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
                             {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
@@ -184,7 +190,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                       <div className="flex min-w-0 flex-1 flex-col items-end gap-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
                         <div className="order-2 min-w-0 text-right sm:order-1">
                           <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            <span>{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
+                            <span className={awayWon ? 'text-[var(--accent-text)]' : ''}>{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
                             {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
@@ -204,7 +210,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                       </p>
                     </div>
                   </div>
-                </div>
+                </button>
               )
             })}
           </div>
