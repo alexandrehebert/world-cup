@@ -92,18 +92,18 @@ export const getDisplayMatchStatus = (match: MatchRecord, nowMs = Date.now()) =>
   return match.status
 }
 
-export const getLiveMatchProgress = (kickoff: string, nowMs = Date.now()) => {
-  const kickoffMs = new Date(kickoff).getTime()
-
-  if (!Number.isFinite(kickoffMs) || nowMs < kickoffMs) {
-    return null
+const getEspnStatusDetail = (match: MatchRecord) => {
+  const shortDetail = match.live?.shortDetail?.trim()
+  if (shortDetail) {
+    return shortDetail
   }
 
-  const elapsedMinutes = Math.floor((nowMs - kickoffMs) / 60000)
-  const period = elapsedMinutes < 45 ? 'Q1' : 'Q2'
-  const minutesText = `${Math.max(0, elapsedMinutes)}'`
+  const detail = match.live?.detail?.trim()
+  if (detail) {
+    return detail
+  }
 
-  return { period, minutesText }
+  return null
 }
 
 export const getMatchDisplayTime = (
@@ -112,14 +112,28 @@ export const getMatchDisplayTime = (
   nowMs = Date.now(),
 ) => {
   const displayStatus = getDisplayMatchStatus(match, nowMs)
-  const liveProgress = match.live?.displayClock ? { period: match.live.period ? `Q${match.live.period}` : 'Q1', minutesText: match.live.displayClock } : getLiveMatchProgress(match.kickoff, nowMs)
+  const espnDetail = getEspnStatusDetail(match)
 
-  if (displayStatus === 'live' && liveProgress) {
-    return `${liveProgress.period} · ${liveProgress.minutesText}`
+  if (displayStatus === 'live') {
+    if (espnDetail) {
+      return espnDetail
+    }
+
+    const displayClock = match.live?.displayClock?.trim()
+    if (displayClock) {
+      return displayClock
+    }
+
+    return labels.live
   }
 
   if (displayStatus === 'finished') {
-    return match.live?.displayClock ? `${labels.fullTime} · ${match.live.displayClock}` : labels.fullTime
+    if (espnDetail) {
+      return espnDetail
+    }
+
+    const displayClock = match.live?.displayClock?.trim()
+    return displayClock ? `${labels.fullTime} · ${displayClock}` : labels.fullTime
   }
 
   return null
