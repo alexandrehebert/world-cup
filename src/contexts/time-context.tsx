@@ -9,7 +9,7 @@ export const TimeProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       setNowMs(Date.now())
-    }, 30_000)
+    }, 10_000)
 
     return () => {
       window.clearInterval(intervalId)

@@ -10,14 +10,11 @@ import { DashboardProvider } from './contexts/dashboard-context'
 import { ThemeProvider } from './contexts/theme-context'
 import { TimeProvider } from './contexts/time-context'
 import type { TournamentData } from './types/tournament'
+import { getTournamentApiRequestUrl } from './lib/tournament-api'
 
 const bootstrapTournamentData = async (): Promise<TournamentData | undefined> => {
-  if (!import.meta.env.PROD) {
-    return undefined
-  }
-
   try {
-    const response = await fetch(`/api/tournament?ts=${Date.now()}`, {
+    const response = await fetch(getTournamentApiRequestUrl(), {
       cache: 'no-store',
       headers: {
         'cache-control': 'no-cache',

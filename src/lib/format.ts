@@ -155,19 +155,58 @@ const parseDisplayClockToSeconds = (displayClock: string | undefined) => {
     return null
   }
 
-  const match = displayClock.trim().match(/^(\d{1,3}):(\d{2})$/)
-  if (!match) {
+  const raw = displayClock.trim()
+  const mmss = raw.match(/^(\d{1,3}):(\d{2})$/)
+  if (mmss) {
+    const minutes = Number(mmss[1])
+    const seconds = Number(mmss[2])
+
+    if (Number.isFinite(minutes) && Number.isFinite(seconds) && seconds >= 0 && seconds <= 59) {
+      return minutes * 60 + seconds
+    }
+  }
+
+  const minuteOnly = raw.match(/^(\d{1,3})\s*['’]$/)
+  if (minuteOnly) {
+    const minutes = Number(minuteOnly[1])
+    if (Number.isFinite(minutes)) {
+      return minutes * 60
+    }
+  }
+
+  const stoppageTime = raw.match(/^(\d{1,3})\s*\+\s*(\d{1,2})\s*['’]$/)
+  if (stoppageTime) {
+    const baseMinutes = Number(stoppageTime[1])
+    const addedMinutes = Number(stoppageTime[2])
+    if (Number.isFinite(baseMinutes) && Number.isFinite(addedMinutes)) {
+      return (baseMinutes + addedMinutes) * 60
+    }
+  }
+
+  return null
+}
+
+const parseClockFromDetailToSeconds = (detail: string | null) => {
+  if (!detail) {
     return null
   }
 
-  const minutes = Number(match[1])
-  const seconds = Number(match[2])
-
-  if (!Number.isFinite(minutes) || !Number.isFinite(seconds) || seconds < 0 || seconds > 59) {
-    return null
+  const mmss = detail.match(/(\d{1,3}):(\d{2})/)
+  if (mmss) {
+    return parseDisplayClockToSeconds(`${mmss[1]}:${mmss[2]}`)
   }
 
-  return minutes * 60 + seconds
+  const stoppageTime = detail.match(/(\d{1,3})\s*\+\s*(\d{1,2})\s*['’]/)
+  if (stoppageTime) {
+    return parseDisplayClockToSeconds(`${stoppageTime[1]}+${stoppageTime[2]}'`)
+  }
+
+  const minuteOnly = detail.match(/(\d{1,3})\s*['’]/)
+  if (minuteOnly) {
+    return parseDisplayClockToSeconds(`${minuteOnly[1]}'`)
+  }
+
+  return null
 }
 
 const formatClockFromSeconds = (totalSeconds: number) => {
@@ -184,7 +223,7 @@ const isPausedLiveDetail = (detail: string | null) => {
   return /(half[\s-]?time|mi-temps|pause|break|delayed|suspended|postponed|interrupted)/i.test(detail)
 }
 
-const getExtrapolatedLiveClock = (match: MatchRecord, nowMs: number) => {
+const getExtrapolatedLiveClock = (match: MatchRecord, nowMs: number, espnDetail: string | null) => {
   if (match.live?.state !== 'in') {
     return null
   }
@@ -193,7 +232,8 @@ const getExtrapolatedLiveClock = (match: MatchRecord, nowMs: number) => {
   const clockFromLiveField = typeof match.live.clock === 'number' && Number.isFinite(match.live.clock)
     ? Math.max(0, Math.trunc(match.live.clock))
     : null
-  const baseClockSeconds = clockFromDisplay ?? clockFromLiveField
+  const baseClockFromDetail = parseClockFromDetailToSeconds(espnDetail)
+  const baseClockSeconds = clockFromDisplay ?? clockFromLiveField ?? baseClockFromDetail
 
   if (baseClockSeconds === null) {
     return null
@@ -221,7 +261,7 @@ export const getMatchDisplayTime = (
       return espnDetail
     }
 
-    const extrapolatedClock = getExtrapolatedLiveClock(match, nowMs)
+    const extrapolatedClock = getExtrapolatedLiveClock(match, nowMs, espnDetail)
     if (extrapolatedClock) {
       return extrapolatedClock
     }

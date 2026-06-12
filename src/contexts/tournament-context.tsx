@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import rawTournamentData from '../data/worldcup.json'
 import { buildTournamentModel, type TournamentModel } from '../lib/tournament'
+import { getTournamentApiRequestUrl } from '../lib/tournament-api'
 import type { TournamentData } from '../types/tournament'
 
 const localTournamentData = rawTournamentData as TournamentData
@@ -20,7 +21,7 @@ export const TournamentProvider = ({ children, initialData }: { children: ReactN
 
   const loadRemoteTournament = useCallback(async (isCancelledRef?: { current: boolean }) => {
     try {
-      const response = await fetch(`/api/tournament?ts=${Date.now()}`, {
+      const response = await fetch(getTournamentApiRequestUrl(), {
         cache: 'no-store',
         headers: {
           'cache-control': 'no-cache',
@@ -49,10 +50,6 @@ export const TournamentProvider = ({ children, initialData }: { children: ReactN
   }, [])
 
   useEffect(() => {
-    if (!import.meta.env.PROD) {
-      return
-    }
-
     const isCancelledRef = { current: false }
 
     void loadRemoteTournament(isCancelledRef)
