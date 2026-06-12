@@ -53,7 +53,7 @@ export const FavoriteTeamsPicker = () => {
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex h-10 items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+        className="inline-flex h-10 cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
       >
         <Icon name="star" className="text-[18px] text-[var(--accent-text)]" />
         <span>{t.labels.favoriteTeams}</span>
@@ -89,7 +89,7 @@ export const FavoriteTeamsPicker = () => {
                     key={team.id}
                     type="button"
                     onClick={() => toggleFavoriteTeam(team.id)}
-                    className={`flex w-full items-center justify-between px-2 py-2 text-left text-sm transition ${
+                    className={`flex w-full cursor-pointer items-center justify-between px-2 py-2 text-left text-sm transition ${
                       selected
                         ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
                         : 'text-[var(--text)] hover:bg-[var(--surface-soft)]'
@@ -116,7 +116,7 @@ export const FavoriteTeamsPicker = () => {
               type="button"
               onClick={clearFavoriteTeams}
               disabled={favoriteTeamIds.length === 0}
-              className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-soft)] transition hover:text-[var(--text-strong)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex cursor-pointer items-center gap-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-soft)] transition hover:text-[var(--text-strong)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Icon name="close" className="text-[14px]" />
               <span>{t.labels.clearFavorites}</span>

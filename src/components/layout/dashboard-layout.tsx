@@ -50,7 +50,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
                 to={tab.to}
                 aria-label={t.sections[tab.labelKey]}
                 className={({ isActive }) =>
-                  `-mb-px inline-flex items-center justify-center gap-2 border-b-2 px-3 py-4 text-sm font-semibold transition sm:px-5 ${
+                  `-mb-px inline-flex cursor-pointer items-center justify-center gap-2 border-b-2 px-3 py-4 text-sm font-semibold transition sm:px-5 ${
                     isActive
                       ? 'border-[var(--accent)] text-[var(--accent-text)]'
                       : 'border-transparent text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]'

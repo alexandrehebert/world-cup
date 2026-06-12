@@ -21,7 +21,7 @@ export const LocaleSwitcher = () => {
             key={option.code}
             type="button"
             onClick={() => setLocale(option.code)}
-            className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 ${
+            className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 ${
               isActive
                 ? 'border border-[var(--tab-active-border)] bg-[var(--tab-active-bg)] text-[var(--tab-active-text)]'
                 : 'border border-transparent text-[var(--text-muted)] hover:bg-[var(--tab-idle-hover-bg)] hover:text-[var(--text)]'
