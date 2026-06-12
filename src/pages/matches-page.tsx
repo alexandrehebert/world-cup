@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDashboard } from '../contexts/dashboard-context'
 import { useLocale } from '../contexts/locale-context'
 import { useTournament } from '../contexts/tournament-context'
-import { UpcomingMatches } from '../components/matches/upcoming-matches'
+import { MatchesList } from '../components/matches/matches-list'
 import { getLocalizedText } from '../lib/format'
 import { Icon } from '../lib/icons'
 
@@ -243,7 +243,7 @@ export const MatchesPage = () => {
 
       {filteredMatches.length > 0 ? (
         <div className="relative z-0">
-          <UpcomingMatches matches={filteredMatches} />
+          <MatchesList matches={filteredMatches} />
         </div>
       ) : (
         <div className="bg-[var(--surface)] px-6 py-6 text-center text-sm text-[var(--text-muted)]">

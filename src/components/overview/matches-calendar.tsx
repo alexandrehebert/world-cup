@@ -38,7 +38,7 @@ const toDayKey = (year: number, month: number, day: number) => `${toMonthKey(yea
 const statusBadgeClass: Record<MatchRecord['status'], string> = {
   scheduled: 'bg-[var(--surface-strong)] text-[var(--text-soft)]',
   live: 'bg-[var(--accent-muted)] text-[var(--accent-text)]',
-  finished: 'bg-[var(--surface-soft)] text-[var(--text-muted)] opacity-60 grayscale',
+  finished: 'past-match-stripes bg-[var(--surface-soft)] text-[var(--text-muted)] opacity-60 grayscale',
 }
 
 const scoreLabel = (match: MatchRecord) => {
@@ -54,6 +54,8 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
   const { locale, t } = useLocale()
   const { teamsById } = useTournament()
   const dateLocale = getDateLocale(locale)
+  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const nowMs = Date.now()
 
   const calendarData = useMemo(() => {
     const byDay = new Map<string, MatchRecord[]>()
@@ -243,7 +245,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     const kickoffTime = new Intl.DateTimeFormat(dateLocale, {
                       hour: '2-digit',
                       minute: '2-digit',
-                      timeZone: match.venue.timeZone ?? 'UTC',
+                      timeZone: localTimeZone,
                     }).format(new Date(match.kickoff))
 
                     return (
@@ -316,12 +318,23 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                   const kickoffTime = new Intl.DateTimeFormat(dateLocale, {
                     hour: '2-digit',
                     minute: '2-digit',
-                    timeZone: match.venue.timeZone ?? 'UTC',
+                    timeZone: localTimeZone,
                   }).format(new Date(match.kickoff))
+                  const minutesUntilKickoff = Math.ceil((new Date(match.kickoff).getTime() - nowMs) / 60000)
+                  const isVerySoon =
+                    match.status === 'scheduled' &&
+                    minutesUntilKickoff > 0 &&
+                    minutesUntilKickoff < 60
+                  const minuteLabel =
+                    locale === 'fr'
+                      ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
+                      : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
                   const footerValue =
                     match.status === 'finished'
                       ? t.labels.finished
-                      : kickoffTime
+                      : isVerySoon
+                        ? minuteLabel
+                        : kickoffTime
 
                   return (
                     <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 md:items-stretch ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]' : (anyFavoriteInMonth ? 'opacity-75 ' : '') + statusBadgeClass[match.status]}`}>

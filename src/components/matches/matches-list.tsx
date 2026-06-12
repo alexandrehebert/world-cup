@@ -61,10 +61,12 @@ const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLo
 const hasScore = (match: MatchRecord) =>
   Number.isFinite(match.home.score) && Number.isFinite(match.away.score)
 
-export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
+export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
   const { locale, t } = useLocale()
   const { isFavoriteTeam, favoriteTeamIds } = useDashboard()
   const { teamsById } = useTournament()
+  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const nowMs = Date.now()
   const anyFavoriteVisible = useMemo(
     () => favoriteTeamIds.length > 0 && matches.some((m) => (m.home.teamId && favoriteTeamIds.includes(m.home.teamId)) || (m.away.teamId && favoriteTeamIds.includes(m.away.teamId))),
     [favoriteTeamIds, matches],
@@ -111,7 +113,15 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
             {group.matches.map((match) => {
               const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
               const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-              const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
+              const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, localTimeZone, t.labels.today)
+              const minutesUntilKickoff = Math.ceil((new Date(match.kickoff).getTime() - nowMs) / 60000)
+              const isVerySoon = match.status === 'scheduled' && minutesUntilKickoff > 0 && minutesUntilKickoff < 60
+              const minuteLabel =
+                locale === 'fr'
+                  ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
+                  : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
+              const displayDateTime = isVerySoon ? minuteLabel : localDateTime
+              const displayLocalTime = isVerySoon ? minuteLabel : localTime
               const isLive = match.status === 'live'
               const isFinished = match.status === 'finished'
               const displayScore = hasScore(match)
@@ -124,7 +134,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                   key={match.id}
                   className={`relative w-full px-5 py-4 transition ${
                     isFinished
-                      ? 'bg-[var(--surface-soft)] opacity-60 saturate-50'
+                      ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50'
                       : hasFavorite
                         ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)]'
                         : anyFavoriteVisible
@@ -138,7 +148,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                         <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
                           {stageLabel(match.stage, t.labels)}
                         </p>
-                        <p className={`${compact ? 'mt-1 text-sm' : 'mt-1 text-base'} font-semibold text-[var(--text-strong)]`}>{localDateTime}</p>
+                        <p className={`${compact ? 'mt-1 text-sm' : 'mt-1 text-base'} font-semibold text-[var(--text-strong)]`}>{displayDateTime}</p>
                       </div>
                       <StatusPill status={match.status} label={statusLabel(match.status, t.labels)} />
                     </div>
@@ -181,7 +191,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
 
                     <div>
                       <p className={compact ? 'text-xs text-[var(--text-soft)]' : 'text-sm text-[var(--text-soft)]'}>
-                        {t.meta.localTime} · {localTime}
+                        {t.meta.localTime} · {displayLocalTime}
                       </p>
                       <p className={compact ? 'text-xs text-[var(--text-soft)]' : 'text-sm text-[var(--text-soft)]'}>
                         {getLocalizedText(match.venue.stadium, locale)} · {getLocalizedText(match.venue.city, locale)}, {getLocalizedText(match.venue.country, locale)}
