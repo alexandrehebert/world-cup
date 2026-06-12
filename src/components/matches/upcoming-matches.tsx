@@ -125,7 +125,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                 locale === 'fr'
                   ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
                   : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
-              const displayTiming = getMatchDisplayTime(match, t.labels, nowMs)
+              const displayTiming = getMatchDisplayTime(match, t.labels, nowMs, locale)
               const displayDateTime = displayTiming ?? (isVerySoon ? minuteLabel : localDateTime)
               const displayLocalTime = isVerySoon ? minuteLabel : localTime
               const displayStatus = getDisplayMatchStatus(match, nowMs)

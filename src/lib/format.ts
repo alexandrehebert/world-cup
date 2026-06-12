@@ -135,6 +135,21 @@ const getEspnStatusDetail = (match: MatchRecord, locale: LocaleCode) => {
   return null
 }
 
+const getFinishedStatusDetail = (espnDetail: string | null, labels: TranslationSet['labels']) => {
+  if (!espnDetail) {
+    return null
+  }
+
+  const trimmed = espnDetail.trim()
+
+  // ESPN often sends a raw FT token; expand it to the localized full-time label.
+  if (/^F\.?T\.?$/i.test(trimmed) || /^full[\s-]?time$/i.test(trimmed)) {
+    return labels.fullTime
+  }
+
+  return trimmed
+}
+
 export const getMatchDisplayTime = (
   match: MatchRecord,
   labels: TranslationSet['labels'],
@@ -158,8 +173,9 @@ export const getMatchDisplayTime = (
   }
 
   if (displayStatus === 'finished') {
-    if (espnDetail) {
-      return espnDetail
+    const finishedStatusDetail = getFinishedStatusDetail(espnDetail, labels)
+    if (finishedStatusDetail) {
+      return finishedStatusDetail
     }
 
     const displayClock = match.live?.displayClock?.trim()

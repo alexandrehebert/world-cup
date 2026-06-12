@@ -260,7 +260,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                       minute: '2-digit',
                       timeZone: localTimeZone,
                     }).format(new Date(match.kickoff))
-                    const displayTiming = getMatchDisplayTime(match, t.labels, nowMs)
+                    const displayTiming = getMatchDisplayTime(match, t.labels, nowMs, locale)
 
                     return (
                       <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[var(--calendar-favorite-hover-bg)]' : statusBadgeClass[displayStatus]}`}>
@@ -352,7 +352,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     locale === 'fr'
                       ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
                       : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
-                  const displayTiming = getMatchDisplayTime(match, t.labels, nowMs)
+                  const displayTiming = getMatchDisplayTime(match, t.labels, nowMs, locale)
                   const footerValue = displayTiming ?? (isVerySoon ? minuteLabel : kickoffTime)
                   const footerStatus =
                     displayStatus === 'finished'

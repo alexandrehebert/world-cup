@@ -4,12 +4,20 @@ import rawTournamentData from '../data/worldcup.json'
 import { buildTournamentModel, type TournamentModel } from '../lib/tournament'
 import type { TournamentData } from '../types/tournament'
 
-const localTournamentModel = buildTournamentModel(rawTournamentData as TournamentData)
+const localTournamentData = rawTournamentData as TournamentData
+const localTournamentModel = buildTournamentModel(localTournamentData)
 
 const TournamentContext = createContext<TournamentModel | undefined>(undefined)
 
-export const TournamentProvider = ({ children }: { children: ReactNode }) => {
-  const [value, setValue] = useState<TournamentModel>(localTournamentModel)
+export const TournamentProvider = ({ children, initialData }: { children: ReactNode; initialData?: TournamentData }) => {
+  const [value, setValue] = useState<TournamentModel>(() => {
+    if (initialData) {
+      return buildTournamentModel(initialData)
+    }
+
+    return localTournamentModel
+  })
+
   const loadRemoteTournament = useCallback(async (isCancelledRef?: { current: boolean }) => {
     try {
       const response = await fetch('/api/tournament', { cache: 'no-store' })
@@ -21,7 +29,13 @@ export const TournamentProvider = ({ children }: { children: ReactNode }) => {
       const payload = (await response.json()) as TournamentData
 
       if (!isCancelledRef?.current) {
-        setValue(buildTournamentModel(payload))
+        setValue((previousValue) => {
+          if (previousValue.meta.updatedAt === payload.meta.updatedAt) {
+            return previousValue
+          }
+
+          return buildTournamentModel(payload)
+        })
       }
     } catch {
       // Keep local bundled data if the API is unavailable.
