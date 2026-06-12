@@ -173,8 +173,7 @@ const parseDisplayClockToSeconds = (displayClock: string | undefined) => {
 const formatClockFromSeconds = (totalSeconds: number) => {
   const clampedSeconds = Math.max(0, Math.trunc(totalSeconds))
   const minutes = Math.floor(clampedSeconds / 60)
-  const seconds = clampedSeconds % 60
-  return `${minutes}:${String(seconds).padStart(2, '0')}`
+  return `${minutes}'`
 }
 
 const isPausedLiveDetail = (detail: string | null) => {
