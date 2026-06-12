@@ -58,7 +58,8 @@ export const MatchModal = () => {
   const hasScore = typeof match.home.score === 'number' && typeof match.away.score === 'number'
   const homeWon = match.status === 'finished' && hasScore && (match.home.score ?? 0) > (match.away.score ?? 0)
   const awayWon = match.status === 'finished' && hasScore && (match.away.score ?? 0) > (match.home.score ?? 0)
-  const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
+  const { localDateTime } = formatMatchDate(match.kickoff, locale, undefined, t.labels.today)
+  const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
 
   return (
     <div

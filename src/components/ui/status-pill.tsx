@@ -8,7 +8,7 @@ const statusClasses: Record<MatchRecord['status'], string> = {
 
 export const StatusPill = ({ status, label }: { status: MatchRecord['status']; label: string }) => (
   <span
-    className={`inline-flex px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${statusClasses[status]}`}
+    className={`inline-flex text-[11px] font-semibold uppercase tracking-[0.2em] ${statusClasses[status]}`}
   >
     {label}
   </span>
