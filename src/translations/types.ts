@@ -10,7 +10,13 @@ export interface TranslationSet {
   headings: {
     groups: string
     upcomingMatches: string
+    matches: string
     bracket: string
+  }
+  footer: {
+    madeWithLove: string
+    byAxoon: string
+    rightsReserved: string
   }
   overview: {
     title: string

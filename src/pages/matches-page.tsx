@@ -105,7 +105,7 @@ export const MatchesPage = () => {
   return (
     <section className="relative isolate space-y-4">
       <div>
-        <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.upcomingMatches}</h2>
+        <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.matches}</h2>
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start">

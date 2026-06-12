@@ -12,7 +12,13 @@ export const en: TranslationSet = {
   headings: {
     groups: 'Groups',
     upcomingMatches: 'Schedule',
+    matches: 'Matches',
     bracket: 'Knockout bracket',
+  },
+  footer: {
+    madeWithLove: 'Made with',
+    byAxoon: 'by Alexandre "Axoon" Hebert',
+    rightsReserved: 'All rights reserved.',
   },
   overview: {
     title: 'FIFA World Cup 2026',
