@@ -209,9 +209,36 @@ const parseClockFromDetailToSeconds = (detail: string | null) => {
   return null
 }
 
-const formatClockFromSeconds = (totalSeconds: number) => {
+const parseStoppageBaseMinute = (value: string | null | undefined) => {
+  if (!value) {
+    return null
+  }
+
+  const stoppageMatch = value.match(/(\d{1,3})\s*\+\s*\d{1,2}\s*['’]?/)
+  if (!stoppageMatch) {
+    return null
+  }
+
+  const baseMinutes = Number(stoppageMatch[1])
+  return Number.isFinite(baseMinutes) ? baseMinutes : null
+}
+
+const getPeriodBoundaryMinute = (period: number | undefined) => {
+  if (period === 1) return 45
+  if (period === 2) return 90
+  if (period === 3) return 105
+  if (period === 4) return 120
+  return null
+}
+
+const formatClockFromSeconds = (totalSeconds: number, stoppageBaseMinute: number | null = null) => {
   const clampedSeconds = Math.max(0, Math.trunc(totalSeconds))
   const minutes = Math.floor(clampedSeconds / 60)
+
+  if (stoppageBaseMinute !== null && minutes > stoppageBaseMinute) {
+    return `${stoppageBaseMinute}'+${minutes - stoppageBaseMinute}`
+  }
+
   return `${minutes}'`
 }
 
@@ -233,7 +260,10 @@ const getExtrapolatedLiveClock = (match: MatchRecord, nowMs: number, espnDetail:
     ? Math.max(0, Math.trunc(match.live.clock))
     : null
   const baseClockFromDetail = parseClockFromDetailToSeconds(espnDetail)
-  const baseClockSeconds = clockFromDisplay ?? clockFromLiveField ?? baseClockFromDetail
+  const baseClockCandidates = [clockFromDisplay, clockFromLiveField, baseClockFromDetail].filter(
+    (value): value is number => value !== null,
+  )
+  const baseClockSeconds = baseClockCandidates.length > 0 ? Math.max(...baseClockCandidates) : null
 
   if (baseClockSeconds === null) {
     return null
@@ -244,7 +274,19 @@ const getExtrapolatedLiveClock = (match: MatchRecord, nowMs: number, espnDetail:
     ? Math.max(0, Math.floor((nowMs - syncedAtMs) / 1000))
     : 0
 
-  return formatClockFromSeconds(baseClockSeconds + elapsedSeconds)
+  const periodBoundaryMinute = getPeriodBoundaryMinute(match.live?.period)
+  const totalSeconds = baseClockSeconds + elapsedSeconds
+  const totalMinutes = Math.floor(totalSeconds / 60)
+  const inferredStoppageBoundary =
+    periodBoundaryMinute !== null &&
+    totalMinutes > periodBoundaryMinute &&
+    baseClockSeconds <= periodBoundaryMinute * 60
+      ? periodBoundaryMinute
+      : null
+  const explicitStoppageBoundary =
+    parseStoppageBaseMinute(match.live?.displayClock) ?? parseStoppageBaseMinute(espnDetail)
+
+  return formatClockFromSeconds(totalSeconds, explicitStoppageBoundary ?? inferredStoppageBoundary)
 }
 
 export const getMatchDisplayTime = (
