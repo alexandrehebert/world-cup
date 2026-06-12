@@ -7,9 +7,17 @@ const statusClasses: Record<MatchRecord['status'], string> = {
   finished: 'text-[var(--text-soft)]',
 }
 
-export const StatusPill = ({ status, label }: { status: MatchRecord['status']; label: ReactNode }) => (
+export const StatusPill = ({
+  status,
+  label,
+  className = '',
+}: {
+  status: MatchRecord['status'];
+  label: ReactNode;
+  className?: string;
+}) => (
   <span
-    className={`inline-flex text-[11px] font-semibold uppercase tracking-[0.2em] ${statusClasses[status]}`}
+    className={`inline-flex text-[11px] font-semibold uppercase tracking-[0.2em] ${statusClasses[status]} ${className}`.trim()}
   >
     {label}
   </span>

@@ -168,6 +168,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                       </div>
                       <StatusPill
                         status={displayStatus}
+                        className={displayStatus === 'live' ? 'bg-transparent' : ''}
                         label={
                           displayStatus === 'live'
                             ? <span className="inline-flex items-center gap-1.5"><LivePulse className="h-3 w-3" /><span>{statusLabel(displayStatus, t.labels)}</span></span>
