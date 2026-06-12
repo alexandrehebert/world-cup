@@ -61,7 +61,7 @@ const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLo
 const hasScore = (match: MatchRecord) =>
   Number.isFinite(match.home.score) && Number.isFinite(match.away.score)
 
-export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
+export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
   const { locale, t } = useLocale()
   const { isFavoriteTeam, favoriteTeamIds } = useDashboard()
   const { teamsById } = useTournament()
@@ -113,13 +113,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
             {group.matches.map((match) => {
               const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
               const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-              const { localDateTime } = formatMatchDate(match.kickoff, locale, localTimeZone, t.labels.today)
-              const { localTime: venueLocalTime } = formatMatchDate(
-                match.kickoff,
-                locale,
-                match.venue.timeZone,
-                t.labels.today,
-              )
+              const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, localTimeZone, t.labels.today)
               const minutesUntilKickoff = Math.ceil((new Date(match.kickoff).getTime() - nowMs) / 60000)
               const isVerySoon = match.status === 'scheduled' && minutesUntilKickoff > 0 && minutesUntilKickoff < 60
               const minuteLabel =
@@ -127,7 +121,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                   ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
                   : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
               const displayDateTime = isVerySoon ? minuteLabel : localDateTime
-              const displayLocalTime = venueLocalTime
+              const displayLocalTime = isVerySoon ? minuteLabel : localTime
               const isLive = match.status === 'live'
               const isFinished = match.status === 'finished'
               const displayScore = hasScore(match)
