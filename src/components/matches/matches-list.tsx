@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getLocalizedText } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, getLocalizedText } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
@@ -126,10 +126,12 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                 locale === 'fr'
                   ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
                   : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
-              const displayDateTime = isVerySoon ? minuteLabel : localDateTime
+              const displayStatus = getDisplayMatchStatus(match, nowMs)
+              const isLive = displayStatus === 'live'
+              const isFinished = displayStatus === 'finished'
+              const displayTiming = getMatchDisplayTime(match, t.labels, nowMs)
+              const displayDateTime = displayTiming ?? (isVerySoon ? minuteLabel : localDateTime)
               const displayLocalTime = venueLocalTime
-              const isLive = match.status === 'live'
-              const isFinished = match.status === 'finished'
               const displayScore = hasScore(match)
               const homeScore = typeof match.home.score === 'number' ? match.home.score : null
               const awayScore = typeof match.away.score === 'number' ? match.away.score : null
@@ -162,7 +164,10 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                         </p>
                         <p className={`${compact ? 'mt-1 text-sm' : 'mt-1 text-base'} font-semibold text-[var(--text-strong)]`}>{displayDateTime}</p>
                       </div>
-                      <StatusPill status={match.status} label={statusLabel(match.status, t.labels)} />
+                      <StatusPill
+                        status={displayStatus}
+                        label={statusLabel(displayStatus, t.labels)}
+                      />
                     </div>
 
                     <div className="flex flex-nowrap items-center gap-2 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-3">

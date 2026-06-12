@@ -57,6 +57,7 @@ export const fr: TranslationSet = {
     scheduled: 'Programmé',
     live: 'En direct',
     finished: 'Terminé',
+    fullTime: 'Temps réglementaire',
     noMatchSelected: 'Sélectionnez un match pour voir ses détails.',
     localeHint: 'Changez la langue du tableau instantanément.',
     team: 'Équipe',

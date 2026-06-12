@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { getLocalizedText } from '../../lib/format'
+import { getDisplayMatchStatus, getMatchDisplayTime, getLocalizedText } from '../../lib/format'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { Icon } from '../../lib/icons'
 import type { MatchRecord } from '../../types/tournament'
@@ -246,7 +246,8 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
                     const homeScore = typeof match.home.score === 'number' ? match.home.score : null
                     const awayScore = typeof match.away.score === 'number' ? match.away.score : null
-                    const isFinished = match.status === 'finished'
+                    const displayStatus = getDisplayMatchStatus(match, nowMs)
+                    const isFinished = displayStatus === 'finished'
                     const homeWon = isFinished && homeScore !== null && awayScore !== null && homeScore > awayScore
                     const awayWon = isFinished && homeScore !== null && awayScore !== null && awayScore > homeScore
                     const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
@@ -259,7 +260,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     }).format(new Date(match.kickoff))
 
                     return (
-                      <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[var(--calendar-favorite-hover-bg)]' : statusBadgeClass[match.status]}`}>
+                      <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[var(--calendar-favorite-hover-bg)]' : statusBadgeClass[displayStatus]}`}>
                         <div className="flex items-center justify-between gap-1">
                           <span className="inline-flex min-w-0 items-center gap-1 font-semibold text-[var(--text-strong)]">
                             {homeTeam ? <FlagAvatar team={homeTeam} className="h-4 w-4" /> : <span className="h-4 w-4 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
@@ -324,7 +325,8 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
                   const homeScore = typeof match.home.score === 'number' ? match.home.score : null
                   const awayScore = typeof match.away.score === 'number' ? match.away.score : null
-                  const isFinished = match.status === 'finished'
+                  const displayStatus = getDisplayMatchStatus(match, nowMs)
+                  const isFinished = displayStatus === 'finished'
                   const homeWon = isFinished && homeScore !== null && awayScore !== null && homeScore > awayScore
                   const awayWon = isFinished && homeScore !== null && awayScore !== null && awayScore > homeScore
                   const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
@@ -344,15 +346,17 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     locale === 'fr'
                       ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
                       : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
-                  const footerValue =
-                    match.status === 'finished'
+                  const displayTiming = getMatchDisplayTime(match, t.labels, nowMs)
+                  const footerValue = displayTiming ?? (isVerySoon ? minuteLabel : kickoffTime)
+                  const footerStatus =
+                    displayStatus === 'finished'
                       ? t.labels.finished
-                      : isVerySoon
-                        ? minuteLabel
-                        : kickoffTime
+                      : displayStatus === 'live'
+                        ? t.labels.live
+                        : t.labels.scheduled
 
                   return (
-                    <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none md:items-stretch ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[var(--calendar-favorite-hover-bg)]' : statusBadgeClass[match.status]}`}>
+                    <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none md:items-stretch ${hasFavorite ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)] hover:bg-[var(--calendar-favorite-hover-bg)]' : statusBadgeClass[displayStatus]}`}>
                       <div className="flex w-full items-center justify-center gap-2 font-semibold text-[var(--text-strong)] md:justify-between">
                         <span className="inline-flex min-w-0 items-center gap-1.5">
                           {homeTeam ? <FlagAvatar team={homeTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
@@ -366,7 +370,10 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                           {awayTeam ? <FlagAvatar team={awayTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                         </span>
                       </div>
-                      <p className="text-center">{footerValue}</p>
+                      <div className="space-y-0.5 text-center">
+                        <p>{footerValue}</p>
+                        <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--text-soft)]">{footerStatus}</p>
+                      </div>
                     </button>
                   )
                 })}

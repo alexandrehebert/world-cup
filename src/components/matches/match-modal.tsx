@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getLocalizedText } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getLocalizedText } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
@@ -56,8 +56,9 @@ export const MatchModal = () => {
   const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
   const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
   const hasScore = typeof match.home.score === 'number' && typeof match.away.score === 'number'
-  const homeWon = match.status === 'finished' && hasScore && (match.home.score ?? 0) > (match.away.score ?? 0)
-  const awayWon = match.status === 'finished' && hasScore && (match.away.score ?? 0) > (match.home.score ?? 0)
+  const displayStatus = getDisplayMatchStatus(match)
+  const homeWon = displayStatus === 'finished' && hasScore && (match.home.score ?? 0) > (match.away.score ?? 0)
+  const awayWon = displayStatus === 'finished' && hasScore && (match.away.score ?? 0) > (match.home.score ?? 0)
   const { localDateTime } = formatMatchDate(match.kickoff, locale, undefined, t.labels.today)
   const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
 
@@ -94,11 +95,11 @@ export const MatchModal = () => {
               <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.status}</p>
               <div className="mt-2">
                 <StatusPill
-                  status={match.status}
+                  status={displayStatus}
                   label={
-                    match.status === 'live'
+                    displayStatus === 'live'
                       ? t.labels.live
-                      : match.status === 'finished'
+                      : displayStatus === 'finished'
                         ? t.labels.finished
                         : t.labels.scheduled
                   }
@@ -132,7 +133,7 @@ export const MatchModal = () => {
                     <p className="text-3xl font-black leading-none text-[var(--text-strong)] sm:text-4xl">
                       {match.home.score} - {match.away.score}
                     </p>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{match.status === 'finished' ? t.labels.finished : t.labels.live}</p>
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{displayStatus === 'finished' ? t.labels.finished : t.labels.live}</p>
                   </>
                 ) : (
                   <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">VS</p>

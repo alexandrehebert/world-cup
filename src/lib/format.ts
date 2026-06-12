@@ -1,4 +1,5 @@
 import type { LocaleCode, LocalizedText, MatchRecord } from '../types/tournament'
+import type { TranslationSet } from '../translations/types'
 
 export const getLocalizedText = (value: LocalizedText, locale: LocaleCode) => value[locale]
 
@@ -61,4 +62,46 @@ export const formatMatchStage = (match: MatchRecord) => {
     default:
       return 'group'
   }
+}
+
+export const getDisplayMatchStatus = (match: MatchRecord, nowMs = Date.now()) => {
+  const kickoffMs = new Date(match.kickoff).getTime()
+
+  if (match.status === 'scheduled' && Number.isFinite(kickoffMs) && nowMs >= kickoffMs) {
+    return 'live'
+  }
+
+  return match.status
+}
+
+export const getLiveMatchProgress = (kickoff: string, nowMs = Date.now()) => {
+  const kickoffMs = new Date(kickoff).getTime()
+
+  if (!Number.isFinite(kickoffMs) || nowMs < kickoffMs) {
+    return null
+  }
+
+  const elapsedMinutes = Math.floor((nowMs - kickoffMs) / 60000)
+  const period = elapsedMinutes < 45 ? 'Q1' : 'Q2'
+  const minutesText = `${Math.max(0, elapsedMinutes)}'`
+
+  return { period, minutesText }
+}
+
+export const getMatchDisplayTime = (
+  match: MatchRecord,
+  labels: TranslationSet['labels'],
+  nowMs = Date.now(),
+) => {
+  const liveProgress = getLiveMatchProgress(match.kickoff, nowMs)
+
+  if (liveProgress && getDisplayMatchStatus(match, nowMs) === 'live') {
+    return `${liveProgress.period} · ${liveProgress.minutesText}`
+  }
+
+  if (getDisplayMatchStatus(match, nowMs) === 'finished') {
+    return labels.fullTime
+  }
+
+  return null
 }
