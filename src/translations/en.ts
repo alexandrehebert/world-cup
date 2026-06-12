@@ -58,6 +58,7 @@ export const en: TranslationSet = {
     live: 'Live',
     finished: 'Finished',
     fullTime: 'Full-time',
+    share: 'Share',
     noMatchSelected: 'Select a match to see its details.',
     localeHint: 'Instantly switch the dashboard language.',
     team: 'Team',

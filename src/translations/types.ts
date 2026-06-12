@@ -56,6 +56,7 @@ export interface TranslationSet {
     live: string
     finished: string
     fullTime: string
+    share: string
     noMatchSelected: string
     localeHint: string
     team: string

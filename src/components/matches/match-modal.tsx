@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow } from '../../contexts/time-context'
@@ -19,10 +19,27 @@ const stageLabel = (stage: 'group' | 'roundOf32' | 'roundOf16' | 'quarterFinal' 
   return labels.stageFinal
 }
 
+const getUtcOffsetLabel = (kickoff: string, timeZone: string) => {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      timeZoneName: 'shortOffset',
+    }).formatToParts(new Date(kickoff))
+
+    const tzName = parts.find((part) => part.type === 'timeZoneName')?.value ?? ''
+    const normalized = tzName.replace('GMT', 'UTC').replace('UTC+0', 'UTC+0').replace('UTC-0', 'UTC+0')
+
+    return normalized || 'UTC+0'
+  } catch {
+    return 'UTC+0'
+  }
+}
+
 export const MatchModal = () => {
-  const { isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
+  const { getMatchSharePath, isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
   const { locale, t } = useLocale()
   const nowMs = useNow()
+  const [isCopied, setIsCopied] = useState(false)
   const { matchesById, teamsById } = useTournament()
   const match = selectedMatchId ? matchesById[selectedMatchId] : undefined
 
@@ -61,16 +78,34 @@ export const MatchModal = () => {
   const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
   const hasScore = typeof match.home.score === 'number' && typeof match.away.score === 'number'
   const displayStatus = getDisplayMatchStatus(match)
-  const liveMatchInfo = getMatchDisplayTime(match, t.labels, nowMs, locale)
   const homeWon = displayStatus === 'finished' && hasScore && (match.home.score ?? 0) > (match.away.score ?? 0)
   const awayWon = displayStatus === 'finished' && hasScore && (match.away.score ?? 0) > (match.home.score ?? 0)
   const { localDateTime } = formatMatchDate(match.kickoff, locale, undefined, t.labels.today)
   const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
-  const syncedAt = match.live?.syncedAt ? formatMatchDate(match.live.syncedAt, locale, undefined).utcDateTime : null
+  const displayTime = displayStatus === 'live' ? getMatchDisplayTime(match, t.labels, nowMs, locale) : localTime
+  const venueUtcOffset = getUtcOffsetLabel(match.kickoff, match.venue.timeZone)
+  const venueClock = new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: match.venue.timeZone,
+  }).format(new Date(match.kickoff))
+
+  const copyShareLink = async () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const shareUrl = new URL(getMatchSharePath(match.id), window.location.origin).href
+    await window.navigator.clipboard.writeText(shareUrl)
+    setIsCopied(true)
+    window.setTimeout(() => {
+      setIsCopied(false)
+    }, 1400)
+  }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 px-4 py-6 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/65 px-4 py-4 backdrop-blur-sm sm:items-center sm:py-6"
       role="presentation"
       onClick={() => setSelectedMatchId(null)}
     >
@@ -78,25 +113,36 @@ export const MatchModal = () => {
         role="dialog"
         aria-modal="true"
         aria-labelledby="match-modal-title"
-        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-strong)] shadow-2xl shadow-slate-950/30"
+        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-strong)] shadow-2xl shadow-slate-950/30 sm:max-h-[calc(100dvh-3rem)]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)]/70 px-5 py-4 backdrop-blur sm:px-6">
           <h3 id="match-modal-title" className="text-lg font-semibold text-[var(--text-strong)]">
             {t.labels.details}
           </h3>
-          <button
-            type="button"
-            onClick={() => setSelectedMatchId(null)}
-            className="text-[var(--text)] transition hover:text-[var(--text-strong)] rounded-full p-1"
-            aria-label="Close"
-          >
-            <Icon name="close" className="text-[24px]" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => void copyShareLink()}
+              className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
+              aria-label={t.labels.share}
+              title={isCopied ? 'Copied' : t.labels.share}
+            >
+              <Icon name={isCopied ? 'check' : 'share'} className={`text-[20px] ${isCopied ? 'text-[var(--accent-text)]' : ''}`.trim()} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedMatchId(null)}
+              className="cursor-pointer rounded-full p-1 text-[var(--text)] transition hover:text-[var(--text-strong)]"
+              aria-label="Close"
+            >
+              <Icon name="close" className="text-[24px]" />
+            </button>
+          </div>
         </div>
 
-        <div className="space-y-5 px-5 py-5 sm:px-6">
-          <div className="flex items-center justify-between gap-3">
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5 sm:px-6">
+          <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.status}</p>
               <div className="mt-2">
@@ -112,33 +158,12 @@ export const MatchModal = () => {
                 />
               </div>
             </div>
+
             <div className="text-right">
               <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.kickoff}</p>
               <p className="mt-2 text-sm font-semibold text-[var(--text-strong)]">{localDateTime}</p>
             </div>
           </div>
-
-          {displayStatus === 'live' ? (
-            <div className="grid gap-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-[var(--accent-text)]">
-                  <LivePulse className="h-3.5 w-3.5" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em]">{t.labels.live}</p>
-                </div>
-                <p className="text-lg font-semibold text-[var(--text-strong)]">{liveMatchInfo ?? t.labels.live}</p>
-                <p className="text-sm text-[var(--text-soft)]">
-                  {match.live?.shortDetail ?? match.live?.detail ?? t.meta.localTime}
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-left sm:text-right">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.updated}</p>
-                <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">
-                  {syncedAt ?? match.live?.displayClock ?? t.labels.live}
-                </p>
-              </div>
-            </div>
-          ) : null}
 
           <div className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
             <p className="text-center text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
@@ -162,14 +187,15 @@ export const MatchModal = () => {
                       {match.home.score} - {match.away.score}
                     </p>
                     <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                      {displayStatus === 'finished' ? t.labels.finished : liveMatchInfo ?? t.labels.live}
+                      {displayStatus === 'finished' ? t.labels.finished : t.labels.live}
                     </p>
+                    {displayStatus === 'live' && displayTime ? (
+                      <p className="text-sm font-semibold text-[var(--text-strong)]">{displayTime}</p>
+                    ) : null}
                   </>
                 ) : (
                   <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">VS</p>
                 )}
-                <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{t.meta.localTime}</p>
-                <p className="text-sm font-semibold text-[var(--text-strong)]">{localTime}</p>
               </div>
 
               <div className="min-w-0 p-2 text-center">
@@ -185,17 +211,19 @@ export const MatchModal = () => {
             </div>
           </div>
 
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.venue}</p>
-            <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{match.venue.stadium}</p>
-            <p className="mt-1 text-sm text-[var(--text)]">
-              {match.venue.city}, {match.venue.country}
-            </p>
-            {displayStatus === 'live' && match.live?.period ? (
-              <p className="mt-2 text-sm text-[var(--text-soft)]">
-                {match.live.shortDetail ?? match.live.detail ?? liveMatchInfo}
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.venue}</p>
+              <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{match.venue.stadium}</p>
+              <p className="mt-1 text-sm text-[var(--text)]">
+                {match.venue.city}, {match.venue.country}
               </p>
-            ) : null}
+            </div>
+
+            <div className="shrink-0 text-right">
+              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.localTime}</p>
+              <p className="mt-2 text-sm font-semibold text-[var(--text-strong)]">{venueClock} {venueUtcOffset}</p>
+            </div>
           </div>
         </div>
       </div>

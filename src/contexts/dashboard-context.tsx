@@ -5,6 +5,7 @@ import { useTournament } from './tournament-context'
 
 const FAVORITE_TEAMS_STORAGE_KEY = 'football-world-cup.favorite-teams'
 const MATCH_QUERY_PARAM = 'match'
+const MATCH_PATH_REGEX = /^\/match\/([^/]+)\/vs\/([^/]+)\/?$/i
 
 const readFavoriteTeamsFromStorage = () => {
   if (typeof window === 'undefined') {
@@ -33,6 +34,7 @@ const readFavoriteTeamsFromStorage = () => {
 interface DashboardContextValue {
   selectedMatchId: string | null
   setSelectedMatchId: (matchId: string | null) => void
+  getMatchSharePath: (matchId: string) => string
   favoriteTeamIds: string[]
   isFavoriteTeam: (teamId: string) => boolean
   toggleFavoriteTeam: (teamId: string) => void
@@ -47,11 +49,31 @@ const normalizeSlugPart = (value: string) => {
   return normalized || 'tbd'
 }
 
+const normalizeMatchCode = (value: string) => value.trim().toUpperCase()
+
+const getMatchPathKey = (pathname: string) => {
+  const match = pathname.match(MATCH_PATH_REGEX)
+
+  if (!match) {
+    return null
+  }
+
+  return `${normalizeMatchCode(decodeURIComponent(match[1]))}/vs/${normalizeMatchCode(decodeURIComponent(match[2]))}`
+}
+
 const getMatchIdFromSearch = (
+  pathname: string,
   search: string,
+  pathToMatchId: Record<string, string>,
   slugToMatchId: Record<string, string>,
   matchesById: Record<string, { id: string }>,
 ) => {
+  const pathKey = getMatchPathKey(pathname)
+
+  if (pathKey && pathToMatchId[pathKey]) {
+    return pathToMatchId[pathKey]
+  }
+
   const params = new URLSearchParams(search)
   const matchParam = params.get(MATCH_QUERY_PARAM)
 
@@ -76,9 +98,11 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const { matchesById, teamsById } = useTournament()
-  const { matchIdToSlug, slugToMatchId } = useMemo(() => {
+  const { matchIdToPath, pathToMatchId, slugToMatchId } = useMemo(() => {
     const idToSlug: Record<string, string> = {}
     const slugToId: Record<string, string> = {}
+    const idToPath: Record<string, string> = {}
+    const pathToId: Record<string, string> = {}
     const duplicateCounts = new Map<string, number>()
     const matches = Object.values(matchesById).sort((first, second) => {
       if (first.kickoff !== second.kickoff) {
@@ -95,14 +119,22 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       const count = (duplicateCounts.get(baseSlug) ?? 0) + 1
       duplicateCounts.set(baseSlug, count)
       const slug = count === 1 ? baseSlug : `${baseSlug}-${count}`
+      const homePathCode = homeCode ? normalizeMatchCode(homeCode) : 'TBD'
+      const awayPathCode = awayCode ? normalizeMatchCode(awayCode) : 'TBD'
+      const pathKey = `${homePathCode}/vs/${awayPathCode}`
 
       idToSlug[match.id] = slug
       slugToId[slug] = match.id
+      idToPath[match.id] = pathKey
+      if (!pathToId[pathKey]) {
+        pathToId[pathKey] = match.id
+      }
     }
 
     return {
-      matchIdToSlug: idToSlug,
       slugToMatchId: slugToId,
+      matchIdToPath: idToPath,
+      pathToMatchId: pathToId,
     }
   }, [matchesById, teamsById])
   const [selectedMatchId, setSelectedMatchIdState] = useState<string | null>(() => {
@@ -110,13 +142,22 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       return null
     }
 
-    return getMatchIdFromSearch(window.location.search, slugToMatchId, matchesById)
+    return getMatchIdFromSearch(window.location.pathname, window.location.search, pathToMatchId, slugToMatchId, matchesById)
   })
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<string[]>(readFavoriteTeamsFromStorage)
 
   const setSelectedMatchId = useCallback((matchId: string | null) => {
     setSelectedMatchIdState(matchId)
   }, [])
+
+  const getMatchSharePath = useCallback(
+    (matchId: string) => {
+      const matchPath = matchIdToPath[matchId]
+
+      return matchPath ? `/match/${matchPath}` : `/match`
+    },
+    [matchIdToPath],
+  )
 
   const isFavoriteTeam = useCallback((teamId: string) => favoriteTeamIds.includes(teamId), [favoriteTeamIds])
 
@@ -143,47 +184,52 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   }, [favoriteTeamIds])
 
   useEffect(() => {
-    const matchIdFromUrl = getMatchIdFromSearch(location.search, slugToMatchId, matchesById)
+    const matchIdFromUrl = getMatchIdFromSearch(location.pathname, location.search, pathToMatchId, slugToMatchId, matchesById)
 
     setSelectedMatchIdState((current) => (current === matchIdFromUrl ? current : matchIdFromUrl))
-  }, [location.search, matchesById, slugToMatchId])
+  }, [location.pathname, location.search, matchesById, pathToMatchId, slugToMatchId])
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const currentMatchParam = params.get(MATCH_QUERY_PARAM)
-    const nextMatchParam = selectedMatchId ? (matchIdToSlug[selectedMatchId] ?? selectedMatchId) : null
+    const currentMatchPath = getMatchPathKey(location.pathname)
+    const nextMatchPath = selectedMatchId ? (matchIdToPath[selectedMatchId] ?? null) : null
 
-    if (currentMatchParam === nextMatchParam) {
+    if (currentMatchPath === nextMatchPath) {
       return
     }
 
-    if (nextMatchParam) {
-      params.set(MATCH_QUERY_PARAM, nextMatchParam)
-    } else {
-      params.delete(MATCH_QUERY_PARAM)
+    if (nextMatchPath) {
+      navigate(
+        {
+          pathname: `/match/${nextMatchPath}`,
+          search: '',
+        },
+        { replace: false },
+      )
+      return
     }
 
-    const nextSearch = params.toString()
-
-    navigate(
-      {
-        pathname: location.pathname,
-        search: nextSearch ? `?${nextSearch}` : '',
-      },
-      { replace: false },
-    )
-  }, [location.pathname, location.search, matchIdToSlug, navigate, selectedMatchId])
+    if (currentMatchPath) {
+      navigate(
+        {
+          pathname: '/matches',
+          search: '',
+        },
+        { replace: false },
+      )
+    }
+  }, [location.pathname, matchIdToPath, navigate, selectedMatchId])
 
   const value = useMemo(
     () => ({
       selectedMatchId,
       setSelectedMatchId,
+      getMatchSharePath,
       favoriteTeamIds,
       isFavoriteTeam,
       toggleFavoriteTeam,
       clearFavoriteTeams,
     }),
-    [selectedMatchId, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
+    [selectedMatchId, getMatchSharePath, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
   )
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>

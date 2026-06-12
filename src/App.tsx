@@ -14,6 +14,8 @@ function App() {
         <Route path="/overview" element={<OverviewPage />} />
         <Route path="/groups" element={<GroupsPage />} />
         <Route path="/matches" element={<MatchesPage />} />
+        <Route path="/match" element={<MatchesPage />} />
+        <Route path="/match/:homeCode/vs/:awayCode" element={<MatchesPage />} />
         <Route path="/bracket" element={<BracketPage />} />
       </Route>
     </Routes>
