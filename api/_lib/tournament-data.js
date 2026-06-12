@@ -56,6 +56,7 @@ export const saveTournamentData = async (data) => {
       access: primaryAccess,
       contentType: 'application/json',
       addRandomSuffix: false,
+      allowOverwrite: true,
     })
   } catch (primaryError) {
     try {
@@ -63,6 +64,7 @@ export const saveTournamentData = async (data) => {
         access: fallbackAccess,
         contentType: 'application/json',
         addRandomSuffix: false,
+        allowOverwrite: true,
       })
     } catch {
       throw primaryError
