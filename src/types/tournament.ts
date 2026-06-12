@@ -1,7 +1,5 @@
 export type LocaleCode = 'en' | 'fr'
 
-export type LocalizedText = Record<LocaleCode, string>
-
 export type SectionKey = 'overview' | 'groups' | 'matches' | 'bracket'
 
 export interface TournamentMeta {
@@ -15,7 +13,7 @@ export interface TournamentMeta {
 export interface TeamRecord {
   id: string
   code: string
-  name: LocalizedText
+  name: string
   flagCode: string
 }
 
@@ -32,7 +30,7 @@ export interface StandingRecord {
 
 export interface GroupRecord {
   id: string
-  label: LocalizedText
+  label: string
   teamIds: string[]
   standings: StandingRecord[]
   matchIds: string[]
@@ -40,14 +38,14 @@ export interface GroupRecord {
 
 export interface ParticipantRef {
   teamId?: string
-  placeholder?: LocalizedText
+  placeholder?: string
   score?: number
 }
 
 export interface MatchVenue {
-  stadium: LocalizedText
-  city: LocalizedText
-  country: LocalizedText
+  stadium: string
+  city: string
+  country: string
   timeZone: string
 }
 
@@ -66,7 +64,7 @@ export interface MatchLiveRecord {
 
 export interface MatchRecord {
   id: string
-  stage: 'group' | 'roundOf16' | 'quarterFinal' | 'semiFinal' | 'final' | 'thirdPlace'
+  stage: 'group' | 'roundOf32' | 'roundOf16' | 'quarterFinal' | 'semiFinal' | 'final' | 'thirdPlace'
   groupId?: string
   roundId?: string
   home: ParticipantRef
@@ -79,7 +77,6 @@ export interface MatchRecord {
 
 export interface BracketRoundRecord {
   id: string
-  label: LocalizedText
   matchIds: string[]
 }
 

@@ -1,7 +1,7 @@
 import { useLocale } from '../../contexts/locale-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getLocalizedText } from '../../lib/format'
+import { formatMatchDate, formatPlaceholder } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 
@@ -22,11 +22,20 @@ const getRoundMetrics = (roundIndex: number) => {
 export const BracketBoard = ({
   rounds,
 }: {
-  rounds: { id: string; label: { en: string; fr: string }; matchIds: string[] }[]
+  rounds: { id: string; matchIds: string[] }[]
 }) => {
   const { locale, t } = useLocale()
   const { isFavoriteTeam } = useDashboard()
   const { matchesById, teamsById } = useTournament()
+
+  const getRoundLabel = (id: string): string => ({
+    roundOf32: t.labels.stageRoundOf32,
+    roundOf16: t.labels.stageRoundOf16,
+    quarterFinal: t.labels.stageQuarterFinal,
+    semiFinal: t.labels.stageSemiFinal,
+    thirdPlace: t.labels.stageThirdPlace,
+    final: t.labels.stageFinal,
+  }[id] ?? id)
 
   const thirdPlaceRound = rounds.find((round) => round.id === 'thirdPlace')
   const mainRounds = rounds.filter((round) => round.id !== 'thirdPlace')
@@ -47,7 +56,7 @@ export const BracketBoard = ({
               <div key={round.id} className="flex min-w-[230px] flex-1 basis-0 flex-col">
                 <div className="border-b border-[var(--border)] pb-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
-                    {getLocalizedText(round.label, locale)}
+                    {getRoundLabel(round.id)}
                   </p>
                 </div>
 
@@ -103,8 +112,8 @@ export const BracketBoard = ({
                                   <span className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
                                     <span className="truncate">
                                       {homeTeam
-                                        ? getLocalizedText(homeTeam.name, locale)
-                                        : getLocalizedText(match.home.placeholder!, locale)}
+                                      ? t.teams[homeTeam.id] ?? homeTeam.name
+                                        : formatPlaceholder(match.home.placeholder!, t)}
                                     </span>
                                     {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                   </span>
@@ -118,8 +127,8 @@ export const BracketBoard = ({
                                   <span className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
                                     <span className="truncate">
                                       {awayTeam
-                                        ? getLocalizedText(awayTeam.name, locale)
-                                        : getLocalizedText(match.away.placeholder!, locale)}
+                                      ? t.teams[awayTeam.id] ?? awayTeam.name
+                                        : formatPlaceholder(match.away.placeholder!, t)}
                                     </span>
                                     {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                   </span>
@@ -130,10 +139,10 @@ export const BracketBoard = ({
                                 {t.meta.localTime} · {localTime}
                               </div>
                               <div className="truncate text-xs text-[var(--text-soft)]">
-                                {getLocalizedText(match.venue.stadium, locale)}
+                                {match.venue.stadium}
                               </div>
                               <div className="truncate text-xs text-[var(--text-muted)]">
-                                {getLocalizedText(match.venue.city, locale)}, {getLocalizedText(match.venue.country, locale)}
+                                {match.venue.city}, {match.venue.country}
                               </div>
                             </div>
                           </div>
@@ -150,7 +159,7 @@ export const BracketBoard = ({
                 {isFinalRound && thirdPlaceRound && thirdPlaceRound.matchIds.length > 0 ? (
                   <div className="mt-auto pt-8">
                     <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
-                      {getLocalizedText(thirdPlaceRound.label, locale)}
+                      {getRoundLabel(thirdPlaceRound.id)}
                     </p>
                     <div className="space-y-px">
                       {thirdPlaceRound.matchIds.map((matchId) => {
@@ -178,8 +187,8 @@ export const BracketBoard = ({
                                 <span className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
                                   <span className="truncate">
                                     {homeTeam
-                                      ? getLocalizedText(homeTeam.name, locale)
-                                      : getLocalizedText(match.home.placeholder!, locale)}
+                                      ? t.teams[homeTeam.id] ?? homeTeam.name
+                                      : formatPlaceholder(match.home.placeholder!, t)}
                                   </span>
                                   {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                 </span>
@@ -193,8 +202,8 @@ export const BracketBoard = ({
                                 <span className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
                                   <span className="truncate">
                                     {awayTeam
-                                      ? getLocalizedText(awayTeam.name, locale)
-                                      : getLocalizedText(match.away.placeholder!, locale)}
+                                      ? t.teams[awayTeam.id] ?? awayTeam.name
+                                      : formatPlaceholder(match.away.placeholder!, t)}
                                   </span>
                                   {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                 </span>

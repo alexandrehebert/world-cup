@@ -3,7 +3,7 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { getDisplayMatchStatus, getMatchDisplayTime, getLocalizedText } from '../../lib/format'
+import { getDisplayMatchStatus, getMatchDisplayTime } from '../../lib/format'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
@@ -366,12 +366,12 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                       <div className="flex w-full items-center justify-center gap-2 font-semibold text-[var(--text-strong)] md:justify-between">
                         <span className="inline-flex min-w-0 items-center gap-1.5">
                           {homeTeam ? <FlagAvatar team={homeTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
-                          <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
+                          <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'TBD'}</span>
                           {homeIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}
                         </span>
                         <span>{scoreLabel(match)}</span>
                         <span className="inline-flex min-w-0 items-center gap-1.5">
-                          <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
+                          <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'TBD'}</span>
                           {awayIsFavorite ? <Icon name="star" className="text-[12px] text-[var(--accent-text)]" /> : null}
                           {awayTeam ? <FlagAvatar team={awayTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                         </span>

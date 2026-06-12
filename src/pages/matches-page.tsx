@@ -3,11 +3,10 @@ import { useDashboard } from '../contexts/dashboard-context'
 import { useLocale } from '../contexts/locale-context'
 import { useTournament } from '../contexts/tournament-context'
 import { MatchesList } from '../components/matches/matches-list'
-import { getLocalizedText } from '../lib/format'
 import { Icon } from '../lib/icons'
 
 export const MatchesPage = () => {
-  const { locale, t } = useLocale()
+  const { t } = useLocale()
   const { favoriteTeamIds } = useDashboard()
   const { upcomingMatches, teamsById } = useTournament()
   const [favoritesOnly, setFavoritesOnly] = useState(false)
@@ -33,8 +32,8 @@ export const MatchesPage = () => {
     return [...uniqueTeamIds]
       .map((teamId) => teamsById[teamId])
       .filter((team): team is NonNullable<typeof team> => Boolean(team))
-      .sort((first, second) => getLocalizedText(first.name, locale).localeCompare(getLocalizedText(second.name, locale)))
-  }, [locale, teamsById, upcomingMatches])
+      .sort((first, second) => (t.teams[first.id] ?? first.name).localeCompare(t.teams[second.id] ?? second.name))
+  }, [t, teamsById, upcomingMatches])
 
   const filteredMatches = useMemo(() => {
     let matches = upcomingMatches
@@ -74,10 +73,10 @@ export const MatchesPage = () => {
     }
 
     return countriesInUpcoming.filter((team) => {
-      const teamName = getLocalizedText(team.name, locale).toLowerCase()
+      const teamName = (t.teams[team.id] ?? team.name).toLowerCase()
       return teamName.includes(query) || team.code.toLowerCase().includes(query)
     })
-  }, [countriesInUpcoming, countryQuery, locale])
+  }, [countriesInUpcoming, countryQuery, t])
 
   const toggleTeamFilter = (teamId: string) => {
     setSelectedTeamIds((current) => {
@@ -146,10 +145,10 @@ export const MatchesPage = () => {
                       toggleTeamFilter(team.id)
                     }}
                     className="inline-flex items-center gap-1.5 border border-[var(--accent-border)] bg-[var(--accent-muted)] px-1.5 py-0.5 text-xs text-[var(--accent-text)]"
-                    title={getLocalizedText(team.name, locale)}
+                    title={t.teams[team.id] ?? team.name}
                   >
                     <span className={`fi fi-${team.flagCode} inline-block h-4 w-4 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
-                    <span>{getLocalizedText(team.name, locale)}</span>
+                    <span>{t.teams[team.id] ?? team.name}</span>
                     <Icon name="close" className="text-[14px] leading-none text-[var(--text-muted)]" />
                   </button>
                 ))}
@@ -225,7 +224,7 @@ export const MatchesPage = () => {
                         >
                           <span className="flex items-center gap-2">
                             <span className={`fi fi-${team.flagCode} inline-block h-6 w-6 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
-                            <span>{getLocalizedText(team.name, locale)}</span>
+                            <span>{t.teams[team.id] ?? team.name}</span>
                           </span>
                           <span className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">{team.code}</span>
                         </button>

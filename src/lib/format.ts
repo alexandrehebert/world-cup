@@ -1,7 +1,5 @@
-import type { LocaleCode, LocalizedText, MatchRecord } from '../types/tournament'
+import type { LocaleCode, MatchRecord } from '../types/tournament'
 import type { TranslationSet } from '../translations/types'
-
-export const getLocalizedText = (value: LocalizedText, locale: LocaleCode) => value[locale]
 
 const getTodayKey = (timeZone: string) =>
   new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date())
@@ -62,6 +60,26 @@ export const formatMatchStage = (match: MatchRecord) => {
     default:
       return 'group'
   }
+}
+
+export const formatPlaceholder = (key: string, t: TranslationSet): string => {
+  const [type, a, b] = key.split(':')
+
+  if (type === 'G1') return `${t.labels.bracketGroup1st} ${a}`
+  if (type === 'G2') return `${t.labels.bracketGroup2nd} ${a}`
+  if (type === 'G3') return `${t.labels.bracketGroup3rd} ${a.split('').join('·')}`
+
+  const roundName: Record<string, string> = {
+    roundOf32: t.labels.stageRoundOf32,
+    roundOf16: t.labels.stageRoundOf16,
+    quarterFinal: t.labels.stageQuarterFinal,
+    semiFinal: t.labels.stageSemiFinal,
+  }
+
+  if (type === 'W') return `${t.labels.bracketWinner} ${roundName[a] ?? a} ${b}`
+  if (type === 'L') return `${t.labels.bracketLoser} ${roundName[a] ?? a} ${b}`
+
+  return key
 }
 
 export const getDisplayMatchStatus = (match: MatchRecord, nowMs = Date.now()) => {

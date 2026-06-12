@@ -2,11 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { getLocalizedText } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 
 export const FavoriteTeamsPicker = () => {
-  const { locale, t } = useLocale()
+  const { t } = useLocale()
   const { teams } = useTournament()
   const { favoriteTeamIds, toggleFavoriteTeam, clearFavoriteTeams } = useDashboard()
   const [isOpen, setIsOpen] = useState(false)
@@ -17,9 +16,9 @@ export const FavoriteTeamsPicker = () => {
 
   const sortedTeams = useMemo(() => {
     return [...teams].sort((first, second) => {
-      return getLocalizedText(first.name, locale).localeCompare(getLocalizedText(second.name, locale))
+      return (t.teams[first.id] ?? first.name).localeCompare(t.teams[second.id] ?? second.name)
     })
-  }, [locale, teams])
+  }, [t, teams])
 
   const filteredTeams = useMemo(() => {
     const trimmedQuery = query.trim().toLowerCase()
@@ -29,10 +28,10 @@ export const FavoriteTeamsPicker = () => {
     }
 
     return sortedTeams.filter((team) => {
-      const teamName = getLocalizedText(team.name, locale).toLowerCase()
+      const teamName = (t.teams[team.id] ?? team.name).toLowerCase()
       return teamName.includes(trimmedQuery) || team.code.toLowerCase().includes(trimmedQuery)
     })
-  }, [locale, query, sortedTeams])
+  }, [t, query, sortedTeams])
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -97,7 +96,7 @@ export const FavoriteTeamsPicker = () => {
                   >
                     <span className="flex items-center gap-2">
                       <span className={`fi fi-${team.flagCode} inline-block h-6 w-6 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
-                      <span>{getLocalizedText(team.name, locale)}</span>
+                      <span>{t.teams[team.id] ?? team.name}</span>
                     </span>
                     <span className="inline-flex items-center gap-1 text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">
                       <span>{team.code}</span>

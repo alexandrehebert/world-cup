@@ -1,12 +1,11 @@
 import { useLocale } from '../../contexts/locale-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { getLocalizedText } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 
 export const GroupCard = ({ groupId }: { groupId: string }) => {
-  const { locale, t } = useLocale()
+  const { t } = useLocale()
   const { isFavoriteTeam, favoriteTeamIds } = useDashboard()
   const { groupsById, teamsById } = useTournament()
   const group = groupsById[groupId]
@@ -15,7 +14,7 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
   return (
     <div className="bg-[var(--surface)]">
       <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] px-5 py-4">
-        <h3 className="text-lg font-bold text-[var(--text-strong)]">{getLocalizedText(group.label, locale)}</h3>
+        <h3 className="text-lg font-bold text-[var(--text-strong)]">{t.groups[group.id] ?? group.label}</h3>
         <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-text)]">
           {group.id}
         </div>
@@ -55,7 +54,7 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
                   <FlagAvatar team={team} className="h-8 w-8 sm:h-12 sm:w-12" />
                   <div>
                     <p className="inline-flex items-center gap-1.5 font-semibold text-[var(--text-strong)]">
-                      <span>{getLocalizedText(team.name, locale)}</span>
+                      <span>{t.teams[team.id] ?? team.name}</span>
                       {isFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                     </p>
                     <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{team.code}</p>

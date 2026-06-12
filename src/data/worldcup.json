@@ -10,443 +10,296 @@
     {
       "id": "mex",
       "code": "MEX",
-      "name": {
-        "en": "Mexico",
-        "fr": "Mexique"
-      },
+      "name": "Mexico",
       "flagCode": "mx"
     },
     {
       "id": "zaf",
       "code": "RSA",
-      "name": {
-        "en": "South Africa",
-        "fr": "Afrique du Sud"
-      },
+      "name": "South Africa",
       "flagCode": "za"
     },
     {
       "id": "kor",
       "code": "KOR",
-      "name": {
-        "en": "South Korea",
-        "fr": "Coree du Sud"
-      },
+      "name": "South Korea",
       "flagCode": "kr"
     },
     {
       "id": "cze",
       "code": "CZE",
-      "name": {
-        "en": "Czech Republic",
-        "fr": "Republique tcheque"
-      },
+      "name": "Czech Republic",
       "flagCode": "cz"
     },
     {
       "id": "can",
       "code": "CAN",
-      "name": {
-        "en": "Canada",
-        "fr": "Canada"
-      },
+      "name": "Canada",
       "flagCode": "ca"
     },
     {
       "id": "bih",
       "code": "BIH",
-      "name": {
-        "en": "Bosnia and Herzegovina",
-        "fr": "Bosnie-Herzegovine"
-      },
+      "name": "Bosnia and Herzegovina",
       "flagCode": "ba"
     },
     {
       "id": "qat",
       "code": "QAT",
-      "name": {
-        "en": "Qatar",
-        "fr": "Qatar"
-      },
+      "name": "Qatar",
       "flagCode": "qa"
     },
     {
       "id": "sui",
       "code": "SUI",
-      "name": {
-        "en": "Switzerland",
-        "fr": "Suisse"
-      },
+      "name": "Switzerland",
       "flagCode": "ch"
     },
     {
       "id": "bra",
       "code": "BRA",
-      "name": {
-        "en": "Brazil",
-        "fr": "Bresil"
-      },
+      "name": "Brazil",
       "flagCode": "br"
     },
     {
       "id": "mar",
       "code": "MAR",
-      "name": {
-        "en": "Morocco",
-        "fr": "Maroc"
-      },
+      "name": "Morocco",
       "flagCode": "ma"
     },
     {
       "id": "hti",
       "code": "HAI",
-      "name": {
-        "en": "Haiti",
-        "fr": "Haiti"
-      },
+      "name": "Haiti",
       "flagCode": "ht"
     },
     {
       "id": "sco",
       "code": "SCO",
-      "name": {
-        "en": "Scotland",
-        "fr": "Ecosse"
-      },
+      "name": "Scotland",
       "flagCode": "gb-sct"
     },
     {
       "id": "usa",
       "code": "USA",
-      "name": {
-        "en": "United States",
-        "fr": "Etats-Unis"
-      },
+      "name": "United States",
       "flagCode": "us"
     },
     {
       "id": "par",
       "code": "PAR",
-      "name": {
-        "en": "Paraguay",
-        "fr": "Paraguay"
-      },
+      "name": "Paraguay",
       "flagCode": "py"
     },
     {
       "id": "aus",
       "code": "AUS",
-      "name": {
-        "en": "Australia",
-        "fr": "Australie"
-      },
+      "name": "Australia",
       "flagCode": "au"
     },
     {
       "id": "tur",
       "code": "TUR",
-      "name": {
-        "en": "Turkey",
-        "fr": "Turquie"
-      },
+      "name": "Turkey",
       "flagCode": "tr"
     },
     {
       "id": "ger",
       "code": "GER",
-      "name": {
-        "en": "Germany",
-        "fr": "Allemagne"
-      },
+      "name": "Germany",
       "flagCode": "de"
     },
     {
       "id": "cuw",
       "code": "CUW",
-      "name": {
-        "en": "Curacao",
-        "fr": "Curacao"
-      },
+      "name": "Curacao",
       "flagCode": "cw"
     },
     {
       "id": "civ",
       "code": "CIV",
-      "name": {
-        "en": "Ivory Coast",
-        "fr": "Cote d'Ivoire"
-      },
+      "name": "Ivory Coast",
       "flagCode": "ci"
     },
     {
       "id": "ecu",
       "code": "ECU",
-      "name": {
-        "en": "Ecuador",
-        "fr": "Equateur"
-      },
+      "name": "Ecuador",
       "flagCode": "ec"
     },
     {
       "id": "ned",
       "code": "NED",
-      "name": {
-        "en": "Netherlands",
-        "fr": "Pays-Bas"
-      },
+      "name": "Netherlands",
       "flagCode": "nl"
     },
     {
       "id": "jpn",
       "code": "JPN",
-      "name": {
-        "en": "Japan",
-        "fr": "Japon"
-      },
+      "name": "Japan",
       "flagCode": "jp"
     },
     {
       "id": "swe",
       "code": "SWE",
-      "name": {
-        "en": "Sweden",
-        "fr": "Suede"
-      },
+      "name": "Sweden",
       "flagCode": "se"
     },
     {
       "id": "tun",
       "code": "TUN",
-      "name": {
-        "en": "Tunisia",
-        "fr": "Tunisie"
-      },
+      "name": "Tunisia",
       "flagCode": "tn"
     },
     {
       "id": "bel",
       "code": "BEL",
-      "name": {
-        "en": "Belgium",
-        "fr": "Belgique"
-      },
+      "name": "Belgium",
       "flagCode": "be"
     },
     {
       "id": "egy",
       "code": "EGY",
-      "name": {
-        "en": "Egypt",
-        "fr": "Egypte"
-      },
+      "name": "Egypt",
       "flagCode": "eg"
     },
     {
       "id": "irn",
       "code": "IRN",
-      "name": {
-        "en": "Iran",
-        "fr": "Iran"
-      },
+      "name": "Iran",
       "flagCode": "ir"
     },
     {
       "id": "nzl",
       "code": "NZL",
-      "name": {
-        "en": "New Zealand",
-        "fr": "Nouvelle-Zelande"
-      },
+      "name": "New Zealand",
       "flagCode": "nz"
     },
     {
       "id": "esp",
       "code": "ESP",
-      "name": {
-        "en": "Spain",
-        "fr": "Espagne"
-      },
+      "name": "Spain",
       "flagCode": "es"
     },
     {
       "id": "cpv",
       "code": "CPV",
-      "name": {
-        "en": "Cape Verde",
-        "fr": "Cap-Vert"
-      },
+      "name": "Cape Verde",
       "flagCode": "cv"
     },
     {
       "id": "sau",
       "code": "KSA",
-      "name": {
-        "en": "Saudi Arabia",
-        "fr": "Arabie saoudite"
-      },
+      "name": "Saudi Arabia",
       "flagCode": "sa"
     },
     {
       "id": "uru",
       "code": "URU",
-      "name": {
-        "en": "Uruguay",
-        "fr": "Uruguay"
-      },
+      "name": "Uruguay",
       "flagCode": "uy"
     },
     {
       "id": "fra",
       "code": "FRA",
-      "name": {
-        "en": "France",
-        "fr": "France"
-      },
+      "name": "France",
       "flagCode": "fr"
     },
     {
       "id": "sen",
       "code": "SEN",
-      "name": {
-        "en": "Senegal",
-        "fr": "Senegal"
-      },
+      "name": "Senegal",
       "flagCode": "sn"
     },
     {
       "id": "irq",
       "code": "IRQ",
-      "name": {
-        "en": "Iraq",
-        "fr": "Irak"
-      },
+      "name": "Iraq",
       "flagCode": "iq"
     },
     {
       "id": "nor",
       "code": "NOR",
-      "name": {
-        "en": "Norway",
-        "fr": "Norvege"
-      },
+      "name": "Norway",
       "flagCode": "no"
     },
     {
       "id": "arg",
       "code": "ARG",
-      "name": {
-        "en": "Argentina",
-        "fr": "Argentine"
-      },
+      "name": "Argentina",
       "flagCode": "ar"
     },
     {
       "id": "dza",
       "code": "ALG",
-      "name": {
-        "en": "Algeria",
-        "fr": "Algerie"
-      },
+      "name": "Algeria",
       "flagCode": "dz"
     },
     {
       "id": "aut",
       "code": "AUT",
-      "name": {
-        "en": "Austria",
-        "fr": "Autriche"
-      },
+      "name": "Austria",
       "flagCode": "at"
     },
     {
       "id": "jor",
       "code": "JOR",
-      "name": {
-        "en": "Jordan",
-        "fr": "Jordanie"
-      },
+      "name": "Jordan",
       "flagCode": "jo"
     },
     {
       "id": "por",
       "code": "POR",
-      "name": {
-        "en": "Portugal",
-        "fr": "Portugal"
-      },
+      "name": "Portugal",
       "flagCode": "pt"
     },
     {
       "id": "cod",
       "code": "COD",
-      "name": {
-        "en": "DR Congo",
-        "fr": "RD Congo"
-      },
+      "name": "DR Congo",
       "flagCode": "cd"
     },
     {
       "id": "uzb",
       "code": "UZB",
-      "name": {
-        "en": "Uzbekistan",
-        "fr": "Ouzbekistan"
-      },
+      "name": "Uzbekistan",
       "flagCode": "uz"
     },
     {
       "id": "col",
       "code": "COL",
-      "name": {
-        "en": "Colombia",
-        "fr": "Colombie"
-      },
+      "name": "Colombia",
       "flagCode": "co"
     },
     {
       "id": "eng",
       "code": "ENG",
-      "name": {
-        "en": "England",
-        "fr": "Angleterre"
-      },
+      "name": "England",
       "flagCode": "gb-eng"
     },
     {
       "id": "cro",
       "code": "CRO",
-      "name": {
-        "en": "Croatia",
-        "fr": "Croatie"
-      },
+      "name": "Croatia",
       "flagCode": "hr"
     },
     {
       "id": "gha",
       "code": "GHA",
-      "name": {
-        "en": "Ghana",
-        "fr": "Ghana"
-      },
+      "name": "Ghana",
       "flagCode": "gh"
     },
     {
       "id": "pan",
       "code": "PAN",
-      "name": {
-        "en": "Panama",
-        "fr": "Panama"
-      },
+      "name": "Panama",
       "flagCode": "pa"
     }
   ],
   "groups": [
     {
       "id": "A",
-      "label": {
-        "en": "Group A",
-        "fr": "Groupe A"
-      },
+      "label": "Group A",
       "teamIds": [
         "mex",
         "zaf",
@@ -506,10 +359,7 @@
     },
     {
       "id": "B",
-      "label": {
-        "en": "Group B",
-        "fr": "Groupe B"
-      },
+      "label": "Group B",
       "teamIds": [
         "can",
         "bih",
@@ -569,10 +419,7 @@
     },
     {
       "id": "C",
-      "label": {
-        "en": "Group C",
-        "fr": "Groupe C"
-      },
+      "label": "Group C",
       "teamIds": [
         "bra",
         "mar",
@@ -632,10 +479,7 @@
     },
     {
       "id": "D",
-      "label": {
-        "en": "Group D",
-        "fr": "Groupe D"
-      },
+      "label": "Group D",
       "teamIds": [
         "usa",
         "par",
@@ -695,10 +539,7 @@
     },
     {
       "id": "E",
-      "label": {
-        "en": "Group E",
-        "fr": "Groupe E"
-      },
+      "label": "Group E",
       "teamIds": [
         "ger",
         "cuw",
@@ -758,10 +599,7 @@
     },
     {
       "id": "F",
-      "label": {
-        "en": "Group F",
-        "fr": "Groupe F"
-      },
+      "label": "Group F",
       "teamIds": [
         "ned",
         "jpn",
@@ -821,10 +659,7 @@
     },
     {
       "id": "G",
-      "label": {
-        "en": "Group G",
-        "fr": "Groupe G"
-      },
+      "label": "Group G",
       "teamIds": [
         "bel",
         "egy",
@@ -884,10 +719,7 @@
     },
     {
       "id": "H",
-      "label": {
-        "en": "Group H",
-        "fr": "Groupe H"
-      },
+      "label": "Group H",
       "teamIds": [
         "esp",
         "cpv",
@@ -947,10 +779,7 @@
     },
     {
       "id": "I",
-      "label": {
-        "en": "Group I",
-        "fr": "Groupe I"
-      },
+      "label": "Group I",
       "teamIds": [
         "fra",
         "sen",
@@ -1010,10 +839,7 @@
     },
     {
       "id": "J",
-      "label": {
-        "en": "Group J",
-        "fr": "Groupe J"
-      },
+      "label": "Group J",
       "teamIds": [
         "arg",
         "dza",
@@ -1073,10 +899,7 @@
     },
     {
       "id": "K",
-      "label": {
-        "en": "Group K",
-        "fr": "Groupe K"
-      },
+      "label": "Group K",
       "teamIds": [
         "por",
         "cod",
@@ -1136,10 +959,7 @@
     },
     {
       "id": "L",
-      "label": {
-        "en": "Group L",
-        "fr": "Groupe L"
-      },
+      "label": "Group L",
       "teamIds": [
         "eng",
         "cro",
@@ -1213,18 +1033,9 @@
       },
       "kickoff": "2026-06-11T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Mexico City Stadium",
-          "fr": "Mexico City Stadium"
-        },
-        "city": {
-          "en": "Mexico City",
-          "fr": "Mexico City"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Mexico City Stadium",
+        "city": "Mexico City",
+        "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
       "status": "finished"
@@ -1243,18 +1054,9 @@
       },
       "kickoff": "2026-06-12T02:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Zapopan Stadium",
-          "fr": "Zapopan Stadium"
-        },
-        "city": {
-          "en": "Zapopan",
-          "fr": "Zapopan"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Zapopan Stadium",
+        "city": "Zapopan",
+        "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
       "status": "scheduled"
@@ -1271,18 +1073,9 @@
       },
       "kickoff": "2026-06-12T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Toronto Stadium",
-          "fr": "Toronto Stadium"
-        },
-        "city": {
-          "en": "Toronto",
-          "fr": "Toronto"
-        },
-        "country": {
-          "en": "Canada",
-          "fr": "Canada"
-        },
+        "stadium": "Toronto Stadium",
+        "city": "Toronto",
+        "country": "Canada",
         "timeZone": "America/Toronto"
       },
       "status": "scheduled"
@@ -1299,18 +1092,9 @@
       },
       "kickoff": "2026-06-13T01:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Inglewood Stadium",
-          "fr": "Inglewood Stadium"
-        },
-        "city": {
-          "en": "Inglewood",
-          "fr": "Inglewood"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -1327,18 +1111,9 @@
       },
       "kickoff": "2026-06-14T01:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Foxborough Stadium",
-          "fr": "Foxborough Stadium"
-        },
-        "city": {
-          "en": "Foxborough",
-          "fr": "Foxborough"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Foxborough Stadium",
+        "city": "Foxborough",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -1355,18 +1130,9 @@
       },
       "kickoff": "2026-06-14T04:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Inglewood Stadium",
-          "fr": "Inglewood Stadium"
-        },
-        "city": {
-          "en": "Inglewood",
-          "fr": "Inglewood"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -1383,18 +1149,9 @@
       },
       "kickoff": "2026-06-13T22:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "East Rutherford Stadium",
-          "fr": "East Rutherford Stadium"
-        },
-        "city": {
-          "en": "East Rutherford",
-          "fr": "East Rutherford"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "East Rutherford Stadium",
+        "city": "East Rutherford",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -1411,18 +1168,9 @@
       },
       "kickoff": "2026-06-13T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Santa Clara Stadium",
-          "fr": "Santa Clara Stadium"
-        },
-        "city": {
-          "en": "Santa Clara",
-          "fr": "Santa Clara"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Santa Clara Stadium",
+        "city": "Santa Clara",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -1439,18 +1187,9 @@
       },
       "kickoff": "2026-06-14T23:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Houston Stadium",
-          "fr": "Houston Stadium"
-        },
-        "city": {
-          "en": "Houston",
-          "fr": "Houston"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Houston Stadium",
+        "city": "Houston",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -1467,18 +1206,9 @@
       },
       "kickoff": "2026-06-14T17:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Dallas Stadium",
-          "fr": "Dallas Stadium"
-        },
-        "city": {
-          "en": "Dallas",
-          "fr": "Dallas"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Dallas Stadium",
+        "city": "Dallas",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -1495,18 +1225,9 @@
       },
       "kickoff": "2026-06-14T20:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Arlington Stadium",
-          "fr": "Arlington Stadium"
-        },
-        "city": {
-          "en": "Arlington",
-          "fr": "Arlington"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -1523,18 +1244,9 @@
       },
       "kickoff": "2026-06-15T02:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Arlington Stadium",
-          "fr": "Arlington Stadium"
-        },
-        "city": {
-          "en": "Arlington",
-          "fr": "Arlington"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -1551,18 +1263,9 @@
       },
       "kickoff": "2026-06-15T22:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Atlanta Stadium",
-          "fr": "Atlanta Stadium"
-        },
-        "city": {
-          "en": "Atlanta",
-          "fr": "Atlanta"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Atlanta Stadium",
+        "city": "Atlanta",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -1579,18 +1282,9 @@
       },
       "kickoff": "2026-06-15T16:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Miami Gardens Stadium",
-          "fr": "Miami Gardens Stadium"
-        },
-        "city": {
-          "en": "Miami Gardens",
-          "fr": "Miami Gardens"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Miami Gardens Stadium",
+        "city": "Miami Gardens",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -1607,18 +1301,9 @@
       },
       "kickoff": "2026-06-16T01:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Seattle Stadium",
-          "fr": "Seattle Stadium"
-        },
-        "city": {
-          "en": "Seattle",
-          "fr": "Seattle"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Seattle Stadium",
+        "city": "Seattle",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -1635,18 +1320,9 @@
       },
       "kickoff": "2026-06-15T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Seattle Stadium",
-          "fr": "Seattle Stadium"
-        },
-        "city": {
-          "en": "Seattle",
-          "fr": "Seattle"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Seattle Stadium",
+        "city": "Seattle",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -1663,18 +1339,9 @@
       },
       "kickoff": "2026-06-16T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "East Rutherford Stadium",
-          "fr": "East Rutherford Stadium"
-        },
-        "city": {
-          "en": "East Rutherford",
-          "fr": "East Rutherford"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "East Rutherford Stadium",
+        "city": "East Rutherford",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -1691,18 +1358,9 @@
       },
       "kickoff": "2026-06-16T22:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "East Rutherford Stadium",
-          "fr": "East Rutherford Stadium"
-        },
-        "city": {
-          "en": "East Rutherford",
-          "fr": "East Rutherford"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "East Rutherford Stadium",
+        "city": "East Rutherford",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -1719,18 +1377,9 @@
       },
       "kickoff": "2026-06-17T01:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Kansas City Stadium",
-          "fr": "Kansas City Stadium"
-        },
-        "city": {
-          "en": "Kansas City",
-          "fr": "Kansas City"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Kansas City Stadium",
+        "city": "Kansas City",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -1747,18 +1396,9 @@
       },
       "kickoff": "2026-06-17T04:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Santa Clara Stadium",
-          "fr": "Santa Clara Stadium"
-        },
-        "city": {
-          "en": "Santa Clara",
-          "fr": "Santa Clara"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Santa Clara Stadium",
+        "city": "Santa Clara",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -1775,18 +1415,9 @@
       },
       "kickoff": "2026-06-17T23:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Arlington Stadium",
-          "fr": "Arlington Stadium"
-        },
-        "city": {
-          "en": "Arlington",
-          "fr": "Arlington"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -1803,18 +1434,9 @@
       },
       "kickoff": "2026-06-17T20:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Arlington Stadium",
-          "fr": "Arlington Stadium"
-        },
-        "city": {
-          "en": "Arlington",
-          "fr": "Arlington"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -1831,18 +1453,9 @@
       },
       "kickoff": "2026-06-17T17:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Houston Stadium",
-          "fr": "Houston Stadium"
-        },
-        "city": {
-          "en": "Houston",
-          "fr": "Houston"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Houston Stadium",
+        "city": "Houston",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -1859,18 +1472,9 @@
       },
       "kickoff": "2026-06-18T02:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Houston Stadium",
-          "fr": "Houston Stadium"
-        },
-        "city": {
-          "en": "Houston",
-          "fr": "Houston"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Houston Stadium",
+        "city": "Houston",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -1887,18 +1491,9 @@
       },
       "kickoff": "2026-06-18T16:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Atlanta Stadium",
-          "fr": "Atlanta Stadium"
-        },
-        "city": {
-          "en": "Atlanta",
-          "fr": "Atlanta"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Atlanta Stadium",
+        "city": "Atlanta",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -1915,18 +1510,9 @@
       },
       "kickoff": "2026-06-18T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Inglewood Stadium",
-          "fr": "Inglewood Stadium"
-        },
-        "city": {
-          "en": "Inglewood",
-          "fr": "Inglewood"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -1943,18 +1529,9 @@
       },
       "kickoff": "2026-06-18T22:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Inglewood Stadium",
-          "fr": "Inglewood Stadium"
-        },
-        "city": {
-          "en": "Inglewood",
-          "fr": "Inglewood"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -1971,18 +1548,9 @@
       },
       "kickoff": "2026-06-19T01:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Zapopan Stadium",
-          "fr": "Zapopan Stadium"
-        },
-        "city": {
-          "en": "Zapopan",
-          "fr": "Zapopan"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Zapopan Stadium",
+        "city": "Zapopan",
+        "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
       "status": "scheduled"
@@ -1999,18 +1567,9 @@
       },
       "kickoff": "2026-06-20T00:30:00Z",
       "venue": {
-        "stadium": {
-          "en": "Foxborough Stadium",
-          "fr": "Foxborough Stadium"
-        },
-        "city": {
-          "en": "Foxborough",
-          "fr": "Foxborough"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Foxborough Stadium",
+        "city": "Foxborough",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2027,18 +1586,9 @@
       },
       "kickoff": "2026-06-19T22:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Foxborough Stadium",
-          "fr": "Foxborough Stadium"
-        },
-        "city": {
-          "en": "Foxborough",
-          "fr": "Foxborough"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Foxborough Stadium",
+        "city": "Foxborough",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2055,18 +1605,9 @@
       },
       "kickoff": "2026-06-20T03:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Seattle Stadium",
-          "fr": "Seattle Stadium"
-        },
-        "city": {
-          "en": "Seattle",
-          "fr": "Seattle"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Seattle Stadium",
+        "city": "Seattle",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -2083,18 +1624,9 @@
       },
       "kickoff": "2026-06-19T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Vancouver Stadium",
-          "fr": "Vancouver Stadium"
-        },
-        "city": {
-          "en": "Vancouver",
-          "fr": "Vancouver"
-        },
-        "country": {
-          "en": "Canada",
-          "fr": "Canada"
-        },
+        "stadium": "Vancouver Stadium",
+        "city": "Vancouver",
+        "country": "Canada",
         "timeZone": "America/Vancouver"
       },
       "status": "scheduled"
@@ -2111,18 +1643,9 @@
       },
       "kickoff": "2026-06-20T20:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Philadelphia Stadium",
-          "fr": "Philadelphia Stadium"
-        },
-        "city": {
-          "en": "Philadelphia",
-          "fr": "Philadelphia"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Philadelphia Stadium",
+        "city": "Philadelphia",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2139,18 +1662,9 @@
       },
       "kickoff": "2026-06-21T00:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Toronto Stadium",
-          "fr": "Toronto Stadium"
-        },
-        "city": {
-          "en": "Toronto",
-          "fr": "Toronto"
-        },
-        "country": {
-          "en": "Canada",
-          "fr": "Canada"
-        },
+        "stadium": "Toronto Stadium",
+        "city": "Toronto",
+        "country": "Canada",
         "timeZone": "America/Toronto"
       },
       "status": "scheduled"
@@ -2167,18 +1681,9 @@
       },
       "kickoff": "2026-06-20T17:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Guadalupe Stadium",
-          "fr": "Guadalupe Stadium"
-        },
-        "city": {
-          "en": "Guadalupe",
-          "fr": "Guadalupe"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Guadalupe Stadium",
+        "city": "Guadalupe",
+        "country": "Mexico",
         "timeZone": "America/Monterrey"
       },
       "status": "scheduled"
@@ -2195,18 +1700,9 @@
       },
       "kickoff": "2026-06-21T04:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Houston Stadium",
-          "fr": "Houston Stadium"
-        },
-        "city": {
-          "en": "Houston",
-          "fr": "Houston"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Houston Stadium",
+        "city": "Houston",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -2223,18 +1719,9 @@
       },
       "kickoff": "2026-06-21T22:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Atlanta Stadium",
-          "fr": "Atlanta Stadium"
-        },
-        "city": {
-          "en": "Atlanta",
-          "fr": "Atlanta"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Atlanta Stadium",
+        "city": "Atlanta",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2251,18 +1738,9 @@
       },
       "kickoff": "2026-06-21T16:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Miami Gardens Stadium",
-          "fr": "Miami Gardens Stadium"
-        },
-        "city": {
-          "en": "Miami Gardens",
-          "fr": "Miami Gardens"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Miami Gardens Stadium",
+        "city": "Miami Gardens",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2279,18 +1757,9 @@
       },
       "kickoff": "2026-06-21T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Inglewood Stadium",
-          "fr": "Inglewood Stadium"
-        },
-        "city": {
-          "en": "Inglewood",
-          "fr": "Inglewood"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -2307,18 +1776,9 @@
       },
       "kickoff": "2026-06-22T01:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Inglewood Stadium",
-          "fr": "Inglewood Stadium"
-        },
-        "city": {
-          "en": "Inglewood",
-          "fr": "Inglewood"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -2335,18 +1795,9 @@
       },
       "kickoff": "2026-06-23T00:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Philadelphia Stadium",
-          "fr": "Philadelphia Stadium"
-        },
-        "city": {
-          "en": "Philadelphia",
-          "fr": "Philadelphia"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Philadelphia Stadium",
+        "city": "Philadelphia",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2363,18 +1814,9 @@
       },
       "kickoff": "2026-06-22T21:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Foxborough Stadium",
-          "fr": "Foxborough Stadium"
-        },
-        "city": {
-          "en": "Foxborough",
-          "fr": "Foxborough"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Foxborough Stadium",
+        "city": "Foxborough",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2391,18 +1833,9 @@
       },
       "kickoff": "2026-06-22T17:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Santa Clara Stadium",
-          "fr": "Santa Clara Stadium"
-        },
-        "city": {
-          "en": "Santa Clara",
-          "fr": "Santa Clara"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Santa Clara Stadium",
+        "city": "Santa Clara",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -2419,18 +1852,9 @@
       },
       "kickoff": "2026-06-23T03:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Arlington Stadium",
-          "fr": "Arlington Stadium"
-        },
-        "city": {
-          "en": "Arlington",
-          "fr": "Arlington"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -2447,18 +1871,9 @@
       },
       "kickoff": "2026-06-23T20:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Toronto Stadium",
-          "fr": "Toronto Stadium"
-        },
-        "city": {
-          "en": "Toronto",
-          "fr": "Toronto"
-        },
-        "country": {
-          "en": "Canada",
-          "fr": "Canada"
-        },
+        "stadium": "Toronto Stadium",
+        "city": "Toronto",
+        "country": "Canada",
         "timeZone": "America/Toronto"
       },
       "status": "scheduled"
@@ -2475,18 +1890,9 @@
       },
       "kickoff": "2026-06-23T23:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Foxborough Stadium",
-          "fr": "Foxborough Stadium"
-        },
-        "city": {
-          "en": "Foxborough",
-          "fr": "Foxborough"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Foxborough Stadium",
+        "city": "Foxborough",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2503,18 +1909,9 @@
       },
       "kickoff": "2026-06-23T17:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Mexico City Stadium",
-          "fr": "Mexico City Stadium"
-        },
-        "city": {
-          "en": "Mexico City",
-          "fr": "Mexico City"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Mexico City Stadium",
+        "city": "Mexico City",
+        "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
       "status": "scheduled"
@@ -2531,18 +1928,9 @@
       },
       "kickoff": "2026-06-24T02:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Houston Stadium",
-          "fr": "Houston Stadium"
-        },
-        "city": {
-          "en": "Houston",
-          "fr": "Houston"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Houston Stadium",
+        "city": "Houston",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -2559,18 +1947,9 @@
       },
       "kickoff": "2026-06-24T22:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Philadelphia Stadium",
-          "fr": "Philadelphia Stadium"
-        },
-        "city": {
-          "en": "Philadelphia",
-          "fr": "Philadelphia"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Philadelphia Stadium",
+        "city": "Philadelphia",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2587,18 +1966,9 @@
       },
       "kickoff": "2026-06-24T22:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Miami Gardens Stadium",
-          "fr": "Miami Gardens Stadium"
-        },
-        "city": {
-          "en": "Miami Gardens",
-          "fr": "Miami Gardens"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Miami Gardens Stadium",
+        "city": "Miami Gardens",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2615,18 +1985,9 @@
       },
       "kickoff": "2026-06-24T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Vancouver Stadium",
-          "fr": "Vancouver Stadium"
-        },
-        "city": {
-          "en": "Vancouver",
-          "fr": "Vancouver"
-        },
-        "country": {
-          "en": "Canada",
-          "fr": "Canada"
-        },
+        "stadium": "Vancouver Stadium",
+        "city": "Vancouver",
+        "country": "Canada",
         "timeZone": "America/Vancouver"
       },
       "status": "scheduled"
@@ -2643,18 +2004,9 @@
       },
       "kickoff": "2026-06-24T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Vancouver Stadium",
-          "fr": "Vancouver Stadium"
-        },
-        "city": {
-          "en": "Vancouver",
-          "fr": "Vancouver"
-        },
-        "country": {
-          "en": "Canada",
-          "fr": "Canada"
-        },
+        "stadium": "Vancouver Stadium",
+        "city": "Vancouver",
+        "country": "Canada",
         "timeZone": "America/Vancouver"
       },
       "status": "scheduled"
@@ -2671,18 +2023,9 @@
       },
       "kickoff": "2026-06-25T01:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Zapopan Stadium",
-          "fr": "Zapopan Stadium"
-        },
-        "city": {
-          "en": "Zapopan",
-          "fr": "Zapopan"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Zapopan Stadium",
+        "city": "Zapopan",
+        "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
       "status": "scheduled"
@@ -2699,18 +2042,9 @@
       },
       "kickoff": "2026-06-25T01:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Mexico City Stadium",
-          "fr": "Mexico City Stadium"
-        },
-        "city": {
-          "en": "Mexico City",
-          "fr": "Mexico City"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Mexico City Stadium",
+        "city": "Mexico City",
+        "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
       "status": "scheduled"
@@ -2727,18 +2061,9 @@
       },
       "kickoff": "2026-06-25T20:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Kansas City Stadium",
-          "fr": "Kansas City Stadium"
-        },
-        "city": {
-          "en": "Kansas City",
-          "fr": "Kansas City"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Kansas City Stadium",
+        "city": "Kansas City",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -2755,18 +2080,9 @@
       },
       "kickoff": "2026-06-25T20:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Philadelphia Stadium",
-          "fr": "Philadelphia Stadium"
-        },
-        "city": {
-          "en": "Philadelphia",
-          "fr": "Philadelphia"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Philadelphia Stadium",
+        "city": "Philadelphia",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2783,18 +2099,9 @@
       },
       "kickoff": "2026-06-25T23:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Guadalupe Stadium",
-          "fr": "Guadalupe Stadium"
-        },
-        "city": {
-          "en": "Guadalupe",
-          "fr": "Guadalupe"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Guadalupe Stadium",
+        "city": "Guadalupe",
+        "country": "Mexico",
         "timeZone": "America/Monterrey"
       },
       "status": "scheduled"
@@ -2811,18 +2118,9 @@
       },
       "kickoff": "2026-06-25T23:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Arlington Stadium",
-          "fr": "Arlington Stadium"
-        },
-        "city": {
-          "en": "Arlington",
-          "fr": "Arlington"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -2839,18 +2137,9 @@
       },
       "kickoff": "2026-06-26T02:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Santa Clara Stadium",
-          "fr": "Santa Clara Stadium"
-        },
-        "city": {
-          "en": "Santa Clara",
-          "fr": "Santa Clara"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Santa Clara Stadium",
+        "city": "Santa Clara",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -2867,18 +2156,9 @@
       },
       "kickoff": "2026-06-26T02:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Inglewood Stadium",
-          "fr": "Inglewood Stadium"
-        },
-        "city": {
-          "en": "Inglewood",
-          "fr": "Inglewood"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -2895,18 +2175,9 @@
       },
       "kickoff": "2026-06-26T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "East Rutherford Stadium",
-          "fr": "East Rutherford Stadium"
-        },
-        "city": {
-          "en": "East Rutherford",
-          "fr": "East Rutherford"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "East Rutherford Stadium",
+        "city": "East Rutherford",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2923,18 +2194,9 @@
       },
       "kickoff": "2026-06-26T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Foxborough Stadium",
-          "fr": "Foxborough Stadium"
-        },
-        "city": {
-          "en": "Foxborough",
-          "fr": "Foxborough"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Foxborough Stadium",
+        "city": "Foxborough",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -2951,18 +2213,9 @@
       },
       "kickoff": "2026-06-27T03:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Vancouver Stadium",
-          "fr": "Vancouver Stadium"
-        },
-        "city": {
-          "en": "Vancouver",
-          "fr": "Vancouver"
-        },
-        "country": {
-          "en": "Canada",
-          "fr": "Canada"
-        },
+        "stadium": "Vancouver Stadium",
+        "city": "Vancouver",
+        "country": "Canada",
         "timeZone": "America/Vancouver"
       },
       "status": "scheduled"
@@ -2979,18 +2232,9 @@
       },
       "kickoff": "2026-06-27T03:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Seattle Stadium",
-          "fr": "Seattle Stadium"
-        },
-        "city": {
-          "en": "Seattle",
-          "fr": "Seattle"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Seattle Stadium",
+        "city": "Seattle",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -3007,18 +2251,9 @@
       },
       "kickoff": "2026-06-27T00:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Miami Gardens Stadium",
-          "fr": "Miami Gardens Stadium"
-        },
-        "city": {
-          "en": "Miami Gardens",
-          "fr": "Miami Gardens"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Miami Gardens Stadium",
+        "city": "Miami Gardens",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3035,18 +2270,9 @@
       },
       "kickoff": "2026-06-27T00:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Houston Stadium",
-          "fr": "Houston Stadium"
-        },
-        "city": {
-          "en": "Houston",
-          "fr": "Houston"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Houston Stadium",
+        "city": "Houston",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -3063,18 +2289,9 @@
       },
       "kickoff": "2026-06-27T21:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Toronto Stadium",
-          "fr": "Toronto Stadium"
-        },
-        "city": {
-          "en": "Toronto",
-          "fr": "Toronto"
-        },
-        "country": {
-          "en": "Canada",
-          "fr": "Canada"
-        },
+        "stadium": "Toronto Stadium",
+        "city": "Toronto",
+        "country": "Canada",
         "timeZone": "America/Toronto"
       },
       "status": "scheduled"
@@ -3091,18 +2308,9 @@
       },
       "kickoff": "2026-06-27T21:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "East Rutherford Stadium",
-          "fr": "East Rutherford Stadium"
-        },
-        "city": {
-          "en": "East Rutherford",
-          "fr": "East Rutherford"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "East Rutherford Stadium",
+        "city": "East Rutherford",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3119,18 +2327,9 @@
       },
       "kickoff": "2026-06-28T02:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Santa Clara Stadium",
-          "fr": "Santa Clara Stadium"
-        },
-        "city": {
-          "en": "Santa Clara",
-          "fr": "Santa Clara"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Santa Clara Stadium",
+        "city": "Santa Clara",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -3147,18 +2346,9 @@
       },
       "kickoff": "2026-06-28T02:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Kansas City Stadium",
-          "fr": "Kansas City Stadium"
-        },
-        "city": {
-          "en": "Kansas City",
-          "fr": "Kansas City"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Kansas City Stadium",
+        "city": "Kansas City",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -3175,18 +2365,9 @@
       },
       "kickoff": "2026-06-27T23:30:00Z",
       "venue": {
-        "stadium": {
-          "en": "Zapopan Stadium",
-          "fr": "Zapopan Stadium"
-        },
-        "city": {
-          "en": "Zapopan",
-          "fr": "Zapopan"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Zapopan Stadium",
+        "city": "Zapopan",
+        "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
       "status": "scheduled"
@@ -3203,19 +2384,314 @@
       },
       "kickoff": "2026-06-27T23:30:00Z",
       "venue": {
-        "stadium": {
-          "en": "Miami Gardens Stadium",
-          "fr": "Miami Gardens Stadium"
-        },
-        "city": {
-          "en": "Miami Gardens",
-          "fr": "Miami Gardens"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Miami Gardens Stadium",
+        "city": "Miami Gardens",
+        "country": "United States",
         "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m73",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G2:A"
+      },
+      "away": {
+        "placeholder": "G2:B"
+      },
+      "kickoff": "2026-06-28T19:00:00Z",
+      "venue": {
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m74",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:E"
+      },
+      "away": {
+        "placeholder": "G3:ABCDF"
+      },
+      "kickoff": "2026-06-29T20:30:00Z",
+      "venue": {
+        "stadium": "Foxborough Stadium",
+        "city": "Foxborough",
+        "country": "United States",
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m75",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:F"
+      },
+      "away": {
+        "placeholder": "G2:C"
+      },
+      "kickoff": "2026-06-30T01:00:00Z",
+      "venue": {
+        "stadium": "Guadalupe Stadium",
+        "city": "Guadalupe",
+        "country": "Mexico",
+        "timeZone": "America/Monterrey"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m76",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:C"
+      },
+      "away": {
+        "placeholder": "G2:F"
+      },
+      "kickoff": "2026-06-29T17:00:00Z",
+      "venue": {
+        "stadium": "Houston Stadium",
+        "city": "Houston",
+        "country": "United States",
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m77",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:I"
+      },
+      "away": {
+        "placeholder": "G3:CDFGH"
+      },
+      "kickoff": "2026-06-30T21:00:00Z",
+      "venue": {
+        "stadium": "East Rutherford Stadium",
+        "city": "East Rutherford",
+        "country": "United States",
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m78",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G2:E"
+      },
+      "away": {
+        "placeholder": "G2:I"
+      },
+      "kickoff": "2026-06-30T17:00:00Z",
+      "venue": {
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m79",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:A"
+      },
+      "away": {
+        "placeholder": "G3:CEFHI"
+      },
+      "kickoff": "2026-07-01T01:00:00Z",
+      "venue": {
+        "stadium": "Mexico City Stadium",
+        "city": "Mexico City",
+        "country": "Mexico",
+        "timeZone": "America/Mexico_City"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m80",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:L"
+      },
+      "away": {
+        "placeholder": "G3:EHIJK"
+      },
+      "kickoff": "2026-07-01T16:00:00Z",
+      "venue": {
+        "stadium": "Atlanta Stadium",
+        "city": "Atlanta",
+        "country": "United States",
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m81",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:D"
+      },
+      "away": {
+        "placeholder": "G3:BEFIJ"
+      },
+      "kickoff": "2026-07-02T00:00:00Z",
+      "venue": {
+        "stadium": "Santa Clara Stadium",
+        "city": "Santa Clara",
+        "country": "United States",
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m82",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:G"
+      },
+      "away": {
+        "placeholder": "G3:AEHIJ"
+      },
+      "kickoff": "2026-07-01T20:00:00Z",
+      "venue": {
+        "stadium": "Seattle Stadium",
+        "city": "Seattle",
+        "country": "United States",
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m83",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G2:K"
+      },
+      "away": {
+        "placeholder": "G2:L"
+      },
+      "kickoff": "2026-07-02T23:00:00Z",
+      "venue": {
+        "stadium": "Toronto Stadium",
+        "city": "Toronto",
+        "country": "Canada",
+        "timeZone": "America/Toronto"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m84",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:H"
+      },
+      "away": {
+        "placeholder": "G2:J"
+      },
+      "kickoff": "2026-07-02T19:00:00Z",
+      "venue": {
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
+        "timeZone": "America/Los_Angeles"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m85",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:B"
+      },
+      "away": {
+        "placeholder": "G3:EFGIJ"
+      },
+      "kickoff": "2026-07-03T03:00:00Z",
+      "venue": {
+        "stadium": "Vancouver Stadium",
+        "city": "Vancouver",
+        "country": "Canada",
+        "timeZone": "America/Vancouver"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m86",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:J"
+      },
+      "away": {
+        "placeholder": "G2:H"
+      },
+      "kickoff": "2026-07-03T22:00:00Z",
+      "venue": {
+        "stadium": "Miami Gardens Stadium",
+        "city": "Miami Gardens",
+        "country": "United States",
+        "timeZone": "America/New_York"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m87",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G1:K"
+      },
+      "away": {
+        "placeholder": "G3:DEIJL"
+      },
+      "kickoff": "2026-07-04T01:30:00Z",
+      "venue": {
+        "stadium": "Kansas City Stadium",
+        "city": "Kansas City",
+        "country": "United States",
+        "timeZone": "America/Chicago"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "m88",
+      "stage": "roundOf32",
+      "roundId": "roundOf32",
+      "home": {
+        "placeholder": "G2:D"
+      },
+      "away": {
+        "placeholder": "G2:G"
+      },
+      "kickoff": "2026-07-03T18:00:00Z",
+      "venue": {
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
+        "timeZone": "America/Chicago"
       },
       "status": "scheduled"
     },
@@ -3224,31 +2700,16 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 74",
-          "fr": "Vainqueur match 74"
-        }
+        "placeholder": "W:roundOf32:2"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 77",
-          "fr": "Vainqueur match 77"
-        }
+        "placeholder": "W:roundOf32:5"
       },
       "kickoff": "2026-07-04T22:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Philadelphia Stadium",
-          "fr": "Philadelphia Stadium"
-        },
-        "city": {
-          "en": "Philadelphia",
-          "fr": "Philadelphia"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Philadelphia Stadium",
+        "city": "Philadelphia",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3258,31 +2719,16 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 73",
-          "fr": "Vainqueur match 73"
-        }
+        "placeholder": "W:roundOf32:1"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 75",
-          "fr": "Vainqueur match 75"
-        }
+        "placeholder": "W:roundOf32:3"
       },
       "kickoff": "2026-07-04T17:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Houston Stadium",
-          "fr": "Houston Stadium"
-        },
-        "city": {
-          "en": "Houston",
-          "fr": "Houston"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Houston Stadium",
+        "city": "Houston",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -3292,31 +2738,16 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 76",
-          "fr": "Vainqueur match 76"
-        }
+        "placeholder": "W:roundOf32:4"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 78",
-          "fr": "Vainqueur match 78"
-        }
+        "placeholder": "W:roundOf32:6"
       },
       "kickoff": "2026-07-05T20:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "East Rutherford Stadium",
-          "fr": "East Rutherford Stadium"
-        },
-        "city": {
-          "en": "East Rutherford",
-          "fr": "East Rutherford"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "East Rutherford Stadium",
+        "city": "East Rutherford",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3326,31 +2757,16 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 79",
-          "fr": "Vainqueur match 79"
-        }
+        "placeholder": "W:roundOf32:7"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 80",
-          "fr": "Vainqueur match 80"
-        }
+        "placeholder": "W:roundOf32:8"
       },
       "kickoff": "2026-07-06T00:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Mexico City Stadium",
-          "fr": "Mexico City Stadium"
-        },
-        "city": {
-          "en": "Mexico City",
-          "fr": "Mexico City"
-        },
-        "country": {
-          "en": "Mexico",
-          "fr": "Mexico"
-        },
+        "stadium": "Mexico City Stadium",
+        "city": "Mexico City",
+        "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
       "status": "scheduled"
@@ -3360,31 +2776,16 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 83",
-          "fr": "Vainqueur match 83"
-        }
+        "placeholder": "W:roundOf32:11"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 84",
-          "fr": "Vainqueur match 84"
-        }
+        "placeholder": "W:roundOf32:12"
       },
       "kickoff": "2026-07-06T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Arlington Stadium",
-          "fr": "Arlington Stadium"
-        },
-        "city": {
-          "en": "Arlington",
-          "fr": "Arlington"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -3394,31 +2795,16 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 81",
-          "fr": "Vainqueur match 81"
-        }
+        "placeholder": "W:roundOf32:9"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 82",
-          "fr": "Vainqueur match 82"
-        }
+        "placeholder": "W:roundOf32:10"
       },
       "kickoff": "2026-07-07T00:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Seattle Stadium",
-          "fr": "Seattle Stadium"
-        },
-        "city": {
-          "en": "Seattle",
-          "fr": "Seattle"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Seattle Stadium",
+        "city": "Seattle",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -3428,31 +2814,16 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 86",
-          "fr": "Vainqueur match 86"
-        }
+        "placeholder": "W:roundOf32:14"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 88",
-          "fr": "Vainqueur match 88"
-        }
+        "placeholder": "W:roundOf32:16"
       },
       "kickoff": "2026-07-07T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Atlanta Stadium",
-          "fr": "Atlanta Stadium"
-        },
-        "city": {
-          "en": "Atlanta",
-          "fr": "Atlanta"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Atlanta Stadium",
+        "city": "Atlanta",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3462,31 +2833,16 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 85",
-          "fr": "Vainqueur match 85"
-        }
+        "placeholder": "W:roundOf32:13"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 87",
-          "fr": "Vainqueur match 87"
-        }
+        "placeholder": "W:roundOf32:15"
       },
       "kickoff": "2026-07-08T00:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Vancouver Stadium",
-          "fr": "Vancouver Stadium"
-        },
-        "city": {
-          "en": "Vancouver",
-          "fr": "Vancouver"
-        },
-        "country": {
-          "en": "Canada",
-          "fr": "Canada"
-        },
+        "stadium": "Vancouver Stadium",
+        "city": "Vancouver",
+        "country": "Canada",
         "timeZone": "America/Vancouver"
       },
       "status": "scheduled"
@@ -3496,31 +2852,16 @@
       "stage": "quarterFinal",
       "roundId": "quarterFinal",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 89",
-          "fr": "Vainqueur match 89"
-        }
+        "placeholder": "W:roundOf16:1"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 90",
-          "fr": "Vainqueur match 90"
-        }
+        "placeholder": "W:roundOf16:2"
       },
       "kickoff": "2026-07-09T20:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Foxborough Stadium",
-          "fr": "Foxborough Stadium"
-        },
-        "city": {
-          "en": "Foxborough",
-          "fr": "Foxborough"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Foxborough Stadium",
+        "city": "Foxborough",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3530,31 +2871,16 @@
       "stage": "quarterFinal",
       "roundId": "quarterFinal",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 93",
-          "fr": "Vainqueur match 93"
-        }
+        "placeholder": "W:roundOf16:5"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 94",
-          "fr": "Vainqueur match 94"
-        }
+        "placeholder": "W:roundOf16:6"
       },
       "kickoff": "2026-07-10T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Inglewood Stadium",
-          "fr": "Inglewood Stadium"
-        },
-        "city": {
-          "en": "Inglewood",
-          "fr": "Inglewood"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Inglewood Stadium",
+        "city": "Inglewood",
+        "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
       "status": "scheduled"
@@ -3564,31 +2890,16 @@
       "stage": "quarterFinal",
       "roundId": "quarterFinal",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 91",
-          "fr": "Vainqueur match 91"
-        }
+        "placeholder": "W:roundOf16:3"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 92",
-          "fr": "Vainqueur match 92"
-        }
+        "placeholder": "W:roundOf16:4"
       },
       "kickoff": "2026-07-11T21:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Miami Gardens Stadium",
-          "fr": "Miami Gardens Stadium"
-        },
-        "city": {
-          "en": "Miami Gardens",
-          "fr": "Miami Gardens"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Miami Gardens Stadium",
+        "city": "Miami Gardens",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3598,31 +2909,16 @@
       "stage": "quarterFinal",
       "roundId": "quarterFinal",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 95",
-          "fr": "Vainqueur match 95"
-        }
+        "placeholder": "W:roundOf16:7"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 96",
-          "fr": "Vainqueur match 96"
-        }
+        "placeholder": "W:roundOf16:8"
       },
       "kickoff": "2026-07-12T01:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Kansas City Stadium",
-          "fr": "Kansas City Stadium"
-        },
-        "city": {
-          "en": "Kansas City",
-          "fr": "Kansas City"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Kansas City Stadium",
+        "city": "Kansas City",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -3632,31 +2928,16 @@
       "stage": "semiFinal",
       "roundId": "semiFinal",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 97",
-          "fr": "Vainqueur match 97"
-        }
+        "placeholder": "W:quarterFinal:1"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 98",
-          "fr": "Vainqueur match 98"
-        }
+        "placeholder": "W:quarterFinal:2"
       },
       "kickoff": "2026-07-14T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Arlington Stadium",
-          "fr": "Arlington Stadium"
-        },
-        "city": {
-          "en": "Arlington",
-          "fr": "Arlington"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Arlington Stadium",
+        "city": "Arlington",
+        "country": "United States",
         "timeZone": "America/Chicago"
       },
       "status": "scheduled"
@@ -3666,31 +2947,16 @@
       "stage": "semiFinal",
       "roundId": "semiFinal",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 99",
-          "fr": "Vainqueur match 99"
-        }
+        "placeholder": "W:quarterFinal:3"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 100",
-          "fr": "Vainqueur match 100"
-        }
+        "placeholder": "W:quarterFinal:4"
       },
       "kickoff": "2026-07-15T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Atlanta Stadium",
-          "fr": "Atlanta Stadium"
-        },
-        "city": {
-          "en": "Atlanta",
-          "fr": "Atlanta"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Atlanta Stadium",
+        "city": "Atlanta",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3700,31 +2966,16 @@
       "stage": "thirdPlace",
       "roundId": "thirdPlace",
       "home": {
-        "placeholder": {
-          "en": "Loser Match 101",
-          "fr": "Perdant match 101"
-        }
+        "placeholder": "L:semiFinal:1"
       },
       "away": {
-        "placeholder": {
-          "en": "Loser Match 102",
-          "fr": "Perdant match 102"
-        }
+        "placeholder": "L:semiFinal:2"
       },
       "kickoff": "2026-07-18T21:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "Miami Gardens Stadium",
-          "fr": "Miami Gardens Stadium"
-        },
-        "city": {
-          "en": "Miami Gardens",
-          "fr": "Miami Gardens"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "Miami Gardens Stadium",
+        "city": "Miami Gardens",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3734,31 +2985,16 @@
       "stage": "final",
       "roundId": "final",
       "home": {
-        "placeholder": {
-          "en": "Winner Match 101",
-          "fr": "Vainqueur match 101"
-        }
+        "placeholder": "W:semiFinal:1"
       },
       "away": {
-        "placeholder": {
-          "en": "Winner Match 102",
-          "fr": "Vainqueur match 102"
-        }
+        "placeholder": "W:semiFinal:2"
       },
       "kickoff": "2026-07-19T19:00:00Z",
       "venue": {
-        "stadium": {
-          "en": "East Rutherford Stadium",
-          "fr": "East Rutherford Stadium"
-        },
-        "city": {
-          "en": "East Rutherford",
-          "fr": "East Rutherford"
-        },
-        "country": {
-          "en": "United States",
-          "fr": "United States"
-        },
+        "stadium": "East Rutherford Stadium",
+        "city": "East Rutherford",
+        "country": "United States",
         "timeZone": "America/New_York"
       },
       "status": "scheduled"
@@ -3766,11 +3002,28 @@
   ],
   "bracketRounds": [
     {
+      "id": "roundOf32",
+      "matchIds": [
+        "m73",
+        "m74",
+        "m75",
+        "m76",
+        "m77",
+        "m78",
+        "m79",
+        "m80",
+        "m81",
+        "m82",
+        "m83",
+        "m84",
+        "m85",
+        "m86",
+        "m87",
+        "m88"
+      ]
+    },
+    {
       "id": "roundOf16",
-      "label": {
-        "en": "Round of 16",
-        "fr": "Huitiemes de finale"
-      },
       "matchIds": [
         "m89",
         "m90",
@@ -3784,10 +3037,6 @@
     },
     {
       "id": "quarterFinal",
-      "label": {
-        "en": "Quarter-finals",
-        "fr": "Quarts de finale"
-      },
       "matchIds": [
         "m97",
         "m98",
@@ -3797,10 +3046,6 @@
     },
     {
       "id": "semiFinal",
-      "label": {
-        "en": "Semi-finals",
-        "fr": "Demi-finales"
-      },
       "matchIds": [
         "m101",
         "m102"
@@ -3808,20 +3053,12 @@
     },
     {
       "id": "thirdPlace",
-      "label": {
-        "en": "Third place",
-        "fr": "Petite finale"
-      },
       "matchIds": [
         "m103"
       ]
     },
     {
       "id": "final",
-      "label": {
-        "en": "Final",
-        "fr": "Finale"
-      },
       "matchIds": [
         "m104"
       ]

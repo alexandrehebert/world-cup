@@ -67,11 +67,17 @@ export interface TranslationSet {
     cities: string
     countries: string
     stageGroup: string
+    stageRoundOf32: string
     stageRoundOf16: string
     stageQuarterFinal: string
     stageSemiFinal: string
     stageThirdPlace: string
     stageFinal: string
+    bracketGroup1st: string
+    bracketGroup2nd: string
+    bracketGroup3rd: string
+    bracketWinner: string
+    bracketLoser: string
     filterByCountries: string
     clearCountryFilters: string
     noMatchesForCountries: string
@@ -90,4 +96,6 @@ export interface TranslationSet {
     filterByFavorites: string
     noMatchesForFavorites: string
   }
+  teams: Record<string, string>
+  groups: Record<string, string>
 }

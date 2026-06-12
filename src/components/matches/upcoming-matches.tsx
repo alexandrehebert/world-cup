@@ -3,7 +3,7 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, getLocalizedText } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
@@ -38,6 +38,10 @@ const statusLabel = (status: MatchRecord['status'], labels: ReturnType<typeof us
 const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLocale>['t']['labels']) => {
   if (stage === 'group') {
     return labels.stageGroup
+  }
+
+  if (stage === 'roundOf32') {
+    return labels.stageRoundOf32
   }
 
   if (stage === 'roundOf16') {
@@ -161,7 +165,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                         {homeTeam && <FlagAvatar team={homeTeam} className="h-6 w-6 sm:h-12 sm:w-12" />}
                         <div className="min-w-0">
                           <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            <span>{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
+                            <span>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'TBD'}</span>
                             {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
@@ -181,7 +185,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                       <div className="flex min-w-0 flex-1 flex-col items-end gap-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
                         <div className="order-2 min-w-0 text-right sm:order-1">
                           <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            <span>{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
+                            <span>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'TBD'}</span>
                             {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
@@ -197,7 +201,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                         {t.meta.localTime} · {displayLocalTime}
                       </p>
                       <p className={compact ? 'text-xs text-[var(--text-soft)]' : 'text-sm text-[var(--text-soft)]'}>
-                        {getLocalizedText(match.venue.stadium, locale)} · {getLocalizedText(match.venue.city, locale)}, {getLocalizedText(match.venue.country, locale)}
+                        {match.venue.stadium} · {match.venue.city}, {match.venue.country}
                       </p>
                     </div>
                   </div>

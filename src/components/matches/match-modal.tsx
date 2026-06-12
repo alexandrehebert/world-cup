@@ -2,13 +2,14 @@ import { useEffect } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getLocalizedText } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
 
-const stageLabel = (stage: 'group' | 'roundOf16' | 'quarterFinal' | 'semiFinal' | 'final' | 'thirdPlace', labels: ReturnType<typeof useLocale>['t']['labels']) => {
+const stageLabel = (stage: 'group' | 'roundOf32' | 'roundOf16' | 'quarterFinal' | 'semiFinal' | 'final' | 'thirdPlace', labels: ReturnType<typeof useLocale>['t']['labels']) => {
   if (stage === 'group') return labels.stageGroup
+  if (stage === 'roundOf32') return labels.stageRoundOf32
   if (stage === 'roundOf16') return labels.stageRoundOf16
   if (stage === 'quarterFinal') return labels.stageQuarterFinal
   if (stage === 'semiFinal') return labels.stageSemiFinal
@@ -121,7 +122,7 @@ export const MatchModal = () => {
                   {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                 </div>
                 <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? getLocalizedText(homeTeam.name, locale) : 'TBD'}</span>
+                  <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'TBD'}</span>
                   {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                 </p>
                 <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? 'TBD'}</p>
@@ -147,7 +148,7 @@ export const MatchModal = () => {
                   {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                 </div>
                 <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? getLocalizedText(awayTeam.name, locale) : 'TBD'}</span>
+                  <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'TBD'}</span>
                   {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                 </p>
                 <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? 'TBD'}</p>
@@ -157,9 +158,9 @@ export const MatchModal = () => {
 
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.venue}</p>
-            <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{getLocalizedText(match.venue.stadium, locale)}</p>
+            <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{match.venue.stadium}</p>
             <p className="mt-1 text-sm text-[var(--text)]">
-              {getLocalizedText(match.venue.city, locale)}, {getLocalizedText(match.venue.country, locale)}
+              {match.venue.city}, {match.venue.country}
             </p>
           </div>
         </div>
