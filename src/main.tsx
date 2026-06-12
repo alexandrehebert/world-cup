@@ -8,18 +8,21 @@ import { LocaleProvider } from './contexts/locale-context'
 import { TournamentProvider } from './contexts/tournament-context'
 import { DashboardProvider } from './contexts/dashboard-context'
 import { ThemeProvider } from './contexts/theme-context'
+import { TimeProvider } from './contexts/time-context'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <LocaleProvider>
-          <TournamentProvider>
-            <DashboardProvider>
-              <App />
-            </DashboardProvider>
-          </TournamentProvider>
-        </LocaleProvider>
+        <TimeProvider>
+          <LocaleProvider>
+            <TournamentProvider>
+              <DashboardProvider>
+                <App />
+              </DashboardProvider>
+            </TournamentProvider>
+          </LocaleProvider>
+        </TimeProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,

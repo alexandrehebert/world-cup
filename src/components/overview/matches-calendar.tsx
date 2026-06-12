@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
+import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { getDisplayMatchStatus, getMatchDisplayTime, getLocalizedText } from '../../lib/format'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -53,9 +54,9 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
   const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
   const { locale, t } = useLocale()
   const { teamsById } = useTournament()
+  const nowMs = useNow()
   const dateLocale = getDateLocale(locale)
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const nowMs = Date.now()
 
   const calendarData = useMemo(() => {
     const byDay = new Map<string, MatchRecord[]>()

@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import rawTournamentData from '../data/worldcup.json'
 import { buildTournamentModel, type TournamentModel } from '../lib/tournament'
 import type { TournamentData } from '../types/tournament'
@@ -10,38 +10,41 @@ const TournamentContext = createContext<TournamentModel | undefined>(undefined)
 
 export const TournamentProvider = ({ children }: { children: ReactNode }) => {
   const [value, setValue] = useState<TournamentModel>(localTournamentModel)
+  const loadRemoteTournament = useCallback(async (isCancelledRef?: { current: boolean }) => {
+    try {
+      const response = await fetch('/api/tournament', { cache: 'no-store' })
+
+      if (!response.ok) {
+        return
+      }
+
+      const payload = (await response.json()) as TournamentData
+
+      if (!isCancelledRef?.current) {
+        setValue(buildTournamentModel(payload))
+      }
+    } catch {
+      // Keep local bundled data if the API is unavailable.
+    }
+  }, [])
 
   useEffect(() => {
     if (!import.meta.env.PROD) {
       return
     }
 
-    let isCancelled = false
+    const isCancelledRef = { current: false }
 
-    const loadRemoteTournament = async () => {
-      try {
-        const response = await fetch('/api/tournament', { cache: 'no-store' })
-
-        if (!response.ok) {
-          return
-        }
-
-        const payload = (await response.json()) as TournamentData
-
-        if (!isCancelled) {
-          setValue(buildTournamentModel(payload))
-        }
-      } catch {
-        // Keep local bundled data if the API is unavailable.
-      }
-    }
-
-    void loadRemoteTournament()
+    void loadRemoteTournament(isCancelledRef)
+    const intervalId = window.setInterval(() => {
+      void loadRemoteTournament(isCancelledRef)
+    }, 60_000)
 
     return () => {
-      isCancelled = true
+      isCancelledRef.current = true
+      window.clearInterval(intervalId)
     }
-  }, [])
+  }, [loadRemoteTournament])
 
   return <TournamentContext.Provider value={value}>{children}</TournamentContext.Provider>
 }

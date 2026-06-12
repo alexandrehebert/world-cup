@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
+import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, getLocalizedText } from '../../lib/format'
 import { Icon } from '../../lib/icons'
@@ -65,8 +66,8 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
   const { locale, t } = useLocale()
   const { isFavoriteTeam, favoriteTeamIds } = useDashboard()
   const { teamsById } = useTournament()
+  const nowMs = useNow()
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const nowMs = Date.now()
   const anyFavoriteVisible = useMemo(
     () => favoriteTeamIds.length > 0 && matches.some((m) => (m.home.teamId && favoriteTeamIds.includes(m.home.teamId)) || (m.away.teamId && favoriteTeamIds.includes(m.away.teamId))),
     [favoriteTeamIds, matches],
