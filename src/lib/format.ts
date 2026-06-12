@@ -150,6 +150,64 @@ const getFinishedStatusDetail = (espnDetail: string | null, labels: TranslationS
   return trimmed
 }
 
+const parseDisplayClockToSeconds = (displayClock: string | undefined) => {
+  if (!displayClock) {
+    return null
+  }
+
+  const match = displayClock.trim().match(/^(\d{1,3}):(\d{2})$/)
+  if (!match) {
+    return null
+  }
+
+  const minutes = Number(match[1])
+  const seconds = Number(match[2])
+
+  if (!Number.isFinite(minutes) || !Number.isFinite(seconds) || seconds < 0 || seconds > 59) {
+    return null
+  }
+
+  return minutes * 60 + seconds
+}
+
+const formatClockFromSeconds = (totalSeconds: number) => {
+  const clampedSeconds = Math.max(0, Math.trunc(totalSeconds))
+  const minutes = Math.floor(clampedSeconds / 60)
+  const seconds = clampedSeconds % 60
+  return `${minutes}:${String(seconds).padStart(2, '0')}`
+}
+
+const isPausedLiveDetail = (detail: string | null) => {
+  if (!detail) {
+    return false
+  }
+
+  return /(half[\s-]?time|mi-temps|pause|break|delayed|suspended|postponed|interrupted)/i.test(detail)
+}
+
+const getExtrapolatedLiveClock = (match: MatchRecord, nowMs: number) => {
+  if (match.live?.state !== 'in') {
+    return null
+  }
+
+  const clockFromDisplay = parseDisplayClockToSeconds(match.live.displayClock)
+  const clockFromLiveField = typeof match.live.clock === 'number' && Number.isFinite(match.live.clock)
+    ? Math.max(0, Math.trunc(match.live.clock))
+    : null
+  const baseClockSeconds = clockFromDisplay ?? clockFromLiveField
+
+  if (baseClockSeconds === null) {
+    return null
+  }
+
+  const syncedAtMs = match.live.syncedAt ? new Date(match.live.syncedAt).getTime() : Number.NaN
+  const elapsedSeconds = Number.isFinite(syncedAtMs)
+    ? Math.max(0, Math.floor((nowMs - syncedAtMs) / 1000))
+    : 0
+
+  return formatClockFromSeconds(baseClockSeconds + elapsedSeconds)
+}
+
 export const getMatchDisplayTime = (
   match: MatchRecord,
   labels: TranslationSet['labels'],
@@ -160,6 +218,15 @@ export const getMatchDisplayTime = (
   const espnDetail = getEspnStatusDetail(match, locale)
 
   if (displayStatus === 'live') {
+    if (isPausedLiveDetail(espnDetail)) {
+      return espnDetail
+    }
+
+    const extrapolatedClock = getExtrapolatedLiveClock(match, nowMs)
+    if (extrapolatedClock) {
+      return extrapolatedClock
+    }
+
     if (espnDetail) {
       return espnDetail
     }

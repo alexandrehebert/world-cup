@@ -59,6 +59,7 @@ const toEspnMatchUpdates = (payload, data) => {
 
   const { byExact, byPair } = buildMatchIndexes(data)
   const updates = []
+  const syncedAt = new Date().toISOString()
 
   for (const event of payload.events) {
     const competition = Array.isArray(event?.competitions) ? event.competitions[0] : undefined
@@ -93,6 +94,7 @@ const toEspnMatchUpdates = (payload, data) => {
           shortDetail: typeof competition?.status?.type?.shortDetail === 'string' ? competition.status.type.shortDetail : undefined,
           completed: typeof competition?.status?.type?.completed === 'boolean' ? competition.status.type.completed : undefined,
           startDate: typeof competition?.startDate === 'string' ? competition.startDate : undefined,
+          syncedAt,
         }
       : undefined
 
