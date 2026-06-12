@@ -3,7 +3,7 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getLocalizedText, getMatchDisplayTime } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -119,6 +119,8 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
             {group.matches.map((match) => {
               const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
               const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
+              const homeTeamLabel = homeTeam ? t.teams[homeTeam.id] ?? getLocalizedText(homeTeam.name, locale) ?? homeTeam.code : 'TBD'
+              const awayTeamLabel = awayTeam ? t.teams[awayTeam.id] ?? getLocalizedText(awayTeam.name, locale) ?? awayTeam.code : 'TBD'
               const { localDateTime } = formatMatchDate(match.kickoff, locale, localTimeZone, t.labels.today)
               const { localTime: venueLocalTime } = formatMatchDate(
                 match.kickoff,
@@ -135,7 +137,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
               const displayStatus = getDisplayMatchStatus(match, nowMs)
               const isLive = displayStatus === 'live'
               const isFinished = displayStatus === 'finished'
-              const displayTiming = getMatchDisplayTime(match, t.labels, nowMs)
+              const displayTiming = getMatchDisplayTime(match, t.labels, nowMs, locale)
               const displayDateTime = displayTiming ?? (isVerySoon ? minuteLabel : localDateTime)
               const displayLocalTime = venueLocalTime
               const displayScore = hasScore(match)
@@ -146,6 +148,11 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
               const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
               const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
               const hasFavorite = homeIsFavorite || awayIsFavorite
+              const stadiumLabel = getLocalizedText(match.venue.stadium, locale)
+              const cityLabel = getLocalizedText(match.venue.city, locale)
+              const countryLabel = getLocalizedText(match.venue.country, locale)
+              const locationLabel = [cityLabel, countryLabel].filter((value): value is string => Boolean(value)).join(', ')
+              const venueLabel = [stadiumLabel, locationLabel].filter((value): value is string => Boolean(value)).join(' · ')
 
               return (
                 <button
@@ -186,7 +193,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                         {homeTeam && <FlagAvatar team={homeTeam} className="h-6 w-6 sm:h-12 sm:w-12" />}
                         <div className="min-w-0">
                           <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            <span className={homeWon ? 'text-[var(--accent-text)]' : ''}>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'TBD'}</span>
+                            <span className={homeWon ? 'text-[var(--accent-text)]' : ''}>{homeTeamLabel}</span>
                             {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
@@ -206,7 +213,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                       <div className="flex min-w-0 flex-1 flex-col items-end gap-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
                         <div className="order-2 min-w-0 text-right sm:order-1">
                           <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            <span className={awayWon ? 'text-[var(--accent-text)]' : ''}>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'TBD'}</span>
+                            <span className={awayWon ? 'text-[var(--accent-text)]' : ''}>{awayTeamLabel}</span>
                             {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                           </p>
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
@@ -222,7 +229,7 @@ export const MatchesList = ({ matches, compact = false }: { matches: MatchRecord
                         {t.meta.localTime} · {displayLocalTime}
                       </p>
                       <p className={compact ? 'text-xs text-[var(--text-soft)]' : 'text-sm text-[var(--text-soft)]'}>
-                        {match.venue.stadium} · {match.venue.city}, {match.venue.country}
+                        {venueLabel}
                       </p>
                     </div>
                   </div>

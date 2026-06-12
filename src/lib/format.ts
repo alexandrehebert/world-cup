@@ -92,13 +92,42 @@ export const getDisplayMatchStatus = (match: MatchRecord, nowMs = Date.now()) =>
   return match.status
 }
 
-const getEspnStatusDetail = (match: MatchRecord) => {
-  const shortDetail = match.live?.shortDetail?.trim()
+export const getLocalizedText = (value: unknown, locale: LocaleCode): string | null => {
+  if (typeof value === 'string') {
+    const normalized = value.trim()
+    return normalized.length > 0 ? normalized : null
+  }
+
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null
+  }
+
+  const map = value as Record<string, unknown>
+  const localized = map[locale]
+  if (typeof localized === 'string' && localized.trim().length > 0) {
+    return localized.trim()
+  }
+
+  const fallbackEn = map.en
+  if (typeof fallbackEn === 'string' && fallbackEn.trim().length > 0) {
+    return fallbackEn.trim()
+  }
+
+  const fallbackFr = map.fr
+  if (typeof fallbackFr === 'string' && fallbackFr.trim().length > 0) {
+    return fallbackFr.trim()
+  }
+
+  return null
+}
+
+const getEspnStatusDetail = (match: MatchRecord, locale: LocaleCode) => {
+  const shortDetail = getLocalizedText(match.live?.shortDetail, locale)
   if (shortDetail) {
     return shortDetail
   }
 
-  const detail = match.live?.detail?.trim()
+  const detail = getLocalizedText(match.live?.detail, locale)
   if (detail) {
     return detail
   }
@@ -110,9 +139,10 @@ export const getMatchDisplayTime = (
   match: MatchRecord,
   labels: TranslationSet['labels'],
   nowMs = Date.now(),
+  locale: LocaleCode = 'en',
 ) => {
   const displayStatus = getDisplayMatchStatus(match, nowMs)
-  const espnDetail = getEspnStatusDetail(match)
+  const espnDetail = getEspnStatusDetail(match, locale)
 
   if (displayStatus === 'live') {
     if (espnDetail) {
