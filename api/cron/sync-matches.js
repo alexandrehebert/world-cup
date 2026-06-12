@@ -83,12 +83,25 @@ const toEspnMatchUpdates = (payload, data) => {
 
     const nextStatus = normalizeEspnState(competition?.status?.type?.state, competition?.status?.type?.completed)
     const hasPlayableStatus = nextStatus === 'live' || nextStatus === 'finished'
+    const live = nextStatus
+      ? {
+          state: competition?.status?.type?.state,
+          period: typeof competition?.status?.period === 'number' ? competition.status.period : undefined,
+          clock: typeof competition?.status?.clock === 'number' ? competition.status.clock : undefined,
+          displayClock: typeof competition?.status?.displayClock === 'string' ? competition.status.displayClock : undefined,
+          detail: typeof competition?.status?.type?.detail === 'string' ? competition.status.type.detail : undefined,
+          shortDetail: typeof competition?.status?.type?.shortDetail === 'string' ? competition.status.type.shortDetail : undefined,
+          completed: typeof competition?.status?.type?.completed === 'boolean' ? competition.status.type.completed : undefined,
+          startDate: typeof competition?.startDate === 'string' ? competition.startDate : undefined,
+        }
+      : undefined
 
     updates.push({
       id: matchId,
       status: nextStatus,
       homeScore: hasPlayableStatus ? home?.score : undefined,
       awayScore: hasPlayableStatus ? away?.score : undefined,
+      live,
     })
   }
 
@@ -138,12 +151,27 @@ const normalizeScore = (value) => {
 const toNormalizedUpdate = (entry) => {
   const homeScore = normalizeScore(entry.homeScore ?? entry.home?.score ?? entry.score?.home)
   const awayScore = normalizeScore(entry.awayScore ?? entry.away?.score ?? entry.score?.away)
+  const live = entry.live
+    ? {
+        state: typeof entry.live.state === 'string' ? entry.live.state : undefined,
+        period: typeof entry.live.period === 'number' ? Math.trunc(entry.live.period) : undefined,
+        clock: typeof entry.live.clock === 'number' ? Math.trunc(entry.live.clock) : undefined,
+        displayClock: typeof entry.live.displayClock === 'string' ? entry.live.displayClock : undefined,
+        detail: typeof entry.live.detail === 'string' ? entry.live.detail : undefined,
+        shortDetail: typeof entry.live.shortDetail === 'string' ? entry.live.shortDetail : undefined,
+        completed: typeof entry.live.completed === 'boolean' ? entry.live.completed : undefined,
+        startDate: typeof entry.live.startDate === 'string' ? entry.live.startDate : undefined,
+        firstSeenLiveAt: typeof entry.live.firstSeenLiveAt === 'string' ? entry.live.firstSeenLiveAt : undefined,
+        syncedAt: typeof entry.live.syncedAt === 'string' ? entry.live.syncedAt : undefined,
+      }
+    : undefined
 
   return {
     id: entry.id,
     status: normalizeStatus(entry.status),
     homeScore,
     awayScore,
+    live,
   }
 }
 
@@ -297,11 +325,22 @@ export default async function handler(request, response) {
       const nextStatus = update.status ?? match.status
       const nextHomeScore = update.homeScore
       const nextAwayScore = update.awayScore
+      const nextLive = update.live
       const homeScoreChanged = nextHomeScore !== undefined && nextHomeScore !== match.home?.score
       const awayScoreChanged = nextAwayScore !== undefined && nextAwayScore !== match.away?.score
       const statusChanged = nextStatus !== match.status
+      const mergedLive =
+        nextLive !== undefined
+          ? {
+              ...nextLive,
+              firstSeenLiveAt: match.live?.firstSeenLiveAt ?? (nextStatus === 'live' ? new Date().toISOString() : undefined),
+            }
+          : nextStatus === 'scheduled'
+            ? undefined
+            : match.live
+      const liveChanged = JSON.stringify(mergedLive ?? null) !== JSON.stringify(match.live ?? null)
 
-      if (!statusChanged && !homeScoreChanged && !awayScoreChanged) {
+      if (!statusChanged && !homeScoreChanged && !awayScoreChanged && !liveChanged) {
         return match
       }
 
@@ -318,6 +357,7 @@ export default async function handler(request, response) {
           ...match.away,
           ...(nextAwayScore !== undefined ? { score: nextAwayScore } : {}),
         },
+        live: mergedLive,
       }
     })
 

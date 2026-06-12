@@ -93,14 +93,15 @@ export const getMatchDisplayTime = (
   labels: TranslationSet['labels'],
   nowMs = Date.now(),
 ) => {
-  const liveProgress = getLiveMatchProgress(match.kickoff, nowMs)
+  const displayStatus = getDisplayMatchStatus(match, nowMs)
+  const liveProgress = match.live?.displayClock ? { period: match.live.period ? `Q${match.live.period}` : 'Q1', minutesText: match.live.displayClock } : getLiveMatchProgress(match.kickoff, nowMs)
 
-  if (liveProgress && getDisplayMatchStatus(match, nowMs) === 'live') {
+  if (displayStatus === 'live' && liveProgress) {
     return `${liveProgress.period} · ${liveProgress.minutesText}`
   }
 
-  if (getDisplayMatchStatus(match, nowMs) === 'finished') {
-    return labels.fullTime
+  if (displayStatus === 'finished') {
+    return match.live?.displayClock ? `${labels.fullTime} · ${match.live.displayClock}` : labels.fullTime
   }
 
   return null

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getLocalizedText } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, getLocalizedText } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
@@ -120,7 +120,8 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                 locale === 'fr'
                   ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
                   : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
-              const displayDateTime = isVerySoon ? minuteLabel : localDateTime
+              const displayTiming = getMatchDisplayTime(match, t.labels, nowMs)
+              const displayDateTime = displayTiming ?? (isVerySoon ? minuteLabel : localDateTime)
               const displayLocalTime = isVerySoon ? minuteLabel : localTime
               const displayStatus = getDisplayMatchStatus(match, nowMs)
               const isLive = displayStatus === 'live'

@@ -51,6 +51,19 @@ export interface MatchVenue {
   timeZone: string
 }
 
+export interface MatchLiveRecord {
+  state?: 'pre' | 'in' | 'post'
+  period?: number
+  clock?: number
+  displayClock?: string
+  detail?: string
+  shortDetail?: string
+  completed?: boolean
+  startDate?: string
+  firstSeenLiveAt?: string
+  syncedAt?: string
+}
+
 export interface MatchRecord {
   id: string
   stage: 'group' | 'roundOf16' | 'quarterFinal' | 'semiFinal' | 'final' | 'thirdPlace'
@@ -61,6 +74,7 @@ export interface MatchRecord {
   kickoff: string
   venue: MatchVenue
   status: 'scheduled' | 'live' | 'finished'
+  live?: MatchLiveRecord
 }
 
 export interface BracketRoundRecord {
