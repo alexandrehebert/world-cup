@@ -41,7 +41,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
           {renderedHeader}
 
           <nav
-            className="flex flex-wrap border-b border-[var(--border)]"
+            className="flex flex-wrap justify-center border-b border-[var(--border)] sm:justify-start"
             aria-label="Primary"
           >
             {tabs.map((tab) => (

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { useLocale } from '../../contexts/locale-context'
 import { Icon } from '../../lib/icons'
 import { LocaleSwitcher } from './locale-switcher'
@@ -7,6 +8,30 @@ import type { TournamentMeta } from '../../types/tournament'
 
 export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isCompact?: boolean }) => {
   const { locale, t } = useLocale()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!mobileMenuRef.current?.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+    document.addEventListener('keydown', handleEscape)
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [])
 
   return (
     <div className={`transition-all duration-200 ${isCompact ? 'pt-2 pb-1' : 'pt-5 pb-2'}`}>
@@ -34,10 +59,42 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
           </p>
         </div>
 
-        <div className={`flex flex-wrap items-center transition-all duration-200 ${isCompact ? 'gap-2' : 'gap-3'}`}>
-          <FavoriteTeamsPicker />
-          <ThemeToggle />
-          <LocaleSwitcher />
+        <div className={`flex w-full items-center transition-all duration-200 lg:w-auto ${isCompact ? 'gap-2' : 'gap-3'}`}>
+          <div className="min-w-0 flex-1 lg:flex-none">
+            <FavoriteTeamsPicker />
+          </div>
+
+          <div ref={mobileMenuRef} className="relative lg:hidden">
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen((current) => !current)}
+              className="inline-flex h-10 w-10 items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+              aria-label={t.labels.theme}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-preferences-menu"
+            >
+              <Icon name={isMobileMenuOpen ? 'close' : 'menu'} className="text-[20px]" />
+            </button>
+
+            {isMobileMenuOpen ? (
+              <div
+                id="mobile-preferences-menu"
+                className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-48 border border-[var(--border)] bg-[var(--surface-strong)] p-2"
+              >
+                <div className="space-y-2">
+                  <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.theme}</p>
+                  <ThemeToggle />
+                  <p className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.language}</p>
+                  <LocaleSwitcher />
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="hidden lg:inline-flex lg:items-center lg:gap-3">
+            <ThemeToggle />
+            <LocaleSwitcher />
+          </div>
         </div>
       </div>
     </div>
