@@ -148,6 +148,10 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
     cells.push({ day, matches: calendarData.byDay.get(dayKey) ?? [] })
   }
 
+  while (cells.length % 7 !== 0) {
+    cells.push(null)
+  }
+
   const weekLabelPrefix = locale === 'fr' ? 'Semaine du tournoi' : 'Tournament Week'
 
   const monthAgendaItems: Array<
@@ -224,14 +228,21 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
         </button>
       </div>
 
-      <div className="hidden gap-px bg-[var(--border)] xl:grid xl:grid-cols-7">
+      <div className="hidden xl:grid xl:grid-cols-7">
         {weekdays.map((weekday) => (
-          <div key={weekday} className="bg-[var(--surface-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">
+          <div key={weekday} className="border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">
             {weekday}
           </div>
         ))}
         {cells.map((cell, index) => (
-          <div key={`${monthKey}-cell-${index}`} className="min-h-40 bg-[var(--surface)] p-2 align-top">
+          <div
+            key={`${monthKey}-cell-${index}`}
+            className={`min-h-40 p-2 align-top ${
+              cell
+                ? 'border border-[var(--border)] bg-[var(--surface)]'
+                : 'bg-[color:color-mix(in_srgb,var(--surface)_42%,transparent)]'
+            }`}
+          >
             {cell ? (
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-[var(--text-soft)]">{cell.day}</p>

@@ -22,7 +22,7 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
       </div>
 
       <div>
-        <div className="grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] gap-1 border-b border-[var(--border)] bg-[var(--surface-soft)] px-3 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-soft)] sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 sm:text-[11px] sm:tracking-[0.22em]">
+        <div className="grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] gap-1 border-b border-[var(--border)] bg-[color:color-mix(in_srgb,var(--surface-soft)_24%,var(--surface)_76%)] px-3 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-soft)] sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 sm:text-[11px] sm:tracking-[0.22em]">
           <span>{t.labels.standings}</span>
           <span className="text-center">{t.labels.played}</span>
           <span className="text-center">{t.labels.won}</span>
