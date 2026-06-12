@@ -52,7 +52,7 @@ export const resolveMatchFromKey = (data, matchKey) => {
 
   const { pathToMatchId, slugToMatchId, teamsById } = buildMatchSlugMaps(data)
   const normalizedKey = String(matchKey).replace(/^\/+|\/+$/g, '')
-  const matchPath = normalizedKey.match(/^match\/([^/]+)\/vs\/([^/]+)$/i)
+  const matchPath = normalizedKey.match(/^(?:match\/)?([^/]+)\/vs\/([^/]+)$/i)
   const pathKey = matchPath ? `${normalizeMatchCode(matchPath[1])}/vs/${normalizeMatchCode(matchPath[2])}` : null
   const resolvedMatchId = (pathKey && pathToMatchId[pathKey]) || slugToMatchId[normalizedKey] || normalizedKey
   const match = (data.matches ?? []).find((entry) => entry.id === resolvedMatchId)
