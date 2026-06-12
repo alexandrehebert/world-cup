@@ -41,6 +41,7 @@ export interface TranslationSet {
     theme: string
     lightTheme: string
     darkTheme: string
+    colorblindTheme: string
     standings: string
     played: string
     won: string

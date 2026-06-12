@@ -43,6 +43,7 @@ export const fr: TranslationSet = {
     theme: 'Thème',
     lightTheme: 'Thème clair',
     darkTheme: 'Thème sombre',
+    colorblindTheme: 'Thème daltonien',
     standings: 'Classement',
     played: 'J',
     won: 'V',

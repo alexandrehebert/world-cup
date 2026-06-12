@@ -43,6 +43,7 @@ export const en: TranslationSet = {
     theme: 'Theme',
     lightTheme: 'Light theme',
     darkTheme: 'Dark theme',
+    colorblindTheme: 'Colorblind theme',
     standings: 'Standings',
     played: 'P',
     won: 'W',

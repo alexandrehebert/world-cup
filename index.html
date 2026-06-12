@@ -2,6 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      ;(() => {
+        try {
+          const storageKey = 'theme-preference'
+          const stored = window.localStorage.getItem(storageKey)
+          const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+          const theme = stored === 'light' || stored === 'dark' || stored === 'colorblind' ? stored : systemTheme
+
+          document.documentElement.setAttribute('data-theme', theme)
+          document.documentElement.style.colorScheme = theme === 'light' ? 'light' : 'dark'
+        } catch {
+          // Keep default CSS media-query behavior if storage is unavailable.
+        }
+      })()
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

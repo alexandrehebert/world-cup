@@ -1,11 +1,14 @@
 import { useTheme } from '../../contexts/theme-context'
+import { useLocale } from '../../contexts/locale-context'
 import { Icon } from '../../lib/icons'
 
 export const ThemeToggle = () => {
   const { setThemePreference, themePreference } = useTheme()
+  const { t } = useLocale()
   const themeOptions = [
-    { value: 'light', label: 'Light', icon: 'light_mode' },
-    { value: 'dark', label: 'Dark', icon: 'dark_mode' },
+    { value: 'light', label: t.labels.lightTheme, icon: 'light_mode' },
+    { value: 'dark', label: t.labels.darkTheme, icon: 'dark_mode' },
+    { value: 'colorblind', label: t.labels.colorblindTheme, icon: 'visibility' },
   ] as const
 
   return (

@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
-export type ThemePreference = 'light' | 'dark'
+export type ThemePreference = 'light' | 'dark' | 'colorblind'
 export type ResolvedTheme = 'light' | 'dark'
 
 interface ThemeContextValue {
@@ -29,7 +29,7 @@ const getStoredPreference = (): ThemePreference => {
 
   const storedPreference = window.localStorage.getItem(THEME_STORAGE_KEY)
 
-  if (storedPreference === 'light' || storedPreference === 'dark') {
+  if (storedPreference === 'light' || storedPreference === 'dark' || storedPreference === 'colorblind') {
     return storedPreference
   }
 
@@ -38,7 +38,7 @@ const getStoredPreference = (): ThemePreference => {
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [themePreference, setThemePreference] = useState<ThemePreference>(getStoredPreference)
-  const resolvedTheme: ResolvedTheme = themePreference
+  const resolvedTheme: ResolvedTheme = themePreference === 'light' ? 'light' : 'dark'
 
   useEffect(() => {
     const root = document.documentElement
@@ -50,7 +50,17 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   }, [resolvedTheme, themePreference])
 
   const toggleTheme = useCallback(() => {
-    setThemePreference((currentPreference) => (currentPreference === 'light' ? 'dark' : 'light'))
+    setThemePreference((currentPreference) => {
+      if (currentPreference === 'light') {
+        return 'dark'
+      }
+
+      if (currentPreference === 'dark') {
+        return 'colorblind'
+      }
+
+      return 'light'
+    })
   }, [])
 
   const value = useMemo(

@@ -105,6 +105,32 @@
     linear-gradient(180deg, #f6fcff 0%, #e8f5ff 55%, #def0ff 100%);
 }
 
+:root[data-theme='colorblind'] {
+  --bg: #0f1b2e;
+  --surface: #16263d;
+  --surface-strong: #223857;
+  --surface-soft: #132236;
+  --border: rgba(168, 202, 242, 0.24);
+  --border-strong: rgba(190, 219, 252, 0.38);
+  --text: #e2efff;
+  --text-strong: #f7fbff;
+  --text-muted: #b5cae6;
+  --text-soft: #8ea8ca;
+  /* Color-blind friendly accent (orange/blue contrast) */
+  --accent: #ffb000;
+  --accent-muted: rgba(255, 176, 0, 0.2);
+  --accent-text: #ffd886;
+  --accent-border: rgba(255, 176, 0, 0.52);
+  --tab-active-bg: var(--accent-muted);
+  --tab-active-text: var(--accent-text);
+  --tab-active-border: var(--accent-border);
+  --tab-idle-hover-bg: rgba(190, 219, 252, 0.14);
+  --page-bg:
+    radial-gradient(circle at 16% -8%, rgba(255, 176, 0, 0.17), transparent 35%),
+    radial-gradient(circle at 88% 10%, rgba(70, 140, 220, 0.2), transparent 43%),
+    linear-gradient(160deg, #0a1424 0%, #0f1d33 52%, #12233b 100%);
+}
+
 * {
   box-sizing: border-box;
 }
