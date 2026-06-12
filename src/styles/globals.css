@@ -22,7 +22,8 @@
   --tab-active-border: var(--accent-border);
   --tab-idle-hover-bg: rgba(153, 201, 255, 0.13);
   --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 93%, white 7%);
-  --calendar-live-hover-bg: color-mix(in srgb, var(--accent-muted) 93%, white 7%);
+  --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 82%, #5d87c9 18%);
+  --calendar-live-hover-bg: color-mix(in srgb, var(--calendar-live-bg) 88%, white 12%);
   --calendar-finished-hover-bg: color-mix(in srgb, var(--surface-soft) 93%, white 7%);
   --calendar-favorite-hover-bg: color-mix(in srgb, var(--accent-muted) 93%, white 7%);
   --font-sans: 'Manrope', sans-serif;
@@ -53,7 +54,8 @@
     --tab-active-border: var(--accent-border);
     --tab-idle-hover-bg: rgba(0, 102, 170, 0.1);
     --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 76%, white 24%);
-    --calendar-live-hover-bg: color-mix(in srgb, var(--accent-muted) 70%, white 30%);
+    --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 84%, #6a8dc3 16%);
+    --calendar-live-hover-bg: color-mix(in srgb, var(--calendar-live-bg) 88%, white 12%);
     --calendar-finished-hover-bg: color-mix(in srgb, var(--surface-soft) 74%, white 26%);
     --calendar-favorite-hover-bg: color-mix(in srgb, var(--accent-muted) 68%, white 32%);
     --page-bg:
@@ -83,7 +85,8 @@
   --tab-active-border: var(--accent-border);
   --tab-idle-hover-bg: rgba(153, 201, 255, 0.13);
   --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 93%, white 7%);
-  --calendar-live-hover-bg: color-mix(in srgb, var(--accent-muted) 93%, white 7%);
+  --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 82%, #5d87c9 18%);
+  --calendar-live-hover-bg: color-mix(in srgb, var(--calendar-live-bg) 88%, white 12%);
   --calendar-finished-hover-bg: color-mix(in srgb, var(--surface-soft) 93%, white 7%);
   --calendar-favorite-hover-bg: color-mix(in srgb, var(--accent-muted) 93%, white 7%);
   --page-bg:
@@ -112,7 +115,8 @@
   --tab-active-border: var(--accent-border);
   --tab-idle-hover-bg: rgba(0, 102, 170, 0.1);
   --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 76%, white 24%);
-  --calendar-live-hover-bg: color-mix(in srgb, var(--accent-muted) 70%, white 30%);
+  --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 84%, #6a8dc3 16%);
+  --calendar-live-hover-bg: color-mix(in srgb, var(--calendar-live-bg) 88%, white 12%);
   --calendar-finished-hover-bg: color-mix(in srgb, var(--surface-soft) 74%, white 26%);
   --calendar-favorite-hover-bg: color-mix(in srgb, var(--accent-muted) 68%, white 32%);
   --page-bg:
@@ -142,7 +146,8 @@
   --tab-active-border: var(--accent-border);
   --tab-idle-hover-bg: rgba(190, 219, 252, 0.14);
   --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 93%, white 7%);
-  --calendar-live-hover-bg: color-mix(in srgb, var(--accent-muted) 93%, white 7%);
+  --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 82%, #7c93b9 18%);
+  --calendar-live-hover-bg: color-mix(in srgb, var(--calendar-live-bg) 88%, white 12%);
   --calendar-finished-hover-bg: color-mix(in srgb, var(--surface-soft) 93%, white 7%);
   --calendar-favorite-hover-bg: color-mix(in srgb, var(--accent-muted) 93%, white 7%);
   --page-bg:

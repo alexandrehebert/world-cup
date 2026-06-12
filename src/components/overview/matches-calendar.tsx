@@ -38,7 +38,7 @@ const toDayKey = (year: number, month: number, day: number) => `${toMonthKey(yea
 
 const statusBadgeClass: Record<MatchRecord['status'], string> = {
   scheduled: 'bg-[var(--surface-strong)] text-[var(--text-soft)] hover:bg-[var(--calendar-scheduled-hover-bg)]',
-  live: 'bg-[var(--accent-muted)] text-[var(--accent-text)] hover:bg-[var(--calendar-live-hover-bg)]',
+  live: 'bg-[var(--calendar-live-bg)] text-[var(--text-soft)] hover:bg-[var(--calendar-live-hover-bg)]',
   finished: 'past-match-stripes bg-[var(--surface-soft)] text-[var(--text-muted)] hover:bg-[var(--calendar-finished-hover-bg)]',
 }
 
