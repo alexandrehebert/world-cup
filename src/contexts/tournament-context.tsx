@@ -20,7 +20,13 @@ export const TournamentProvider = ({ children, initialData }: { children: ReactN
 
   const loadRemoteTournament = useCallback(async (isCancelledRef?: { current: boolean }) => {
     try {
-      const response = await fetch('/api/tournament', { cache: 'no-store' })
+      const response = await fetch(`/api/tournament?ts=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'cache-control': 'no-cache',
+          pragma: 'no-cache',
+        },
+      })
 
       if (!response.ok) {
         return

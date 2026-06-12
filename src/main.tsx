@@ -17,7 +17,13 @@ const bootstrapTournamentData = async (): Promise<TournamentData | undefined> =>
   }
 
   try {
-    const response = await fetch('/api/tournament', { cache: 'no-store' })
+    const response = await fetch(`/api/tournament?ts=${Date.now()}`, {
+      cache: 'no-store',
+      headers: {
+        'cache-control': 'no-cache',
+        pragma: 'no-cache',
+      },
+    })
 
     if (!response.ok) {
       return undefined

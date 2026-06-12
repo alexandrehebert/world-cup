@@ -26,7 +26,13 @@ export const loadTournamentData = async () => {
 
   try {
     const blob = await head(TOURNAMENT_BLOB_PATH)
-    const response = await fetch(blob.url, { cache: 'no-store' })
+    const response = await fetch(blob.url, {
+      cache: 'no-store',
+      headers: {
+        'cache-control': 'no-cache',
+        pragma: 'no-cache',
+      },
+    })
 
     if (!response.ok) {
       throw new Error(`Failed to fetch blob data (${response.status})`)
