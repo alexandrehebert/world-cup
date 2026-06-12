@@ -46,9 +46,26 @@ export const saveTournamentData = async (data) => {
     return
   }
 
-  await put(TOURNAMENT_BLOB_PATH, JSON.stringify(data, null, 2), {
-    access: 'public',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-  })
+  const configuredAccess = (process.env.BLOB_OBJECT_ACCESS ?? '').toLowerCase()
+  const primaryAccess = configuredAccess === 'public' ? 'public' : 'private'
+  const fallbackAccess = primaryAccess === 'public' ? 'private' : 'public'
+  const body = JSON.stringify(data, null, 2)
+
+  try {
+    await put(TOURNAMENT_BLOB_PATH, body, {
+      access: primaryAccess,
+      contentType: 'application/json',
+      addRandomSuffix: false,
+    })
+  } catch (primaryError) {
+    try {
+      await put(TOURNAMENT_BLOB_PATH, body, {
+        access: fallbackAccess,
+        contentType: 'application/json',
+        addRandomSuffix: false,
+      })
+    } catch {
+      throw primaryError
+    }
+  }
 }

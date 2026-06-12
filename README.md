@@ -85,6 +85,7 @@ This project now supports a Vercel cron that runs every 5 minutes and updates ma
 ### Required Vercel environment variables
 
 - `BLOB_READ_WRITE_TOKEN`: token for Vercel Blob read/write.
+- `BLOB_OBJECT_ACCESS` (optional): `private` (default) or `public` for Blob writes.
 - `MATCH_RESULTS_URL` (optional): override source URL for match result updates.
 - `CRON_SECRET` (optional): secret used for manual or external cron endpoint calls.
 
