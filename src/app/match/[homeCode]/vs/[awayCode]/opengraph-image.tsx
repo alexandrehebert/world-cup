@@ -1,22 +1,24 @@
 import { ImageResponse } from 'next/og'
-import rawTournamentData from '../../../../../data/worldcup.json'
+import { loadTournamentData } from '../../../../../server/tournament-data'
+import type { TournamentData } from '../../../../../types/tournament'
 
+export const dynamic = 'force-dynamic'
 export const contentType = 'image/png'
 export const size = { width: 1200, height: 630 }
 export const alt = 'FIFA World Cup 2026 match preview'
 
-type MatchRecord = (typeof rawTournamentData.matches)[number]
-type TeamRecord = (typeof rawTournamentData.teams)[number]
-
-const teamsById = Object.fromEntries(rawTournamentData.teams.map((team: TeamRecord) => [team.id, team]))
+type MatchRecord = TournamentData['matches'][number]
+type TeamRecord = TournamentData['teams'][number]
 
 const normalizeCode = (value: string | undefined) => String(value ?? '').trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
 
-const findMatchByCodes = (homeCode: string, awayCode: string) => {
+type TeamsById = Record<string, TeamRecord>
+
+const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: string, awayCode: string) => {
   const normalizedHome = normalizeCode(homeCode)
   const normalizedAway = normalizeCode(awayCode)
 
-  return rawTournamentData.matches.find((match: MatchRecord) => {
+  return data.matches.find((match: MatchRecord) => {
     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
     const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
 
@@ -26,7 +28,9 @@ const findMatchByCodes = (homeCode: string, awayCode: string) => {
 
 export default async function Image({ params }: { params: Promise<{ homeCode: string; awayCode: string }> }) {
   const { homeCode, awayCode } = await params
-  const match = findMatchByCodes(homeCode, awayCode)
+  const tournamentData = await loadTournamentData()
+  const teamsById = Object.fromEntries(tournamentData.teams.map((team: TeamRecord) => [team.id, team]))
+  const match = findMatchByCodes(tournamentData, teamsById, homeCode, awayCode)
 
   const homeTeam = match?.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined
