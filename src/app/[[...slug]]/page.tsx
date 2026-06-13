@@ -10,15 +10,15 @@ type TeamRecord = TournamentData['teams'][number]
 
 const normalizeCode = (value: string | undefined) => String(value ?? '').trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
 
-const findMatchByCodes = (data: TournamentData, homeCode: string, awayCode: string) => {
+type TeamsById = Record<string, TeamRecord>
+
+const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: string, awayCode: string) => {
   const normalizedHome = normalizeCode(homeCode)
   const normalizedAway = normalizeCode(awayCode)
 
   if (!normalizedHome || !normalizedAway) {
     return null
   }
-
-  const teamsById = Object.fromEntries(data.teams.map((team: TeamRecord) => [team.id, team]))
 
   return data.matches.find((match: MatchRecord) => {
     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
@@ -29,13 +29,13 @@ const findMatchByCodes = (data: TournamentData, homeCode: string, awayCode: stri
 }
 
 const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string) => {
-  const match = findMatchByCodes(data, homeCode, awayCode)
+  const teamsById = Object.fromEntries(data.teams.map((team: TeamRecord) => [team.id, team]))
+  const match = findMatchByCodes(data, teamsById, homeCode, awayCode)
 
   if (!match) {
     return null
   }
 
-  const teamsById = Object.fromEntries(data.teams.map((team: TeamRecord) => [team.id, team]))
   const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
   const homeLabel = homeTeam?.name ?? homeTeam?.code ?? homeCode

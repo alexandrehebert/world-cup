@@ -12,11 +12,11 @@ type TeamRecord = TournamentData['teams'][number]
 
 const normalizeCode = (value: string | undefined) => String(value ?? '').trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
 
-const findMatchByCodes = (data: TournamentData, homeCode: string, awayCode: string) => {
+type TeamsById = Record<string, TeamRecord>
+
+const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: string, awayCode: string) => {
   const normalizedHome = normalizeCode(homeCode)
   const normalizedAway = normalizeCode(awayCode)
-
-  const teamsById = Object.fromEntries(data.teams.map((team: TeamRecord) => [team.id, team]))
 
   return data.matches.find((match: MatchRecord) => {
     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
@@ -30,7 +30,7 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
   const { homeCode, awayCode } = await params
   const tournamentData = await loadTournamentData()
   const teamsById = Object.fromEntries(tournamentData.teams.map((team: TeamRecord) => [team.id, team]))
-  const match = findMatchByCodes(tournamentData, homeCode, awayCode)
+  const match = findMatchByCodes(tournamentData, teamsById, homeCode, awayCode)
 
   const homeTeam = match?.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined
