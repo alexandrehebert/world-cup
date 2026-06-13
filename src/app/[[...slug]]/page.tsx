@@ -1,15 +1,16 @@
 import type { Metadata } from 'next'
-import rawTournamentData from '../../data/worldcup.json'
 import ClientApp from '../client-app'
+import { loadTournamentData } from '../../server/tournament-data'
+import type { TournamentData } from '../../types/tournament'
 
-type MatchRecord = (typeof rawTournamentData.matches)[number]
-type TeamRecord = (typeof rawTournamentData.teams)[number]
+export const dynamic = 'force-dynamic'
 
-const teamsById = Object.fromEntries(rawTournamentData.teams.map((team: TeamRecord) => [team.id, team]))
+type MatchRecord = TournamentData['matches'][number]
+type TeamRecord = TournamentData['teams'][number]
 
 const normalizeCode = (value: string | undefined) => String(value ?? '').trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
 
-const findMatchByCodes = (homeCode: string, awayCode: string) => {
+const findMatchByCodes = (data: TournamentData, homeCode: string, awayCode: string) => {
   const normalizedHome = normalizeCode(homeCode)
   const normalizedAway = normalizeCode(awayCode)
 
@@ -17,7 +18,9 @@ const findMatchByCodes = (homeCode: string, awayCode: string) => {
     return null
   }
 
-  return rawTournamentData.matches.find((match: MatchRecord) => {
+  const teamsById = Object.fromEntries(data.teams.map((team: TeamRecord) => [team.id, team]))
+
+  return data.matches.find((match: MatchRecord) => {
     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
     const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
 
@@ -25,13 +28,14 @@ const findMatchByCodes = (homeCode: string, awayCode: string) => {
   })
 }
 
-const getMatchMeta = (homeCode: string, awayCode: string) => {
-  const match = findMatchByCodes(homeCode, awayCode)
+const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string) => {
+  const match = findMatchByCodes(data, homeCode, awayCode)
 
   if (!match) {
     return null
   }
 
+  const teamsById = Object.fromEntries(data.teams.map((team: TeamRecord) => [team.id, team]))
   const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
   const homeLabel = homeTeam?.name ?? homeTeam?.code ?? homeCode
@@ -66,7 +70,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug?: st
     }
   }
 
-  const meta = getMatchMeta(homeCode, awayCode)
+  const tournamentData = await loadTournamentData()
+  const meta = getMatchMeta(tournamentData, homeCode, awayCode)
 
   if (!meta) {
     return {
