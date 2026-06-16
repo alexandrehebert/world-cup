@@ -271,7 +271,15 @@ const isPausedLiveDetail = (detail: string | null) => {
     return false
   }
 
-  return /(half[\s-]?time|mi-temps|pause|break|delayed|suspended|postponed|interrupted)/i.test(detail)
+  return /(^h\.?t\.?$|half[\s-]?time|mi-temps|pause|break|delayed|suspended|postponed|interrupted)/i.test(detail)
+}
+
+const isHalfTimeLiveDetail = (detail: string | null) => {
+  if (!detail) {
+    return false
+  }
+
+  return /(^h\.?t\.?$|half[\s-]?time|mi-temps)/i.test(detail)
 }
 
 const getExtrapolatedLiveClock = (match: MatchRecord, nowMs: number, espnDetail: string | null) => {
@@ -324,7 +332,7 @@ export const getMatchDisplayTime = (
 
   if (displayStatus === 'live') {
     if (isPausedLiveDetail(espnDetail)) {
-      return espnDetail
+      return isHalfTimeLiveDetail(espnDetail) ? labels.halfTime : espnDetail
     }
 
     const extrapolatedClock = getExtrapolatedLiveClock(match, nowMs, espnDetail)

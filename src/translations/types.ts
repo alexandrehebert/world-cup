@@ -54,6 +54,7 @@ export interface TranslationSet {
     status: string
     scheduled: string
     live: string
+    halfTime: string
     finished: string
     fullTime: string
     share: string
