@@ -105,7 +105,7 @@ export const MatchModal = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/65 px-4 py-4 backdrop-blur-sm sm:items-center sm:py-6"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/65 px-4 py-4 backdrop-blur-sm sm:py-6"
       role="presentation"
       onClick={() => setSelectedMatchId(null)}
     >

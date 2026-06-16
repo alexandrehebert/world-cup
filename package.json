@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "rm -rf .next",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

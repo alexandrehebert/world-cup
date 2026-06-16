@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og'
 import { loadTournamentData } from '../../../../../server/tournament-data'
+import { getDisplayMatchStatus, getMatchDisplayTime } from '../../../../../lib/format'
+import { en } from '../../../../../translations/en'
 import type { TournamentData } from '../../../../../types/tournament'
 
 export const dynamic = 'force-dynamic'
@@ -36,9 +38,11 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined
   const homeLabel = homeTeam?.name ?? homeTeam?.code ?? homeCode
   const awayLabel = awayTeam?.name ?? awayTeam?.code ?? awayCode
+  const displayStatus = match ? getDisplayMatchStatus(match) : null
+  const liveClock = match && displayStatus === 'live' ? getMatchDisplayTime(match, en.labels) : null
   const hasScore = typeof match?.home.score === 'number' && typeof match?.away.score === 'number'
   const scoreLine = hasScore ? `${match?.home.score}-${match?.away.score}` : 'VS'
-  const status = match ? (match.status === 'live' ? 'LIVE' : match.status === 'finished' ? 'FINISHED' : 'SCHEDULED') : 'MATCH'
+  const status = displayStatus === 'live' ? 'LIVE' : displayStatus === 'finished' ? 'FINISHED' : displayStatus === 'scheduled' ? 'SCHEDULED' : 'MATCH'
   const venue = match ? [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ') : 'FIFA World Cup 2026'
 
   return new ImageResponse(
@@ -58,7 +62,10 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: 2 }}>FIFA WORLD CUP 2026</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#f4c542' }}>{status}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: '#f4c542' }}>{status}</div>
+            {liveClock ? <div style={{ fontSize: 22, fontWeight: 700, color: '#7fe5c5' }}>{liveClock}</div> : null}
+          </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
