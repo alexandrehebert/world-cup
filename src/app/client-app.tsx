@@ -9,8 +9,9 @@ import { LocaleProvider } from '../contexts/locale-context'
 import { ThemeProvider } from '../contexts/theme-context'
 import { TimeProvider } from '../contexts/time-context'
 import { TournamentProvider } from '../contexts/tournament-context'
+import type { TournamentData } from '../types/tournament'
 
-export default function ClientApp() {
+export default function ClientApp({ initialData }: { initialData?: TournamentData }) {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function ClientApp() {
       <ThemeProvider>
         <TimeProvider>
           <LocaleProvider>
-            <TournamentProvider>
+            <TournamentProvider initialData={initialData}>
               <DashboardProvider>
                 <App />
               </DashboardProvider>

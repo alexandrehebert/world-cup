@@ -103,6 +103,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug?: st
   }
 }
 
-export default function CatchAllPage() {
-  return <ClientApp />
+export default async function CatchAllPage() {
+  const tournamentData = await loadTournamentData()
+
+  return <ClientApp initialData={tournamentData} />
 }

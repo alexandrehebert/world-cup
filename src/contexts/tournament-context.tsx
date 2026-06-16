@@ -8,6 +8,12 @@ import type { TournamentData } from '../types/tournament'
 const localTournamentData = rawTournamentData as TournamentData
 const localTournamentModel = buildTournamentModel(localTournamentData)
 
+const getUpdatedAtMs = (value: string | undefined) => {
+  const timestamp = Date.parse(value ?? '')
+
+  return Number.isFinite(timestamp) ? timestamp : Number.NEGATIVE_INFINITY
+}
+
 const TournamentContext = createContext<TournamentModel | undefined>(undefined)
 
 export const TournamentProvider = ({ children, initialData }: { children: ReactNode; initialData?: TournamentData }) => {
@@ -37,7 +43,7 @@ export const TournamentProvider = ({ children, initialData }: { children: ReactN
 
       if (!isCancelledRef?.current) {
         setValue((previousValue) => {
-          if (previousValue.meta.updatedAt === payload.meta.updatedAt) {
+          if (getUpdatedAtMs(payload.meta.updatedAt) <= getUpdatedAtMs(previousValue.meta.updatedAt)) {
             return previousValue
           }
 
