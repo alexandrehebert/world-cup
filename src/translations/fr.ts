@@ -56,6 +56,7 @@ export const fr: TranslationSet = {
     status: 'Statut',
     scheduled: 'Programmé',
     live: 'En direct',
+    halfTime: 'Mi-temps',
     finished: 'Terminé',
     fullTime: 'Temps réglementaire',
     share: 'Partager',

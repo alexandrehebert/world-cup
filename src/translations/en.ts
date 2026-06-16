@@ -56,6 +56,7 @@ export const en: TranslationSet = {
     status: 'Status',
     scheduled: 'Scheduled',
     live: 'Live',
+    halfTime: 'Half-time',
     finished: 'Finished',
     fullTime: 'Full-time',
     share: 'Share',

@@ -2,6 +2,7 @@ import type { LocaleCode, MatchRecord } from '../types/tournament'
 import type { TranslationSet } from '../translations/types'
 
 const LIVE_INFERENCE_WINDOW_MS = 3 * 60 * 60 * 1000
+const HALF_TIME_DETAIL_PATTERN = /(^h\.?t\.?$|half[\s-]?time|mi-temps)/i
 
 const getTodayKey = (timeZone: string) =>
   new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date())
@@ -271,7 +272,18 @@ const isPausedLiveDetail = (detail: string | null) => {
     return false
   }
 
-  return /(half[\s-]?time|mi-temps|pause|break|delayed|suspended|postponed|interrupted)/i.test(detail)
+  return (
+    HALF_TIME_DETAIL_PATTERN.test(detail) ||
+    /(pause|break|delayed|suspended|postponed|interrupted)/i.test(detail)
+  )
+}
+
+const isHalfTimeLiveDetail = (detail: string | null) => {
+  if (!detail) {
+    return false
+  }
+
+  return HALF_TIME_DETAIL_PATTERN.test(detail)
 }
 
 const getExtrapolatedLiveClock = (match: MatchRecord, nowMs: number, espnDetail: string | null) => {
@@ -324,7 +336,7 @@ export const getMatchDisplayTime = (
 
   if (displayStatus === 'live') {
     if (isPausedLiveDetail(espnDetail)) {
-      return espnDetail
+      return isHalfTimeLiveDetail(espnDetail) ? labels.halfTime : espnDetail
     }
 
     const extrapolatedClock = getExtrapolatedLiveClock(match, nowMs, espnDetail)
