@@ -11,7 +11,14 @@ import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
 import { StatusPill } from '../ui/status-pill'
+import { FeedbackPopup } from '../ui/feedback-popup'
 import type { MatchOutcome } from '../../types/predictions'
+
+type PredictionValidationIssue = 'outcome' | 'scores'
+type PredictionErrorState = {
+  message: string
+  issue?: PredictionValidationIssue
+}
 
 const inferOutcomeFromScores = (homeRaw: string, awayRaw: string): MatchOutcome | null => {
   const homeValue = homeRaw.trim()
@@ -75,7 +82,7 @@ export const MatchModal = () => {
   const [scoreInput, setScoreInput] = useState({ home: '', away: '' })
   const [draftMatchId, setDraftMatchId] = useState<string | null>(null)
   const [isDraftDirty, setIsDraftDirty] = useState(false)
-  const [predictionError, setPredictionError] = useState<string | null>(null)
+  const [predictionError, setPredictionError] = useState<PredictionErrorState | null>(null)
   const { matchesById, teamsById } = useTournament()
   const match = selectedMatchId ? matchesById[selectedMatchId] : undefined
   const existingPrediction = match ? predictionsByMatch[match.id] : undefined
@@ -155,7 +162,8 @@ export const MatchModal = () => {
   const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
   const displayTime = displayStatus === 'live' ? getMatchDisplayTime(match, t.labels, nowMs, locale) : localTime
   const venueUtcOffset = getUtcOffsetLabel(match.kickoff, match.venue.timeZone)
-  const venueClock = new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+  const dateLocaleByLanguage = { en: 'en-GB', fr: 'fr-FR' } as const
+  const venueClock = new Intl.DateTimeFormat(dateLocaleByLanguage[locale], {
     hour: '2-digit',
     minute: '2-digit',
     timeZone: match.venue.timeZone,
@@ -168,8 +176,14 @@ export const MatchModal = () => {
   const isDraftSyncedToMatch = draftMatchId === match.id
   const draftOutcome = isDraftSyncedToMatch ? selectedOutcome : (persistedOutcome ?? null)
   const draftScoreInput = isDraftSyncedToMatch ? scoreInput : { home: persistedHomeScore, away: persistedAwayScore }
+  const hasDraftHomeScore = draftScoreInput.home.trim().length > 0
+  const hasDraftAwayScore = draftScoreInput.away.trim().length > 0
   const inferredDraftOutcome = inferOutcomeFromScores(draftScoreInput.home, draftScoreInput.away)
   const effectiveOutcome = inferredDraftOutcome ?? draftOutcome
+  const isOutcomeInvalid = predictionError?.issue === 'outcome' && !effectiveOutcome
+  const isScoresInvalid = predictionError?.issue === 'scores'
+  const isHomeScoreInvalid = isScoresInvalid && !hasDraftHomeScore && hasDraftAwayScore
+  const isAwayScoreInvalid = isScoresInvalid && !hasDraftAwayScore && hasDraftHomeScore
   const hasPredictionChanges =
     isDraftDirty &&
     isDraftSyncedToMatch &&
@@ -178,24 +192,27 @@ export const MatchModal = () => {
       draftScoreInput.away.trim() !== persistedAwayScore)
 
   const quickOptions: Array<{ value: MatchOutcome; label: string }> = [
-    { value: 'home', label: homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'Home' },
-    { value: 'draw', label: locale === 'fr' ? 'Nul' : 'Draw' },
-    { value: 'away', label: awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'Away' },
+    { value: 'home', label: homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home },
+    { value: 'draw', label: t.labels.draw },
+    { value: 'away', label: awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away },
   ]
 
   const submitPrediction = async () => {
     const outcome = effectiveOutcome
 
     if (!outcome) {
-      setPredictionError(locale === 'fr' ? 'Choisis un gagnant ou nul.' : 'Pick a winner or draw first.')
+      setPredictionError({
+        message: t.labels.pickWinnerOrDrawFirst,
+        issue: 'outcome',
+      })
       return
     }
 
-    const hasHomeScore = draftScoreInput.home.trim().length > 0
-    const hasAwayScore = draftScoreInput.away.trim().length > 0
-
-    if ((hasHomeScore && !hasAwayScore) || (!hasHomeScore && hasAwayScore)) {
-      setPredictionError(locale === 'fr' ? 'Entre les deux scores, ou laisse vide.' : 'Enter both scores, or leave both empty.')
+    if ((hasDraftHomeScore && !hasDraftAwayScore) || (!hasDraftHomeScore && hasDraftAwayScore)) {
+      setPredictionError({
+        message: t.labels.enterBothScoresOrLeaveEmpty,
+        issue: 'scores',
+      })
       return
     }
 
@@ -205,7 +222,7 @@ export const MatchModal = () => {
       const saved = await savePrediction({
         matchId: match.id,
         outcome,
-        ...(hasHomeScore && hasAwayScore ? { homeScore: draftScoreInput.home, awayScore: draftScoreInput.away } : {}),
+        ...(hasDraftHomeScore && hasDraftAwayScore ? { homeScore: draftScoreInput.home, awayScore: draftScoreInput.away } : {}),
       })
 
       setSelectedOutcome(saved.outcome)
@@ -216,7 +233,9 @@ export const MatchModal = () => {
       setDraftMatchId(match.id)
       setIsDraftDirty(false)
     } catch (error) {
-      setPredictionError(error instanceof Error ? error.message : locale === 'fr' ? 'Erreur de sauvegarde.' : 'Save failed.')
+      setPredictionError({
+        message: error instanceof Error ? error.message : t.labels.saveFailed,
+      })
     }
   }
 
@@ -256,7 +275,7 @@ export const MatchModal = () => {
               onClick={() => void copyShareLink()}
               className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
               aria-label={t.labels.share}
-              title={isCopied ? 'Copied' : t.labels.share}
+              title={isCopied ? t.labels.copied : t.labels.share}
             >
               <Icon name={isCopied ? 'check' : 'share'} className={`text-[20px] ${isCopied ? 'text-[var(--accent-text)]' : ''}`.trim()} />
             </button>
@@ -264,7 +283,7 @@ export const MatchModal = () => {
               type="button"
               onClick={closeModal}
               className="cursor-pointer rounded-full p-1 text-[var(--text)] transition hover:text-[var(--text-strong)]"
-              aria-label="Close"
+              aria-label={t.labels.close}
             >
               <Icon name="close" className="text-[24px]" />
             </button>
@@ -304,10 +323,10 @@ export const MatchModal = () => {
                   {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                 </div>
                 <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'TBD'}</span>
+                  <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.tbd}</span>
                   {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                 </p>
-                <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? 'TBD'}</p>
+                <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? t.labels.tbd}</p>
               </div>
 
               <div className="flex flex-col items-center gap-1 px-2">
@@ -324,7 +343,7 @@ export const MatchModal = () => {
                     ) : null}
                   </>
                 ) : (
-                  <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">VS</p>
+                  <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">{t.labels.vs}</p>
                 )}
               </div>
 
@@ -333,10 +352,10 @@ export const MatchModal = () => {
                   {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                 </div>
                 <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'TBD'}</span>
+                  <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.tbd}</span>
                   {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                 </p>
-                <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? 'TBD'}</p>
+                <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? t.labels.tbd}</p>
               </div>
             </div>
           </div>
@@ -345,7 +364,7 @@ export const MatchModal = () => {
             <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                  {locale === 'fr' ? 'Pronostic' : 'Prediction'}
+                  {t.labels.prediction}
                 </p>
                 {user && hasPredictionChanges ? (
                   <div className="flex items-center gap-2">
@@ -359,19 +378,19 @@ export const MatchModal = () => {
                         setDraftMatchId(match.id)
                         setIsDraftDirty(false)
                       }}
-                      className="border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--text)] disabled:opacity-50"
+                      className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      {locale === 'fr' ? 'Annuler' : 'Cancel'}
+                      {t.labels.cancel}
                     </button>
                     <button
                       type="button"
-                      disabled={isSavingPrediction || !effectiveOutcome}
+                      disabled={isSavingPrediction}
                       onClick={() => {
                         void submitPrediction()
                       }}
-                      className="bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent-text)] disabled:opacity-50"
+                      className="cursor-pointer bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent-text)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      {locale === 'fr' ? 'Enregistrer' : 'Save'}
+                      {t.labels.save}
                     </button>
                   </div>
                 ) : null}
@@ -385,14 +404,14 @@ export const MatchModal = () => {
                         key={option.value}
                         type="button"
                         onClick={() => openAuthModal('login')}
-                        className="px-2 py-2 text-xs font-semibold text-[var(--text)] sm:text-sm bg-[var(--surface-soft)]"
+                        className="cursor-pointer bg-[var(--surface-soft)] px-2 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] sm:text-sm"
                       >
                         {option.label}
                       </button>
                     ))}
                   </div>
                   <p className="text-sm text-[var(--text-muted)]">
-                    {locale === 'fr' ? 'Connecte-toi pour enregistrer un pronostic.' : 'Sign in to save a prediction.'}
+                    {t.labels.signInToSavePrediction}
                   </p>
                 </div>
               ) : (
@@ -404,16 +423,17 @@ export const MatchModal = () => {
                         type="button"
                         disabled={isSavingPrediction}
                         onClick={() => {
+                          setPredictionError(null)
                           setDraftMatchId(match.id)
                           setSelectedOutcome(option.value)
                           setScoreInput({ home: '', away: '' })
                           setIsDraftDirty(true)
                         }}
-                        className={`px-2 py-2 text-xs font-semibold sm:text-sm ${
+                        className={`cursor-pointer px-2 py-2 text-xs font-semibold transition hover:brightness-105 sm:text-sm ${
                           draftOutcome === option.value
                             ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
                             : 'bg-[var(--surface-soft)] text-[var(--text)]'
-                        } disabled:opacity-50`}
+                        } ${isOutcomeInvalid ? 'ring-1 ring-rose-400' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
                       >
                         {option.label}
                       </button>
@@ -426,6 +446,7 @@ export const MatchModal = () => {
                       min={0}
                       value={draftScoreInput.home}
                       onChange={(event) => {
+                        setPredictionError(null)
                         const nextScoreInput = { ...draftScoreInput, home: event.target.value }
                         const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
                         setDraftMatchId(match.id)
@@ -435,15 +456,18 @@ export const MatchModal = () => {
                           setSelectedOutcome(inferredOutcome)
                         }
                       }}
-                      placeholder={homeTeam?.code ?? 'HOME'}
-                      className="w-full border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-sm"
+                      placeholder={homeTeam?.code ?? t.labels.home}
+                      className={`w-full border bg-[var(--surface-strong)] px-2 py-1 text-sm ${
+                        isHomeScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
+                      }`}
                     />
-                    <span className="self-center text-center text-sm text-[var(--text-muted)]">Scores</span>
+                    <span className="self-center text-center text-sm text-[var(--text-muted)]">{t.labels.scores}</span>
                     <input
                       type="number"
                       min={0}
                       value={draftScoreInput.away}
                       onChange={(event) => {
+                        setPredictionError(null)
                         const nextScoreInput = { ...draftScoreInput, away: event.target.value }
                         const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
                         setDraftMatchId(match.id)
@@ -453,12 +477,13 @@ export const MatchModal = () => {
                           setSelectedOutcome(inferredOutcome)
                         }
                       }}
-                      placeholder={awayTeam?.code ?? 'AWAY'}
-                      className="w-full border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-sm"
+                      placeholder={awayTeam?.code ?? t.labels.away}
+                      className={`w-full border bg-[var(--surface-strong)] px-2 py-1 text-sm ${
+                        isAwayScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
+                      }`}
                     />
                   </div>
 
-                  {predictionError ? <p className="text-sm text-rose-400">{predictionError}</p> : null}
                 </>
               )}
             </div>
@@ -480,6 +505,11 @@ export const MatchModal = () => {
           </div>
         </div>
       </div>
+      <FeedbackPopup
+        message={predictionError?.message ?? null}
+        onDismiss={() => setPredictionError(null)}
+        dismissLabel={t.labels.close}
+      />
     </div>
   )
 }

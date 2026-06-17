@@ -112,6 +112,29 @@ export interface TranslationSet {
     noPredictionMatches: string
     player: string
     predictions: string
+    prediction: string
+    draw: string
+    cancel: string
+    save: string
+    loadingSession: string
+    signInToAccessPredictions: string
+    signInToSavePrediction: string
+    predictionTrend: string
+    players: string
+    scores: string
+    copied: string
+    home: string
+    away: string
+    tbd: string
+    vs: string
+    predictionSuccessful: string
+    predictionPending: string
+    predictionUnsuccessful: string
+    predictionClosedStarted: string
+    pickWinnerOrDrawFirst: string
+    enterBothScoresOrLeaveEmpty: string
+    unableToSavePrediction: string
+    saveFailed: string
   }
   teams: Record<string, string>
   groups: Record<string, string>

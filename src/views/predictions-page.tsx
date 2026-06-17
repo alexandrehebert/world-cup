@@ -7,9 +7,16 @@ import { useNow } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
 import { formatMatchDate } from '../lib/format'
 import { Icon } from '../lib/icons'
+import { FeedbackPopup } from '../components/ui/feedback-popup'
 import type { MatchOutcome, PredictionRecord } from '../types/predictions'
 
-const drawLabelByLocale = (locale: 'en' | 'fr') => (locale === 'fr' ? 'Nul' : 'Draw')
+type PredictionValidationIssue = 'outcome' | 'scores'
+type PredictionErrorState = {
+  message: string
+  matchId?: string
+  issue?: PredictionValidationIssue
+}
+
 const inferOutcomeFromScores = (homeRaw: string, awayRaw: string): MatchOutcome | null => {
   const homeValue = homeRaw.trim()
   const awayValue = awayRaw.trim()
@@ -48,10 +55,10 @@ export const PredictionsPage = () => {
   const { upcomingMatches, teamsById } = useTournament()
   const nowMs = useNow()
   const [selectedOutcomes, setSelectedOutcomes] = useState<Record<string, MatchOutcome>>({})
-  const [predictionError, setPredictionError] = useState<string | null>(null)
+  const [predictionError, setPredictionError] = useState<PredictionErrorState | null>(null)
   const [scoreInputs, setScoreInputs] = useState<Record<string, { home: string; away: string }>>({})
   const [dirtyMatches, setDirtyMatches] = useState<Record<string, boolean>>({})
-  const drawLabel = drawLabelByLocale(locale)
+  const drawLabel = t.labels.draw
 
   const predictionOpenMatches = useMemo(() => {
     return upcomingMatches
@@ -93,9 +100,11 @@ export const PredictionsPage = () => {
   const submitPrediction = async (matchId: string, kickoffMs: number) => {
     if (kickoffMs <= nowMs) {
       setPredictionError(
-        locale === 'fr'
-          ? 'Ce match a commencé. Les pronostics sont fermés.'
-          : 'This match has started. Predictions are closed.',
+        {
+          message:
+            t.labels.predictionClosedStarted,
+          matchId,
+        },
       )
       return
     }
@@ -107,12 +116,20 @@ export const PredictionsPage = () => {
     const outcome = inferredOutcome ?? selectedOutcomes[matchId]
 
     if (!outcome) {
-      setPredictionError(locale === 'fr' ? 'Choisis un gagnant ou nul.' : 'Pick a winner or draw first.')
+      setPredictionError({
+        message: t.labels.pickWinnerOrDrawFirst,
+        matchId,
+        issue: 'outcome',
+      })
       return
     }
 
     if ((hasHomeScore && !hasAwayScore) || (!hasHomeScore && hasAwayScore)) {
-      setPredictionError(locale === 'fr' ? 'Entre les deux scores, ou laisse vide.' : 'Enter both scores, or leave both empty.')
+      setPredictionError({
+        message: t.labels.enterBothScoresOrLeaveEmpty,
+        matchId,
+        issue: 'scores',
+      })
       return
     }
 
@@ -135,7 +152,10 @@ export const PredictionsPage = () => {
       }))
       setDirtyMatches((current) => ({ ...current, [matchId]: false }))
     } catch (error) {
-      setPredictionError(error instanceof Error ? error.message : 'Unable to save prediction')
+      setPredictionError({
+        message: error instanceof Error ? error.message : t.labels.unableToSavePrediction,
+        matchId,
+      })
     }
   }
 
@@ -147,27 +167,25 @@ export const PredictionsPage = () => {
 
       {isLoading ? (
         <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">
-          {locale === 'fr' ? 'Chargement de la session...' : 'Loading session...'}
+          {t.labels.loadingSession}
         </div>
       ) : !user ? (
         <div className="space-y-4 bg-[var(--surface)] p-4">
           <p className="text-sm text-[var(--text-muted)]">
-            {locale === 'fr'
-              ? 'Connecte-toi ou crée un compte pour accéder aux pronostics.'
-              : 'Sign in or create an account to access predictions.'}
+            {t.labels.signInToAccessPredictions}
           </p>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => openAuthModal('login')}
-              className="bg-[var(--accent-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-text)]"
+              className="cursor-pointer bg-[var(--accent-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-text)] transition hover:brightness-105"
             >
               {t.labels.signIn}
             </button>
             <button
               type="button"
               onClick={() => openAuthModal('register')}
-              className="bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)]"
+              className="cursor-pointer bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)]"
             >
               {t.labels.createAccount}
             </button>
@@ -175,7 +193,11 @@ export const PredictionsPage = () => {
         </div>
       ) : null}
 
-      {predictionError ? <p className="text-sm text-rose-400">{predictionError}</p> : null}
+      <FeedbackPopup
+        message={predictionError?.message ?? null}
+        onDismiss={() => setPredictionError(null)}
+        dismissLabel={t.labels.close}
+      />
 
       {user && !isPredictionsLoading && predictionOpenMatches.length === 0 ? (
         <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{t.labels.noPredictionMatches}</div>
@@ -186,8 +208,8 @@ export const PredictionsPage = () => {
           {predictionOpenMatches.map((match) => {
             const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
             const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-            const homeLabel = homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'TBD'
-            const awayLabel = awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'TBD'
+            const homeLabel = homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.tbd
+            const awayLabel = awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.tbd
             const prediction: PredictionRecord | undefined = predictionsByMatch[match.id]
             const predictionDistribution = predictionDistributionsByMatch[match.id] ?? {
               matchId: match.id,
@@ -211,10 +233,7 @@ export const PredictionsPage = () => {
             } as const
             const heatOpacity = totalPredictions > 0 ? 0.25 + maxShare * 0.55 : 0.2
             const trendPositionPercent = Math.round((homeShare * 0 + drawShare * 50 + awayShare * 100) * 10) / 10
-            const trendTooltip =
-              locale === 'fr'
-                ? `${homeLabel}: ${Math.round(homeShare * 100)}% • Nul: ${Math.round(drawShare * 100)}% • ${awayLabel}: ${Math.round(awayShare * 100)}%`
-                : `${homeLabel}: ${Math.round(homeShare * 100)}% • Draw: ${Math.round(drawShare * 100)}% • ${awayLabel}: ${Math.round(awayShare * 100)}%`
+            const trendTooltip = `${homeLabel}: ${Math.round(homeShare * 100)}% • ${drawLabel}: ${Math.round(drawShare * 100)}% • ${awayLabel}: ${Math.round(awayShare * 100)}%`
             const { localDateTime } = formatMatchDate(match.kickoff, locale, Intl.DateTimeFormat().resolvedOptions().timeZone, t.labels.today)
             const isSaving = savingMatchId === match.id
             const isPredictionClosed = new Date(match.kickoff).getTime() <= nowMs
@@ -225,6 +244,11 @@ export const PredictionsPage = () => {
             const scoreInput = scoreInputs[match.id] ?? { home: persistedHomeScore, away: persistedAwayScore }
             const draftHomeScore = scoreInput.home.trim()
             const draftAwayScore = scoreInput.away.trim()
+            const activeValidationIssue = predictionError?.matchId === match.id ? predictionError.issue : undefined
+            const isOutcomeInvalid = activeValidationIssue === 'outcome' && !selectedOutcome
+            const isScoresInvalid = activeValidationIssue === 'scores'
+            const isHomeScoreInvalid = isScoresInvalid && draftHomeScore.length === 0 && draftAwayScore.length > 0
+            const isAwayScoreInvalid = isScoresInvalid && draftAwayScore.length === 0 && draftHomeScore.length > 0
             const isDraftDirty = Boolean(dirtyMatches[match.id])
             const hasChanges =
               isDraftDirty &&
@@ -251,18 +275,11 @@ export const PredictionsPage = () => {
               unsuccessful: 'bg-[var(--surface-soft)] text-rose-400',
             } as const
 
-            const statusTitleByState =
-              locale === 'fr'
-                ? {
-                    successful: 'Pronostic réussi',
-                    pending: 'Pronostic en attente (match à venir)',
-                    unsuccessful: 'Pronostic non réussi',
-                  }
-                : {
-                    successful: 'Successful prediction',
-                    pending: 'Prediction saved (match in the future)',
-                    unsuccessful: 'Unsuccessful prediction',
-                  }
+            const statusTitleByState = {
+              successful: t.labels.predictionSuccessful,
+              pending: t.labels.predictionPending,
+              unsuccessful: t.labels.predictionUnsuccessful,
+            } as const
             return (
               <article key={match.id} className="space-y-3 bg-[var(--surface)] p-4">
                 <div className="flex items-start justify-between gap-3">
@@ -273,7 +290,7 @@ export const PredictionsPage = () => {
                     <p className="text-xs text-[var(--text-muted)]">{localDateTime}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
-                    {predictionStatus ? (
+                    {predictionStatus && !hasChanges ? (
                       <span
                         title={statusTitleByState[predictionStatus]}
                         className={`inline-flex h-5 w-5 items-center justify-center rounded-full ${statusClassByState[predictionStatus]}`}
@@ -303,19 +320,19 @@ export const PredictionsPage = () => {
                             }))
                             setDirtyMatches((current) => ({ ...current, [match.id]: false }))
                           }}
-                          className="border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--text)] disabled:opacity-50"
+                          className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          {locale === 'fr' ? 'Annuler' : 'Cancel'}
+                          {t.labels.cancel}
                         </button>
                         <button
                           type="button"
-                          disabled={isSaving || !selectedOutcome || isPredictionClosed}
+                          disabled={isSaving || isPredictionClosed}
                           onClick={() => {
                             void submitPrediction(match.id, new Date(match.kickoff).getTime())
                           }}
-                          className="bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent-text)] disabled:opacity-50"
+                          className="cursor-pointer bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent-text)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          {locale === 'fr' ? 'Enregistrer' : 'Save'}
+                          {t.labels.save}
                         </button>
                       </>
                     ) : null}
@@ -335,6 +352,9 @@ export const PredictionsPage = () => {
                       type="button"
                       disabled={isSaving}
                       onClick={() => {
+                        if (predictionError?.matchId === match.id) {
+                          setPredictionError(null)
+                        }
                         setSelectedOutcomes((current) => ({ ...current, [match.id]: item.value }))
                         setScoreInputs((current) => ({
                           ...current,
@@ -342,11 +362,11 @@ export const PredictionsPage = () => {
                         }))
                         setDirtyMatches((current) => ({ ...current, [match.id]: true }))
                       }}
-                      className={`w-full px-2 py-2 text-xs font-semibold sm:text-sm ${
+                      className={`w-full cursor-pointer px-2 py-2 text-xs font-semibold transition hover:brightness-105 sm:text-sm ${
                         selectedOutcome === item.value
                           ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
                           : 'bg-[var(--surface-soft)] text-[var(--text)]'
-                      }`}
+                      } ${isOutcomeInvalid ? 'ring-1 ring-rose-400' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
                     >
                       {item.label}
                     </button>
@@ -356,6 +376,9 @@ export const PredictionsPage = () => {
                     min={0}
                     value={scoreInput.home}
                     onChange={(event) => {
+                      if (predictionError?.matchId === match.id) {
+                        setPredictionError(null)
+                      }
                       const nextScoreInput = { ...scoreInput, home: event.target.value }
                       const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
                       setScoreInputs((current) => ({
@@ -367,15 +390,20 @@ export const PredictionsPage = () => {
                         setSelectedOutcomes((current) => ({ ...current, [match.id]: inferredOutcome }))
                       }
                     }}
-                    placeholder={homeTeam?.code ?? 'HOME'}
-                    className="w-full border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-sm"
+                    placeholder={homeTeam?.code ?? t.labels.home}
+                    className={`w-full border bg-[var(--surface-strong)] px-2 py-1 text-sm ${
+                      isHomeScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
+                    }`}
                   />
-                  <span className="self-center text-center text-sm text-[var(--text-muted)]">Scores</span>
+                  <span className="self-center text-center text-sm text-[var(--text-muted)]">{t.labels.scores}</span>
                   <input
                     type="number"
                     min={0}
                     value={scoreInput.away}
                     onChange={(event) => {
+                      if (predictionError?.matchId === match.id) {
+                        setPredictionError(null)
+                      }
                       const nextScoreInput = { ...scoreInput, away: event.target.value }
                       const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
                       setScoreInputs((current) => ({
@@ -387,16 +415,18 @@ export const PredictionsPage = () => {
                         setSelectedOutcomes((current) => ({ ...current, [match.id]: inferredOutcome }))
                       }
                     }}
-                    placeholder={awayTeam?.code ?? 'AWAY'}
-                    className="w-full border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-sm"
+                    placeholder={awayTeam?.code ?? t.labels.away}
+                    className={`w-full border bg-[var(--surface-strong)] px-2 py-1 text-sm ${
+                      isAwayScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
+                    }`}
                   />
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                    <span>{locale === 'fr' ? 'Tendance des pronostics' : 'Prediction trend'}</span>
+                    <span>{t.labels.predictionTrend}</span>
                     <span>
-                      {totalPredictions} {locale === 'fr' ? 'joueurs' : 'players'}
+                      {totalPredictions} {t.labels.players}
                     </span>
                   </div>
                   <div title={trendTooltip} className="relative h-2 overflow-hidden rounded bg-[var(--surface-soft)]">
