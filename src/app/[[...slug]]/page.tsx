@@ -48,6 +48,7 @@ const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string) 
   const displayStatus = getDisplayMatchStatus(match)
   const status = displayStatus === 'live' ? 'Live' : displayStatus === 'finished' ? 'Finished' : 'Scheduled'
   const utcDateStr = displayStatus === 'scheduled' && match.kickoff
+    // localTime with timeZone:'UTC' returns the time with GMT/UTC abbreviation
     ? formatMatchDate(match.kickoff, 'en', 'UTC').localTime + ' UTC'
     : null
   const description = [

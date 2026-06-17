@@ -45,9 +45,10 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
   const status = displayStatus === 'live' ? 'LIVE' : displayStatus === 'finished' ? 'FINISHED' : displayStatus === 'scheduled' ? 'SCHEDULED' : 'MATCH'
   const venue = match ? [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ') : 'FIFA World Cup 2026'
 
-  const isScheduled = displayStatus === 'scheduled' && match?.kickoff
-  const stadiumDates = isScheduled ? formatMatchDate(match!.kickoff, 'en', match!.venue?.timeZone ?? 'UTC') : null
-  const utcDates = isScheduled ? formatMatchDate(match!.kickoff, 'en', 'UTC') : null
+  const scheduledKickoff = displayStatus === 'scheduled' ? match?.kickoff : undefined
+  const stadiumDates = scheduledKickoff ? formatMatchDate(scheduledKickoff, 'en', match?.venue?.timeZone ?? 'UTC') : null
+  const utcDates = scheduledKickoff ? formatMatchDate(scheduledKickoff, 'en', 'UTC') : null
+  // localTime with timeZone:'UTC' returns the time with GMT/UTC abbreviation
   const stadiumLocalTime = stadiumDates?.localTime ?? null
   const utcDateTime = utcDates ? `${utcDates.localTime} (UTC)` : null
 
