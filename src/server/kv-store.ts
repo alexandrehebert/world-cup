@@ -232,7 +232,7 @@ export const setPredictionPoints = async (userId: string, matchId: string, nextP
 
   const previousPoints = prediction.pointsAwarded
 
-  if (previousPoints === nextPoints) {
+  if (previousPoints === nextPoints && prediction.scoredAt) {
     return false
   }
 
