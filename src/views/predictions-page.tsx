@@ -17,6 +17,50 @@ type PredictionErrorState = {
   issue?: PredictionValidationIssue
 }
 
+const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : 'en-GB')
+
+const getMatchDayKey = (kickoff: string, timeZone?: string) => {
+  const date = new Date(kickoff)
+  const resolvedTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+
+  return new Intl.DateTimeFormat('en-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: resolvedTimeZone,
+  }).format(date)
+}
+
+const formatNextKickoffCountdown = (kickoffMs: number, nowMs: number, locale: ReturnType<typeof useLocale>['locale']) => {
+  const minutes = Math.max(1, Math.ceil((kickoffMs - nowMs) / 60000))
+
+  if (minutes < 60) {
+    if (locale === 'fr') {
+      return `dans ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+    }
+
+    return `in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+  }
+
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  if (hours < 24) {
+    if (locale === 'fr') {
+      return `dans ${hours} h${remainingMinutes > 0 ? ` ${remainingMinutes} min` : ''}`
+    }
+
+    return `in ${hours}h${remainingMinutes > 0 ? ` ${remainingMinutes}m` : ''}`
+  }
+
+  const days = Math.floor(hours / 24)
+  const remainingHours = hours % 24
+  if (locale === 'fr') {
+    return `dans ${days} ${days === 1 ? 'jour' : 'jours'}${remainingHours > 0 ? ` ${remainingHours} h` : ''}`
+  }
+
+  return `in ${days} ${days === 1 ? 'day' : 'days'}${remainingHours > 0 ? ` ${remainingHours}h` : ''}`
+}
+
 const inferOutcomeFromScores = (homeRaw: string, awayRaw: string): MatchOutcome | null => {
   const homeValue = homeRaw.trim()
   const awayValue = awayRaw.trim()
@@ -74,6 +118,47 @@ export const PredictionsPage = () => {
       })
       .sort((first, second) => first.kickoff.localeCompare(second.kickoff))
   }, [upcomingMatches, nowMs, teamsById])
+
+  const nextMatchMessage = useMemo(() => {
+    const nextMatch = predictionOpenMatches[0]
+    if (!nextMatch) {
+      return null
+    }
+
+    const kickoffMs = new Date(nextMatch.kickoff).getTime()
+    const countdown = formatNextKickoffCountdown(kickoffMs, nowMs, locale)
+    return locale === 'fr' ? `Prochain match ${countdown}` : `Next match ${countdown}`
+  }, [locale, nowMs, predictionOpenMatches])
+
+  const groupedPredictionOpenMatches = useMemo(() => {
+    const dateLocale = getDateLocale(locale)
+    const groups = new Map<string, { dayLabel: string; matches: typeof predictionOpenMatches }>()
+    const todayKey = getMatchDayKey(new Date().toISOString())
+
+    for (const match of predictionOpenMatches) {
+      const date = new Date(match.kickoff)
+      const resolvedTimeZone = match.venue.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+      const dayKey = getMatchDayKey(match.kickoff, match.venue.timeZone)
+      const existingGroup = groups.get(dayKey)
+
+      if (existingGroup) {
+        existingGroup.matches.push(match)
+        continue
+      }
+
+      groups.set(dayKey, {
+        dayLabel: dayKey === todayKey
+          ? t.labels.today
+          : new Intl.DateTimeFormat(dateLocale, {
+              dateStyle: 'full',
+              timeZone: resolvedTimeZone,
+            }).format(date),
+        matches: [match],
+      })
+    }
+
+    return [...groups.values()]
+  }, [locale, predictionOpenMatches, t.labels.today])
 
   useEffect(() => {
     setSelectedOutcomes(
@@ -177,6 +262,12 @@ export const PredictionsPage = () => {
         <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.predictions}</h2>
       </div>
 
+      {user && !isPredictionsLoading && nextMatchMessage ? (
+        <div className="bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--accent-text)]">
+          {nextMatchMessage}
+        </div>
+      ) : null}
+
       {isLoading ? (
         <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">
           {t.labels.loadingSession}
@@ -216,8 +307,15 @@ export const PredictionsPage = () => {
       ) : null}
 
       {user && !isPredictionsLoading ? (
-        <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
-          {predictionOpenMatches.map((match) => {
+        <div className="space-y-6">
+          {groupedPredictionOpenMatches.map((group) => (
+            <section key={group.dayLabel}>
+              <div className="mb-3 flex items-center gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">{group.dayLabel}</p>
+                <span className="flex-1 border-t border-[var(--border)]" />
+              </div>
+              <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+                {group.matches.map((match) => {
             const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
             const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
             const homeLabel = homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.tbd
@@ -295,7 +393,7 @@ export const PredictionsPage = () => {
               pending: t.labels.predictionPending,
               unsuccessful: t.labels.predictionUnsuccessful,
             } as const
-            return (
+                  return (
               <article key={match.id} className="space-y-3 bg-[var(--surface)] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
@@ -495,9 +593,12 @@ export const PredictionsPage = () => {
                     ) : null}
                   </div>
                 </div>
-              </article>
-            )
-          })}
+                  </article>
+                  )
+                })}
+              </div>
+            </section>
+          ))}
         </div>
       ) : null}
     </section>
