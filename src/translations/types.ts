@@ -111,6 +111,8 @@ export interface TranslationSet {
     saveScorePrediction: string
     predictScores: string
     noPredictionMatches: string
+    pastAndLivePredictions: string
+    noPastPredictions: string
     player: string
     predictions: string
     prediction: string

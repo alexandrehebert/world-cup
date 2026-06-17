@@ -1,266 +1,119 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useAuth } from '../contexts/auth-context'
 import { useLocale } from '../contexts/locale-context'
 import { usePredictions } from '../contexts/predictions-context'
 import { useNow } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
-import { formatMatchDate } from '../lib/format'
-import { Icon } from '../lib/icons'
+import { ClosedMatchCard } from '../components/predictions/closed-match-card'
+import { OpenMatchCard } from '../components/predictions/open-match-card'
+import { usePredictionDrafts } from '../components/predictions/use-prediction-drafts'
 import { FeedbackPopup } from '../components/ui/feedback-popup'
-import type { MatchOutcome, PredictionRecord } from '../types/predictions'
+import { getDateLocale, getMatchDayKey, formatNextKickoffCountdown } from '../lib/predictions'
+import type { MatchRecord } from '../types/tournament'
 
-type PredictionValidationIssue = 'outcome' | 'scores'
-type PredictionErrorState = {
-  message: string
-  matchId?: string
-  issue?: PredictionValidationIssue
-}
+type DayGroup = { dayLabel: string; matches: MatchRecord[] }
 
-const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : 'en-GB')
+const buildDayGroups = (
+  matches: MatchRecord[],
+  locale: ReturnType<typeof useLocale>['locale'],
+  todayLabel: string,
+): DayGroup[] => {
+  const dateLocale = getDateLocale(locale)
+  const groups = new Map<string, DayGroup>()
+  const todayKey = getMatchDayKey(new Date().toISOString())
 
-const getMatchDayKey = (kickoff: string, timeZone?: string) => {
-  const date = new Date(kickoff)
-  const resolvedTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+  for (const match of matches) {
+    const date = new Date(match.kickoff)
+    const resolvedTz = match.venue.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+    const dayKey = getMatchDayKey(match.kickoff, match.venue.timeZone)
+    const existing = groups.get(dayKey)
 
-  return new Intl.DateTimeFormat('en-CA', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    timeZone: resolvedTimeZone,
-  }).format(date)
-}
-
-const formatNextKickoffCountdown = (kickoffMs: number, nowMs: number, locale: ReturnType<typeof useLocale>['locale']) => {
-  const minutes = Math.max(1, Math.ceil((kickoffMs - nowMs) / 60000))
-
-  if (minutes < 60) {
-    if (locale === 'fr') {
-      return `dans ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+    if (existing) {
+      existing.matches.push(match)
+      continue
     }
 
-    return `in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+    groups.set(dayKey, {
+      dayLabel: dayKey === todayKey
+        ? todayLabel
+        : new Intl.DateTimeFormat(dateLocale, { dateStyle: 'full', timeZone: resolvedTz }).format(date),
+      matches: [match],
+    })
   }
 
-  const hours = Math.floor(minutes / 60)
-  const remainingMinutes = minutes % 60
-  if (hours < 24) {
-    if (locale === 'fr') {
-      return `dans ${hours} h${remainingMinutes > 0 ? ` ${remainingMinutes} min` : ''}`
-    }
-
-    return `in ${hours}h${remainingMinutes > 0 ? ` ${remainingMinutes}m` : ''}`
-  }
-
-  const days = Math.floor(hours / 24)
-  const remainingHours = hours % 24
-  if (locale === 'fr') {
-    return `dans ${days} ${days === 1 ? 'jour' : 'jours'}${remainingHours > 0 ? ` ${remainingHours} h` : ''}`
-  }
-
-  return `in ${days} ${days === 1 ? 'day' : 'days'}${remainingHours > 0 ? ` ${remainingHours}h` : ''}`
-}
-
-const inferOutcomeFromScores = (homeRaw: string, awayRaw: string): MatchOutcome | null => {
-  const homeValue = homeRaw.trim()
-  const awayValue = awayRaw.trim()
-
-  if (!homeValue || !awayValue) {
-    return null
-  }
-
-  const homeScore = Number(homeValue)
-  const awayScore = Number(awayValue)
-  if (!Number.isFinite(homeScore) || !Number.isFinite(awayScore) || homeScore < 0 || awayScore < 0) {
-    return null
-  }
-
-  if (homeScore > awayScore) {
-    return 'home'
-  }
-
-  if (awayScore > homeScore) {
-    return 'away'
-  }
-
-  return 'draw'
+  return [...groups.values()]
 }
 
 export const PredictionsPage = () => {
   const { locale, t } = useLocale()
   const { user, isLoading, openAuthModal } = useAuth()
-  const {
-    predictionsByMatch,
-    predictionDistributionsByMatch,
-    isLoading: isPredictionsLoading,
-    savePrediction,
-    savingMatchId,
-  } = usePredictions()
+  const { predictionsByMatch, isLoading: isPredictionsLoading } = usePredictions()
   const { upcomingMatches, teamsById } = useTournament()
   const nowMs = useNow()
-  const [selectedOutcomes, setSelectedOutcomes] = useState<Record<string, MatchOutcome>>({})
-  const [predictionError, setPredictionError] = useState<PredictionErrorState | null>(null)
-  const [scoreInputs, setScoreInputs] = useState<Record<string, { home: string; away: string }>>({})
-  const [scoreFieldsVisibleByMatch, setScoreFieldsVisibleByMatch] = useState<Record<string, boolean>>({})
-  const [dirtyMatches, setDirtyMatches] = useState<Record<string, boolean>>({})
-  const drawLabel = t.labels.draw
+  const drafts = usePredictionDrafts()
 
-  const predictionOpenMatches = useMemo(() => {
+  const openMatches = useMemo(() => {
     return upcomingMatches
-      .filter((match) => {
-        const hasKnownTeams =
-          Boolean(match.home.teamId) &&
-          Boolean(match.away.teamId) &&
-          Boolean(match.home.teamId ? teamsById[match.home.teamId] : undefined) &&
-          Boolean(match.away.teamId ? teamsById[match.away.teamId] : undefined)
-
-        return match.status === 'scheduled' && new Date(match.kickoff).getTime() > nowMs && hasKnownTeams
+      .filter((m) => {
+        const hasTeams = Boolean(m.home.teamId && teamsById[m.home.teamId]) && Boolean(m.away.teamId && teamsById[m.away.teamId])
+        return m.status === 'scheduled' && new Date(m.kickoff).getTime() > nowMs && hasTeams
       })
-      .sort((first, second) => first.kickoff.localeCompare(second.kickoff))
+      .sort((a, b) => a.kickoff.localeCompare(b.kickoff))
   }, [upcomingMatches, nowMs, teamsById])
 
+  const closedMatches = useMemo(() => {
+    return upcomingMatches
+      .filter((m) => {
+        const hasTeams = Boolean(m.home.teamId && teamsById[m.home.teamId]) && Boolean(m.away.teamId && teamsById[m.away.teamId])
+        const hasPrediction = Boolean(predictionsByMatch[m.id])
+        const isStarted = m.status !== 'scheduled' || new Date(m.kickoff).getTime() <= nowMs
+        return isStarted && hasPrediction && hasTeams
+      })
+      .sort((a, b) => b.kickoff.localeCompare(a.kickoff))
+  }, [upcomingMatches, nowMs, teamsById, predictionsByMatch])
+
   const nextMatchMessage = useMemo(() => {
-    const nextMatch = predictionOpenMatches[0]
-    if (!nextMatch) {
-      return null
-    }
-
-    const kickoffMs = new Date(nextMatch.kickoff).getTime()
-    const countdown = formatNextKickoffCountdown(kickoffMs, nowMs, locale)
+    const next = openMatches[0]
+    if (!next) return null
+    const countdown = formatNextKickoffCountdown(new Date(next.kickoff).getTime(), nowMs, locale)
     return locale === 'fr' ? `Prochain match ${countdown}` : `Next match ${countdown}`
-  }, [locale, nowMs, predictionOpenMatches])
+  }, [locale, nowMs, openMatches])
 
-  const groupedPredictionOpenMatches = useMemo(() => {
-    const dateLocale = getDateLocale(locale)
-    const groups = new Map<string, { dayLabel: string; matches: typeof predictionOpenMatches }>()
-    const todayKey = getMatchDayKey(new Date().toISOString())
+  const todayKey = useMemo(() => getMatchDayKey(new Date(nowMs).toISOString()), [nowMs])
 
-    for (const match of predictionOpenMatches) {
-      const date = new Date(match.kickoff)
-      const resolvedTimeZone = match.venue.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
-      const dayKey = getMatchDayKey(match.kickoff, match.venue.timeZone)
-      const existingGroup = groups.get(dayKey)
+  const groupedOpen = useMemo(
+    () => buildDayGroups(openMatches, locale, t.labels.today),
+    [openMatches, locale, t.labels.today],
+  )
 
-      if (existingGroup) {
-        existingGroup.matches.push(match)
-        continue
-      }
+  const groupedClosed = useMemo(
+    () => buildDayGroups(closedMatches, locale, t.labels.today),
+    [closedMatches, locale, t.labels.today],
+  )
 
-      groups.set(dayKey, {
-        dayLabel: dayKey === todayKey
-          ? t.labels.today
-          : new Intl.DateTimeFormat(dateLocale, {
-              dateStyle: 'full',
-              timeZone: resolvedTimeZone,
-            }).format(date),
-        matches: [match],
-      })
-    }
+  const mobileTodayMatches = useMemo(() => {
+    const todayOpen = openMatches.filter((m) => getMatchDayKey(m.kickoff, m.venue.timeZone) === todayKey)
+    const todayClosed = closedMatches.filter((m) => getMatchDayKey(m.kickoff, m.venue.timeZone) === todayKey)
+    return [
+      ...todayOpen.map((m) => ({ match: m, isOpen: true as const })),
+      ...todayClosed.map((m) => ({ match: m, isOpen: false as const })),
+    ].sort((a, b) => a.match.kickoff.localeCompare(b.match.kickoff))
+  }, [openMatches, closedMatches, todayKey])
 
-    return [...groups.values()]
-  }, [locale, predictionOpenMatches, t.labels.today])
+  const mobileOpenNonToday = useMemo(
+    () => groupedOpen.filter((g) => g.dayLabel !== t.labels.today),
+    [groupedOpen, t.labels.today],
+  )
 
-  useEffect(() => {
-    setSelectedOutcomes(
-      Object.fromEntries(
-        Object.values(predictionsByMatch).map((prediction) => [prediction.matchId, prediction.outcome]),
-      ),
-    )
-    setScoreInputs((current) => {
-      const next = { ...current }
-
-      for (const prediction of Object.values(predictionsByMatch)) {
-        if (prediction.type === 'score') {
-          next[prediction.matchId] = {
-            home: String(prediction.homeScore ?? ''),
-            away: String(prediction.awayScore ?? ''),
-          }
-        }
-      }
-
-      return next
-    })
-    setScoreFieldsVisibleByMatch((current) => {
-      const next = { ...current }
-
-      for (const prediction of Object.values(predictionsByMatch)) {
-        if (prediction.type === 'score') {
-          next[prediction.matchId] = true
-        }
-      }
-
-      return next
-    })
-    setDirtyMatches({})
-  }, [predictionsByMatch])
-
-  const submitPrediction = async (matchId: string, kickoffMs: number) => {
-    if (kickoffMs <= nowMs) {
-      setPredictionError(
-        {
-          message:
-            t.labels.predictionClosedStarted,
-          matchId,
-        },
-      )
-      return
-    }
-
-    const values = scoreInputs[matchId] ?? { home: '', away: '' }
-    const hasHomeScore = values.home.trim().length > 0
-    const hasAwayScore = values.away.trim().length > 0
-    const inferredOutcome = hasHomeScore && hasAwayScore ? inferOutcomeFromScores(values.home, values.away) : null
-    const outcome = inferredOutcome ?? selectedOutcomes[matchId]
-
-    if (!outcome) {
-      setPredictionError({
-        message: t.labels.pickWinnerOrDrawFirst,
-        matchId,
-        issue: 'outcome',
-      })
-      return
-    }
-
-    if ((hasHomeScore && !hasAwayScore) || (!hasHomeScore && hasAwayScore)) {
-      setPredictionError({
-        message: t.labels.enterBothScoresOrLeaveEmpty,
-        matchId,
-        issue: 'scores',
-      })
-      return
-    }
-
-    const isScorePrediction = hasHomeScore && hasAwayScore
-    setPredictionError(null)
-
-    try {
-      const savedPrediction = await savePrediction({
-        matchId,
-        outcome,
-        ...(isScorePrediction ? { homeScore: values.home, awayScore: values.away } : {}),
-      })
-      setSelectedOutcomes((current) => ({ ...current, [matchId]: savedPrediction.outcome }))
-      setScoreInputs((current) => ({
-        ...current,
-        [matchId]: {
-          home: String(savedPrediction.homeScore ?? ''),
-          away: String(savedPrediction.awayScore ?? ''),
-        },
-      }))
-      setDirtyMatches((current) => ({ ...current, [matchId]: false }))
-    } catch (error) {
-      setPredictionError({
-        message: error instanceof Error ? error.message : t.labels.unableToSavePrediction,
-        matchId,
-      })
-    }
-  }
+  const mobileClosedNonToday = useMemo(
+    () => groupedClosed.filter((g) => g.dayLabel !== t.labels.today),
+    [groupedClosed, t.labels.today],
+  )
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.predictions}</h2>
-      </div>
+      <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.predictions}</h2>
 
       {user && !isPredictionsLoading && nextMatchMessage ? (
         <div className="bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--accent-text)]">
@@ -269,14 +122,10 @@ export const PredictionsPage = () => {
       ) : null}
 
       {isLoading ? (
-        <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">
-          {t.labels.loadingSession}
-        </div>
+        <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{t.labels.loadingSession}</div>
       ) : !user ? (
         <div className="space-y-4 bg-[var(--surface)] p-4">
-          <p className="text-sm text-[var(--text-muted)]">
-            {t.labels.signInToAccessPredictions}
-          </p>
+          <p className="text-sm text-[var(--text-muted)]">{t.labels.signInToAccessPredictions}</p>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
@@ -297,310 +146,120 @@ export const PredictionsPage = () => {
       ) : null}
 
       <FeedbackPopup
-        message={predictionError?.message ?? null}
-        onDismiss={() => setPredictionError(null)}
+        message={drafts.predictionError?.message ?? null}
+        onDismiss={() => drafts.setPredictionError(null)}
         dismissLabel={t.labels.close}
       />
 
-      {user && !isPredictionsLoading && predictionOpenMatches.length === 0 ? (
-        <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{t.labels.noPredictionMatches}</div>
-      ) : null}
-
       {user && !isPredictionsLoading ? (
-        <div className="space-y-6">
-          {groupedPredictionOpenMatches.map((group) => (
-            <section key={group.dayLabel}>
-              <div className="mb-3 flex items-center gap-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">{group.dayLabel}</p>
-                <span className="flex-1 border-t border-[var(--border)]" />
-              </div>
-              <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
-                {group.matches.map((match) => {
-            const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
-            const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-            const homeLabel = homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.tbd
-            const awayLabel = awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.tbd
-            const prediction: PredictionRecord | undefined = predictionsByMatch[match.id]
-            const predictionDistribution = predictionDistributionsByMatch[match.id] ?? {
-              matchId: match.id,
-              homeCount: 0,
-              drawCount: 0,
-              awayCount: 0,
-              totalPredictions: 0,
-            }
-            const totalPredictions = predictionDistribution.totalPredictions
-            const homeShare = totalPredictions > 0 ? predictionDistribution.homeCount / totalPredictions : 0
-            const drawShare = totalPredictions > 0 ? predictionDistribution.drawCount / totalPredictions : 0
-            const awayShare = totalPredictions > 0 ? predictionDistribution.awayCount / totalPredictions : 0
-            const maxShare = Math.max(homeShare, drawShare, awayShare)
-            const dominantOutcome =
-              maxShare === 0 ? 'neutral' : homeShare === maxShare ? 'home' : drawShare === maxShare ? 'draw' : 'away'
-            const heatColorByOutcome = {
-              home: 'rgb(52 211 153)',
-              draw: 'rgb(168 162 158)',
-              away: 'rgb(56 189 248)',
-              neutral: 'rgb(161 161 170)',
-            } as const
-            const heatOpacity = totalPredictions > 0 ? 0.25 + maxShare * 0.55 : 0.2
-            const trendPositionPercent = Math.round((homeShare * 0 + drawShare * 50 + awayShare * 100) * 10) / 10
-            const trendTooltip = `${homeLabel}: ${Math.round(homeShare * 100)}% • ${drawLabel}: ${Math.round(drawShare * 100)}% • ${awayLabel}: ${Math.round(awayShare * 100)}%`
-            const { localDateTime } = formatMatchDate(match.kickoff, locale, Intl.DateTimeFormat().resolvedOptions().timeZone, t.labels.today)
-            const isSaving = savingMatchId === match.id
-            const isPredictionClosed = new Date(match.kickoff).getTime() <= nowMs
-            const persistedOutcome = prediction?.outcome
-            const persistedHomeScore = prediction?.type === 'score' && prediction.homeScore !== undefined ? String(prediction.homeScore) : ''
-            const persistedAwayScore = prediction?.type === 'score' && prediction.awayScore !== undefined ? String(prediction.awayScore) : ''
-            const selectedOutcome = selectedOutcomes[match.id] ?? persistedOutcome
-            const scoreInput = scoreInputs[match.id] ?? { home: persistedHomeScore, away: persistedAwayScore }
-            const draftHomeScore = scoreInput.home.trim()
-            const draftAwayScore = scoreInput.away.trim()
-            const hasPersistedScores = persistedHomeScore.length > 0 || persistedAwayScore.length > 0
-            const hasDraftScores = draftHomeScore.length > 0 || draftAwayScore.length > 0
-            const isScoreFieldsVisible = scoreFieldsVisibleByMatch[match.id] ?? (hasPersistedScores || hasDraftScores)
-            const activeValidationIssue = predictionError?.matchId === match.id ? predictionError.issue : undefined
-            const isOutcomeInvalid = activeValidationIssue === 'outcome' && !selectedOutcome
-            const isScoresInvalid = activeValidationIssue === 'scores'
-            const isHomeScoreInvalid = isScoresInvalid && draftHomeScore.length === 0 && draftAwayScore.length > 0
-            const isAwayScoreInvalid = isScoresInvalid && draftAwayScore.length === 0 && draftHomeScore.length > 0
-            const isDraftDirty = Boolean(dirtyMatches[match.id])
-            const hasChanges =
-              isDraftDirty &&
-              ((selectedOutcome ?? null) !== (persistedOutcome ?? null) ||
-                draftHomeScore !== persistedHomeScore ||
-                draftAwayScore !== persistedAwayScore)
-            const predictionStatus = !prediction
-              ? null
-              : prediction.scoredAt
-                ? prediction.pointsAwarded > 0
-                  ? 'successful'
-                  : 'unsuccessful'
-                : 'pending'
+        <>
+          {/* DESKTOP: past/live left | upcoming right */}
+          <div className="hidden xl:grid xl:grid-cols-2 xl:items-start xl:gap-8">
+            <ClosedColumn groups={groupedClosed} />
+            <OpenColumn groups={groupedOpen} openMatches={openMatches} drafts={drafts} />
+          </div>
 
-            const statusIconByState = {
-              successful: 'check_circle',
-              pending: 'schedule',
-              unsuccessful: 'cancel',
-            } as const
+          {/* MOBILE: today mixed → future → past */}
+          <div className="space-y-6 xl:hidden">
+            {mobileTodayMatches.length === 0 && openMatches.length === 0 ? (
+              <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{t.labels.noPredictionMatches}</div>
+            ) : null}
 
-            const statusClassByState = {
-              successful: 'bg-[var(--accent-muted)] text-[var(--accent-text)]',
-              pending: 'bg-[var(--surface-soft)] text-[var(--text-muted)]',
-              unsuccessful: 'bg-[var(--surface-soft)] text-rose-400',
-            } as const
+            {mobileTodayMatches.length > 0 ? (
+              <DaySection dayLabel={t.labels.today} accent>
+                {mobileTodayMatches.map(({ match, isOpen }) =>
+                  isOpen
+                    ? <OpenMatchCard key={match.id} match={match} drafts={drafts} />
+                    : <ClosedMatchCard key={match.id} match={match} />,
+                )}
+              </DaySection>
+            ) : null}
 
-            const statusTitleByState = {
-              successful: t.labels.predictionSuccessful,
-              pending: t.labels.predictionPending,
-              unsuccessful: t.labels.predictionUnsuccessful,
-            } as const
-                  return (
-              <article key={match.id} className="space-y-3 bg-[var(--surface)] p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-[var(--text-strong)]">
-                      {homeLabel} vs {awayLabel}
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)]">{localDateTime}</p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    {predictionStatus && !hasChanges ? (
-                      <span
-                        title={statusTitleByState[predictionStatus]}
-                        className={`inline-flex h-5 w-5 items-center justify-center rounded-full ${statusClassByState[predictionStatus]}`}
-                      >
-                        <Icon name={statusIconByState[predictionStatus]} className="text-sm leading-none" />
-                      </span>
-                    ) : null}
-                    {hasChanges ? (
-                      <>
-                        <button
-                          type="button"
-                          disabled={isSaving}
-                          onClick={() => {
-                            setPredictionError(null)
-                            setSelectedOutcomes((current) => {
-                              const next = { ...current }
-                              if (persistedOutcome) {
-                                next[match.id] = persistedOutcome
-                              } else {
-                                delete next[match.id]
-                              }
-                              return next
-                            })
-                            setScoreInputs((current) => ({
-                              ...current,
-                              [match.id]: { home: persistedHomeScore, away: persistedAwayScore },
-                            }))
-                            setDirtyMatches((current) => ({ ...current, [match.id]: false }))
-                          }}
-                          className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {t.labels.cancel}
-                        </button>
-                        <button
-                          type="button"
-                          disabled={isSaving || isPredictionClosed}
-                          onClick={() => {
-                            void submitPrediction(match.id, new Date(match.kickoff).getTime())
-                          }}
-                          className="cursor-pointer bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent-text)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {t.labels.save}
-                        </button>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
+            {mobileOpenNonToday.map((group) => (
+              <DaySection key={group.dayLabel} dayLabel={group.dayLabel} accent>
+                {group.matches.map((m) => <OpenMatchCard key={m.id} match={m} drafts={drafts} />)}
+              </DaySection>
+            ))}
 
-                <div className="space-y-2">
-                  <div className="grid grid-cols-3 items-start gap-2">
-                    {(
-                      [
-                        { value: 'home' as const, label: homeLabel },
-                        { value: 'draw' as const, label: drawLabel },
-                        { value: 'away' as const, label: awayLabel },
-                      ] as const
-                    ).map((item) => (
-                      <button
-                        key={item.value}
-                        type="button"
-                        disabled={isSaving}
-                        onClick={() => {
-                          if (predictionError?.matchId === match.id) {
-                            setPredictionError(null)
-                          }
-                          if (selectedOutcome === item.value) {
-                            return
-                          }
-                          setSelectedOutcomes((current) => ({ ...current, [match.id]: item.value }))
-                          setScoreInputs((current) => ({
-                            ...current,
-                            [match.id]: { home: '', away: '' },
-                          }))
-                          setDirtyMatches((current) => ({ ...current, [match.id]: true }))
-                        }}
-                        className={`w-full cursor-pointer px-2 py-2 text-xs font-semibold transition hover:brightness-105 sm:text-sm ${
-                          selectedOutcome === item.value
-                            ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                            : 'bg-[var(--surface-soft)] text-[var(--text)]'
-                        } ${isOutcomeInvalid ? 'ring-1 ring-rose-400' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="grid h-9 grid-cols-3 items-center gap-2">
-                    {isScoreFieldsVisible ? (
-                      <>
-                        <input
-                        type="number"
-                        min={0}
-                        value={scoreInput.home}
-                        onChange={(event) => {
-                          if (predictionError?.matchId === match.id) {
-                            setPredictionError(null)
-                          }
-                          const nextScoreInput = { ...scoreInput, home: event.target.value }
-                          const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
-                          setScoreInputs((current) => ({
-                            ...current,
-                            [match.id]: nextScoreInput,
-                          }))
-                          setDirtyMatches((current) => ({ ...current, [match.id]: true }))
-                          if (inferredOutcome) {
-                            setSelectedOutcomes((current) => ({ ...current, [match.id]: inferredOutcome }))
-                          }
-                        }}
-                        placeholder={homeTeam?.code ?? t.labels.home}
-                        className={`h-full w-full border bg-[var(--surface-strong)] px-2 py-1 text-center text-sm ${
-                          isHomeScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
-                        }`}
-                      />
-                        <span className="self-center text-center text-sm text-[var(--text-muted)]">-</span>
-                        <input
-                        type="number"
-                        min={0}
-                        value={scoreInput.away}
-                        onChange={(event) => {
-                          if (predictionError?.matchId === match.id) {
-                            setPredictionError(null)
-                          }
-                          const nextScoreInput = { ...scoreInput, away: event.target.value }
-                          const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
-                          setScoreInputs((current) => ({
-                            ...current,
-                            [match.id]: nextScoreInput,
-                          }))
-                          setDirtyMatches((current) => ({ ...current, [match.id]: true }))
-                          if (inferredOutcome) {
-                            setSelectedOutcomes((current) => ({ ...current, [match.id]: inferredOutcome }))
-                          }
-                        }}
-                        placeholder={awayTeam?.code ?? t.labels.away}
-                        className={`h-full w-full border bg-[var(--surface-strong)] px-2 py-1 text-center text-sm ${
-                          isAwayScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
-                        }`}
-                      />
-                      </>
-                    ) : (
-                      <button
-                        type="button"
-                        disabled={isSaving}
-                        onClick={() => {
-                          setScoreFieldsVisibleByMatch((current) => ({ ...current, [match.id]: true }))
-                        }}
-                        className="col-span-3 cursor-pointer justify-self-center bg-transparent p-0 text-xs font-medium text-[var(--text-muted)] underline decoration-1 underline-offset-2 transition hover:text-[var(--text-soft)] disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {t.labels.predictScores}
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                    <span>{t.labels.predictionTrend}</span>
-                    <span>
-                      {totalPredictions} {t.labels.players}
-                    </span>
-                  </div>
-                  <div title={trendTooltip} className="relative h-2 overflow-hidden rounded bg-[var(--surface-soft)]">
-                    <span
-                      aria-hidden
-                      className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-[var(--text-muted)]/40"
-                    />
-                    {totalPredictions > 0 ? (
-                      <>
-                        <span
-                          aria-hidden
-                          className="absolute top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[10px]"
-                          style={{
-                            left: `${trendPositionPercent}%`,
-                            backgroundColor: heatColorByOutcome[dominantOutcome],
-                            opacity: heatOpacity,
-                          }}
-                        />
-                        <span
-                          aria-hidden
-                          className="absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--surface)]"
-                          style={{
-                            left: `${trendPositionPercent}%`,
-                            backgroundColor: heatColorByOutcome[dominantOutcome],
-                          }}
-                        />
-                      </>
-                    ) : null}
-                  </div>
-                </div>
-                  </article>
-                  )
-                })}
-              </div>
-            </section>
-          ))}
-        </div>
+            {mobileClosedNonToday.map((group) => (
+              <DaySection key={group.dayLabel} dayLabel={group.dayLabel}>
+                {group.matches.map((m) => <ClosedMatchCard key={m.id} match={m} />)}
+              </DaySection>
+            ))}
+          </div>
+        </>
       ) : null}
     </section>
   )
 }
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+const DaySection = ({
+  dayLabel,
+  accent = false,
+  children,
+}: {
+  dayLabel: string
+  accent?: boolean
+  children: React.ReactNode
+}) => (
+  <section>
+    <div className="mb-3 flex items-center gap-3">
+      <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${accent ? 'text-[var(--accent-text)]' : 'text-[var(--text-muted)]'}`}>
+        {dayLabel}
+      </p>
+      <span className="flex-1 border-t border-[var(--border)]" />
+    </div>
+    <div className="space-y-3">{children}</div>
+  </section>
+)
+
+const ClosedColumn = ({ groups }: { groups: DayGroup[] }) => {
+  const { t } = useLocale()
+  return (
+    <div className="space-y-6">
+      <SectionHeader label={t.labels.pastAndLivePredictions} />
+      {groups.length === 0 ? (
+        <p className="text-sm text-[var(--text-muted)]">{t.labels.noPastPredictions}</p>
+      ) : groups.map((g) => (
+        <DaySection key={g.dayLabel} dayLabel={g.dayLabel}>
+          {g.matches.map((m) => <ClosedMatchCard key={m.id} match={m} />)}
+        </DaySection>
+      ))}
+    </div>
+  )
+}
+
+const OpenColumn = ({
+  groups,
+  openMatches,
+  drafts,
+}: {
+  groups: DayGroup[]
+  openMatches: MatchRecord[]
+  drafts: ReturnType<typeof usePredictionDrafts>
+}) => {
+  const { t } = useLocale()
+  return (
+    <div className="space-y-6">
+      <SectionHeader label={t.labels.predictions} accent />
+      {openMatches.length === 0 ? (
+        <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionMatches}</p>
+      ) : groups.map((g) => (
+        <DaySection key={g.dayLabel} dayLabel={g.dayLabel} accent>
+          {g.matches.map((m) => <OpenMatchCard key={m.id} match={m} drafts={drafts} />)}
+        </DaySection>
+      ))}
+    </div>
+  )
+}
+
+const SectionHeader = ({ label, accent = false }: { label: string; accent?: boolean }) => (
+  <div className="flex items-center gap-3">
+    <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${accent ? 'text-[var(--accent-text)]' : 'text-[var(--text-muted)]'}`}>
+      {label}
+    </p>
+    <span className="flex-1 border-t border-[var(--border)]" />
+  </div>
+)

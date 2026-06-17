@@ -113,6 +113,8 @@ export const fr: TranslationSet = {
     saveScorePrediction: 'Enregistrer le score',
     predictScores: 'Prédire les scores',
     noPredictionMatches: 'Aucun match à venir ouvert aux pronostics.',
+    pastAndLivePredictions: 'Pronostics passés & en direct',
+    noPastPredictions: "Aucun pronostic passé pour l'instant.",
     player: 'Joueur',
     predictions: 'Pronostics',
     prediction: 'Pronostic',
