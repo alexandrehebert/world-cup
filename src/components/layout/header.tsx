@@ -202,7 +202,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 }}
                 aria-expanded={isSettingsMenuOpen}
                 aria-controls="desktop-settings-menu"
-                className="inline-flex cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2.5 py-2 text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+                className="inline-flex cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2.5 py-1.5 text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
               >
                 <Icon name="settings" className="text-[18px]" />
                 <span className="text-sm font-medium">{locale === 'fr' ? 'Paramètres' : 'Settings'}</span>

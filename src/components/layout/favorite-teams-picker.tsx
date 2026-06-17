@@ -52,7 +52,7 @@ export const FavoriteTeamsPicker = () => {
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex h-10 w-full cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto"
+        className="inline-flex w-full cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2.5 py-1.5 text-sm font-medium text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto"
       >
         <Icon name="star" className="text-[18px] text-[var(--accent-text)]" />
         <span>{t.labels.favoriteTeams}</span>
