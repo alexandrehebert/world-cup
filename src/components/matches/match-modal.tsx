@@ -378,8 +378,7 @@ export const MatchModal = () => {
             </div>
           </div>
 
-          {(isPredictionOpen || existingPrediction) ? (
-            <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
+          <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
                   {t.labels.prediction}
@@ -462,20 +461,23 @@ export const MatchModal = () => {
                   />
                 )
               ) : (
-                <PredictionForm
-                  readOnly
-                  homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
-                  awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
-                  selectedOutcome={persistedOutcome ?? null}
-                  scoreInput={{ home: persistedHomeScore, away: persistedAwayScore }}
-                  actualOutcome={actualOutcome}
-                  isLive={isMatchLive}
-                  isScored={isPredictionScored}
-                  isCorrect={isPredictionCorrect}
-                />
+                existingPrediction ? (
+                  <PredictionForm
+                    readOnly
+                    homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
+                    awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
+                    selectedOutcome={persistedOutcome ?? null}
+                    scoreInput={{ home: persistedHomeScore, away: persistedAwayScore }}
+                    actualOutcome={actualOutcome}
+                    isLive={isMatchLive}
+                    isScored={isPredictionScored}
+                    isCorrect={isPredictionCorrect}
+                  />
+                ) : (
+                  <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionForMatch}</p>
+                )
               )}
             </div>
-          ) : null}
 
           <div className="flex items-end justify-between gap-4">
             <div>

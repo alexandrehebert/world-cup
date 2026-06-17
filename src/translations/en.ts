@@ -115,6 +115,7 @@ export const en: TranslationSet = {
     noPredictionMatches: 'There are no upcoming matches open for predictions.',
     pastAndLivePredictions: 'Past & live predictions',
     noPastPredictions: 'No past predictions yet.',
+    noPredictionForMatch: 'You did not make a prediction for this match.',
     player: 'Player',
     predictions: 'Predictions',
     prediction: 'Prediction',

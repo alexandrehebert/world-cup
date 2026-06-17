@@ -113,6 +113,7 @@ export interface TranslationSet {
     noPredictionMatches: string
     pastAndLivePredictions: string
     noPastPredictions: string
+    noPredictionForMatch: string
     player: string
     predictions: string
     prediction: string
