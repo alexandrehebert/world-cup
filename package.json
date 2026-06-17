@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "rm -rf .next",
+    "predev": "rm -rf .next || true",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@vercel/blob": "^2.4.0",
     "flag-icons": "^7.5.0",
+    "mongodb": "^7.3.0",
     "next": "^15.3.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

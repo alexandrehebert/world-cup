@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { ImageResponse } from 'next/og'
 import { loadTournamentData } from '../../../../../server/tournament-data'
 import { getDisplayMatchStatus, getMatchDisplayTime, formatMatchDate } from '../../../../../lib/format'
@@ -48,9 +49,9 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
   const scheduledKickoff = displayStatus === 'scheduled' ? match?.kickoff : undefined
   const stadiumDates = scheduledKickoff ? formatMatchDate(scheduledKickoff, 'en', match?.venue?.timeZone ?? 'UTC') : null
   const utcDates = scheduledKickoff ? formatMatchDate(scheduledKickoff, 'en', 'UTC') : null
-  // localTime with timeZone:'UTC' returns the time with GMT/UTC abbreviation
+  // localTime with timeZone:'UTC' already includes the time-zone abbreviation.
   const stadiumLocalTime = stadiumDates?.localTime ?? null
-  const utcDateTime = utcDates ? `${utcDates.localTime} (UTC)` : null
+  const utcDateTime = utcDates?.localTime ?? null
 
   return new ImageResponse(
     (
@@ -72,7 +73,7 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: '#f4c542' }}>{status}</div>
             {liveClock ? <div style={{ fontSize: 22, fontWeight: 700, color: '#7fe5c5' }}>{liveClock}</div> : null}
-            {utcDateTime ? <div style={{ fontSize: 20, fontWeight: 500, color: '#c5d5f5', opacity: 0.9 }}>{utcDateTime}</div> : null}
+            {utcDateTime ? <div style={{ fontSize: 26, fontWeight: 600, color: '#c5d5f5', opacity: 0.9 }}>{utcDateTime}</div> : null}
           </div>
         </div>
 

@@ -1,5 +1,7 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { Metadata } from 'next'
 import ClientApp from '../client-app'
+import { loadClientBootstrapData } from '../../server/client-bootstrap'
 import { loadTournamentData } from '../../server/tournament-data'
 import { getDisplayMatchStatus, formatMatchDate } from '../../lib/format'
 import type { TournamentData } from '../../types/tournament'
@@ -47,10 +49,7 @@ const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string) 
   const venue = [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ')
   const displayStatus = getDisplayMatchStatus(match)
   const status = displayStatus === 'live' ? 'Live' : displayStatus === 'finished' ? 'Finished' : 'Scheduled'
-  const utcDateStr = displayStatus === 'scheduled' && match.kickoff
-    // localTime with timeZone:'UTC' returns the time with GMT/UTC abbreviation
-    ? formatMatchDate(match.kickoff, 'en', 'UTC').localTime + ' UTC'
-    : null
+  const utcDateStr = displayStatus === 'scheduled' && match.kickoff ? formatMatchDate(match.kickoff, 'en', 'UTC').localTime : null
   const description = [
     status,
     hasScore ? `${homeLabel} ${match.home.score}-${match.away.score} ${awayLabel}` : `${homeLabel} vs ${awayLabel}`,
@@ -61,7 +60,7 @@ const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string) 
   return { title, description }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug?: string[] }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
   const { slug } = await params
 
   if (!slug || slug.length < 4) {
@@ -114,8 +113,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug?: st
   }
 }
 
-export default async function CatchAllPage() {
-  const tournamentData = await loadTournamentData()
+export default async function SlugPage() {
+  const [tournamentData, bootstrapData] = await Promise.all([loadTournamentData(), loadClientBootstrapData()])
 
-  return <ClientApp initialData={tournamentData} />
+  return <ClientApp initialData={tournamentData} bootstrapData={bootstrapData} />
 }

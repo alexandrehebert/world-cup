@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDashboard } from '../contexts/dashboard-context'
 import { useLocale } from '../contexts/locale-context'
 import { useTournament } from '../contexts/tournament-context'
@@ -17,8 +17,10 @@ export const MatchesPage = () => {
   const countryFilterRef = useRef<HTMLDivElement>(null)
   const countryInputRef = useRef<HTMLInputElement>(null)
 
-  const getTeamLabel = (team: NonNullable<(typeof teamsById)[string]>) =>
-    t.teams[team.id] ?? getLocalizedText(team.name, locale) ?? team.code
+  const getTeamLabel = useCallback(
+    (team: NonNullable<(typeof teamsById)[string]>) => t.teams[team.id] ?? getLocalizedText(team.name, locale) ?? team.code,
+    [locale, t],
+  )
 
   const countriesInUpcoming = useMemo(() => {
     const uniqueTeamIds = new Set<string>()
@@ -37,7 +39,7 @@ export const MatchesPage = () => {
       .map((teamId) => teamsById[teamId])
       .filter((team): team is NonNullable<typeof team> => Boolean(team))
       .sort((first, second) => getTeamLabel(first).localeCompare(getTeamLabel(second)))
-  }, [locale, t, teamsById, upcomingMatches])
+  }, [getTeamLabel, teamsById, upcomingMatches])
 
   const filteredMatches = useMemo(() => {
     let matches = upcomingMatches
@@ -80,7 +82,7 @@ export const MatchesPage = () => {
       const teamName = getTeamLabel(team).toLowerCase()
       return teamName.includes(query) || team.code.toLowerCase().includes(query)
     })
-  }, [countriesInUpcoming, countryQuery, locale, t])
+  }, [countriesInUpcoming, countryQuery, getTeamLabel])
 
   const toggleTeamFilter = (teamId: string) => {
     setSelectedTeamIds((current) => {
@@ -246,7 +248,7 @@ export const MatchesPage = () => {
 
       {filteredMatches.length > 0 ? (
         <div className="relative z-0">
-          <MatchesList matches={filteredMatches} />
+          <MatchesList matches={filteredMatches} showQuickPrediction />
         </div>
       ) : (
         <div className="bg-[var(--surface)] px-6 py-6 text-center text-sm text-[var(--text-muted)]">

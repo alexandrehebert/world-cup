@@ -87,7 +87,11 @@ This project now supports a Vercel cron that runs every 5 minutes and updates ma
 - `BLOB_READ_WRITE_TOKEN`: token for Vercel Blob read/write.
 - `BLOB_OBJECT_ACCESS` (optional): `private` (default) or `public` for Blob writes.
 - `MATCH_RESULTS_URL` (optional): override source URL for match result updates.
+- `ESPN_LOOKBACK_DAYS` (optional): number of past days scanned on ESPN to backfill late scores for recently played matches (default: `7`).
 - `CRON_SECRET` (optional): secret used for manual or external cron endpoint calls.
+- `MONGODB_URI`: MongoDB connection string (MongoDB Atlas free tier works well on Vercel).
+- `MONGODB_DB` (optional): database name used by the app (default: `world-cup`).
+- `SESSION_SECRET`: secret used to sign auth session cookies.
 
 Vercel scheduled cron calls are identified via the `x-vercel-cron` header and do not automatically include your custom `Authorization` header.
 
@@ -99,6 +103,35 @@ If `MATCH_RESULTS_URL` is not set, the cron defaults to:
 
 - Path: `/api/cron/sync-matches`
 - Schedule: `*/5 * * * *`
+
+## Local Docker stack (app + MongoDB + cron)
+
+This repository includes a local Docker Compose setup with:
+
+- `app`: Next.js application on `http://localhost:${APP_PORT:-3000}`
+- `mongo`: local MongoDB database for users/predictions/leaderboard
+- `cron`: local cron runner calling `/api/cron/sync-matches` every minute (more frequent than Vercel)
+- source code mounted into `app` for live reload while developing
+
+### Start locally
+
+1. Copy `.env.docker.example` to `.env` and adjust secrets (`APP_PORT=3001` avoids conflicts with local port 3000).
+2. Start the stack:
+
+```bash
+docker compose up --build
+```
+
+### Autoreload behavior
+
+- The `app` service mounts the project directory (`./:/app`), so code edits on host are reflected instantly in the container.
+- Polling is enabled (`CHOKIDAR_USEPOLLING` and `WATCHPACK_POLLING`) to keep file watching reliable in Docker.
+
+### Local cron schedule
+
+- Endpoint: `POST http://app:3000/api/cron/sync-matches`
+- Frequency: `* * * * *` (every minute)
+- Auth header: `Authorization: Bearer $CRON_SECRET`
 
 ### Upstream payload format
 

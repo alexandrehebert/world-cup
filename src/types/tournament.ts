@@ -1,6 +1,6 @@
 export type LocaleCode = 'en' | 'fr'
 
-export type SectionKey = 'overview' | 'groups' | 'matches' | 'bracket'
+export type SectionKey = 'overview' | 'groups' | 'matches' | 'bracket' | 'predictions' | 'leaderboard'
 
 export interface TournamentMeta {
   edition: string

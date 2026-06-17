@@ -1,7 +1,9 @@
 import type { MatchLiveRecord, MatchRecord, TournamentData } from '../types/tournament'
 import { loadTournamentData, saveTournamentData } from './tournament-data'
+import { scoreFinishedMatches } from './predictions-scoring'
 
 const DEFAULT_MATCH_RESULTS_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard'
+const DEFAULT_ESPN_LOOKBACK_DAYS = 7
 
 const toUtcDateKey = (date: Date) => {
   const year = date.getUTCFullYear()
@@ -10,12 +12,41 @@ const toUtcDateKey = (date: Date) => {
   return `${year}${month}${day}`
 }
 
-const getEspnDateWindow = (now = new Date()) => {
+const getEspnDateWindow = (data: TournamentData, now = new Date()) => {
   const offsets = [-1, 0, 1]
-  return offsets.map((offset) => {
-    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + offset))
-    return toUtcDateKey(date)
-  })
+  const lookbackDays = Number(process.env.ESPN_LOOKBACK_DAYS ?? DEFAULT_ESPN_LOOKBACK_DAYS)
+  const sanitizedLookbackDays = Number.isFinite(lookbackDays) && lookbackDays > 0 ? Math.trunc(lookbackDays) : DEFAULT_ESPN_LOOKBACK_DAYS
+  const lookbackStart = new Date(now)
+  lookbackStart.setUTCDate(lookbackStart.getUTCDate() - sanitizedLookbackDays)
+  const keys = new Set(
+    offsets.map((offset) => {
+      const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + offset))
+      return toUtcDateKey(date)
+    }),
+  )
+
+  for (const match of data.matches) {
+    if (match.status === 'finished') {
+      continue
+    }
+
+    const kickoff = new Date(match.kickoff)
+    if (Number.isNaN(kickoff.getTime())) {
+      continue
+    }
+
+    if (kickoff <= now && kickoff >= lookbackStart) {
+      keys.add(toUtcDateKey(kickoff))
+
+      // ESPN scoreboard `dates` is based on US local calendar day, which can
+      // place late-night UTC kickoffs in the previous bucket.
+      const previousDay = new Date(kickoff)
+      previousDay.setUTCDate(previousDay.getUTCDate() - 1)
+      keys.add(toUtcDateKey(previousDay))
+    }
+  }
+
+  return [...keys].sort()
 }
 
 const isEspnScoreboardUrl = (rawUrl: string) => {
@@ -61,7 +92,7 @@ const mergeEspnPayloads = (payloads: EspnPayload[]): EspnPayload => {
   }
 }
 
-const fetchMatchResultsPayload = async (resultsUrl: string) => {
+const fetchMatchResultsPayload = async (resultsUrl: string, data: TournamentData) => {
   if (!isEspnScoreboardUrl(resultsUrl)) {
     const response = await fetch(resultsUrl, { cache: 'no-store' })
 
@@ -73,7 +104,9 @@ const fetchMatchResultsPayload = async (resultsUrl: string) => {
   }
 
   const baseUrl = new URL(resultsUrl)
-  const dateWindow = baseUrl.searchParams.get('dates') ? [baseUrl.searchParams.get('dates') as string] : getEspnDateWindow()
+  const dateWindow = baseUrl.searchParams.get('dates')
+    ? [baseUrl.searchParams.get('dates') as string]
+    : getEspnDateWindow(data)
   const payloads: EspnPayload[] = []
 
   for (const dateKey of dateWindow) {
@@ -460,7 +493,7 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
 
   try {
     const currentData = await loadTournamentData()
-    const payload = await fetchMatchResultsPayload(resultsUrl)
+    const payload = await fetchMatchResultsPayload(resultsUrl, currentData)
     const updates = toMatchUpdates(payload, currentData)
     const updateMap = new Map(
       updates
@@ -532,6 +565,7 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
     }
 
     await saveTournamentData(nextData)
+    await scoreFinishedMatches(nextData)
 
     return {
       ok: true,

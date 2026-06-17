@@ -6,12 +6,16 @@ export interface TranslationSet {
     groups: string
     matches: string
     bracket: string
+    predictions: string
+    leaderboard: string
   }
   headings: {
     groups: string
     upcomingMatches: string
     matches: string
     bracket: string
+    predictions: string
+    leaderboard: string
   }
   footer: {
     madeWithLove: string
@@ -97,6 +101,17 @@ export interface TranslationSet {
     today: string
     filterByFavorites: string
     noMatchesForFavorites: string
+    login: string
+    register: string
+    username: string
+    password: string
+    signIn: string
+    createAccount: string
+    logout: string
+    saveScorePrediction: string
+    noPredictionMatches: string
+    player: string
+    predictions: string
   }
   teams: Record<string, string>
   groups: Record<string, string>

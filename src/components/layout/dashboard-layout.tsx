@@ -1,8 +1,10 @@
 import { cloneElement, isValidElement, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import { useAuth } from '../../contexts/auth-context'
 import { useLocale } from '../../contexts/locale-context'
 import { Icon } from '../../lib/icons'
+import { AuthModal } from '../auth/auth-modal'
 import { MatchModal } from '../matches/match-modal'
 import { Footer } from './footer'
 
@@ -15,10 +17,13 @@ const tabs = [
   { to: '/groups', labelKey: 'groups', icon: 'groups', iconClassName: '' },
   { to: '/matches', labelKey: 'matches', icon: 'sports_soccer', iconClassName: '' },
   { to: '/bracket', labelKey: 'bracket', icon: 'account_tree', iconClassName: '-scale-x-100' },
+  { to: '/predictions', labelKey: 'predictions', icon: 'edit_note', iconClassName: '' },
+  { to: '/leaderboard', labelKey: 'leaderboard', icon: 'leaderboard', iconClassName: '' },
 ] as const
 
 export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   const { t } = useLocale()
+  const { user, openAuthModal } = useAuth()
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const headerScrollTimeoutRef = useRef<number | null>(null)
 
@@ -80,6 +85,12 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
               <NavLink
                 key={tab.to}
                 to={tab.to}
+                onClick={(event) => {
+                  if (tab.to === '/predictions' && !user) {
+                    event.preventDefault()
+                    openAuthModal('login')
+                  }
+                }}
                 aria-label={t.sections[tab.labelKey]}
                 className={({ isActive }) =>
                   `-mb-px inline-flex cursor-pointer items-center justify-center gap-2 border-b-2 px-3 py-4 text-sm font-semibold transition sm:px-5 ${
@@ -107,6 +118,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
         <Footer />
       </div>
 
+      <AuthModal />
       <MatchModal />
     </div>
   )

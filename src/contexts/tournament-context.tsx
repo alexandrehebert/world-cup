@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+/* eslint-disable react-hooks/set-state-in-effect */
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import rawTournamentData from '../data/worldcup.json'
 import { buildTournamentModel, type TournamentModel } from '../lib/tournament'

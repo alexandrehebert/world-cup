@@ -1,7 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { en } from '../translations/en'
 import { fr } from '../translations/fr'
+import { useAuth } from './auth-context'
 import type { TranslationSet } from '../translations/types'
 import type { LocaleCode } from '../types/tournament'
 
@@ -32,7 +34,9 @@ const detectLocale = (): LocaleCode => {
 }
 
 export const LocaleProvider = ({ children }: { children: ReactNode }) => {
+  const { user, updateUserPreferences } = useAuth()
   const [locale, setLocaleState] = useState<LocaleCode>(detectLocale)
+  const isApplyingUserLocaleRef = useRef(false)
 
   const setLocale = (nextLocale: LocaleCode) => {
     setLocaleState(nextLocale)
@@ -41,6 +45,35 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('locale', nextLocale)
     }
   }
+
+  useEffect(() => {
+    const preferredLocale = user?.preferences?.locale
+
+    if (!preferredLocale || locale === preferredLocale) {
+      return
+    }
+
+    isApplyingUserLocaleRef.current = true
+    setLocaleState(preferredLocale)
+    localStorage.setItem('locale', preferredLocale)
+  }, [locale, user?.preferences?.locale])
+
+  useEffect(() => {
+    if (isApplyingUserLocaleRef.current) {
+      isApplyingUserLocaleRef.current = false
+      return
+    }
+
+    if (!user) {
+      return
+    }
+
+    if (user.preferences?.locale === locale) {
+      return
+    }
+
+    void updateUserPreferences({ locale }).catch(() => undefined)
+  }, [locale, updateUserPreferences, user, user?.preferences?.locale])
 
   const value = useMemo(
     () => ({ locale, setLocale, t: dictionaries[locale] }),

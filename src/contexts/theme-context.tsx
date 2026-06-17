@@ -1,5 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useAuth } from './auth-context'
 
 export type ThemePreference = 'light' | 'dark' | 'colorblind'
 export type ResolvedTheme = 'light' | 'dark'
@@ -37,7 +39,9 @@ const getStoredPreference = (): ThemePreference => {
 }
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const { user, updateUserPreferences } = useAuth()
   const [themePreference, setThemePreference] = useState<ThemePreference>(getStoredPreference)
+  const isApplyingUserThemeRef = useRef(false)
   const resolvedTheme: ResolvedTheme = themePreference === 'light' ? 'light' : 'dark'
 
   useEffect(() => {
@@ -48,6 +52,34 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     root.style.colorScheme = resolvedTheme
     window.localStorage.setItem(THEME_STORAGE_KEY, themePreference)
   }, [resolvedTheme, themePreference])
+
+  useEffect(() => {
+    const userTheme = user?.preferences?.themePreference
+
+    if (!userTheme || themePreference === userTheme) {
+      return
+    }
+
+    isApplyingUserThemeRef.current = true
+    setThemePreference(userTheme)
+  }, [themePreference, user?.preferences?.themePreference])
+
+  useEffect(() => {
+    if (isApplyingUserThemeRef.current) {
+      isApplyingUserThemeRef.current = false
+      return
+    }
+
+    if (!user) {
+      return
+    }
+
+    if (user.preferences?.themePreference === themePreference) {
+      return
+    }
+
+    void updateUserPreferences({ themePreference }).catch(() => undefined)
+  }, [themePreference, updateUserPreferences, user, user?.preferences?.themePreference])
 
   const toggleTheme = useCallback(() => {
     setThemePreference((currentPreference) => {

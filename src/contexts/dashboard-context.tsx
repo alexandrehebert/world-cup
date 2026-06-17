@@ -1,11 +1,21 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from './auth-context'
 import { useTournament } from './tournament-context'
 
 const FAVORITE_TEAMS_STORAGE_KEY = 'football-world-cup.favorite-teams'
 const MATCH_QUERY_PARAM = 'match'
 const MATCH_PATH_REGEX = /^\/match\/([^/]+)\/vs\/([^/]+)\/?$/i
+
+const areFavoriteListsEqual = (first: string[], second: string[]) => {
+  if (first.length !== second.length) {
+    return false
+  }
+
+  return first.every((teamId, index) => second[index] === teamId)
+}
 
 const readFavoriteTeamsFromStorage = () => {
   if (typeof window === 'undefined') {
@@ -97,6 +107,7 @@ const getMatchIdFromSearch = (
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation()
   const navigate = useNavigate()
+  const { user, updateUserPreferences } = useAuth()
   const { matchesById, teamsById } = useTournament()
   const { matchIdToPath, pathToMatchId, slugToMatchId } = useMemo(() => {
     const idToSlug: Record<string, string> = {}
@@ -145,6 +156,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     return getMatchIdFromSearch(window.location.pathname, window.location.search, pathToMatchId, slugToMatchId, matchesById)
   })
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<string[]>(readFavoriteTeamsFromStorage)
+  const isApplyingUserFavoritesRef = useRef(false)
 
   const setSelectedMatchId = useCallback((matchId: string | null) => {
     setSelectedMatchIdState(matchId)
@@ -182,6 +194,38 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
     window.localStorage.setItem(FAVORITE_TEAMS_STORAGE_KEY, JSON.stringify(favoriteTeamIds))
   }, [favoriteTeamIds])
+
+  useEffect(() => {
+    if (!user || !Array.isArray(user.preferences?.favoriteTeamIds)) {
+      return
+    }
+
+    if (areFavoriteListsEqual(favoriteTeamIds, user.preferences.favoriteTeamIds)) {
+      return
+    }
+
+    isApplyingUserFavoritesRef.current = true
+    setFavoriteTeamIds(user.preferences.favoriteTeamIds)
+  }, [favoriteTeamIds, user, user?.preferences?.favoriteTeamIds])
+
+  useEffect(() => {
+    if (isApplyingUserFavoritesRef.current) {
+      isApplyingUserFavoritesRef.current = false
+      return
+    }
+
+    if (!user) {
+      return
+    }
+
+    const userFavorites = Array.isArray(user.preferences?.favoriteTeamIds) ? user.preferences.favoriteTeamIds : []
+
+    if (areFavoriteListsEqual(favoriteTeamIds, userFavorites)) {
+      return
+    }
+
+    void updateUserPreferences({ favoriteTeamIds }).catch(() => undefined)
+  }, [favoriteTeamIds, updateUserPreferences, user, user?.preferences?.favoriteTeamIds])
 
   useEffect(() => {
     const matchIdFromUrl = getMatchIdFromSearch(location.pathname, location.search, pathToMatchId, slugToMatchId, matchesById)
@@ -229,7 +273,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       toggleFavoriteTeam,
       clearFavoriteTeams,
     }),
-    [selectedMatchId, getMatchSharePath, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
+    [selectedMatchId, setSelectedMatchId, getMatchSharePath, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
   )
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>

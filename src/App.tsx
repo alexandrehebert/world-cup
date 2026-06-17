@@ -5,6 +5,8 @@ import { OverviewPage } from './views/overview-page'
 import { GroupsPage } from './views/groups-page'
 import { MatchesPage } from './views/matches-page'
 import { BracketPage } from './views/bracket-page'
+import { PredictionsPage } from './views/predictions-page'
+import { LeaderboardPage } from './views/leaderboard-page'
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/match" element={<MatchesPage />} />
         <Route path="/match/:homeCode/vs/:awayCode" element={<MatchesPage />} />
         <Route path="/bracket" element={<BracketPage />} />
+        <Route path="/predictions" element={<PredictionsPage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
       </Route>
     </Routes>
   )
