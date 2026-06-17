@@ -189,6 +189,14 @@ select {
   font: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .material-symbols-rounded {
   font-variation-settings:
     'FILL' 0,

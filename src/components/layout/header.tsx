@@ -131,7 +131,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 aria-controls="mobile-account-menu"
               >
                 {user ? (
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-muted)] text-sm font-semibold text-[var(--accent-text)]">
+                  <span className="inline-flex h-full w-full items-center justify-center rounded-none bg-[var(--accent-muted)] text-sm font-semibold text-[var(--accent-text)]">
                     {getUserInitial(user.username)}
                   </span>
                 ) : (
@@ -231,14 +231,16 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 }}
                 aria-expanded={isAccountMenuOpen}
                 aria-controls="desktop-account-menu"
-                className="inline-flex cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-1.5 text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+                className={`inline-flex cursor-pointer items-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] ${
+                  user ? 'gap-0 py-0 pl-0 pr-2' : 'gap-2 px-2 py-1.5'
+                }`}
               >
                 {user ? (
                   <>
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--accent-muted)] text-xs font-semibold text-[var(--accent-text)]">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-none border-r border-[var(--border)] bg-[var(--accent-muted)] text-xs font-semibold text-[var(--accent-text)]">
                       {getUserInitial(user.username)}
                     </span>
-                    <span className="max-w-[10rem] truncate text-sm font-medium">{user.username}</span>
+                    <span className="max-w-[10rem] truncate px-2 text-sm font-medium">{user.username}</span>
                   </>
                 ) : (
                   <>
