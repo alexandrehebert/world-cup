@@ -111,6 +111,46 @@ export const PredictionsPage = () => {
     [groupedClosed, t.labels.today],
   )
 
+  const desktopDaySections = useMemo(() => {
+    const dateLocale = getDateLocale(locale)
+    const dayMap = new Map<string, { dayKey: string; dayLabel: string; items: { match: MatchRecord; isOpen: boolean }[] }>()
+
+    const add = (matches: MatchRecord[], isOpen: boolean) => {
+      for (const match of matches) {
+        const dayKey = getMatchDayKey(match.kickoff, match.venue.timeZone)
+        const existing = dayMap.get(dayKey)
+        if (existing) {
+          existing.items.push({ match, isOpen })
+        } else {
+          const date = new Date(match.kickoff)
+          const resolvedTz = match.venue.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+          const dayLabel = dayKey === todayKey
+            ? t.labels.today
+            : new Intl.DateTimeFormat(dateLocale, { dateStyle: 'full', timeZone: resolvedTz }).format(date)
+          dayMap.set(dayKey, { dayKey, dayLabel, items: [{ match, isOpen }] })
+        }
+      }
+    }
+
+    add(openMatches, true)
+    add(closedMatches, false)
+    return [...dayMap.values()]
+  }, [openMatches, closedMatches, locale, todayKey, t.labels.today])
+
+  const desktopLeftSections = useMemo(
+    () => desktopDaySections
+      .filter((s) => s.dayKey <= todayKey)
+      .sort((a, b) => b.dayKey.localeCompare(a.dayKey)),
+    [desktopDaySections, todayKey],
+  )
+
+  const desktopRightSections = useMemo(
+    () => desktopDaySections
+      .filter((s) => s.dayKey > todayKey)
+      .sort((a, b) => a.dayKey.localeCompare(b.dayKey)),
+    [desktopDaySections, todayKey],
+  )
+
   return (
     <section className="space-y-4">
       <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.predictions}</h2>
@@ -147,10 +187,27 @@ export const PredictionsPage = () => {
 
       {user && !isPredictionsLoading ? (
         <>
-          {/* DESKTOP: past/live left | upcoming right */}
+          {/* DESKTOP: left = today + past | right = future */}
           <div className="hidden xl:grid xl:grid-cols-2 xl:items-start xl:gap-8">
-            <ClosedColumn groups={groupedClosed} nextMatchMessage={nextMatchMessage} />
-            <OpenColumn groups={groupedOpen} openMatches={openMatches} drafts={drafts} />
+            <div className="space-y-6">
+              {nextMatchMessage ? (
+                <div className="bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--accent-text)]">
+                  {nextMatchMessage}
+                </div>
+              ) : null}
+              {desktopLeftSections.length === 0 ? (
+                <p className="text-sm text-[var(--text-muted)]">{t.labels.noPastPredictions}</p>
+              ) : desktopLeftSections.map((section) => (
+                <DesktopDaySection key={section.dayKey} section={section} drafts={drafts} />
+              ))}
+            </div>
+            <div className="space-y-6">
+              {desktopRightSections.length === 0 ? (
+                <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionMatches}</p>
+              ) : desktopRightSections.map((section) => (
+                <DesktopDaySection key={section.dayKey} section={section} drafts={drafts} />
+              ))}
+            </div>
           </div>
 
           {/* MOBILE: today mixed → future → past */}
@@ -194,6 +251,24 @@ export const PredictionsPage = () => {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
+const DesktopDaySection = ({
+  section,
+  drafts,
+}: {
+  section: { dayKey: string; dayLabel: string; items: { match: MatchRecord; isOpen: boolean }[] }
+  drafts: ReturnType<typeof usePredictionDrafts>
+}) => (
+  <DaySection dayLabel={section.dayLabel} accent={section.items.some((i) => i.isOpen)}>
+    {[...section.items]
+      .sort((a, b) => a.match.kickoff.localeCompare(b.match.kickoff))
+      .map(({ match, isOpen }) =>
+        isOpen
+          ? <OpenMatchCard key={match.id} match={match} drafts={drafts} />
+          : <ClosedMatchCard key={match.id} match={match} />,
+      )}
+  </DaySection>
+)
+
 const DaySection = ({
   dayLabel,
   accent = false,
@@ -214,56 +289,3 @@ const DaySection = ({
   </section>
 )
 
-const ClosedColumn = ({ groups, nextMatchMessage }: { groups: DayGroup[]; nextMatchMessage: string | null }) => {
-  const { t } = useLocale()
-  return (
-    <div className="space-y-6">
-      <SectionHeader label={t.labels.pastAndLivePredictions} />
-      {nextMatchMessage ? (
-        <div className="bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--accent-text)]">
-          {nextMatchMessage}
-        </div>
-      ) : null}
-      {groups.length === 0 ? (
-        <p className="text-sm text-[var(--text-muted)]">{t.labels.noPastPredictions}</p>
-      ) : groups.map((g) => (
-        <DaySection key={g.dayLabel} dayLabel={g.dayLabel}>
-          {g.matches.map((m) => <ClosedMatchCard key={m.id} match={m} />)}
-        </DaySection>
-      ))}
-    </div>
-  )
-}
-
-const OpenColumn = ({
-  groups,
-  openMatches,
-  drafts,
-}: {
-  groups: DayGroup[]
-  openMatches: MatchRecord[]
-  drafts: ReturnType<typeof usePredictionDrafts>
-}) => {
-  const { t } = useLocale()
-  return (
-    <div className="space-y-6">
-      <SectionHeader label={t.labels.predictions} accent />
-      {openMatches.length === 0 ? (
-        <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionMatches}</p>
-      ) : groups.map((g) => (
-        <DaySection key={g.dayLabel} dayLabel={g.dayLabel} accent>
-          {g.matches.map((m) => <OpenMatchCard key={m.id} match={m} drafts={drafts} />)}
-        </DaySection>
-      ))}
-    </div>
-  )
-}
-
-const SectionHeader = ({ label, accent = false }: { label: string; accent?: boolean }) => (
-  <div className="flex items-center gap-3">
-    <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${accent ? 'text-[var(--accent-text)]' : 'text-[var(--text-muted)]'}`}>
-      {label}
-    </p>
-    <span className="flex-1 border-t border-[var(--border)]" />
-  </div>
-)
