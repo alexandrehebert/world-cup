@@ -1,5 +1,4 @@
 /* eslint-disable react-refresh/only-export-components */
-/* eslint-disable react-hooks/set-state-in-effect */
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { en } from '../translations/en'
 import { fr } from '../translations/fr'
@@ -49,14 +48,20 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const preferredLocale = user?.preferences?.locale
 
-    if (!preferredLocale || locale === preferredLocale) {
+    if (!preferredLocale) {
       return
     }
 
-    isApplyingUserLocaleRef.current = true
-    setLocaleState(preferredLocale)
-    localStorage.setItem('locale', preferredLocale)
-  }, [locale, user?.preferences?.locale])
+    setLocaleState((currentLocale) => {
+      if (currentLocale === preferredLocale) {
+        return currentLocale
+      }
+
+      isApplyingUserLocaleRef.current = true
+      localStorage.setItem('locale', preferredLocale)
+      return preferredLocale
+    })
+  }, [user?.preferences?.locale])
 
   useEffect(() => {
     if (isApplyingUserLocaleRef.current) {

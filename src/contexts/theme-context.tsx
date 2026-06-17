@@ -1,5 +1,4 @@
 /* eslint-disable react-refresh/only-export-components */
-/* eslint-disable react-hooks/set-state-in-effect */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from './auth-context'
 
@@ -56,13 +55,19 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const userTheme = user?.preferences?.themePreference
 
-    if (!userTheme || themePreference === userTheme) {
+    if (!userTheme) {
       return
     }
 
-    isApplyingUserThemeRef.current = true
-    setThemePreference(userTheme)
-  }, [themePreference, user?.preferences?.themePreference])
+    setThemePreference((currentThemePreference) => {
+      if (currentThemePreference === userTheme) {
+        return currentThemePreference
+      }
+
+      isApplyingUserThemeRef.current = true
+      return userTheme
+    })
+  }, [user?.preferences?.themePreference])
 
   useEffect(() => {
     if (isApplyingUserThemeRef.current) {
