@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { loadTournamentData } from '../../../../../server/tournament-data'
-import { getDisplayMatchStatus, getMatchDisplayTime } from '../../../../../lib/format'
+import { getDisplayMatchStatus, getMatchDisplayTime, formatMatchDate } from '../../../../../lib/format'
 import { en } from '../../../../../translations/en'
 import type { TournamentData } from '../../../../../types/tournament'
 
@@ -45,6 +45,13 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
   const status = displayStatus === 'live' ? 'LIVE' : displayStatus === 'finished' ? 'FINISHED' : displayStatus === 'scheduled' ? 'SCHEDULED' : 'MATCH'
   const venue = match ? [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ') : 'FIFA World Cup 2026'
 
+  const scheduledKickoff = displayStatus === 'scheduled' ? match?.kickoff : undefined
+  const stadiumDates = scheduledKickoff ? formatMatchDate(scheduledKickoff, 'en', match?.venue?.timeZone ?? 'UTC') : null
+  const utcDates = scheduledKickoff ? formatMatchDate(scheduledKickoff, 'en', 'UTC') : null
+  // localTime with timeZone:'UTC' returns the time with GMT/UTC abbreviation
+  const stadiumLocalTime = stadiumDates?.localTime ?? null
+  const utcDateTime = utcDates ? `${utcDates.localTime} (UTC)` : null
+
   return new ImageResponse(
     (
       <div
@@ -65,6 +72,7 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: '#f4c542' }}>{status}</div>
             {liveClock ? <div style={{ fontSize: 22, fontWeight: 700, color: '#7fe5c5' }}>{liveClock}</div> : null}
+            {utcDateTime ? <div style={{ fontSize: 20, fontWeight: 500, color: '#c5d5f5', opacity: 0.9 }}>{utcDateTime}</div> : null}
           </div>
         </div>
 
@@ -75,7 +83,10 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <div style={{ fontSize: 28, opacity: 0.86 }}>{venue}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ fontSize: 28, opacity: 0.86 }}>{venue}</div>
+            {stadiumLocalTime ? <div style={{ fontSize: 22, fontWeight: 500, color: '#f4c542', opacity: 0.9 }}>{stadiumLocalTime}</div> : null}
+          </div>
           <div style={{ fontSize: 26, opacity: 0.76 }}>world-cup.hebert.app</div>
         </div>
       </div>
