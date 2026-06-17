@@ -14,6 +14,7 @@ type TeamRecord = TournamentData['teams'][number]
 const normalizeCode = (value: string | undefined) => String(value ?? '').trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
 
 type TeamsById = Record<string, TeamRecord>
+type MenuPageMeta = { title: string; description: string; imagePath: string; imageAlt: string; canonical: string }
 
 const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: string, awayCode: string) => {
   const normalizedHome = normalizeCode(homeCode)
@@ -60,24 +61,93 @@ const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string) 
   return { title, description }
 }
 
+const menuMetaBySegment: Record<string, MenuPageMeta> = {
+  overview: {
+    title: 'World Cup Schedule | FIFA World Cup 2026',
+    description: 'Explore upcoming fixtures, venues, and kickoff times across the full tournament schedule.',
+    imagePath: '/menu/overview/opengraph-image',
+    imageAlt: 'World Cup schedule overview',
+    canonical: '/overview',
+  },
+  groups: {
+    title: 'Group Standings | FIFA World Cup 2026',
+    description: 'Track every group table with points, goal difference, and qualification race updates.',
+    imagePath: '/menu/groups/opengraph-image',
+    imageAlt: 'World Cup group standings',
+    canonical: '/groups',
+  },
+  matches: {
+    title: 'Matches | FIFA World Cup 2026',
+    description: 'Follow live and upcoming World Cup matches with scores, status, and fixture details.',
+    imagePath: '/menu/matches/opengraph-image',
+    imageAlt: 'World Cup matches center',
+    canonical: '/matches',
+  },
+  bracket: {
+    title: 'Knockout Bracket | FIFA World Cup 2026',
+    description: 'See the complete knockout path from Round of 32 to the World Cup final.',
+    imagePath: '/menu/bracket/opengraph-image',
+    imageAlt: 'World Cup knockout bracket',
+    canonical: '/bracket',
+  },
+  predictions: {
+    title: 'World Cup Predictions | FIFA World Cup 2026',
+    description: 'Join me on the predictions page and make your picks for upcoming World Cup matches.',
+    imagePath: '/predictions/opengraph-image',
+    imageAlt: 'World Cup predictions invite',
+    canonical: '/predictions',
+  },
+  leaderboard: {
+    title: 'Predictions Leaderboard | FIFA World Cup 2026',
+    description: 'Compare player rankings and see who leads the World Cup prediction challenge.',
+    imagePath: '/menu/leaderboard/opengraph-image',
+    imageAlt: 'World Cup predictions leaderboard',
+    canonical: '/leaderboard',
+  },
+}
+
+const buildMenuMetadata = (meta: MenuPageMeta): Metadata => ({
+  title: meta.title,
+  description: meta.description,
+  alternates: { canonical: meta.canonical },
+  openGraph: {
+    title: meta.title,
+    description: meta.description,
+    type: 'website',
+    url: meta.canonical,
+    images: [{ url: meta.imagePath, width: 1200, height: 630, alt: meta.imageAlt }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: meta.title,
+    description: meta.description,
+    images: [meta.imagePath],
+  },
+})
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
   const { slug } = await params
+  const defaultMeta = {
+    title: 'FIFA World Cup 2026',
+    description: 'World Cup dashboard with live results, fixtures, groups, and bracket.',
+  }
+
+  const firstSegment = slug?.[0]?.toLowerCase()
+  const menuMeta = firstSegment ? menuMetaBySegment[firstSegment] : undefined
+
+  if (menuMeta && slug?.length === 1) {
+    return buildMenuMetadata(menuMeta)
+  }
 
   if (!slug || slug.length < 4) {
-    return {
-      title: 'FIFA World Cup 2026',
-      description: 'World Cup dashboard with live results, fixtures, groups, and bracket.',
-    }
+    return defaultMeta
   }
 
   const [first, homeCode, third, awayCode] = slug
   const isMatchRoute = first?.toLowerCase() === 'match' && third?.toLowerCase() === 'vs'
 
   if (!isMatchRoute) {
-    return {
-      title: 'FIFA World Cup 2026',
-      description: 'World Cup dashboard with live results, fixtures, groups, and bracket.',
-    }
+    return defaultMeta
   }
 
   const tournamentData = await loadTournamentData()
