@@ -3,6 +3,7 @@ import { usePredictions } from '../../contexts/predictions-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate } from '../../lib/format'
 import { Icon } from '../../lib/icons'
+import { getActualOutcome, getClosedButtonClass } from '../predictions/prediction-form'
 import type { MatchRecord } from '../../types/tournament'
 
 interface Props {
@@ -16,38 +17,6 @@ const STATUS_CLASS = {
   unsuccessful: 'bg-[var(--surface-soft)] text-rose-400',
   live: 'bg-amber-500/20 text-amber-400',
 } as const
-
-const getActualOutcome = (match: MatchRecord): 'home' | 'draw' | 'away' | null => {
-  if (match.status !== 'finished' && match.status !== 'live') return null
-  const home = match.home.score
-  const away = match.away.score
-  if (home === undefined || away === undefined) return null
-  if (home > away) return 'home'
-  if (away > home) return 'away'
-  return 'draw'
-}
-
-const getButtonClass = (
-  value: 'home' | 'draw' | 'away',
-  userPick: 'home' | 'draw' | 'away' | undefined,
-  actualOutcome: 'home' | 'draw' | 'away' | null,
-  isScored: boolean,
-  isCorrect: boolean,
-  isLive: boolean,
-) => {
-  if (userPick === value) {
-    if (isLive && actualOutcome !== null) {
-      return actualOutcome === value
-        ? 'bg-amber-500/25 text-amber-400'
-        : 'bg-rose-500/20 text-rose-400'
-    }
-    if (!isScored) return 'bg-[var(--accent-muted)] text-[var(--accent-text)] opacity-70'
-    return isCorrect ? 'bg-emerald-500/25 text-emerald-400' : 'bg-rose-500/20 text-rose-400'
-  }
-  if (isLive && actualOutcome === value) return 'bg-amber-500/10 text-amber-500/60'
-  if (actualOutcome === value && isScored && !isCorrect) return 'bg-emerald-500/10 text-emerald-500/60'
-  return 'bg-[var(--surface-soft)] text-[var(--text-muted)] opacity-50'
-}
 
 export const ClosedMatchCard = ({ match }: Props) => {
   const { locale, t } = useLocale()
@@ -65,7 +34,7 @@ export const ClosedMatchCard = ({ match }: Props) => {
   const isLive = match.status === 'live'
   const isFinished = match.status === 'finished'
   const hasScore = match.home.score !== undefined && match.away.score !== undefined
-  const actualOutcome = getActualOutcome(match)
+  const actualOutcome = getActualOutcome(match.home.score, match.away.score, match.status)
   const isScored = Boolean(prediction?.scoredAt)
   const isCorrect = isScored && (prediction?.pointsAwarded ?? 0) > 0
 
@@ -119,7 +88,7 @@ export const ClosedMatchCard = ({ match }: Props) => {
               key={item.value}
               type="button"
               disabled
-              className={`w-full cursor-not-allowed px-2 py-2 text-xs font-semibold sm:text-sm ${getButtonClass(item.value, prediction?.outcome, actualOutcome, isScored, isCorrect, isLive)}`}
+              className={`w-full cursor-not-allowed px-2 py-2 text-xs font-semibold sm:text-sm ${getClosedButtonClass(item.value, prediction?.outcome, actualOutcome, isScored, isCorrect, isLive)}`}
             >
               {item.label}
             </button>

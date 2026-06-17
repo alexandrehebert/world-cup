@@ -7,6 +7,7 @@ import { Icon } from '../../lib/icons'
 import { inferOutcomeFromScores } from '../../lib/predictions'
 import type { MatchRecord } from '../../types/tournament'
 import type { PredictionDraftState } from './use-prediction-drafts'
+import { PredictionForm } from './prediction-form'
 
 interface Props {
   match: MatchRecord
@@ -139,78 +140,33 @@ export const OpenMatchCard = ({ match, drafts }: Props) => {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="grid grid-cols-3 items-start gap-2">
-          {([
-            { value: 'home' as const, label: homeLabel },
-            { value: 'draw' as const, label: t.labels.draw },
-            { value: 'away' as const, label: awayLabel },
-          ] as const).map((item) => (
-            <button
-              key={item.value}
-              type="button"
-              disabled={isSaving}
-              onClick={() => {
-                clearErrorIfNeeded()
-                if (selectedOutcome === item.value) return
-                setSelectedOutcomes((curr) => ({ ...curr, [match.id]: item.value }))
-                setScoreInputs((curr) => ({ ...curr, [match.id]: { home: '', away: '' } }))
-                setDirtyMatches((curr) => ({ ...curr, [match.id]: true }))
-              }}
-              className={`w-full cursor-pointer px-2 py-2 text-xs font-semibold transition hover:brightness-105 sm:text-sm ${selectedOutcome === item.value ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]' : 'bg-[var(--surface-soft)] text-[var(--text)]'} ${isOutcomeInvalid ? 'ring-1 ring-rose-400' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid h-9 grid-cols-3 items-center gap-2">
-          {isScoreVisible ? (
-            <>
-              <input
-                type="number"
-                min={0}
-                value={scoreInput.home}
-                onChange={(e) => {
-                  clearErrorIfNeeded()
-                  const next = { ...scoreInput, home: e.target.value }
-                  setScoreInputs((curr) => ({ ...curr, [match.id]: next }))
-                  setDirtyMatches((curr) => ({ ...curr, [match.id]: true }))
-                  const inferred = inferOutcomeFromScores(next.home, next.away)
-                  if (inferred) setSelectedOutcomes((curr) => ({ ...curr, [match.id]: inferred }))
-                }}
-                placeholder={homeTeam?.code ?? t.labels.home}
-                className={`h-full w-full border bg-[var(--surface-strong)] px-2 py-1 text-center text-sm ${isHomeScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'}`}
-              />
-              <span className="self-center text-center text-sm text-[var(--text-muted)]">-</span>
-              <input
-                type="number"
-                min={0}
-                value={scoreInput.away}
-                onChange={(e) => {
-                  clearErrorIfNeeded()
-                  const next = { ...scoreInput, away: e.target.value }
-                  setScoreInputs((curr) => ({ ...curr, [match.id]: next }))
-                  setDirtyMatches((curr) => ({ ...curr, [match.id]: true }))
-                  const inferred = inferOutcomeFromScores(next.home, next.away)
-                  if (inferred) setSelectedOutcomes((curr) => ({ ...curr, [match.id]: inferred }))
-                }}
-                placeholder={awayTeam?.code ?? t.labels.away}
-                className={`h-full w-full border bg-[var(--surface-strong)] px-2 py-1 text-center text-sm ${isAwayScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'}`}
-              />
-            </>
-          ) : (
-            <button
-              type="button"
-              disabled={isSaving}
-              onClick={() => { setScoreFieldsVisibleByMatch((curr) => ({ ...curr, [match.id]: true })) }}
-              className="col-span-3 cursor-pointer justify-self-center bg-transparent p-0 text-xs font-medium text-[var(--text-muted)] underline decoration-1 underline-offset-2 transition hover:text-[var(--text-soft)] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {t.labels.predictScores}
-            </button>
-          )}
-        </div>
-      </div>
+      <PredictionForm
+        homeLabel={homeLabel}
+        awayLabel={awayLabel}
+        selectedOutcome={selectedOutcome ?? null}
+        scoreInput={scoreInput}
+        isScoreVisible={isScoreVisible}
+        onOutcomeChange={(outcome) => {
+          clearErrorIfNeeded()
+          if (selectedOutcome === outcome) return
+          setSelectedOutcomes((curr) => ({ ...curr, [match.id]: outcome }))
+          setScoreInputs((curr) => ({ ...curr, [match.id]: { home: '', away: '' } }))
+          setDirtyMatches((curr) => ({ ...curr, [match.id]: true }))
+        }}
+        onScoreChange={(next) => {
+          clearErrorIfNeeded()
+          setScoreInputs((curr) => ({ ...curr, [match.id]: next }))
+          setDirtyMatches((curr) => ({ ...curr, [match.id]: true }))
+          const inferred = inferOutcomeFromScores(next.home, next.away)
+          if (inferred) setSelectedOutcomes((curr) => ({ ...curr, [match.id]: inferred }))
+        }}
+        onShowScores={() => setScoreFieldsVisibleByMatch((curr) => ({ ...curr, [match.id]: true }))}
+        isOutcomeInvalid={isOutcomeInvalid}
+        isHomeScoreInvalid={isHomeScoreInvalid}
+        isAwayScoreInvalid={isAwayScoreInvalid}
+        isSaving={isSaving}
+        compact
+      />
 
       <div className="space-y-1">
         <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">

@@ -12,6 +12,7 @@ import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
 import { StatusPill } from '../ui/status-pill'
 import { FeedbackPopup } from '../ui/feedback-popup'
+import { PredictionForm, getActualOutcome } from '../predictions/prediction-form'
 import type { MatchOutcome } from '../../types/predictions'
 
 type PredictionValidationIssue = 'outcome' | 'scores'
@@ -203,6 +204,11 @@ export const MatchModal = () => {
       draftScoreInput.home.trim() !== persistedHomeScore ||
       draftScoreInput.away.trim() !== persistedAwayScore)
 
+  const actualOutcome = getActualOutcome(match.home.score, match.away.score, match.status)
+  const isMatchLive = match.status === 'live'
+  const isPredictionScored = Boolean(existingPrediction?.scoredAt)
+  const isPredictionCorrect = isPredictionScored && (existingPrediction?.pointsAwarded ?? 0) > 0
+
   const quickOptions: Array<{ value: MatchOutcome; label: string }> = [
     { value: 'home', label: homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home },
     { value: 'draw', label: t.labels.draw },
@@ -372,13 +378,13 @@ export const MatchModal = () => {
             </div>
           </div>
 
-          {isPredictionOpen ? (
+          {(isPredictionOpen || existingPrediction) ? (
             <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
                   {t.labels.prediction}
                 </p>
-                {user && hasPredictionChanges ? (
+                {user && isPredictionOpen && hasPredictionChanges ? (
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -408,98 +414,65 @@ export const MatchModal = () => {
                 ) : null}
               </div>
 
-              {!user ? (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-3 gap-2">
-                    {quickOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => openAuthModal('login')}
-                        className="cursor-pointer bg-[var(--surface-soft)] px-2 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] sm:text-sm"
-                      >
-                        {option.label}
-                      </button>
-                    ))}
+              {isPredictionOpen ? (
+                !user ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-3 gap-2">
+                      {quickOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => openAuthModal('login')}
+                          className="cursor-pointer bg-[var(--surface-soft)] px-2 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] sm:text-sm"
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-sm text-[var(--text-muted)]">
+                      {t.labels.signInToSavePrediction}
+                    </p>
                   </div>
-                  <p className="text-sm text-[var(--text-muted)]">
-                    {t.labels.signInToSavePrediction}
-                  </p>
-                </div>
+                ) : (
+                  <PredictionForm
+                    homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
+                    awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
+                    selectedOutcome={draftOutcome}
+                    scoreInput={draftScoreInput}
+                    onOutcomeChange={(outcome) => {
+                      setPredictionError(null)
+                      if (draftOutcome === outcome) return
+                      setDraftMatchId(match.id)
+                      setSelectedOutcome(outcome)
+                      setScoreInput({ home: '', away: '' })
+                      setIsDraftDirty(true)
+                    }}
+                    onScoreChange={(next) => {
+                      setPredictionError(null)
+                      const inferredOutcome = inferOutcomeFromScores(next.home, next.away)
+                      setDraftMatchId(match.id)
+                      setIsDraftDirty(true)
+                      setScoreInput(next)
+                      if (inferredOutcome) setSelectedOutcome(inferredOutcome)
+                    }}
+                    isOutcomeInvalid={isOutcomeInvalid}
+                    isHomeScoreInvalid={isHomeScoreInvalid}
+                    isAwayScoreInvalid={isAwayScoreInvalid}
+                    isSaving={isSavingPrediction}
+                  />
+                )
               ) : (
-                <>
-                  <div className="grid grid-cols-3 gap-2">
-                    {quickOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        disabled={isSavingPrediction}
-                        onClick={() => {
-                          setPredictionError(null)
-                          if (draftOutcome === option.value) {
-                            return
-                          }
-                          setDraftMatchId(match.id)
-                          setSelectedOutcome(option.value)
-                          setScoreInput({ home: '', away: '' })
-                          setIsDraftDirty(true)
-                        }}
-                        className={`cursor-pointer px-2 py-2 text-xs font-semibold transition hover:brightness-105 sm:text-sm ${
-                          draftOutcome === option.value
-                            ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                            : 'bg-[var(--surface-soft)] text-[var(--text)]'
-                        } ${isOutcomeInvalid ? 'ring-1 ring-rose-400' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="grid grid-cols-3 items-start gap-2">
-                    <input
-                      type="number"
-                      min={0}
-                      value={draftScoreInput.home}
-                      onChange={(event) => {
-                        setPredictionError(null)
-                        const nextScoreInput = { ...draftScoreInput, home: event.target.value }
-                        const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
-                        setDraftMatchId(match.id)
-                        setIsDraftDirty(true)
-                        setScoreInput(nextScoreInput)
-                        if (inferredOutcome) {
-                          setSelectedOutcome(inferredOutcome)
-                        }
-                      }}
-                      placeholder={homeTeam?.code ?? t.labels.home}
-                      className={`w-full border bg-[var(--surface-strong)] px-2 py-1 text-sm ${
-                        isHomeScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
-                      }`}
-                    />
-                    <span className="self-center text-center text-sm text-[var(--text-muted)]">{t.labels.scores}</span>
-                    <input
-                      type="number"
-                      min={0}
-                      value={draftScoreInput.away}
-                      onChange={(event) => {
-                        setPredictionError(null)
-                        const nextScoreInput = { ...draftScoreInput, away: event.target.value }
-                        const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
-                        setDraftMatchId(match.id)
-                        setIsDraftDirty(true)
-                        setScoreInput(nextScoreInput)
-                        if (inferredOutcome) {
-                          setSelectedOutcome(inferredOutcome)
-                        }
-                      }}
-                      placeholder={awayTeam?.code ?? t.labels.away}
-                      className={`w-full border bg-[var(--surface-strong)] px-2 py-1 text-sm ${
-                        isAwayScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
-                      }`}
-                    />
-                  </div>
-
-                </>
+                <PredictionForm
+                  readOnly
+                  homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
+                  awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
+                  selectedOutcome={persistedOutcome ?? null}
+                  scoreInput={{ home: persistedHomeScore, away: persistedAwayScore }}
+                  actualOutcome={actualOutcome}
+                  isLive={isMatchLive}
+                  isScored={isPredictionScored}
+                  isCorrect={isPredictionCorrect}
+                />
               )}
             </div>
           ) : null}
