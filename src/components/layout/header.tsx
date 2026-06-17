@@ -97,7 +97,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                   setIsMobileSettingsMenuOpen((current) => !current)
                   setIsMobileAccountMenuOpen(false)
                 }}
-                className="inline-flex h-10 w-10 items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+                className="inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
                 aria-label={locale === 'fr' ? 'Paramètres' : 'Settings'}
                 aria-expanded={isMobileSettingsMenuOpen}
                 aria-controls="mobile-settings-menu"
@@ -125,7 +125,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                   setIsMobileAccountMenuOpen((current) => !current)
                   setIsMobileSettingsMenuOpen(false)
                 }}
-                className="inline-flex h-10 w-10 items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+                className="inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
                 aria-label={user ? (locale === 'fr' ? 'Compte' : 'Account') : (locale === 'fr' ? 'Connexion' : 'Sign in')}
                 aria-expanded={isMobileAccountMenuOpen}
                 aria-controls="mobile-account-menu"
@@ -202,7 +202,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 }}
                 aria-expanded={isSettingsMenuOpen}
                 aria-controls="desktop-settings-menu"
-                className="inline-flex items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2.5 py-2 text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+                className="inline-flex cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2.5 py-2 text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
               >
                 <Icon name="settings" className="text-[18px]" />
                 <span className="text-sm font-medium">{locale === 'fr' ? 'Paramètres' : 'Settings'}</span>
@@ -231,7 +231,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 }}
                 aria-expanded={isAccountMenuOpen}
                 aria-controls="desktop-account-menu"
-                className="inline-flex items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-1.5 text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+                className="inline-flex cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-1.5 text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
               >
                 {user ? (
                   <>
