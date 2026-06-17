@@ -6,7 +6,7 @@ import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -152,6 +152,18 @@ export const MatchModal = () => {
   }
   const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
+  const homePlaceholder = match.home.placeholder ? formatPlaceholder(match.home.placeholder, t) : null
+  const awayPlaceholder = match.away.placeholder ? formatPlaceholder(match.away.placeholder, t) : null
+  const homeTeamLabel = homeTeam
+    ? (t.teams[homeTeam.id] ?? homeTeam.name)
+    : homePlaceholder
+      ? homePlaceholder
+      : t.labels.tbd
+  const awayTeamLabel = awayTeam
+    ? (t.teams[awayTeam.id] ?? awayTeam.name)
+    : awayPlaceholder
+      ? awayPlaceholder
+      : t.labels.tbd
   const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
   const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
   const displayStatus = getDisplayMatchStatus(match, nowMs)
@@ -323,7 +335,7 @@ export const MatchModal = () => {
                   {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                 </div>
                 <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.tbd}</span>
+                  <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeamLabel}</span>
                   {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                 </p>
                 <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? t.labels.tbd}</p>
@@ -352,7 +364,7 @@ export const MatchModal = () => {
                   {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                 </div>
                 <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.tbd}</span>
+                  <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeamLabel}</span>
                   {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                 </p>
                 <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? t.labels.tbd}</p>

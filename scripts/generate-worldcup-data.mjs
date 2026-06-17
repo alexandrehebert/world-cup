@@ -54,7 +54,7 @@ const teams = [
 
 const groupDefs = {
   A: ['mex', 'zaf', 'kor', 'cze'],
-  B: ['can', 'bih', 'qat', 'sui'],
+  B: ['sui', 'can', 'qat', 'bih'],
   C: ['bra', 'mar', 'hti', 'sco'],
   D: ['usa', 'par', 'aus', 'tur'],
   E: ['ger', 'cuw', 'civ', 'ecu'],
