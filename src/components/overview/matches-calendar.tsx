@@ -51,6 +51,8 @@ const scoreLabel = (match: MatchRecord, nowMs: number) => {
   return 'vs'
 }
 
+type CalendarDayCell = { day: number; matches: MatchRecord[] }
+
 export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
   const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
   const { locale, t } = useLocale()
@@ -139,7 +141,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
 
   const firstWeekday = (monthDate.getUTCDay() + 6) % 7
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate()
-  const cells: Array<{ day: number; matches: MatchRecord[] } | null> = []
+  const cells: Array<CalendarDayCell | null> = []
 
   for (let index = 0; index < firstWeekday; index += 1) {
     cells.push(null)
@@ -163,7 +165,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
 
   for (let weekStart = 0; weekStart < cells.length; weekStart += 7) {
     const weekCells = cells.slice(weekStart, weekStart + 7)
-    const firstDayCell = weekCells.find((cell): cell is { day: number; matches: MatchRecord[] } => Boolean(cell))
+    const firstDayCell = weekCells.find((cell): cell is CalendarDayCell => Boolean(cell))
     const hasMatchesInWeek = weekCells.some((cell) => Boolean(cell && cell.matches.length > 0))
 
     if (!firstDayCell || !hasMatchesInWeek) {
@@ -200,6 +202,28 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
     }
   }
 
+  const desktopWeeks: Array<Array<CalendarDayCell | null>> = []
+
+  for (let weekStart = 0; weekStart < cells.length; weekStart += 7) {
+    desktopWeeks.push(cells.slice(weekStart, weekStart + 7))
+  }
+
+  while (
+    desktopWeeks.length > 0 &&
+    desktopWeeks[0].every((cell) => !cell || cell.matches.length === 0)
+  ) {
+    desktopWeeks.shift()
+  }
+
+  while (
+    desktopWeeks.length > 0 &&
+    desktopWeeks[desktopWeeks.length - 1].every((cell) => !cell || cell.matches.length === 0)
+  ) {
+    desktopWeeks.pop()
+  }
+
+  const desktopCells = desktopWeeks.flat()
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between bg-[var(--surface)] px-4 py-3">
@@ -233,18 +257,38 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
             {weekday}
           </div>
         ))}
-        {cells.map((cell, index) => (
-          <div
-            key={`${monthKey}-cell-${index}`}
-            className={`min-h-40 p-2 align-top ${
-              cell
-                ? '-ml-px -mt-px border border-[var(--border)] bg-[var(--surface)]'
-                : 'bg-[color:color-mix(in_srgb,var(--surface)_42%,transparent)]'
-            }`}
-          >
-            {cell ? (
+        {desktopCells.map((cell, index) => (
+          (() => {
+            const isToday = Boolean(
+              cell &&
+                year === todayParts.year &&
+                month === todayParts.month &&
+                cell.day === todayParts.day,
+            )
+
+            return (
+              <div
+                key={`${monthKey}-cell-${index}`}
+                className={`min-h-40 p-2 align-top ${
+                  cell
+                    ? `-ml-px -mt-px border border-[var(--border)] bg-[var(--surface)] ${isToday ? 'bg-[color:color-mix(in_srgb,var(--accent-muted)_78%,var(--surface)_22%)]' : ''}`
+                    : 'bg-[color:color-mix(in_srgb,var(--surface)_42%,transparent)]'
+                }`}
+              >
+                {cell ? (
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-[var(--text-soft)]">{cell.day}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <p
+                    className={`text-xs font-semibold ${isToday ? 'text-[var(--accent-text)]' : 'text-[var(--text-soft)]'}`}
+                  >
+                    {cell.day}
+                  </p>
+                  {isToday ? (
+                    <span className="rounded-full border border-[var(--accent-border)] bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--surface)]">
+                      {t.labels.today}
+                    </span>
+                  ) : null}
+                </div>
                 <div className="space-y-1.5">
                   {cell.matches.map((match) => {
                     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
@@ -297,8 +341,10 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                   })}
                 </div>
               </div>
-            ) : null}
-          </div>
+                ) : null}
+              </div>
+            )
+          })()
         ))}
       </div>
 
