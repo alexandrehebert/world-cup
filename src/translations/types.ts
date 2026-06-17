@@ -109,6 +109,7 @@ export interface TranslationSet {
     createAccount: string
     logout: string
     saveScorePrediction: string
+    predictScores: string
     noPredictionMatches: string
     player: string
     predictions: string

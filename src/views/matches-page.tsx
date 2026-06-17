@@ -248,7 +248,7 @@ export const MatchesPage = () => {
 
       {filteredMatches.length > 0 ? (
         <div className="relative z-0">
-          <MatchesList matches={filteredMatches} showQuickPrediction />
+          <MatchesList matches={filteredMatches} />
         </div>
       ) : (
         <div className="bg-[var(--surface)] px-6 py-6 text-center text-sm text-[var(--text-muted)]">

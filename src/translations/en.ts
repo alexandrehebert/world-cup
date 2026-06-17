@@ -111,6 +111,7 @@ export const en: TranslationSet = {
     createAccount: 'Create account',
     logout: 'Log out',
     saveScorePrediction: 'Save score prediction',
+    predictScores: 'Predict scores',
     noPredictionMatches: 'There are no upcoming matches open for predictions.',
     player: 'Player',
     predictions: 'Predictions',

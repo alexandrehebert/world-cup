@@ -57,6 +57,7 @@ export const PredictionsPage = () => {
   const [selectedOutcomes, setSelectedOutcomes] = useState<Record<string, MatchOutcome>>({})
   const [predictionError, setPredictionError] = useState<PredictionErrorState | null>(null)
   const [scoreInputs, setScoreInputs] = useState<Record<string, { home: string; away: string }>>({})
+  const [scoreFieldsVisibleByMatch, setScoreFieldsVisibleByMatch] = useState<Record<string, boolean>>({})
   const [dirtyMatches, setDirtyMatches] = useState<Record<string, boolean>>({})
   const drawLabel = t.labels.draw
 
@@ -89,6 +90,17 @@ export const PredictionsPage = () => {
             home: String(prediction.homeScore ?? ''),
             away: String(prediction.awayScore ?? ''),
           }
+        }
+      }
+
+      return next
+    })
+    setScoreFieldsVisibleByMatch((current) => {
+      const next = { ...current }
+
+      for (const prediction of Object.values(predictionsByMatch)) {
+        if (prediction.type === 'score') {
+          next[prediction.matchId] = true
         }
       }
 
@@ -244,6 +256,9 @@ export const PredictionsPage = () => {
             const scoreInput = scoreInputs[match.id] ?? { home: persistedHomeScore, away: persistedAwayScore }
             const draftHomeScore = scoreInput.home.trim()
             const draftAwayScore = scoreInput.away.trim()
+            const hasPersistedScores = persistedHomeScore.length > 0 || persistedAwayScore.length > 0
+            const hasDraftScores = draftHomeScore.length > 0 || draftAwayScore.length > 0
+            const isScoreFieldsVisible = scoreFieldsVisibleByMatch[match.id] ?? (hasPersistedScores || hasDraftScores)
             const activeValidationIssue = predictionError?.matchId === match.id ? predictionError.issue : undefined
             const isOutcomeInvalid = activeValidationIssue === 'outcome' && !selectedOutcome
             const isScoresInvalid = activeValidationIssue === 'scores'
@@ -339,87 +354,107 @@ export const PredictionsPage = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 items-start gap-2">
-                  {(
-                    [
-                  { value: 'home' as const, label: homeLabel },
-                  { value: 'draw' as const, label: drawLabel },
-                  { value: 'away' as const, label: awayLabel },
-                    ] as const
-                  ).map((item) => (
-                    <button
-                      key={item.value}
-                      type="button"
-                      disabled={isSaving}
-                      onClick={() => {
-                        if (predictionError?.matchId === match.id) {
-                          setPredictionError(null)
-                        }
-                        setSelectedOutcomes((current) => ({ ...current, [match.id]: item.value }))
-                        setScoreInputs((current) => ({
-                          ...current,
-                          [match.id]: { home: '', away: '' },
-                        }))
-                        setDirtyMatches((current) => ({ ...current, [match.id]: true }))
-                      }}
-                      className={`w-full cursor-pointer px-2 py-2 text-xs font-semibold transition hover:brightness-105 sm:text-sm ${
-                        selectedOutcome === item.value
-                          ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                          : 'bg-[var(--surface-soft)] text-[var(--text)]'
-                      } ${isOutcomeInvalid ? 'ring-1 ring-rose-400' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                  <input
-                    type="number"
-                    min={0}
-                    value={scoreInput.home}
-                    onChange={(event) => {
-                      if (predictionError?.matchId === match.id) {
-                        setPredictionError(null)
-                      }
-                      const nextScoreInput = { ...scoreInput, home: event.target.value }
-                      const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
-                      setScoreInputs((current) => ({
-                        ...current,
-                        [match.id]: nextScoreInput,
-                      }))
-                      setDirtyMatches((current) => ({ ...current, [match.id]: true }))
-                      if (inferredOutcome) {
-                        setSelectedOutcomes((current) => ({ ...current, [match.id]: inferredOutcome }))
-                      }
-                    }}
-                    placeholder={homeTeam?.code ?? t.labels.home}
-                    className={`w-full border bg-[var(--surface-strong)] px-2 py-1 text-sm ${
-                      isHomeScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
-                    }`}
-                  />
-                  <span className="self-center text-center text-sm text-[var(--text-muted)]">{t.labels.scores}</span>
-                  <input
-                    type="number"
-                    min={0}
-                    value={scoreInput.away}
-                    onChange={(event) => {
-                      if (predictionError?.matchId === match.id) {
-                        setPredictionError(null)
-                      }
-                      const nextScoreInput = { ...scoreInput, away: event.target.value }
-                      const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
-                      setScoreInputs((current) => ({
-                        ...current,
-                        [match.id]: nextScoreInput,
-                      }))
-                      setDirtyMatches((current) => ({ ...current, [match.id]: true }))
-                      if (inferredOutcome) {
-                        setSelectedOutcomes((current) => ({ ...current, [match.id]: inferredOutcome }))
-                      }
-                    }}
-                    placeholder={awayTeam?.code ?? t.labels.away}
-                    className={`w-full border bg-[var(--surface-strong)] px-2 py-1 text-sm ${
-                      isAwayScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
-                    }`}
-                  />
+                <div className="space-y-2">
+                  <div className="grid grid-cols-3 items-start gap-2">
+                    {(
+                      [
+                        { value: 'home' as const, label: homeLabel },
+                        { value: 'draw' as const, label: drawLabel },
+                        { value: 'away' as const, label: awayLabel },
+                      ] as const
+                    ).map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        disabled={isSaving}
+                        onClick={() => {
+                          if (predictionError?.matchId === match.id) {
+                            setPredictionError(null)
+                          }
+                          setSelectedOutcomes((current) => ({ ...current, [match.id]: item.value }))
+                          setScoreInputs((current) => ({
+                            ...current,
+                            [match.id]: { home: '', away: '' },
+                          }))
+                          setDirtyMatches((current) => ({ ...current, [match.id]: true }))
+                        }}
+                        className={`w-full cursor-pointer px-2 py-2 text-xs font-semibold transition hover:brightness-105 sm:text-sm ${
+                          selectedOutcome === item.value
+                            ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
+                            : 'bg-[var(--surface-soft)] text-[var(--text)]'
+                        } ${isOutcomeInvalid ? 'ring-1 ring-rose-400' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="grid h-9 grid-cols-3 items-center gap-2">
+                    {isScoreFieldsVisible ? (
+                      <>
+                        <input
+                        type="number"
+                        min={0}
+                        value={scoreInput.home}
+                        onChange={(event) => {
+                          if (predictionError?.matchId === match.id) {
+                            setPredictionError(null)
+                          }
+                          const nextScoreInput = { ...scoreInput, home: event.target.value }
+                          const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
+                          setScoreInputs((current) => ({
+                            ...current,
+                            [match.id]: nextScoreInput,
+                          }))
+                          setDirtyMatches((current) => ({ ...current, [match.id]: true }))
+                          if (inferredOutcome) {
+                            setSelectedOutcomes((current) => ({ ...current, [match.id]: inferredOutcome }))
+                          }
+                        }}
+                        placeholder={homeTeam?.code ?? t.labels.home}
+                        className={`h-full w-full border bg-[var(--surface-strong)] px-2 py-1 text-center text-sm ${
+                          isHomeScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
+                        }`}
+                      />
+                        <span className="self-center text-center text-sm text-[var(--text-muted)]">-</span>
+                        <input
+                        type="number"
+                        min={0}
+                        value={scoreInput.away}
+                        onChange={(event) => {
+                          if (predictionError?.matchId === match.id) {
+                            setPredictionError(null)
+                          }
+                          const nextScoreInput = { ...scoreInput, away: event.target.value }
+                          const inferredOutcome = inferOutcomeFromScores(nextScoreInput.home, nextScoreInput.away)
+                          setScoreInputs((current) => ({
+                            ...current,
+                            [match.id]: nextScoreInput,
+                          }))
+                          setDirtyMatches((current) => ({ ...current, [match.id]: true }))
+                          if (inferredOutcome) {
+                            setSelectedOutcomes((current) => ({ ...current, [match.id]: inferredOutcome }))
+                          }
+                        }}
+                        placeholder={awayTeam?.code ?? t.labels.away}
+                        className={`h-full w-full border bg-[var(--surface-strong)] px-2 py-1 text-center text-sm ${
+                          isAwayScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
+                        }`}
+                      />
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={isSaving}
+                        onClick={() => {
+                          setScoreFieldsVisibleByMatch((current) => ({ ...current, [match.id]: true }))
+                        }}
+                        className="col-span-3 cursor-pointer justify-self-center bg-transparent p-0 text-xs font-medium text-[var(--text-muted)] underline decoration-1 underline-offset-2 transition hover:text-[var(--text-soft)] disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {t.labels.predictScores}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-1">

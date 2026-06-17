@@ -111,6 +111,7 @@ export const fr: TranslationSet = {
     createAccount: 'Créer un compte',
     logout: 'Se déconnecter',
     saveScorePrediction: 'Enregistrer le score',
+    predictScores: 'Prédire les scores',
     noPredictionMatches: 'Aucun match à venir ouvert aux pronostics.',
     player: 'Joueur',
     predictions: 'Pronostics',
