@@ -137,6 +137,8 @@ export const fr: TranslationSet = {
     predictionPending: 'Pronostic en attente (match à venir)',
     predictionUnsuccessful: 'Pronostic non réussi',
     predictionLive: 'Match en direct – pronostic en attente',
+    yourPrediction: 'mon prono',
+    finalScore: 'résultat',
     predictionClosedStarted: 'Ce match a commencé. Les pronostics sont fermés.',
     pickWinnerOrDrawFirst: 'Choisis un gagnant ou nul.',
     enterBothScoresOrLeaveEmpty: 'Entre les deux scores, ou laisse vide.',

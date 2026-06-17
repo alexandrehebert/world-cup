@@ -137,6 +137,8 @@ export const en: TranslationSet = {
     predictionPending: 'Prediction saved (match in the future)',
     predictionUnsuccessful: 'Unsuccessful prediction',
     predictionLive: 'Match is live – prediction pending',
+    yourPrediction: 'your pick',
+    finalScore: 'final',
     predictionClosedStarted: 'This match has started. Predictions are closed.',
     pickWinnerOrDrawFirst: 'Pick a winner or draw first.',
     enterBothScoresOrLeaveEmpty: 'Enter both scores, or leave both empty.',

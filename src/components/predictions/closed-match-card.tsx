@@ -12,9 +12,9 @@ interface Props {
 
 const STATUS_ICON = { successful: 'check_circle', pending: 'schedule', unsuccessful: 'cancel', live: 'sports_soccer' } as const
 const STATUS_CLASS = {
-  successful: 'bg-[var(--accent-muted)] text-[var(--accent-text)]',
+  successful: 'bg-emerald-500/20 text-emerald-400',
   pending: 'bg-[var(--surface-soft)] text-[var(--text-muted)]',
-  unsuccessful: 'bg-[var(--surface-soft)] text-rose-400',
+  unsuccessful: 'bg-rose-500/20 text-rose-400',
   live: 'bg-amber-500/20 text-amber-400',
 } as const
 
@@ -53,8 +53,18 @@ export const ClosedMatchCard = ({ match }: Props) => {
     live: t.labels.predictionLive,
   } as const
 
+  const finishedBorderClass = isFinished && predictionStatus === 'successful'
+    ? 'border-l-2 border-l-emerald-500'
+    : isFinished && predictionStatus === 'unsuccessful'
+      ? 'border-l-2 border-l-rose-500'
+      : ''
+
+  const scoreColorClass = isFinished
+    ? predictionStatus === 'successful' ? 'text-emerald-400' : predictionStatus === 'unsuccessful' ? 'text-rose-400' : 'text-[var(--text-muted)]'
+    : 'text-[var(--text-muted)]'
+
   return (
-    <article className="space-y-3 bg-[var(--surface)] p-4 opacity-90">
+    <article className={`space-y-3 bg-[var(--surface)] p-4 opacity-90 ${finishedBorderClass}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <p className="text-sm font-semibold text-[var(--text-strong)]">{homeLabel} vs {awayLabel}</p>
@@ -71,8 +81,11 @@ export const ClosedMatchCard = ({ match }: Props) => {
           </p>
         </div>
         {predictionStatus ? (
-          <span title={statusTitle[predictionStatus]} className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${STATUS_CLASS[predictionStatus]} ${predictionStatus === 'live' ? 'animate-pulse' : ''}`}>
-            <Icon name={STATUS_ICON[predictionStatus]} className="text-sm leading-none" />
+          <span
+            title={statusTitle[predictionStatus]}
+            className={`inline-flex shrink-0 items-center justify-center rounded-full ${STATUS_CLASS[predictionStatus]} ${predictionStatus === 'live' ? 'animate-pulse' : ''} ${isFinished ? 'h-6 w-6' : 'h-5 w-5'}`}
+          >
+            <Icon name={STATUS_ICON[predictionStatus]} className={`leading-none ${isFinished ? 'text-base' : 'text-sm'}`} />
           </span>
         ) : null}
       </div>
@@ -96,10 +109,27 @@ export const ClosedMatchCard = ({ match }: Props) => {
         </div>
 
         {hasPersistedScores ? (
-          <div className="grid h-9 grid-cols-3 items-center gap-2">
-            <input type="number" readOnly value={persistedHomeScore} className="h-full w-full cursor-not-allowed border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-center text-sm opacity-60" />
-            <span className="self-center text-center text-sm text-[var(--text-muted)]">-</span>
-            <input type="number" readOnly value={persistedAwayScore} className="h-full w-full cursor-not-allowed border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-center text-sm opacity-60" />
+          <div className="space-y-1">
+            <div className="grid h-9 grid-cols-3 items-center gap-2">
+              <div className={`flex h-full items-center justify-center border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-center text-sm font-semibold ${scoreColorClass}`}>
+                {persistedHomeScore}
+              </div>
+              <span className={`self-center text-center text-xs font-medium ${scoreColorClass}`}>{t.labels.yourPrediction}</span>
+              <div className={`flex h-full items-center justify-center border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-center text-sm font-semibold ${scoreColorClass}`}>
+                {persistedAwayScore}
+              </div>
+            </div>
+            {isFinished && hasScore ? (
+              <div className="grid h-9 grid-cols-3 items-center gap-2">
+                <div className="flex h-full items-center justify-center border border-[var(--border)] bg-transparent px-2 py-1 text-center text-sm font-semibold text-[var(--text)]">
+                  {match.home.score}
+                </div>
+                <span className="self-center text-center text-xs text-[var(--text-muted)]">{t.labels.finalScore}</span>
+                <div className="flex h-full items-center justify-center border border-[var(--border)] bg-transparent px-2 py-1 text-center text-sm font-semibold text-[var(--text)]">
+                  {match.away.score}
+                </div>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
