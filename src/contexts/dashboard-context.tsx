@@ -236,6 +236,12 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const currentMatchPath = getMatchPathKey(location.pathname)
     const nextMatchPath = selectedMatchId ? (matchIdToPath[selectedMatchId] ?? null) : null
+    const isMatchesRoute = location.pathname === '/matches' || location.pathname === '/match'
+    const shouldSyncMatchUrl = isMatchesRoute || currentMatchPath !== null
+
+    if (!shouldSyncMatchUrl) {
+      return
+    }
 
     if (currentMatchPath === nextMatchPath) {
       return

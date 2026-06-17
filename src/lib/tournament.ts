@@ -5,7 +5,7 @@ import type {
   TeamRecord,
   TournamentData,
 } from '../types/tournament'
-import { compareStandings } from './standings'
+import { sortGroupStandings } from './standings'
 
 export interface TournamentModel extends TournamentData {
   teamsById: Record<string, TeamRecord>
@@ -19,13 +19,10 @@ export const buildTournamentModel = (data: TournamentData): TournamentModel => {
   const teamsById = Object.fromEntries(data.teams.map((team) => [team.id, team]))
   const groups = data.groups.map((group) => {
     const originalOrder = new Map(group.standings.map((standing, index) => [standing.teamId, index]))
-    const standings = [...group.standings].sort((first, second) => {
-      const ranking = compareStandings(first, second)
-      if (ranking !== 0) {
-        return ranking
-      }
-
-      return (originalOrder.get(first.teamId) ?? 0) - (originalOrder.get(second.teamId) ?? 0)
+    const standings = sortGroupStandings({
+      standings: group.standings,
+      matches: data.matches.filter((match) => match.stage === 'group' && match.groupId === group.id),
+      originalOrder,
     })
 
     return {

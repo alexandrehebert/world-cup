@@ -1,5 +1,5 @@
 import type { MatchLiveRecord, MatchRecord, TournamentData } from '../types/tournament'
-import { compareStandings } from '../lib/standings'
+import { sortGroupStandings } from '../lib/standings'
 import { loadTournamentData, saveTournamentData } from './tournament-data'
 import { scoreFinishedMatches } from './predictions-scoring'
 
@@ -441,13 +441,10 @@ const recomputeGroups = (groups: TournamentData['groups'], matches: TournamentDa
     }
 
     const originalOrder = new Map(group.standings.map((standing, index) => [standing.teamId, index]))
-    const standings = [...byTeamId.values()].sort((first, second) => {
-      const ranking = compareStandings(first, second)
-      if (ranking !== 0) {
-        return ranking
-      }
-
-      return (originalOrder.get(first.teamId) ?? 0) - (originalOrder.get(second.teamId) ?? 0)
+    const standings = sortGroupStandings({
+      standings: [...byTeamId.values()],
+      matches: matches.filter((match) => match.stage === 'group' && match.groupId === group.id),
+      originalOrder,
     })
 
     return {
