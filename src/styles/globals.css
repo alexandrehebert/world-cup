@@ -35,33 +35,33 @@
 
 @media (prefers-color-scheme: light) {
   :root {
-    --bg: #f3fbff;
+    --bg: #edf6fd;
     --surface: #ffffff;
-    --surface-strong: #edf7ff;
-    --surface-soft: #e4f2ff;
-    --border: rgba(0, 88, 150, 0.16);
-    --border-strong: rgba(0, 88, 150, 0.31);
-    --text: #174064;
-    --text-strong: #052440;
-    --text-muted: #457399;
-    --text-soft: #6a94b8;
-    --accent: #008f5e;
-    --accent-muted: rgba(0, 143, 94, 0.13);
-    --accent-text: #00784f;
-    --accent-border: rgba(0, 143, 94, 0.34);
+    --surface-strong: #e5f0fa;
+    --surface-soft: #dce9f6;
+    --border: rgba(4, 65, 108, 0.23);
+    --border-strong: rgba(4, 65, 108, 0.4);
+    --text: #103a5b;
+    --text-strong: #031c34;
+    --text-muted: #2f5f86;
+    --text-soft: #4f789d;
+    --accent: #007b4f;
+    --accent-muted: rgba(0, 123, 79, 0.18);
+    --accent-text: #005c3a;
+    --accent-border: rgba(0, 123, 79, 0.42);
     --tab-active-bg: var(--accent-muted);
     --tab-active-text: var(--accent-text);
     --tab-active-border: var(--accent-border);
-    --tab-idle-hover-bg: rgba(0, 102, 170, 0.1);
-    --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 76%, white 24%);
-    --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 84%, #6a8dc3 16%);
+    --tab-idle-hover-bg: rgba(4, 65, 108, 0.12);
+    --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 72%, white 28%);
+    --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 78%, #5f84bc 22%);
     --calendar-live-hover-bg: color-mix(in srgb, var(--calendar-live-bg) 88%, white 12%);
-    --calendar-finished-hover-bg: color-mix(in srgb, var(--surface-soft) 74%, white 26%);
-    --calendar-favorite-hover-bg: color-mix(in srgb, var(--accent-muted) 68%, white 32%);
+    --calendar-finished-hover-bg: color-mix(in srgb, var(--surface-soft) 70%, white 30%);
+    --calendar-favorite-hover-bg: color-mix(in srgb, var(--accent-muted) 72%, white 28%);
     --page-bg:
-      radial-gradient(circle at 7% 2%, rgba(0, 217, 143, 0.17), transparent 31%),
-      radial-gradient(circle at 97% 0%, rgba(0, 170, 255, 0.2), transparent 39%),
-      linear-gradient(180deg, #f6fcff 0%, #e8f5ff 55%, #def0ff 100%);
+      radial-gradient(circle at 7% 2%, rgba(0, 123, 79, 0.18), transparent 31%),
+      radial-gradient(circle at 97% 0%, rgba(40, 127, 207, 0.2), transparent 39%),
+      linear-gradient(180deg, #f6fbff 0%, #e9f3fb 55%, #deebf8 100%);
   }
 }
 
@@ -96,33 +96,33 @@
 }
 
 :root[data-theme='light'] {
-  --bg: #f3fbff;
+  --bg: #edf6fd;
   --surface: #ffffff;
-  --surface-strong: #edf7ff;
-  --surface-soft: #e4f2ff;
-  --border: rgba(0, 88, 150, 0.16);
-  --border-strong: rgba(0, 88, 150, 0.31);
-  --text: #174064;
-  --text-strong: #052440;
-  --text-muted: #457399;
-  --text-soft: #6a94b8;
-  --accent: #008f5e;
-  --accent-muted: rgba(0, 143, 94, 0.13);
-  --accent-text: #00784f;
-  --accent-border: rgba(0, 143, 94, 0.34);
+  --surface-strong: #e5f0fa;
+  --surface-soft: #dce9f6;
+  --border: rgba(4, 65, 108, 0.23);
+  --border-strong: rgba(4, 65, 108, 0.4);
+  --text: #103a5b;
+  --text-strong: #031c34;
+  --text-muted: #2f5f86;
+  --text-soft: #4f789d;
+  --accent: #007b4f;
+  --accent-muted: rgba(0, 123, 79, 0.18);
+  --accent-text: #005c3a;
+  --accent-border: rgba(0, 123, 79, 0.42);
   --tab-active-bg: var(--accent-muted);
   --tab-active-text: var(--accent-text);
   --tab-active-border: var(--accent-border);
-  --tab-idle-hover-bg: rgba(0, 102, 170, 0.1);
-  --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 76%, white 24%);
-  --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 84%, #6a8dc3 16%);
+  --tab-idle-hover-bg: rgba(4, 65, 108, 0.12);
+  --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 72%, white 28%);
+  --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 78%, #5f84bc 22%);
   --calendar-live-hover-bg: color-mix(in srgb, var(--calendar-live-bg) 88%, white 12%);
-  --calendar-finished-hover-bg: color-mix(in srgb, var(--surface-soft) 74%, white 26%);
-  --calendar-favorite-hover-bg: color-mix(in srgb, var(--accent-muted) 68%, white 32%);
+  --calendar-finished-hover-bg: color-mix(in srgb, var(--surface-soft) 70%, white 30%);
+  --calendar-favorite-hover-bg: color-mix(in srgb, var(--accent-muted) 72%, white 28%);
   --page-bg:
-    radial-gradient(circle at 7% 2%, rgba(0, 217, 143, 0.17), transparent 31%),
-    radial-gradient(circle at 97% 0%, rgba(0, 170, 255, 0.2), transparent 39%),
-    linear-gradient(180deg, #f6fcff 0%, #e8f5ff 55%, #def0ff 100%);
+    radial-gradient(circle at 7% 2%, rgba(0, 123, 79, 0.18), transparent 31%),
+    radial-gradient(circle at 97% 0%, rgba(40, 127, 207, 0.2), transparent 39%),
+    linear-gradient(180deg, #f6fbff 0%, #e9f3fb 55%, #deebf8 100%);
 }
 
 :root[data-theme='colorblind'] {
@@ -171,6 +171,7 @@ body {
   background: var(--page-bg);
   color: var(--text);
   font-family: var(--font-sans);
+  line-height: 1.5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
