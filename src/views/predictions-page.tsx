@@ -115,12 +115,6 @@ export const PredictionsPage = () => {
     <section className="space-y-4">
       <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.predictions}</h2>
 
-      {user && !isPredictionsLoading && nextMatchMessage ? (
-        <div className="bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--accent-text)]">
-          {nextMatchMessage}
-        </div>
-      ) : null}
-
       {isLoading ? (
         <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{t.labels.loadingSession}</div>
       ) : !user ? (
@@ -155,7 +149,7 @@ export const PredictionsPage = () => {
         <>
           {/* DESKTOP: past/live left | upcoming right */}
           <div className="hidden xl:grid xl:grid-cols-2 xl:items-start xl:gap-8">
-            <ClosedColumn groups={groupedClosed} />
+            <ClosedColumn groups={groupedClosed} nextMatchMessage={nextMatchMessage} />
             <OpenColumn groups={groupedOpen} openMatches={openMatches} drafts={drafts} />
           </div>
 
@@ -167,6 +161,11 @@ export const PredictionsPage = () => {
 
             {mobileTodayMatches.length > 0 ? (
               <DaySection dayLabel={t.labels.today} accent>
+                {nextMatchMessage ? (
+                  <div className="bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--accent-text)]">
+                    {nextMatchMessage}
+                  </div>
+                ) : null}
                 {mobileTodayMatches.map(({ match, isOpen }) =>
                   isOpen
                     ? <OpenMatchCard key={match.id} match={match} drafts={drafts} />
@@ -215,11 +214,16 @@ const DaySection = ({
   </section>
 )
 
-const ClosedColumn = ({ groups }: { groups: DayGroup[] }) => {
+const ClosedColumn = ({ groups, nextMatchMessage }: { groups: DayGroup[]; nextMatchMessage: string | null }) => {
   const { t } = useLocale()
   return (
     <div className="space-y-6">
       <SectionHeader label={t.labels.pastAndLivePredictions} />
+      {nextMatchMessage ? (
+        <div className="bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--accent-text)]">
+          {nextMatchMessage}
+        </div>
+      ) : null}
       {groups.length === 0 ? (
         <p className="text-sm text-[var(--text-muted)]">{t.labels.noPastPredictions}</p>
       ) : groups.map((g) => (

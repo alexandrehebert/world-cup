@@ -133,6 +133,7 @@ export interface TranslationSet {
     predictionSuccessful: string
     predictionPending: string
     predictionUnsuccessful: string
+    predictionLive: string
     predictionClosedStarted: string
     pickWinnerOrDrawFirst: string
     enterBothScoresOrLeaveEmpty: string

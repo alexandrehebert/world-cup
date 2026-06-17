@@ -9,15 +9,16 @@ interface Props {
   match: MatchRecord
 }
 
-const STATUS_ICON = { successful: 'check_circle', pending: 'schedule', unsuccessful: 'cancel' } as const
+const STATUS_ICON = { successful: 'check_circle', pending: 'schedule', unsuccessful: 'cancel', live: 'sports_soccer' } as const
 const STATUS_CLASS = {
   successful: 'bg-[var(--accent-muted)] text-[var(--accent-text)]',
   pending: 'bg-[var(--surface-soft)] text-[var(--text-muted)]',
   unsuccessful: 'bg-[var(--surface-soft)] text-rose-400',
+  live: 'bg-amber-500/20 text-amber-400',
 } as const
 
 const getActualOutcome = (match: MatchRecord): 'home' | 'draw' | 'away' | null => {
-  if (match.status !== 'finished') return null
+  if (match.status !== 'finished' && match.status !== 'live') return null
   const home = match.home.score
   const away = match.away.score
   if (home === undefined || away === undefined) return null
@@ -32,11 +33,18 @@ const getButtonClass = (
   actualOutcome: 'home' | 'draw' | 'away' | null,
   isScored: boolean,
   isCorrect: boolean,
+  isLive: boolean,
 ) => {
   if (userPick === value) {
+    if (isLive && actualOutcome !== null) {
+      return actualOutcome === value
+        ? 'bg-amber-500/25 text-amber-400'
+        : 'bg-rose-500/20 text-rose-400'
+    }
     if (!isScored) return 'bg-[var(--accent-muted)] text-[var(--accent-text)] opacity-70'
     return isCorrect ? 'bg-emerald-500/25 text-emerald-400' : 'bg-rose-500/20 text-rose-400'
   }
+  if (isLive && actualOutcome === value) return 'bg-amber-500/10 text-amber-500/60'
   if (actualOutcome === value && isScored && !isCorrect) return 'bg-emerald-500/10 text-emerald-500/60'
   return 'bg-[var(--surface-soft)] text-[var(--text-muted)] opacity-50'
 }
@@ -54,6 +62,7 @@ export const ClosedMatchCard = ({ match }: Props) => {
   const prediction = predictionsByMatch[match.id]
   const { localDateTime } = formatMatchDate(match.kickoff, locale, Intl.DateTimeFormat().resolvedOptions().timeZone, t.labels.today)
 
+  const isLive = match.status === 'live'
   const isFinished = match.status === 'finished'
   const hasScore = match.home.score !== undefined && match.away.score !== undefined
   const actualOutcome = getActualOutcome(match)
@@ -65,13 +74,14 @@ export const ClosedMatchCard = ({ match }: Props) => {
   const hasPersistedScores = persistedHomeScore.length > 0 || persistedAwayScore.length > 0
 
   const predictionStatus = prediction
-    ? prediction.scoredAt ? (prediction.pointsAwarded > 0 ? 'successful' : 'unsuccessful') : 'pending'
+    ? prediction.scoredAt ? (prediction.pointsAwarded > 0 ? 'successful' : 'unsuccessful') : isLive ? 'live' : 'pending'
     : null
 
   const statusTitle = {
     successful: t.labels.predictionSuccessful,
     pending: t.labels.predictionPending,
     unsuccessful: t.labels.predictionUnsuccessful,
+    live: t.labels.predictionLive,
   } as const
 
   return (
@@ -81,13 +91,18 @@ export const ClosedMatchCard = ({ match }: Props) => {
           <p className="text-sm font-semibold text-[var(--text-strong)]">{homeLabel} vs {awayLabel}</p>
           <p className="text-xs text-[var(--text-muted)]">
             {localDateTime}
-            {isFinished && hasScore ? (
-              <span className="ml-2 font-semibold text-[var(--text)]">{match.home.score} – {match.away.score}</span>
+            {(isFinished || isLive) && hasScore ? (
+              <span className={`ml-2 font-semibold ${isLive ? 'text-amber-400' : 'text-[var(--text)]'}`}>
+                {match.home.score} – {match.away.score}
+                {isLive && match.live?.shortDetail ? (
+                  <span className="ml-1 text-[0.65rem] font-normal opacity-70">{match.live.shortDetail}</span>
+                ) : null}
+              </span>
             ) : null}
           </p>
         </div>
         {predictionStatus ? (
-          <span title={statusTitle[predictionStatus]} className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${STATUS_CLASS[predictionStatus]}`}>
+          <span title={statusTitle[predictionStatus]} className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${STATUS_CLASS[predictionStatus]} ${predictionStatus === 'live' ? 'animate-pulse' : ''}`}>
             <Icon name={STATUS_ICON[predictionStatus]} className="text-sm leading-none" />
           </span>
         ) : null}
@@ -104,7 +119,7 @@ export const ClosedMatchCard = ({ match }: Props) => {
               key={item.value}
               type="button"
               disabled
-              className={`w-full cursor-not-allowed px-2 py-2 text-xs font-semibold sm:text-sm ${getButtonClass(item.value, prediction?.outcome, actualOutcome, isScored, isCorrect)}`}
+              className={`w-full cursor-not-allowed px-2 py-2 text-xs font-semibold sm:text-sm ${getButtonClass(item.value, prediction?.outcome, actualOutcome, isScored, isCorrect, isLive)}`}
             >
               {item.label}
             </button>
