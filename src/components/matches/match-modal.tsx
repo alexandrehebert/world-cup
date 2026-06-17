@@ -424,6 +424,9 @@ export const MatchModal = () => {
                         disabled={isSavingPrediction}
                         onClick={() => {
                           setPredictionError(null)
+                          if (draftOutcome === option.value) {
+                            return
+                          }
                           setDraftMatchId(match.id)
                           setSelectedOutcome(option.value)
                           setScoreInput({ home: '', away: '' })

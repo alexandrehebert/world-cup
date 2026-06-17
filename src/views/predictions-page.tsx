@@ -371,6 +371,9 @@ export const PredictionsPage = () => {
                           if (predictionError?.matchId === match.id) {
                             setPredictionError(null)
                           }
+                          if (selectedOutcome === item.value) {
+                            return
+                          }
                           setSelectedOutcomes((current) => ({ ...current, [match.id]: item.value }))
                           setScoreInputs((current) => ({
                             ...current,
