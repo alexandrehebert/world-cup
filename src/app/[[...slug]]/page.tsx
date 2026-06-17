@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import ClientApp from '../client-app'
 import { loadTournamentData } from '../../server/tournament-data'
+import { getDisplayMatchStatus, formatMatchDate } from '../../lib/format'
 import type { TournamentData } from '../../types/tournament'
 
 export const dynamic = 'force-dynamic'
@@ -44,8 +45,17 @@ const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string) 
   const scoreLine = hasScore ? `${match.home.score}-${match.away.score}` : 'vs'
   const title = `${homeLabel} ${scoreLine} ${awayLabel} | FIFA World Cup 2026`
   const venue = [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ')
-  const status = match.status === 'live' ? 'Live' : match.status === 'finished' ? 'Finished' : 'Scheduled'
-  const description = `${status} · ${hasScore ? `${homeLabel} ${match.home.score}-${match.away.score} ${awayLabel}` : `${homeLabel} vs ${awayLabel}`} · ${venue}`
+  const displayStatus = getDisplayMatchStatus(match)
+  const status = displayStatus === 'live' ? 'Live' : displayStatus === 'finished' ? 'Finished' : 'Scheduled'
+  const utcDateStr = displayStatus === 'scheduled' && match.kickoff
+    ? formatMatchDate(match.kickoff, 'en', 'UTC').localTime + ' UTC'
+    : null
+  const description = [
+    status,
+    hasScore ? `${homeLabel} ${match.home.score}-${match.away.score} ${awayLabel}` : `${homeLabel} vs ${awayLabel}`,
+    venue,
+    utcDateStr,
+  ].filter(Boolean).join(' · ')
 
   return { title, description }
 }
