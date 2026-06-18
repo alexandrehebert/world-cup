@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useLocale } from '../../contexts/locale-context'
 import type { MatchOutcome } from '../../types/predictions'
 

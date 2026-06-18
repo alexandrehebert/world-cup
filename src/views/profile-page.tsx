@@ -32,17 +32,16 @@ export const ProfilePage = () => {
 
   useEffect(() => {
     const requestedUsername = String(username ?? '').trim()
-
-    if (!requestedUsername) {
-      setProfile(null)
-      setIsMissing(true)
-      setIsLoading(false)
-      return
-    }
-
     const controller = new AbortController()
 
     const loadProfile = async () => {
+      if (!requestedUsername) {
+        setProfile(null)
+        setIsMissing(true)
+        setIsLoading(false)
+        return
+      }
+
       setIsLoading(true)
       setIsMissing(false)
 
