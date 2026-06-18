@@ -10,6 +10,7 @@ import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchDisp
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
+import { ModalShell } from '../ui/modal-shell'
 import { StatusPill } from '../ui/status-pill'
 import { FeedbackPopup } from '../ui/feedback-popup'
 import { PredictionForm, getActualOutcome } from '../predictions/prediction-form'
@@ -99,26 +100,6 @@ export const MatchModal = () => {
   useEffect(() => {
     if (selectedMatchId && !match) {
       closeModal()
-    }
-  }, [closeModal, match, selectedMatchId])
-
-  useEffect(() => {
-    if (!selectedMatchId || !match) {
-      return
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeModal()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    document.body.style.overflow = 'hidden'
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = ''
     }
   }, [closeModal, match, selectedMatchId])
 
@@ -271,235 +252,213 @@ export const MatchModal = () => {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/65 px-4 py-4 backdrop-blur-sm sm:py-6"
-      role="presentation"
-      onClick={closeModal}
+    <ModalShell
+      titleId="match-modal-title"
+      title={t.labels.details}
+      onClose={closeModal}
+      headerActions={
+        <button
+          type="button"
+          onClick={() => void copyShareLink()}
+          className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
+          aria-label={t.labels.share}
+          title={isCopied ? t.labels.copied : t.labels.share}
+        >
+          <Icon name={isCopied ? 'check' : 'share'} className={`text-[20px] ${isCopied ? 'text-[var(--accent-text)]' : ''}`.trim()} />
+        </button>
+      }
+      footer={
+        <FeedbackPopup
+          message={predictionError?.message ?? null}
+          onDismiss={() => setPredictionError(null)}
+          dismissLabel={t.labels.close}
+        />
+      }
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="match-modal-title"
-        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-strong)] shadow-2xl shadow-slate-950/30 sm:max-h-[calc(100dvh-3rem)]"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)]/70 px-5 py-4 backdrop-blur sm:px-6">
-          <h3 id="match-modal-title" className="text-lg font-semibold text-[var(--text-strong)]">
-            {t.labels.details}
-          </h3>
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => void copyShareLink()}
-              className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
-              aria-label={t.labels.share}
-              title={isCopied ? t.labels.copied : t.labels.share}
-            >
-              <Icon name={isCopied ? 'check' : 'share'} className={`text-[20px] ${isCopied ? 'text-[var(--accent-text)]' : ''}`.trim()} />
-            </button>
-            <button
-              type="button"
-              onClick={closeModal}
-              className="cursor-pointer rounded-full p-1 text-[var(--text)] transition hover:text-[var(--text-strong)]"
-              aria-label={t.labels.close}
-            >
-              <Icon name="close" className="text-[24px]" />
-            </button>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.status}</p>
+          <div className="mt-2">
+            <StatusPill
+              status={displayStatus}
+              label={
+                displayStatus === 'live'
+                  ? <span className="inline-flex items-center gap-1.5"><LivePulse className="h-3 w-3" /><span>{t.labels.live}</span></span>
+                  : displayStatus === 'finished'
+                    ? t.labels.finished
+                    : t.labels.scheduled
+              }
+            />
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5 sm:px-6">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.status}</p>
-              <div className="mt-2">
-                <StatusPill
-                  status={displayStatus}
-                  label={
-                    displayStatus === 'live'
-                      ? <span className="inline-flex items-center gap-1.5"><LivePulse className="h-3 w-3" /><span>{t.labels.live}</span></span>
-                      : displayStatus === 'finished'
-                        ? t.labels.finished
-                        : t.labels.scheduled
-                  }
-                />
-              </div>
-            </div>
+        <div className="text-right">
+          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.kickoff}</p>
+          <p className="mt-2 text-sm font-semibold text-[var(--text-strong)]">{localDateTime}</p>
+        </div>
+      </div>
 
-            <div className="text-right">
-              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.kickoff}</p>
-              <p className="mt-2 text-sm font-semibold text-[var(--text-strong)]">{localDateTime}</p>
+      <div className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
+        <p className="text-center text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
+
+        <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <div className="min-w-0 p-2 text-center">
+            <div className="mx-auto mb-2 w-fit">
+              {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
             </div>
+            <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
+              <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeamLabel}</span>
+              {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+            </p>
+            <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? t.labels.tbd}</p>
           </div>
 
-          <div className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-            <p className="text-center text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
-
-            <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-              <div className="min-w-0 p-2 text-center">
-                <div className="mx-auto mb-2 w-fit">
-                  {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
-                </div>
-                <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeamLabel}</span>
-                  {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+          <div className="flex flex-col items-center gap-1 px-2">
+            {hasScore ? (
+              <>
+                <p className="text-3xl font-black leading-none text-[var(--text-strong)] sm:text-4xl">
+                  {match.home.score} - {match.away.score}
                 </p>
-                <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? t.labels.tbd}</p>
-              </div>
-
-              <div className="flex flex-col items-center gap-1 px-2">
-                {hasScore ? (
-                  <>
-                    <p className="text-3xl font-black leading-none text-[var(--text-strong)] sm:text-4xl">
-                      {match.home.score} - {match.away.score}
-                    </p>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                      {displayStatus === 'finished' ? t.labels.finished : t.labels.live}
-                    </p>
-                    {displayStatus === 'live' && displayTime ? (
-                      <p className="text-sm font-semibold text-[var(--text-strong)]">{displayTime}</p>
-                    ) : null}
-                  </>
-                ) : (
-                  <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">{t.labels.vs}</p>
-                )}
-              </div>
-
-              <div className="min-w-0 p-2 text-center">
-                <div className="mx-auto mb-2 w-fit">
-                  {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
-                </div>
-                <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                  <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeamLabel}</span>
-                  {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+                <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">
+                  {displayStatus === 'finished' ? t.labels.finished : t.labels.live}
                 </p>
-                <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? t.labels.tbd}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                  {t.labels.prediction}
-                </p>
-                {user && isPredictionOpen && hasPredictionChanges ? (
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      disabled={isSavingPrediction}
-                      onClick={() => {
-                        setPredictionError(null)
-                        setSelectedOutcome(persistedOutcome ?? null)
-                        setScoreInput({ home: persistedHomeScore, away: persistedAwayScore })
-                        setDraftMatchId(match.id)
-                        setIsDraftDirty(false)
-                      }}
-                      className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {t.labels.cancel}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={isSavingPrediction}
-                      onClick={() => {
-                        void submitPrediction()
-                      }}
-                      className="cursor-pointer bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent-text)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {t.labels.save}
-                    </button>
-                  </div>
+                {displayStatus === 'live' && displayTime ? (
+                  <p className="text-sm font-semibold text-[var(--text-strong)]">{displayTime}</p>
                 ) : null}
-              </div>
+              </>
+            ) : (
+              <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">{t.labels.vs}</p>
+            )}
+          </div>
 
-              {isPredictionOpen ? (
-                !user ? (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-3 gap-2">
-                      {quickOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          onClick={() => openAuthModal('login')}
-                          className="cursor-pointer bg-[var(--surface-soft)] px-2 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] sm:text-sm"
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                    <p className="text-sm text-[var(--text-muted)]">
-                      {t.labels.signInToSavePrediction}
-                    </p>
-                  </div>
-                ) : (
-                  <PredictionForm
-                    homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
-                    awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
-                    selectedOutcome={draftOutcome}
-                    scoreInput={draftScoreInput}
-                    onOutcomeChange={(outcome) => {
-                      setPredictionError(null)
-                      if (draftOutcome === outcome) return
-                      setDraftMatchId(match.id)
-                      setSelectedOutcome(outcome)
-                      setScoreInput({ home: '', away: '' })
-                      setIsDraftDirty(true)
-                    }}
-                    onScoreChange={(next) => {
-                      setPredictionError(null)
-                      const inferredOutcome = inferOutcomeFromScores(next.home, next.away)
-                      setDraftMatchId(match.id)
-                      setIsDraftDirty(true)
-                      setScoreInput(next)
-                      if (inferredOutcome) setSelectedOutcome(inferredOutcome)
-                    }}
-                    isOutcomeInvalid={isOutcomeInvalid}
-                    isHomeScoreInvalid={isHomeScoreInvalid}
-                    isAwayScoreInvalid={isAwayScoreInvalid}
-                    isSaving={isSavingPrediction}
-                  />
-                )
-              ) : (
-                existingPrediction ? (
-                  <PredictionForm
-                    readOnly
-                    homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
-                    awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
-                    selectedOutcome={persistedOutcome ?? null}
-                    scoreInput={{ home: persistedHomeScore, away: persistedAwayScore }}
-                    actualOutcome={actualOutcome}
-                    isLive={isMatchLive}
-                    isScored={isPredictionScored}
-                    isCorrect={isPredictionCorrect}
-                  />
-                ) : (
-                  <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionForMatch}</p>
-                )
-              )}
+          <div className="min-w-0 p-2 text-center">
+            <div className="mx-auto mb-2 w-fit">
+              {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
             </div>
-
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.venue}</p>
-              <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{match.venue.stadium}</p>
-              <p className="mt-1 text-sm text-[var(--text)]">
-                {match.venue.city}, {match.venue.country}
-              </p>
-            </div>
-
-            <div className="shrink-0 text-right">
-              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.localTime}</p>
-              <p className="mt-2 text-sm font-semibold text-[var(--text-strong)]">{venueClock} {venueUtcOffset}</p>
-            </div>
+            <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
+              <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeamLabel}</span>
+              {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+            </p>
+            <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? t.labels.tbd}</p>
           </div>
         </div>
       </div>
-      <FeedbackPopup
-        message={predictionError?.message ?? null}
-        onDismiss={() => setPredictionError(null)}
-        dismissLabel={t.labels.close}
-      />
-    </div>
+
+      <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
+            {t.labels.prediction}
+          </p>
+          {user && isPredictionOpen && hasPredictionChanges ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={isSavingPrediction}
+                onClick={() => {
+                  setPredictionError(null)
+                  setSelectedOutcome(persistedOutcome ?? null)
+                  setScoreInput({ home: persistedHomeScore, away: persistedAwayScore })
+                  setDraftMatchId(match.id)
+                  setIsDraftDirty(false)
+                }}
+                className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {t.labels.cancel}
+              </button>
+              <button
+                type="button"
+                disabled={isSavingPrediction}
+                onClick={() => {
+                  void submitPrediction()
+                }}
+                className="cursor-pointer bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent-text)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {t.labels.save}
+              </button>
+            </div>
+          ) : null}
+        </div>
+
+        {isPredictionOpen ? (
+          !user ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-2">
+                {quickOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => openAuthModal('login')}
+                    className="cursor-pointer bg-[var(--surface-soft)] px-2 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] sm:text-sm"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-sm text-[var(--text-muted)]">
+                {t.labels.signInToSavePrediction}
+              </p>
+            </div>
+          ) : (
+            <PredictionForm
+              homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
+              awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
+              selectedOutcome={draftOutcome}
+              scoreInput={draftScoreInput}
+              onOutcomeChange={(outcome) => {
+                setPredictionError(null)
+                if (draftOutcome === outcome) return
+                setDraftMatchId(match.id)
+                setSelectedOutcome(outcome)
+                setScoreInput({ home: '', away: '' })
+                setIsDraftDirty(true)
+              }}
+              onScoreChange={(next) => {
+                setPredictionError(null)
+                const inferredOutcome = inferOutcomeFromScores(next.home, next.away)
+                setDraftMatchId(match.id)
+                setIsDraftDirty(true)
+                setScoreInput(next)
+                if (inferredOutcome) setSelectedOutcome(inferredOutcome)
+              }}
+              isOutcomeInvalid={isOutcomeInvalid}
+              isHomeScoreInvalid={isHomeScoreInvalid}
+              isAwayScoreInvalid={isAwayScoreInvalid}
+              isSaving={isSavingPrediction}
+            />
+          )
+        ) : (
+          existingPrediction ? (
+            <PredictionForm
+              readOnly
+              homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
+              awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
+              selectedOutcome={persistedOutcome ?? null}
+              scoreInput={{ home: persistedHomeScore, away: persistedAwayScore }}
+              actualOutcome={actualOutcome}
+              isLive={isMatchLive}
+              isScored={isPredictionScored}
+              isCorrect={isPredictionCorrect}
+            />
+          ) : (
+            <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionForMatch}</p>
+          )
+        )}
+      </div>
+
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.venue}</p>
+          <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{match.venue.stadium}</p>
+          <p className="mt-1 text-sm text-[var(--text)]">
+            {match.venue.city}, {match.venue.country}
+          </p>
+        </div>
+
+        <div className="shrink-0 text-right">
+          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.localTime}</p>
+          <p className="mt-2 text-sm font-semibold text-[var(--text-strong)]">{venueClock} {venueUtcOffset}</p>
+        </div>
+      </div>
+    </ModalShell>
   )
 }

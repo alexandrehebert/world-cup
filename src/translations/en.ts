@@ -144,6 +144,12 @@ export const en: TranslationSet = {
     enterBothScoresOrLeaveEmpty: 'Enter both scores, or leave both empty.',
     unableToSavePrediction: 'Unable to save prediction',
     saveFailed: 'Save failed.',
+    teamDetails: 'Team details',
+    upcomingMatchesSection: 'Upcoming',
+    pastMatchesSection: 'Past matches',
+    liveMatchesSection: 'Live',
+    noMatchesForTeam: 'No matches for this team.',
+    groupPosition: 'Group position',
   },
   teams: {
     mex: 'Mexico',

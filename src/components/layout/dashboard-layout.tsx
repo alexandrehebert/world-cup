@@ -6,6 +6,7 @@ import { useLocale } from '../../contexts/locale-context'
 import { Icon } from '../../lib/icons'
 import { AuthModal } from '../auth/auth-modal'
 import { MatchModal } from '../matches/match-modal'
+import { CountryModal } from '../teams/country-modal'
 import { Footer } from './footer'
 
 const HEADER_COMPACT_ENTER_SCROLL = 56
@@ -120,6 +121,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
 
       <AuthModal />
       <MatchModal />
+      <CountryModal />
     </div>
   )
 }

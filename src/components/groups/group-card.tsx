@@ -6,7 +6,7 @@ import { FlagAvatar } from '../ui/flag-avatar'
 
 export const GroupCard = ({ groupId }: { groupId: string }) => {
   const { t } = useLocale()
-  const { isFavoriteTeam, favoriteTeamIds } = useDashboard()
+  const { isFavoriteTeam, favoriteTeamIds, setSelectedTeamId } = useDashboard()
   const { groupsById, teamsById } = useTournament()
   const group = groupsById[groupId]
   const anyFavoriteInGroup = favoriteTeamIds.length > 0 && group.standings.some((s) => favoriteTeamIds.includes(s.teamId))
@@ -49,7 +49,11 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
                     : (isQualifier ? 'border-l-2 border-l-[var(--accent)]' : 'border-l-2 border-l-transparent') + (anyFavoriteInGroup ? ' opacity-75' : '')
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedTeamId(team.id)}
+                  className="flex cursor-pointer items-center gap-3 text-left"
+                >
                   <span className="w-4 text-xs font-semibold text-[var(--text-soft)]">{index + 1}</span>
                   <FlagAvatar team={team} className="h-8 w-8 sm:h-12 sm:w-12" />
                   <div>
@@ -59,7 +63,7 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
                     </p>
                     <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{team.code}</p>
                   </div>
-                </div>
+                </button>
                 <span className="text-center text-[var(--text)]">{standing.played}</span>
                 <span className="text-center text-[var(--text)]">{standing.won}</span>
                 <span className="text-center text-[var(--text)]">{standing.drawn}</span>

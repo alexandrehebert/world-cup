@@ -65,7 +65,7 @@ const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLo
 
 export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
   const { locale, t } = useLocale()
-  const { isFavoriteTeam, favoriteTeamIds } = useDashboard()
+  const { isFavoriteTeam, favoriteTeamIds, setSelectedTeamId } = useDashboard()
   const { teamsById } = useTournament()
   const nowMs = useNow()
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -161,10 +161,20 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                       <div className="flex min-w-0 flex-1 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
                         {homeTeam && <FlagAvatar team={homeTeam} className="h-6 w-6 sm:h-12 sm:w-12" />}
                         <div className="min-w-0">
-                          <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            <span>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'TBD'}</span>
-                            {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
-                          </p>
+                          {homeTeam ? (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedTeamId(homeTeam.id)}
+                              className="inline-flex max-w-full cursor-pointer items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)] hover:text-[var(--accent-text)] hover:underline"
+                            >
+                              <span>{t.teams[homeTeam.id] ?? homeTeam.name}</span>
+                              {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+                            </button>
+                          ) : (
+                            <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
+                              <span>TBD</span>
+                            </p>
+                          )}
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
                             {homeTeam?.code ?? 'TBD'}
                           </p>
@@ -181,10 +191,20 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                       </div>
                       <div className="flex min-w-0 flex-1 flex-col items-end gap-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
                         <div className="order-2 min-w-0 text-right sm:order-1">
-                          <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
-                            <span>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'TBD'}</span>
-                            {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
-                          </p>
+                          {awayTeam ? (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedTeamId(awayTeam.id)}
+                              className="inline-flex max-w-full cursor-pointer items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)] hover:text-[var(--accent-text)] hover:underline"
+                            >
+                              <span>{t.teams[awayTeam.id] ?? awayTeam.name}</span>
+                              {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+                            </button>
+                          ) : (
+                            <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
+                              <span>TBD</span>
+                            </p>
+                          )}
                           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
                             {awayTeam?.code ?? 'TBD'}
                           </p>

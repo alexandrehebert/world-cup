@@ -77,7 +77,7 @@ export const MatchesList = ({
   showQuickPrediction?: boolean
 }) => {
   const { locale, t } = useLocale()
-  const { isFavoriteTeam, favoriteTeamIds, setSelectedMatchId } = useDashboard()
+  const { isFavoriteTeam, favoriteTeamIds, setSelectedMatchId, setSelectedTeamId } = useDashboard()
   const { user, openAuthModal } = useAuth()
   const { predictionsByMatch, savePrediction, savingMatchId } = usePredictions()
   const { teamsById } = useTournament()
@@ -177,7 +177,16 @@ export const MatchesList = ({
               return (
                 <div
                   key={match.id}
-                  className={`relative w-full cursor-pointer px-5 py-4 transition focus:outline-none focus-visible:outline-none ${
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedMatchId(match.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setSelectedMatchId(match.id)
+                    }
+                  }}
+                  className={`relative w-full cursor-pointer px-5 py-4 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                     isFinished
                       ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50'
                       : hasFavorite
@@ -187,72 +196,90 @@ export const MatchesList = ({
                           : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)]'
                   } ${hasFavorite ? 'border-l-4 border-l-[var(--accent)]' : isLive ? 'border-l-2 border-l-[var(--accent)]' : ''}`}
                 >
-                  <button type="button" onClick={() => setSelectedMatchId(match.id)} className="w-full text-left">
-                    <div className="flex w-full flex-col gap-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                            {stageLabel(match.stage, t.labels)}
-                          </p>
-                          <p className={`${compact ? 'mt-1 text-sm' : 'mt-1 text-base'} font-semibold text-[var(--text-strong)]`}>{displayDateTime}</p>
-                        </div>
-                        <StatusPill
-                          status={displayStatus}
-                          className={displayStatus === 'live' ? 'bg-transparent' : ''}
-                          label={
-                            displayStatus === 'live'
-                              ? <span className="inline-flex items-center gap-1.5"><LivePulse className="h-3 w-3" /><span>{statusLabel(displayStatus, t.labels)}</span></span>
-                              : statusLabel(displayStatus, t.labels)
-                          }
-                        />
+                  <div className="flex w-full flex-col gap-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
+                          {stageLabel(match.stage, t.labels)}
+                        </p>
+                        <p className={`${compact ? 'mt-1 text-sm' : 'mt-1 text-base'} font-semibold text-[var(--text-strong)]`}>{displayDateTime}</p>
                       </div>
+                      <StatusPill
+                        status={displayStatus}
+                        className={displayStatus === 'live' ? 'bg-transparent' : ''}
+                        label={
+                          displayStatus === 'live'
+                            ? <span className="inline-flex items-center gap-1.5"><LivePulse className="h-3 w-3" /><span>{statusLabel(displayStatus, t.labels)}</span></span>
+                            : statusLabel(displayStatus, t.labels)
+                        }
+                      />
+                    </div>
 
-                      <div className="flex flex-nowrap items-center gap-2 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-3">
-                        <div className="flex min-w-0 flex-1 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
-                          {homeTeam && <FlagAvatar team={homeTeam} className="h-6 w-6 sm:h-12 sm:w-12" />}
-                          <div className="min-w-0">
-                            <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
+                    <div className="flex flex-nowrap items-center gap-2 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-3">
+                      <div className="flex min-w-0 flex-1 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
+                        {homeTeam && <FlagAvatar team={homeTeam} className="h-6 w-6 sm:h-12 sm:w-12" />}
+                        <div className="min-w-0">
+                          {homeTeam ? (
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setSelectedTeamId(homeTeam.id) }}
+                              className="inline-flex max-w-full cursor-pointer items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)] hover:text-[var(--accent-text)] hover:underline"
+                            >
                               <span className={homeWon ? 'text-[var(--accent-text)]' : ''}>{homeTeamLabel}</span>
                               {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
-                            </p>
-                            <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                              {homeTeam?.code ?? 'TBD'}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="shrink-0 px-2 py-1 text-center sm:px-3">
-                          {displayScore ? (
-                            <p className="text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                              {match.home.score} - {match.away.score}
-                            </p>
+                            </button>
                           ) : (
-                            <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-soft)]">vs</p>
-                          )}
-                        </div>
-                        <div className="flex min-w-0 flex-1 flex-col items-end gap-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
-                          <div className="order-2 min-w-0 text-right sm:order-1">
                             <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
+                              <span>{homeTeamLabel}</span>
+                            </p>
+                          )}
+                          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
+                            {homeTeam?.code ?? 'TBD'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="shrink-0 px-2 py-1 text-center sm:px-3">
+                        {displayScore ? (
+                          <p className="text-base font-semibold text-[var(--text-strong)] sm:text-lg">
+                            {match.home.score} - {match.away.score}
+                          </p>
+                        ) : (
+                          <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-soft)]">vs</p>
+                        )}
+                      </div>
+                      <div className="flex min-w-0 flex-1 flex-col items-end gap-1 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+                        <div className="order-2 min-w-0 text-right sm:order-1">
+                          {awayTeam ? (
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setSelectedTeamId(awayTeam.id) }}
+                              className="inline-flex max-w-full cursor-pointer items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)] hover:text-[var(--accent-text)] hover:underline"
+                            >
                               <span className={awayWon ? 'text-[var(--accent-text)]' : ''}>{awayTeamLabel}</span>
                               {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
+                            </button>
+                          ) : (
+                            <p className="inline-flex max-w-full items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[var(--text-strong)]">
+                              <span>{awayTeamLabel}</span>
                             </p>
-                            <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                              {awayTeam?.code ?? 'TBD'}
-                            </p>
-                          </div>
-                          {awayTeam && <FlagAvatar team={awayTeam} className="order-1 h-6 w-6 sm:order-2 sm:h-12 sm:w-12" />}
+                          )}
+                          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
+                            {awayTeam?.code ?? 'TBD'}
+                          </p>
                         </div>
-                      </div>
-
-                      <div>
-                        <p className={compact ? 'text-xs text-[var(--text-soft)]' : 'text-sm text-[var(--text-soft)]'}>
-                          {t.meta.localTime} · {displayLocalTime}
-                        </p>
-                        <p className={compact ? 'text-xs text-[var(--text-soft)]' : 'text-sm text-[var(--text-soft)]'}>
-                          {venueLabel}
-                        </p>
+                        {awayTeam && <FlagAvatar team={awayTeam} className="order-1 h-6 w-6 sm:order-2 sm:h-12 sm:w-12" />}
                       </div>
                     </div>
-                  </button>
+
+                    <div>
+                      <p className={compact ? 'text-xs text-[var(--text-soft)]' : 'text-sm text-[var(--text-soft)]'}>
+                        {t.meta.localTime} · {displayLocalTime}
+                      </p>
+                      <p className={compact ? 'text-xs text-[var(--text-soft)]' : 'text-sm text-[var(--text-soft)]'}>
+                        {venueLabel}
+                      </p>
+                    </div>
+                  </div>
 
                   {showQuickPrediction && isPredictionOpen ? (
                     <div className="mt-3 border-t border-[var(--border)] pt-3">
@@ -263,7 +290,7 @@ export const MatchesList = ({
                               <button
                                 key={option.value}
                                 type="button"
-                                onClick={() => openAuthModal('login')}
+                                onClick={(e) => { e.stopPropagation(); openAuthModal('login') }}
                                 className="truncate bg-[var(--surface-soft)] px-2 py-1 text-xs font-semibold text-[var(--text)]"
                                 title={option.label}
                               >
@@ -282,7 +309,8 @@ export const MatchesList = ({
                               key={option.value}
                               type="button"
                               disabled={isSavingPrediction}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation()
                                 void savePrediction({ matchId: match.id, outcome: option.value })
                               }}
                               className={`truncate px-2 py-1 text-xs font-semibold ${

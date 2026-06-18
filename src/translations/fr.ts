@@ -144,6 +144,12 @@ export const fr: TranslationSet = {
     enterBothScoresOrLeaveEmpty: 'Entre les deux scores, ou laisse vide.',
     unableToSavePrediction: 'Impossible d’enregistrer le pronostic',
     saveFailed: 'Échec de la sauvegarde.',
+    teamDetails: "Détails de l'équipe",
+    upcomingMatchesSection: 'À venir',
+    pastMatchesSection: 'Matchs passés',
+    liveMatchesSection: 'En direct',
+    noMatchesForTeam: 'Aucun match pour cette équipe.',
+    groupPosition: 'Position dans le groupe',
   },
   teams: {
     mex: 'Mexique',
