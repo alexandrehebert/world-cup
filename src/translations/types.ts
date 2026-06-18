@@ -16,6 +16,7 @@ export interface TranslationSet {
     bracket: string
     predictions: string
     leaderboard: string
+    profile: string
   }
   footer: {
     madeWithLove: string
@@ -117,6 +118,7 @@ export interface TranslationSet {
     player: string
     predictions: string
     prediction: string
+    rank: string
     draw: string
     cancel: string
     save: string
@@ -148,6 +150,13 @@ export interface TranslationSet {
     liveMatchesSection: string
     noMatchesForTeam: string
     groupPosition: string
+    shareLeaderboard: string
+    viewLeaderboard: string
+    viewProfile: string
+    myProfile: string
+    loadingProfile: string
+    profileNotFound: string
+    noProfilePredictions: string
   }
   teams: Record<string, string>
   groups: Record<string, string>

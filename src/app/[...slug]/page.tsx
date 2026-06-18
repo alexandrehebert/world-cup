@@ -139,6 +139,36 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return buildMenuMetadata(menuMeta)
   }
 
+  if (firstSegment === 'profile' && slug?.length === 2) {
+    const username = slug[1]?.trim()
+
+    if (!username) {
+      return defaultMeta
+    }
+
+    const decodedUsername = decodeURIComponent(username)
+    const title = `${decodedUsername} Predictions Profile | FIFA World Cup 2026`
+    const description = `See ${decodedUsername}'s detailed World Cup predictions, ranking, and points on the public profile page.`
+    const canonical = `/profile/${encodeURIComponent(decodedUsername)}`
+
+    return {
+      title,
+      description,
+      alternates: { canonical },
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+        url: canonical,
+      },
+      twitter: {
+        card: 'summary',
+        title,
+        description,
+      },
+    }
+  }
+
   if (!slug || slug.length < 4) {
     return defaultMeta
   }

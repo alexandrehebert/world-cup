@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/auth-context'
 import { useLocale } from '../contexts/locale-context'
 import { usePredictions } from '../contexts/predictions-context'
@@ -52,6 +52,7 @@ export const PredictionsPage = () => {
   const { upcomingMatches, teamsById } = useTournament()
   const nowMs = useNow()
   const drafts = usePredictionDrafts()
+  const [isLeaderboardCopied, setIsLeaderboardCopied] = useState(false)
 
   const openMatches = useMemo(() => {
     return upcomingMatches
@@ -151,9 +152,57 @@ export const PredictionsPage = () => {
     [desktopDaySections, todayKey],
   )
 
+  useEffect(() => {
+    if (!isLeaderboardCopied) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsLeaderboardCopied(false)
+    }, 2000)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [isLeaderboardCopied])
+
+  const handleShareLeaderboard = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/leaderboard`)
+      setIsLeaderboardCopied(true)
+    } catch {
+      setIsLeaderboardCopied(false)
+    }
+  }
+
   return (
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.predictions}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.predictions}</h2>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => void handleShareLeaderboard()}
+            className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+          >
+            {isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}
+          </button>
+          <Link
+            to="/leaderboard"
+            className="border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+          >
+            {t.labels.viewLeaderboard}
+          </Link>
+          {user ? (
+            <Link
+              to={`/profile/${encodeURIComponent(user.username)}`}
+              className="border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+            >
+              {t.labels.myProfile}
+            </Link>
+          ) : null}
+        </div>
+      </div>
 
       {isLoading ? (
         <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{t.labels.loadingSession}</div>
@@ -288,4 +337,3 @@ const DaySection = ({
     <div className="space-y-3">{children}</div>
   </section>
 )
-

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLeaderboardBootstrap } from '../contexts/leaderboard-context'
 import { useLocale } from '../contexts/locale-context'
 import type { LeaderboardEntry } from '../types/predictions'
@@ -11,7 +12,9 @@ type LeaderboardResponse = {
 export const LeaderboardPage = () => {
   const { locale, t } = useLocale()
   const { initialEntries } = useLeaderboardBootstrap()
+  const navigate = useNavigate()
   const [entries, setEntries] = useState<RankedLeaderboardEntry[]>(initialEntries)
+  const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
     const loadLeaderboard = async () => {
@@ -35,9 +38,41 @@ export const LeaderboardPage = () => {
     void loadLeaderboard()
   }, [])
 
+  useEffect(() => {
+    if (!isCopied) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsCopied(false)
+    }, 2000)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [isCopied])
+
+  const handleShareLeaderboard = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/leaderboard`)
+      setIsCopied(true)
+    } catch {
+      setIsCopied(false)
+    }
+  }
+
   return (
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.leaderboard}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.leaderboard}</h2>
+        <button
+          type="button"
+          onClick={() => void handleShareLeaderboard()}
+          className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+        >
+          {isCopied ? t.labels.copied : t.labels.shareLeaderboard}
+        </button>
+      </div>
 
       <div className="overflow-x-auto bg-[var(--surface)]">
         <table className="min-w-full border-collapse text-sm">
@@ -52,9 +87,28 @@ export const LeaderboardPage = () => {
           <tbody>
             {entries.length > 0 ? (
               entries.map((entry) => (
-                <tr key={entry.userId} className="border-b border-[var(--border)] text-[var(--text)] last:border-b-0">
+                <tr
+                  key={entry.userId}
+                  tabIndex={0}
+                  role="link"
+                  onClick={() => navigate(`/profile/${encodeURIComponent(entry.username)}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      navigate(`/profile/${encodeURIComponent(entry.username)}`)
+                    }
+                  }}
+                  className="border-b border-[var(--border)] text-[var(--text)] transition hover:bg-[var(--surface-soft)] focus-visible:bg-[var(--surface-soft)] focus-visible:outline-none last:border-b-0"
+                >
                   <td className="px-4 py-3">{entry.rank}</td>
-                  <td className="px-4 py-3">{entry.username}</td>
+                  <td className="px-4 py-3">
+                    <Link
+                      to={`/profile/${encodeURIComponent(entry.username)}`}
+                      className="font-semibold text-[var(--accent-text)] transition hover:underline"
+                    >
+                      {entry.username}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">{entry.points}</td>
                   <td className="px-4 py-3">{entry.predictionsCount}</td>
                 </tr>

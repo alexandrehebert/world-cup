@@ -50,3 +50,11 @@ export interface LeaderboardEntry {
   points: number
   predictionsCount: number
 }
+
+export interface PublicProfile {
+  username: string
+  rank: number
+  points: number
+  predictionsCount: number
+  predictions: PredictionRecord[]
+}
