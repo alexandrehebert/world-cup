@@ -142,6 +142,12 @@ export interface TranslationSet {
     enterBothScoresOrLeaveEmpty: string
     unableToSavePrediction: string
     saveFailed: string
+    teamDetails: string
+    upcomingMatchesSection: string
+    pastMatchesSection: string
+    liveMatchesSection: string
+    noMatchesForTeam: string
+    groupPosition: string
   }
   teams: Record<string, string>
   groups: Record<string, string>

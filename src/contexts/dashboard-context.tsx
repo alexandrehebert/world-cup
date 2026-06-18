@@ -45,6 +45,8 @@ interface DashboardContextValue {
   selectedMatchId: string | null
   setSelectedMatchId: (matchId: string | null) => void
   getMatchSharePath: (matchId: string) => string
+  selectedTeamId: string | null
+  setSelectedTeamId: (teamId: string | null) => void
   favoriteTeamIds: string[]
   isFavoriteTeam: (teamId: string) => boolean
   toggleFavoriteTeam: (teamId: string) => void
@@ -155,11 +157,22 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
     return getMatchIdFromSearch(window.location.pathname, window.location.search, pathToMatchId, slugToMatchId, matchesById)
   })
+  const [selectedTeamId, setSelectedTeamIdState] = useState<string | null>(null)
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<string[]>(readFavoriteTeamsFromStorage)
   const isApplyingUserFavoritesRef = useRef(false)
 
   const setSelectedMatchId = useCallback((matchId: string | null) => {
     setSelectedMatchIdState(matchId)
+    if (matchId !== null) {
+      setSelectedTeamIdState(null)
+    }
+  }, [])
+
+  const setSelectedTeamId = useCallback((teamId: string | null) => {
+    setSelectedTeamIdState(teamId)
+    if (teamId !== null) {
+      setSelectedMatchIdState(null)
+    }
   }, [])
 
   const getMatchSharePath = useCallback(
@@ -274,12 +287,14 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       selectedMatchId,
       setSelectedMatchId,
       getMatchSharePath,
+      selectedTeamId,
+      setSelectedTeamId,
       favoriteTeamIds,
       isFavoriteTeam,
       toggleFavoriteTeam,
       clearFavoriteTeams,
     }),
-    [selectedMatchId, setSelectedMatchId, getMatchSharePath, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
+    [selectedMatchId, setSelectedMatchId, getMatchSharePath, selectedTeamId, setSelectedTeamId, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
   )
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>
