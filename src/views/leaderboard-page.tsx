@@ -68,11 +68,11 @@ export const LeaderboardPage = () => {
                 <tr
                   key={entry.userId}
                   tabIndex={0}
-                  role="link"
+                  role="button"
                   aria-label={`${entry.username} ${t.labels.viewProfile}`}
                   onClick={() => navigate(`/profile/${encodeURIComponent(entry.username)}`)}
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
+                    if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault()
                       navigate(`/profile/${encodeURIComponent(entry.username)}`)
                     }

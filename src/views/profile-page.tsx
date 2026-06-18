@@ -112,7 +112,7 @@ export const ProfilePage = () => {
         <>
           <div className="flex flex-col gap-4 bg-[var(--surface)] p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-4">
-              <span className="inline-flex h-18 w-18 shrink-0 items-center justify-center rounded-full bg-[var(--accent-muted)] text-2xl font-semibold text-[var(--accent-text)]">
+              <span className="inline-flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[var(--accent-muted)] text-2xl font-semibold text-[var(--accent-text)]">
                 {getUserInitial(profile.username)}
               </span>
               <div className="min-w-0">
