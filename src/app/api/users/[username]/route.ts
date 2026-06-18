@@ -25,8 +25,9 @@ export async function GET(_: Request, context: RouteContext) {
       listLeaderboard(),
     ])
 
-    const rankedEntry = leaderboard.find((entry) => entry.userId === user.id)
-    const rank = rankedEntry ? leaderboard.findIndex((entry) => entry.userId === user.id) + 1 : leaderboard.length + 1
+    const rankIndex = leaderboard.findIndex((entry) => entry.userId === user.id)
+    const rankedEntry = rankIndex >= 0 ? leaderboard[rankIndex] : undefined
+    const rank = rankIndex >= 0 ? rankIndex + 1 : leaderboard.length + 1
 
     return NextResponse.json(
       {

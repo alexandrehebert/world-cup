@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/auth-context'
 import { useLocale } from '../contexts/locale-context'
@@ -10,6 +10,7 @@ import { OpenMatchCard } from '../components/predictions/open-match-card'
 import { usePredictionDrafts } from '../components/predictions/use-prediction-drafts'
 import { FeedbackPopup } from '../components/ui/feedback-popup'
 import { getDateLocale, getMatchDayKey, formatNextKickoffCountdown } from '../lib/predictions'
+import { useShareLink } from '../lib/use-share-link'
 import type { MatchRecord } from '../types/tournament'
 
 type DayGroup = { dayLabel: string; matches: MatchRecord[] }
@@ -52,7 +53,7 @@ export const PredictionsPage = () => {
   const { upcomingMatches, teamsById } = useTournament()
   const nowMs = useNow()
   const drafts = usePredictionDrafts()
-  const [isLeaderboardCopied, setIsLeaderboardCopied] = useState(false)
+  const { isCopied: isLeaderboardCopied, share: shareLeaderboard } = useShareLink('/leaderboard')
 
   const openMatches = useMemo(() => {
     return upcomingMatches
@@ -152,29 +153,6 @@ export const PredictionsPage = () => {
     [desktopDaySections, todayKey],
   )
 
-  useEffect(() => {
-    if (!isLeaderboardCopied) {
-      return
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setIsLeaderboardCopied(false)
-    }, 2000)
-
-    return () => {
-      window.clearTimeout(timeoutId)
-    }
-  }, [isLeaderboardCopied])
-
-  const handleShareLeaderboard = async () => {
-    try {
-      await navigator.clipboard.writeText(`${window.location.origin}/leaderboard`)
-      setIsLeaderboardCopied(true)
-    } catch {
-      setIsLeaderboardCopied(false)
-    }
-  }
-
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -182,7 +160,7 @@ export const PredictionsPage = () => {
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => void handleShareLeaderboard()}
+            onClick={() => void shareLeaderboard()}
             className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
           >
             {isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}
