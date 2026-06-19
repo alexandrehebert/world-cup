@@ -201,7 +201,7 @@ export const ProfilePage = () => {
                     </div>
                     <div className="flex items-center gap-2 sm:shrink-0">
                       <span className="text-xs font-semibold text-[var(--text-strong)]">{prediction.pointsAwarded} {t.labels.points}</span>
-                      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${statusClassByState[status]}`}>
+                      <span className={['inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold', statusClassByState[status]].join(' ')}>
                         <Icon name={statusIconByState[status]} className="text-sm leading-none" />
                         <span>{statusLabel}</span>
                       </span>
