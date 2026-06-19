@@ -159,7 +159,10 @@ export const ProfilePage = () => {
               const displayDate = match
                 ? formatMatchDate(match.kickoff, locale, resolvedTimeZone, t.labels.today).localDateTime
                 : null
-              const predictionLabel = prediction.type === 'score' && prediction.homeScore !== undefined && prediction.awayScore !== undefined
+              const hasPredictedScore = prediction.type === 'score'
+                && typeof prediction.homeScore === 'number'
+                && typeof prediction.awayScore === 'number'
+              const predictionLabel = hasPredictedScore
                 ? `${prediction.homeScore} - ${prediction.awayScore}`
                 : prediction.outcome === 'home'
                   ? homeLabel
@@ -186,7 +189,7 @@ export const ProfilePage = () => {
                     : t.labels.predictionPending
 
               return (
-                <article key={`${prediction.matchId}:${prediction.updatedAt}`} className="bg-[var(--surface)] px-4 py-3">
+                <article key={`${prediction.matchId}|${prediction.updatedAt}`} className="bg-[var(--surface)] px-4 py-3">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="min-w-0 space-y-1">
                       <p className="truncate text-sm font-semibold text-[var(--text-strong)]">{homeLabel} vs {awayLabel}</p>
