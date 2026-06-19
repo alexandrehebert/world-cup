@@ -69,7 +69,7 @@ export const LeaderboardPage = () => {
                   key={entry.userId}
                   tabIndex={0}
                   role="button"
-                  aria-label={`${entry.username} ${t.labels.viewProfile}`}
+                  aria-label={`${t.labels.viewProfile}: ${entry.username}`}
                   onClick={() => navigate(`/profile/${encodeURIComponent(entry.username)}`)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {

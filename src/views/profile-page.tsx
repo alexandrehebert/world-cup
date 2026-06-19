@@ -31,7 +31,7 @@ export const ProfilePage = () => {
   const [isMissing, setIsMissing] = useState(false)
 
   useEffect(() => {
-    const requestedUsername = String(username ?? '').trim()
+    const requestedUsername = username?.trim() ?? ''
     const controller = new AbortController()
 
     const loadProfile = async () => {

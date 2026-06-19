@@ -8,7 +8,7 @@ type RouteContext = {
 export async function GET(_: Request, context: RouteContext) {
   try {
     const { username } = await context.params
-    const requestedUsername = String(username ?? '').trim()
+    const requestedUsername = username?.trim() ?? ''
 
     if (!requestedUsername) {
       return NextResponse.json({ error: 'Username is required' }, { status: 400 })
