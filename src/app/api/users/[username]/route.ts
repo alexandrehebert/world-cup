@@ -28,7 +28,9 @@ export async function GET(_: Request, context: RouteContext) {
     const rankIndex = leaderboard.findIndex((entry) => entry.userId === user.id)
     const rankedEntry = rankIndex >= 0 ? leaderboard[rankIndex] : undefined
     const rank = rankIndex >= 0 ? rankIndex + 1 : leaderboard.length + 1
-    const points = rankedEntry?.points ?? predictions.reduce((total, prediction) => total + prediction.pointsAwarded, 0)
+    const points = rankedEntry
+      ? rankedEntry.points
+      : predictions.reduce((total, prediction) => total + prediction.pointsAwarded, 0)
 
     return NextResponse.json(
       {

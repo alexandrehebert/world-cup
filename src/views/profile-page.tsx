@@ -40,6 +40,7 @@ export const ProfilePage = () => {
   const { username } = useParams<{ username: string }>()
   const { locale, t } = useLocale()
   const { matchesById, teamsById } = useTournament()
+  const resolvedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isMissing, setIsMissing] = useState(false)
@@ -156,7 +157,7 @@ export const ProfilePage = () => {
               const homeLabel = homeTeam ? (t.teams[homeTeam.id] ?? homeTeam.name) : t.labels.home
               const awayLabel = awayTeam ? (t.teams[awayTeam.id] ?? awayTeam.name) : t.labels.away
               const displayDate = match
-                ? formatMatchDate(match.kickoff, locale, Intl.DateTimeFormat().resolvedOptions().timeZone, t.labels.today).localDateTime
+                ? formatMatchDate(match.kickoff, locale, resolvedTimeZone, t.labels.today).localDateTime
                 : null
               const predictionLabel = prediction.type === 'score' && prediction.homeScore !== undefined && prediction.awayScore !== undefined
                 ? `${prediction.homeScore} - ${prediction.awayScore}`
