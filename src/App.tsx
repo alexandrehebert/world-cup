@@ -7,6 +7,7 @@ import { MatchesPage } from './views/matches-page'
 import { BracketPage } from './views/bracket-page'
 import { PredictionsPage } from './views/predictions-page'
 import { LeaderboardPage } from './views/leaderboard-page'
+import { ProfilePage } from './views/profile-page'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/bracket" element={<BracketPage />} />
         <Route path="/predictions" element={<PredictionsPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/profile/:username" element={<ProfilePage />} />
       </Route>
     </Routes>
   )
