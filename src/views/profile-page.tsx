@@ -23,17 +23,17 @@ const isPublicProfile = (value: unknown): value is PublicProfile => {
 }
 
 const statusIconByState = {
-  successful: 'check_circle',
-  unsuccessful: 'cancel',
+  successWithScore: 'sports_score',
+  success: 'check_circle',
+  failure: 'cancel',
   pending: 'schedule',
-  live: 'sports_soccer',
 } as const
 
 const statusClassByState = {
-  successful: 'bg-emerald-500/20 text-emerald-400',
-  unsuccessful: 'bg-rose-500/20 text-rose-400',
+  successWithScore: 'bg-cyan-500/20 text-cyan-300',
+  success: 'bg-emerald-500/20 text-emerald-400',
+  failure: 'bg-rose-500/20 text-rose-400',
   pending: 'bg-[var(--surface-soft)] text-[var(--text-muted)]',
-  live: 'bg-amber-500/20 text-amber-400',
 } as const
 
 export const ProfilePage = () => {
@@ -166,34 +166,43 @@ export const ProfilePage = () => {
                   : prediction.outcome === 'away'
                     ? awayLabel
                     : t.labels.draw
-              const actualScore = typeof match?.home.score === 'number' && typeof match?.away.score === 'number'
+              const hasFinalScore = typeof match?.home.score === 'number' && typeof match?.away.score === 'number'
+              const actualScore = hasFinalScore
                 ? `${match.home.score} - ${match.away.score}`
                 : '—'
+              const hasExactScore = hasFinalScore
+                && prediction.type === 'score'
+                && prediction.homeScore === match.home.score
+                && prediction.awayScore === match.away.score
               const status = prediction.scoredAt
-                ? (prediction.pointsAwarded > 0 ? 'successful' : 'unsuccessful')
-                : match?.status === 'live'
-                  ? 'live'
-                  : 'pending'
+                ? (hasExactScore ? 'successWithScore' : prediction.pointsAwarded > 0 ? 'success' : 'failure')
+                : 'pending'
+              const statusLabel = status === 'successWithScore'
+                ? t.labels.predictionSuccessWithScore
+                : status === 'success'
+                  ? t.labels.predictionSuccessful
+                  : status === 'failure'
+                    ? t.labels.predictionUnsuccessful
+                    : t.labels.predictionPending
 
               return (
-                <article key={`${prediction.matchId}:${prediction.updatedAt}`} className="space-y-3 bg-[var(--surface)] p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-base font-semibold text-[var(--text-strong)]">{homeLabel} vs {awayLabel}</p>
-                      <p className="text-xs text-[var(--text-muted)]">{displayDate ?? prediction.matchId}</p>
+                <article key={`${prediction.matchId}:${prediction.updatedAt}`} className="bg-[var(--surface)] px-4 py-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0 space-y-1">
+                      <p className="truncate text-sm font-semibold text-[var(--text-strong)]">{homeLabel} vs {awayLabel}</p>
+                      <p className="truncate text-xs text-[var(--text-muted)]">{displayDate ?? prediction.matchId}</p>
+                      <p className="truncate text-xs text-[var(--text-muted)]">
+                        {t.labels.prediction}: {predictionLabel}
+                        {hasFinalScore ? ` • ${t.labels.finalScore}: ${actualScore}` : ''}
+                      </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-[var(--text-strong)]">{prediction.pointsAwarded} {t.labels.points}</span>
-                      <span className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${statusClassByState[status]}`}>
-                        <Icon name={statusIconByState[status]} className="text-base leading-none" />
+                    <div className="flex items-center gap-2 sm:shrink-0">
+                      <span className="text-xs font-semibold text-[var(--text-strong)]">{prediction.pointsAwarded} {t.labels.points}</span>
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${statusClassByState[status]}`}>
+                        <Icon name={statusIconByState[status]} className="text-sm leading-none" />
+                        <span>{statusLabel}</span>
                       </span>
                     </div>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    <DetailCard label={t.labels.prediction} value={predictionLabel} />
-                    <DetailCard label={t.labels.finalScore} value={actualScore} />
-                    <DetailCard label={t.labels.status} value={match ? t.labels[match.status] : t.labels.scheduled} />
                   </div>
                 </article>
               )
@@ -211,12 +220,5 @@ const ProfileStat = ({ label, value }: { label: string; value: string }) => (
   <div className="bg-[var(--surface-soft)] px-3 py-3 text-center">
     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{label}</p>
     <p className="mt-1 text-lg font-semibold text-[var(--text-strong)]">{value}</p>
-  </div>
-)
-
-const DetailCard = ({ label, value }: { label: string; value: string }) => (
-  <div className="bg-[var(--surface-soft)] px-3 py-3">
-    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{label}</p>
-    <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">{value}</p>
   </div>
 )

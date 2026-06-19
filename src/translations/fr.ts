@@ -136,6 +136,7 @@ export const fr: TranslationSet = {
     tbd: 'À déterminer',
     vs: 'VS',
     predictionSuccessful: 'Pronostic réussi',
+    predictionSuccessWithScore: 'Pronostic score exact réussi',
     predictionPending: 'Pronostic en attente (match à venir)',
     predictionUnsuccessful: 'Pronostic non réussi',
     predictionLive: 'Match en direct – pronostic en attente',

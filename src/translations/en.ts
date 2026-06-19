@@ -136,6 +136,7 @@ export const en: TranslationSet = {
     tbd: 'TBD',
     vs: 'VS',
     predictionSuccessful: 'Successful prediction',
+    predictionSuccessWithScore: 'Successful score prediction',
     predictionPending: 'Prediction saved (match in the future)',
     predictionUnsuccessful: 'Unsuccessful prediction',
     predictionLive: 'Match is live – prediction pending',

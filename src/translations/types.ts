@@ -134,6 +134,7 @@ export interface TranslationSet {
     tbd: string
     vs: string
     predictionSuccessful: string
+    predictionSuccessWithScore: string
     predictionPending: string
     predictionUnsuccessful: string
     predictionLive: string
