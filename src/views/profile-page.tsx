@@ -8,6 +8,20 @@ import type { PublicProfile } from '../types/predictions'
 
 const getUserInitial = (username: string) => username.trim().charAt(0).toUpperCase() || 'U'
 
+const isPublicProfile = (value: unknown): value is PublicProfile => {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const candidate = value as Partial<PublicProfile>
+
+  return typeof candidate.username === 'string'
+    && typeof candidate.rank === 'number'
+    && typeof candidate.points === 'number'
+    && typeof candidate.predictionsCount === 'number'
+    && Array.isArray(candidate.predictions)
+}
+
 const statusIconByState = {
   successful: 'check_circle',
   unsuccessful: 'cancel',
@@ -63,7 +77,13 @@ export const ProfilePage = () => {
           return
         }
 
-        const payload = (await response.json()) as PublicProfile
+        const payload = (await response.json()) as unknown
+
+        if (!isPublicProfile(payload)) {
+          setProfile(null)
+          return
+        }
+
         setProfile(payload)
       } catch (error) {
         if (!(error instanceof DOMException && error.name === 'AbortError')) {
@@ -117,7 +137,7 @@ export const ProfilePage = () => {
               </span>
               <div className="min-w-0">
                 <p className="truncate text-2xl font-semibold text-[var(--text-strong)]">{profile.username}</p>
-                <p className="text-sm text-[var(--text-muted)]">{profile.predictionsCount} {t.labels.predictions.toLowerCase()}</p>
+                <p className="text-sm text-[var(--text-muted)]">{profile.predictionsCount} {t.labels.predictions}</p>
               </div>
             </div>
 
