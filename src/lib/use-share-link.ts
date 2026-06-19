@@ -22,7 +22,7 @@ export const useShareLink = (path: string, durationMs = 2000) => {
       await navigator.clipboard.writeText(`${window.location.origin}${path}`)
       setIsCopied(true)
     } catch (error) {
-      console.error('Unable to copy shared link', error)
+      console.error(`Unable to copy shared link for path "${path}"`, error)
       setIsCopied(false)
     }
   }

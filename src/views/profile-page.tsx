@@ -209,14 +209,14 @@ export const ProfilePage = () => {
 
 const ProfileStat = ({ label, value }: { label: string; value: string }) => (
   <div className="bg-[var(--surface-soft)] px-3 py-3 text-center">
-    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{label}</p>
+    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{label}</p>
     <p className="mt-1 text-lg font-semibold text-[var(--text-strong)]">{value}</p>
   </div>
 )
 
 const DetailCard = ({ label, value }: { label: string; value: string }) => (
   <div className="bg-[var(--surface-soft)] px-3 py-3">
-    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{label}</p>
+    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{label}</p>
     <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">{value}</p>
   </div>
 )
