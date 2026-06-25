@@ -4,7 +4,6 @@ import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, formatPlaceholder } from '../../lib/format'
 import { getPotentialTeamsFromPlaceholder, getTopTeamFromPlaceholder } from '../../lib/bracket'
 import { Icon } from '../../lib/icons'
-import { FlagAvatar } from '../ui/flag-avatar'
 
 const NODE_HEIGHT = 196
 const BASE_GAP = 20
@@ -44,6 +43,33 @@ export const BracketBoard = ({
     final: t.labels.stageFinal,
   }[id] ?? id)
 
+  const formatBracketPlaceholder = (placeholder: string, roundId: string) => {
+    if (roundId !== 'roundOf32') {
+      return t.labels.tbd
+    }
+
+    return formatPlaceholder(placeholder, t)
+  }
+
+  const renderKnownTeamAvatar = (teamId: string) => {
+    const team = teamsById[teamId]
+    if (!team) return null
+
+    const teamLabel = t.teams[team.id] ?? team.name
+
+    return (
+      <div
+        className="relative h-12 w-12 shrink-0 rounded-full border border-[var(--border)] p-1"
+        title={teamLabel}
+      >
+        <span className="relative block h-full w-full overflow-hidden rounded-full">
+          <span className={`fi fi-${team.flagCode} flag-avatar-circle-fill`} aria-hidden="true" />
+        </span>
+        <span className="sr-only">{teamLabel}</span>
+      </div>
+    )
+  }
+
   const renderPotentialTeamFlags = (teamIds: string[], topTeamId?: string) => (
     <div className="mt-1 flex max-h-8 flex-wrap gap-1 overflow-hidden">
       {teamIds.map((teamId) => {
@@ -81,10 +107,12 @@ export const BracketBoard = ({
 
     return (
       <div
-        className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-dashed border-[var(--border)]"
+        className="relative h-12 w-12 shrink-0 rounded-full border border-dashed border-[var(--border)] p-1"
         title={topTeamLabel}
       >
-        <span className={`fi fi-${topTeam.flagCode} flag-avatar-circle-fill opacity-90 saturate-75`} aria-hidden="true" />
+        <span className="relative block h-full w-full overflow-hidden rounded-full">
+          <span className={`fi fi-${topTeam.flagCode} flag-avatar-circle-fill opacity-90 saturate-75`} aria-hidden="true" />
+        </span>
         <span className="sr-only">{topTeamLabel}</span>
       </div>
     )
@@ -163,7 +191,7 @@ export const BracketBoard = ({
                               <div className="space-y-2">
                                 <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
                                   {homeTeam ? (
-                                    <FlagAvatar team={homeTeam} />
+                                    renderKnownTeamAvatar(homeTeam.id)
                                   ) : (
                                     renderPotentialTeamAvatar(homeTopTeamId)
                                   )}
@@ -172,7 +200,7 @@ export const BracketBoard = ({
                                       <span className="truncate">
                                         {homeTeam
                                         ? t.teams[homeTeam.id] ?? homeTeam.name
-                                          : formatPlaceholder(match.home.placeholder!, t)}
+                                          : formatBracketPlaceholder(match.home.placeholder!, round.id)}
                                       </span>
                                       {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                     </span>
@@ -185,7 +213,7 @@ export const BracketBoard = ({
                                 </div>
                                 <div className="flex min-w-0 items-center gap-2.5 pb-1">
                                   {awayTeam ? (
-                                    <FlagAvatar team={awayTeam} />
+                                    renderKnownTeamAvatar(awayTeam.id)
                                   ) : (
                                     renderPotentialTeamAvatar(awayTopTeamId)
                                   )}
@@ -194,7 +222,7 @@ export const BracketBoard = ({
                                       <span className="truncate">
                                         {awayTeam
                                         ? t.teams[awayTeam.id] ?? awayTeam.name
-                                          : formatPlaceholder(match.away.placeholder!, t)}
+                                          : formatBracketPlaceholder(match.away.placeholder!, round.id)}
                                       </span>
                                       {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                     </span>
@@ -257,7 +285,7 @@ export const BracketBoard = ({
                             <div className="space-y-2">
                               <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
                                 {homeTeam ? (
-                                  <FlagAvatar team={homeTeam} />
+                                  renderKnownTeamAvatar(homeTeam.id)
                                 ) : (
                                   renderPotentialTeamAvatar(homeTopTeamId)
                                 )}
@@ -266,7 +294,7 @@ export const BracketBoard = ({
                                     <span className="truncate">
                                       {homeTeam
                                         ? t.teams[homeTeam.id] ?? homeTeam.name
-                                        : formatPlaceholder(match.home.placeholder!, t)}
+                                        : formatBracketPlaceholder(match.home.placeholder!, thirdPlaceRound.id)}
                                     </span>
                                     {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                   </span>
@@ -279,7 +307,7 @@ export const BracketBoard = ({
                               </div>
                               <div className="flex min-w-0 items-center gap-2.5 pb-1">
                                 {awayTeam ? (
-                                  <FlagAvatar team={awayTeam} />
+                                  renderKnownTeamAvatar(awayTeam.id)
                                 ) : (
                                   renderPotentialTeamAvatar(awayTopTeamId)
                                 )}
@@ -288,7 +316,7 @@ export const BracketBoard = ({
                                     <span className="truncate">
                                       {awayTeam
                                         ? t.teams[awayTeam.id] ?? awayTeam.name
-                                        : formatPlaceholder(match.away.placeholder!, t)}
+                                        : formatBracketPlaceholder(match.away.placeholder!, thirdPlaceRound.id)}
                                     </span>
                                     {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                   </span>
