@@ -44,6 +44,52 @@ export const BracketBoard = ({
     final: t.labels.stageFinal,
   }[id] ?? id)
 
+  const renderPotentialTeamFlags = (teamIds: string[], topTeamId?: string) => (
+    <div className="mt-1 flex max-h-8 flex-wrap gap-1 overflow-hidden">
+      {teamIds.map((teamId) => {
+        const team = teamsById[teamId]
+        if (!team) return null
+        const isTopTeam = teamId === topTeamId
+        const teamLabel = t.teams[team.id] ?? team.name
+
+        return (
+          <span
+            key={teamId}
+            className={`relative inline-flex h-5 w-5 shrink-0 overflow-hidden rounded-full border ${
+              isTopTeam
+                ? 'border-[var(--accent-border)] ring-1 ring-[var(--accent-border)]'
+                : 'border-[var(--border)] opacity-80 saturate-75'
+            }`}
+            title={teamLabel}
+          >
+            <span className={`fi fi-${team.flagCode} flag-avatar-circle-fill`} aria-hidden="true" />
+            <span className="sr-only">{teamLabel}</span>
+          </span>
+        )
+      })}
+    </div>
+  )
+
+  const renderPotentialTeamAvatar = (topTeamId?: string) => {
+    const topTeam = topTeamId ? teamsById[topTeamId] : undefined
+
+    if (!topTeam) {
+      return <div className="h-12 w-12 shrink-0 rounded-full border border-dashed border-[var(--border)]" />
+    }
+
+    const topTeamLabel = t.teams[topTeam.id] ?? topTeam.name
+
+    return (
+      <div
+        className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-dashed border-[var(--border)]"
+        title={topTeamLabel}
+      >
+        <span className={`fi fi-${topTeam.flagCode} flag-avatar-circle-fill opacity-90 saturate-75`} aria-hidden="true" />
+        <span className="sr-only">{topTeamLabel}</span>
+      </div>
+    )
+  }
+
   const thirdPlaceRound = rounds.find((round) => round.id === 'thirdPlace')
   const mainRounds = rounds.filter((round) => round.id !== 'thirdPlace')
   const firstRoundMatchCount = mainRounds.at(0)?.matchIds.length ?? 0
@@ -89,29 +135,29 @@ export const BracketBoard = ({
                           <div key={match.id} className="relative">
                             {hasPreviousRound ? (
                               <span
-                                className="pointer-events-none absolute top-1/2 -left-[16px] h-px bg-[var(--border)]"
+                                className="pointer-events-none absolute top-1/2 -left-[16px] z-0 h-px bg-[var(--border)]"
                                 style={{ width: `${CONNECTOR_WIDTH / 2}px` }}
                               />
                             ) : null}
 
                             {showVerticalBridge ? (
                               <span
-                                className="pointer-events-none absolute top-1/2 -right-[16px] w-px bg-[var(--border)]"
+                                className="pointer-events-none absolute top-1/2 -right-[16px] z-0 w-px bg-[var(--border)]"
                                 style={{ height: `${NODE_HEIGHT + metrics.gap}px` }}
                               />
                             ) : null}
 
                             {hasNextRound ? (
                               <span
-                                className="pointer-events-none absolute top-1/2 -right-[16px] h-px bg-[var(--border)]"
+                                className="pointer-events-none absolute top-1/2 -right-[16px] z-0 h-px bg-[var(--border)]"
                                 style={{ width: `${CONNECTOR_WIDTH}px` }}
                               />
                             ) : null}
 
-                            <div className={`relative min-h-[196px] overflow-hidden p-3 cursor-pointer transition hover:brightness-105 ${
+                            <div className={`relative z-10 h-[196px] overflow-hidden p-3 cursor-pointer transition ${
                               hasFavorite
-                                ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]'
-                                : 'bg-[var(--surface-soft)]'
+                                ? 'bg-[var(--accent-muted)] ring-2 ring-inset ring-[var(--accent-border)]'
+                                : 'bg-[var(--surface-soft)] hover:brightness-105'
                             }`}
                             onClick={() => setSelectedMatchId(match.id)}>
                               <div className="space-y-2">
@@ -119,7 +165,7 @@ export const BracketBoard = ({
                                   {homeTeam ? (
                                     <FlagAvatar team={homeTeam} />
                                   ) : (
-                                    <div className="h-10 w-10 rounded-full border border-dashed border-[var(--border)]" />
+                                    renderPotentialTeamAvatar(homeTopTeamId)
                                   )}
                                   <div className="min-w-0 flex-1">
                                     <span className="inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
@@ -131,21 +177,9 @@ export const BracketBoard = ({
                                       {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                     </span>
                                     {homePotentialTeamIds.length > 0 && (
-                                      <div className="mt-1 flex flex-wrap gap-1">
-                                        {homePotentialTeamIds.map((teamId) => {
-                                          const team = teamsById[teamId]
-                                          const isTopTeam = teamId === homeTopTeamId
-                                          return (
-                                            <span key={teamId} className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
-                                              isTopTeam
-                                                ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                                                : 'bg-[var(--border)] text-[var(--text-soft)]'
-                                            }`}>
-                                              {t.teams[team.id] ?? team.code}
-                                            </span>
-                                          )
-                                        })}
-                                      </div>
+                                      renderPotentialTeamFlags(
+                                        homePotentialTeamIds.filter((teamId) => teamId !== homeTopTeamId),
+                                      )
                                     )}
                                   </div>
                                 </div>
@@ -153,7 +187,7 @@ export const BracketBoard = ({
                                   {awayTeam ? (
                                     <FlagAvatar team={awayTeam} />
                                   ) : (
-                                    <div className="h-10 w-10 rounded-full border border-dashed border-[var(--border)]" />
+                                    renderPotentialTeamAvatar(awayTopTeamId)
                                   )}
                                   <div className="min-w-0 flex-1">
                                     <span className="inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
@@ -165,21 +199,9 @@ export const BracketBoard = ({
                                       {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                     </span>
                                     {awayPotentialTeamIds.length > 0 && (
-                                      <div className="mt-1 flex flex-wrap gap-1">
-                                        {awayPotentialTeamIds.map((teamId) => {
-                                          const team = teamsById[teamId]
-                                          const isTopTeam = teamId === awayTopTeamId
-                                          return (
-                                            <span key={teamId} className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
-                                              isTopTeam
-                                                ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                                                : 'bg-[var(--border)] text-[var(--text-soft)]'
-                                            }`}>
-                                              {t.teams[team.id] ?? team.code}
-                                            </span>
-                                          )
-                                        })}
-                                      </div>
+                                      renderPotentialTeamFlags(
+                                        awayPotentialTeamIds.filter((teamId) => teamId !== awayTopTeamId),
+                                      )
                                     )}
                                   </div>
                                 </div>
@@ -226,10 +248,10 @@ export const BracketBoard = ({
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
 
                         return (
-                          <div key={match.id} className={`p-3 cursor-pointer transition hover:brightness-105 ${
+                          <div key={match.id} className={`p-3 cursor-pointer transition ${
                             hasFavorite
-                              ? 'bg-[var(--accent-muted)] outline outline-2 outline-[var(--accent-border)]'
-                              : 'bg-[var(--surface-soft)]'
+                              ? 'bg-[var(--accent-muted)] ring-2 ring-inset ring-[var(--accent-border)]'
+                              : 'bg-[var(--surface-soft)] hover:brightness-105'
                           }`}
                           onClick={() => setSelectedMatchId(match.id)}>
                             <div className="space-y-2">
@@ -237,7 +259,7 @@ export const BracketBoard = ({
                                 {homeTeam ? (
                                   <FlagAvatar team={homeTeam} />
                                 ) : (
-                                  <div className="h-10 w-10 rounded-full border border-dashed border-[var(--border)]" />
+                                  renderPotentialTeamAvatar(homeTopTeamId)
                                 )}
                                 <div className="min-w-0 flex-1">
                                   <span className="inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
@@ -249,21 +271,9 @@ export const BracketBoard = ({
                                     {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                   </span>
                                   {homePotentialTeamIds.length > 0 && (
-                                    <div className="mt-1 flex flex-wrap gap-1">
-                                      {homePotentialTeamIds.map((teamId) => {
-                                        const team = teamsById[teamId]
-                                        const isTopTeam = teamId === homeTopTeamId
-                                        return (
-                                          <span key={teamId} className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
-                                            isTopTeam
-                                              ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                                              : 'bg-[var(--border)] text-[var(--text-soft)]'
-                                          }`}>
-                                            {t.teams[team.id] ?? team.code}
-                                          </span>
-                                        )
-                                      })}
-                                    </div>
+                                    renderPotentialTeamFlags(
+                                      homePotentialTeamIds.filter((teamId) => teamId !== homeTopTeamId),
+                                    )
                                   )}
                                 </div>
                               </div>
@@ -271,7 +281,7 @@ export const BracketBoard = ({
                                 {awayTeam ? (
                                   <FlagAvatar team={awayTeam} />
                                 ) : (
-                                  <div className="h-10 w-10 rounded-full border border-dashed border-[var(--border)]" />
+                                  renderPotentialTeamAvatar(awayTopTeamId)
                                 )}
                                 <div className="min-w-0 flex-1">
                                   <span className="inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
@@ -283,21 +293,9 @@ export const BracketBoard = ({
                                     {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
                                   </span>
                                   {awayPotentialTeamIds.length > 0 && (
-                                    <div className="mt-1 flex flex-wrap gap-1">
-                                      {awayPotentialTeamIds.map((teamId) => {
-                                        const team = teamsById[teamId]
-                                        const isTopTeam = teamId === awayTopTeamId
-                                        return (
-                                          <span key={teamId} className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
-                                            isTopTeam
-                                              ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                                              : 'bg-[var(--border)] text-[var(--text-soft)]'
-                                          }`}>
-                                            {t.teams[team.id] ?? team.code}
-                                          </span>
-                                        )
-                                      })}
-                                    </div>
+                                    renderPotentialTeamFlags(
+                                      awayPotentialTeamIds.filter((teamId) => teamId !== awayTopTeamId),
+                                    )
                                   )}
                                 </div>
                               </div>
