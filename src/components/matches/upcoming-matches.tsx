@@ -136,15 +136,17 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
               return (
                 <div
                   key={match.id}
-                  className={`relative w-full px-5 py-4 transition ${
+                  className={`relative w-full overflow-hidden rounded-[var(--radius-sm)] px-5 py-4 transition ${
                     isFinished
                       ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50'
                       : hasFavorite
                         ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)]'
+                        : isLive
+                          ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
                         : anyFavoriteVisible
                           ? 'bg-[var(--surface)] opacity-75 hover:opacity-100'
                           : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)]'
-                  } ${hasFavorite ? 'border-l-4 border-l-[var(--accent)]' : isLive ? 'border-l-2 border-l-[var(--accent)]' : ''}`}
+                  } ${hasFavorite ? 'border-l-4 border-l-[var(--accent)]' : ''}`}
                 >
                   <div className="flex w-full flex-col gap-4 text-left">
                     <div className="flex items-start justify-between gap-3">
