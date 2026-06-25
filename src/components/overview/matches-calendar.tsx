@@ -252,7 +252,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
         {weekdays.map((weekday) => (
           <div
             key={weekday}
-            className="-ml-px -mt-px border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]"
+            className="-ml-px -mt-px rounded-none border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]"
           >
             {weekday}
           </div>
@@ -269,7 +269,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
             return (
               <div
                 key={`${monthKey}-cell-${index}`}
-                className={`min-h-40 p-2 align-top ${
+                className={`min-h-40 rounded-none p-2 align-top ${
                   cell
                     ? `-ml-px -mt-px border border-[var(--border)] bg-[var(--surface)] ${isToday ? 'bg-[color:color-mix(in_srgb,var(--accent-muted)_78%,var(--surface)_22%)]' : ''}`
                     : 'bg-[color:color-mix(in_srgb,var(--surface)_42%,transparent)]'

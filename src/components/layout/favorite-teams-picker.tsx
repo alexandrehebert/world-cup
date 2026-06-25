@@ -13,6 +13,7 @@ export const FavoriteTeamsPicker = () => {
   const pickerRef = useRef<HTMLDivElement>(null)
 
   const favoriteSet = useMemo(() => new Set(favoriteTeamIds), [favoriteTeamIds])
+  const footerButtonClassName = 'inline-flex h-9 items-center justify-center gap-1 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] disabled:cursor-not-allowed disabled:opacity-40'
 
   const sortedTeams = useMemo(() => {
     return [...teams].sort((first, second) => {
@@ -52,7 +53,7 @@ export const FavoriteTeamsPicker = () => {
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex w-full cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2.5 py-1.5 text-sm font-medium text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto"
+        className="inline-flex h-9 w-full cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto"
       >
         <Icon name="star" className="text-[18px] text-[var(--accent-text)]" />
         <span>{t.labels.favoriteTeams}</span>
@@ -62,11 +63,16 @@ export const FavoriteTeamsPicker = () => {
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 top-[calc(100%+0.5rem)] z-50 w-[min(24rem,calc(100vw-2rem))] border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-lg sm:left-auto sm:right-0">
+        <div className="absolute left-0 top-[calc(100%+0.5rem)] z-50 w-[min(24rem,calc(100vw-2rem))] space-y-3 border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-lg sm:left-auto sm:right-0">
           <div className="space-y-2 border-b border-[var(--border)] pb-3">
-            <p className="text-sm font-semibold text-[var(--text-strong)]">{t.labels.favoriteTeams}</p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-[var(--text-strong)]">{t.labels.favoriteTeams}</p>
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-soft)]">
+                {favoriteTeamIds.length} {t.labels.favoritesCount}
+              </span>
+            </div>
             <p className="text-xs text-[var(--text-soft)]">{t.labels.favoriteTeamsHint}</p>
-            <div className="flex items-center gap-2 border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5">
+            <div className="flex items-center gap-2 border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2">
               <Icon name="search" className="text-[16px] text-[var(--text-soft)]" />
               <input
                 type="text"
@@ -88,10 +94,10 @@ export const FavoriteTeamsPicker = () => {
                     key={team.id}
                     type="button"
                     onClick={() => toggleFavoriteTeam(team.id)}
-                    className={`flex w-full cursor-pointer items-center justify-between px-2 py-2 text-left text-sm transition ${
+                    className={`flex w-full cursor-pointer items-center justify-between border border-transparent px-2.5 py-2 text-left text-sm font-medium transition ${
                       selected
-                        ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                        : 'text-[var(--text)] hover:bg-[var(--surface-soft)]'
+                        ? 'border-[var(--accent-border)] bg-[var(--accent-muted)] text-[var(--accent-text)]'
+                        : 'text-[var(--text)] hover:border-[var(--border)] hover:bg-[var(--surface-soft)]'
                     }`}
                   >
                     <span className="flex items-center gap-2">
@@ -110,16 +116,18 @@ export const FavoriteTeamsPicker = () => {
             )}
           </div>
 
-          <div className="mt-3 border-t border-[var(--border)] pt-3">
+          <div>
+            <div className="flex items-center">
             <button
               type="button"
               onClick={clearFavoriteTeams}
               disabled={favoriteTeamIds.length === 0}
-              className="inline-flex cursor-pointer items-center gap-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-soft)] transition hover:text-[var(--text-strong)] disabled:cursor-not-allowed disabled:opacity-40"
+              className={`w-full ${footerButtonClassName}`}
             >
-              <Icon name="close" className="text-[14px]" />
+              <Icon name="delete" className="text-[16px]" />
               <span>{t.labels.clearFavorites}</span>
             </button>
+            </div>
           </div>
         </div>
       ) : null}

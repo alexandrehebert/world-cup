@@ -21,6 +21,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
   const mobileSettingsMenuRef = useRef<HTMLDivElement>(null)
   const accountMenuRef = useRef<HTMLDivElement>(null)
   const settingsMenuRef = useRef<HTMLDivElement>(null)
+  const desktopMenuTriggerClassName = 'inline-flex h-9 cursor-pointer items-center border border-[var(--border)] bg-[var(--surface-soft)] text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]'
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -210,10 +211,10 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 }}
                 aria-expanded={isSettingsMenuOpen}
                 aria-controls="desktop-settings-menu"
-                className="inline-flex cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-2.5 py-1.5 text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+                className={`${desktopMenuTriggerClassName} gap-2 px-3`}
               >
                 <Icon name="settings" className="text-[18px]" />
-                <span className="text-sm font-medium">{locale === 'fr' ? 'Paramètres' : 'Settings'}</span>
+                <span>{locale === 'fr' ? 'Paramètres' : 'Settings'}</span>
                 <Icon name={isSettingsMenuOpen ? 'expand_less' : 'expand_more'} className="text-[18px] text-[var(--text-soft)]" />
               </button>
 
@@ -239,21 +240,21 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 }}
                 aria-expanded={isAccountMenuOpen}
                 aria-controls="desktop-account-menu"
-                className={`inline-flex cursor-pointer items-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] ${
-                  user ? 'gap-0 py-0 pl-0 pr-2' : 'gap-2 px-2 py-1.5'
+                className={`${desktopMenuTriggerClassName} ${
+                  user ? 'gap-0 py-0 pl-0 pr-2.5' : 'gap-2 px-3'
                 }`}
               >
                 {user ? (
                   <>
-                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-none border-r border-[var(--border)] bg-[var(--accent-muted)] text-xs font-semibold text-[var(--accent-text)]">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-none border-r border-[var(--border)] bg-[var(--accent-muted)] text-sm font-semibold text-[var(--accent-text)]">
                       {getUserInitial(user.username)}
                     </span>
-                    <span className="max-w-[10rem] truncate px-2 text-sm font-medium">{user.username}</span>
+                    <span className="max-w-[10rem] truncate px-2 font-semibold">{user.username}</span>
                   </>
                 ) : (
                   <>
                     <Icon name="person" className="text-[18px]" />
-                    <span className="text-sm font-medium">{locale === 'fr' ? 'Compte' : 'Account'}</span>
+                    <span>{locale === 'fr' ? 'Compte' : 'Account'}</span>
                   </>
                 )}
                 <Icon name={isAccountMenuOpen ? 'expand_less' : 'expand_more'} className="text-[18px] text-[var(--text-soft)]" />

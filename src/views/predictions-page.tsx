@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth-context'
 import { useLocale } from '../contexts/locale-context'
 import { usePredictions } from '../contexts/predictions-context'
@@ -52,6 +52,7 @@ export const PredictionsPage = () => {
   const { user, isLoading, openAuthModal } = useAuth()
   const { predictionsByMatch, isLoading: isPredictionsLoading } = usePredictions()
   const { upcomingMatches, teamsById } = useTournament()
+  const navigate = useNavigate()
   const nowMs = useNow()
   const drafts = usePredictionDrafts()
   const { isCopied: isLeaderboardCopied, share: shareLeaderboard } = useShareLink('/leaderboard')
@@ -154,39 +155,32 @@ export const PredictionsPage = () => {
     [desktopDaySections, todayKey],
   )
 
-  const actionButtonClassName = 'inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface-soft)] text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)] sm:h-auto sm:w-auto sm:rounded-none sm:px-3 sm:py-2'
+  const actionButtonClassName = 'appearance-none inline-flex h-10 w-10 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface-soft)] text-sm font-semibold leading-normal text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto sm:justify-start sm:gap-2 sm:px-3 sm:py-2'
 
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.predictions}</h2>
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
+          <TopActionButton
+            label={isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}
+            iconName={isLeaderboardCopied ? 'check' : 'share'}
             onClick={() => void shareLeaderboard()}
-            className={`cursor-pointer ${actionButtonClassName}`}
-            aria-label={isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}
-          >
-            <Icon name={isLeaderboardCopied ? 'check' : 'share'} className="text-[20px] leading-none sm:hidden" />
-            <span className="hidden sm:inline">{isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}</span>
-          </button>
-          <Link
-            to="/leaderboard"
             className={actionButtonClassName}
-            aria-label={t.labels.viewLeaderboard}
-          >
-            <Icon name="leaderboard" className="text-[20px] leading-none sm:hidden" />
-            <span className="hidden sm:inline">{t.labels.viewLeaderboard}</span>
-          </Link>
+          />
+          <TopActionButton
+            label={t.labels.viewLeaderboard}
+            iconName="leaderboard"
+            onClick={() => navigate('/leaderboard')}
+            className={actionButtonClassName}
+          />
           {user ? (
-            <Link
-              to={`/profile/${encodeURIComponent(user.username)}`}
+            <TopActionButton
+              label={t.labels.myProfile}
+              iconName="person"
+              onClick={() => navigate(`/profile/${encodeURIComponent(user.username)}`)}
               className={actionButtonClassName}
-              aria-label={t.labels.myProfile}
-            >
-              <Icon name="person" className="text-[20px] leading-none sm:hidden" />
-              <span className="hidden sm:inline">{t.labels.myProfile}</span>
-            </Link>
+            />
           ) : null}
         </div>
       </div>
@@ -323,4 +317,26 @@ const DaySection = ({
     </div>
     <div className="space-y-3">{children}</div>
   </section>
+)
+
+const TopActionButton = ({
+  label,
+  iconName,
+  onClick,
+  className,
+}: {
+  label: string
+  iconName: string
+  onClick: () => void
+  className: string
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`cursor-pointer ${className}`}
+    aria-label={label}
+  >
+    <Icon name={iconName} className="text-[20px] leading-none sm:text-[18px]" />
+    <span className="hidden sm:inline">{label}</span>
+  </button>
 )

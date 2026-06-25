@@ -20,6 +20,7 @@
   --tab-active-bg: var(--accent-muted);
   --tab-active-text: var(--accent-text);
   --tab-active-border: var(--accent-border);
+  --radius-sm: 6px;
   --tab-idle-hover-bg: rgba(153, 201, 255, 0.13);
   --calendar-scheduled-hover-bg: color-mix(in srgb, var(--surface-strong) 93%, white 7%);
   --calendar-live-bg: color-mix(in srgb, var(--surface-strong) 82%, #5d87c9 18%);
@@ -191,10 +192,21 @@ select {
 
 button {
   cursor: pointer;
+  border-radius: var(--radius-sm);
 }
 
 button:disabled {
   cursor: not-allowed;
+}
+
+:where(
+  .card,
+  .calendar-match-card,
+  [class*='bg-[var(--surface)]'],
+  [class*='bg-[var(--surface-soft)]'],
+  [class*='bg-[var(--surface-strong)]']
+):not([class*='rounded-full']):not([class*='rounded-none']) {
+  border-radius: var(--radius-sm);
 }
 
 .material-symbols-rounded {

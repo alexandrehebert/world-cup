@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLeaderboardBootstrap } from '../contexts/leaderboard-context'
 import { useLocale } from '../contexts/locale-context'
+import { Icon } from '../lib/icons'
 import { useShareLink } from '../lib/use-share-link'
 import type { LeaderboardEntry } from '../types/predictions'
 import type { RankedLeaderboardEntry } from '../types/bootstrap'
@@ -16,6 +17,7 @@ export const LeaderboardPage = () => {
   const navigate = useNavigate()
   const [entries, setEntries] = useState<RankedLeaderboardEntry[]>(initialEntries)
   const { isCopied, share } = useShareLink('/leaderboard')
+  const actionButtonClassName = 'appearance-none inline-flex h-10 w-10 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface-soft)] text-sm font-semibold leading-normal text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto sm:justify-start sm:gap-2 sm:px-3 sm:py-2'
 
   useEffect(() => {
     const loadLeaderboard = async () => {
@@ -46,9 +48,11 @@ export const LeaderboardPage = () => {
         <button
           type="button"
           onClick={() => void share()}
-          className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+          className={`cursor-pointer ${actionButtonClassName}`}
+          aria-label={isCopied ? t.labels.copied : t.labels.shareLeaderboard}
         >
-          {isCopied ? t.labels.copied : t.labels.shareLeaderboard}
+          <Icon name={isCopied ? 'check' : 'share'} className="text-[20px] leading-none sm:text-[18px]" />
+          <span className="hidden sm:inline">{isCopied ? t.labels.copied : t.labels.shareLeaderboard}</span>
         </button>
       </div>
 
