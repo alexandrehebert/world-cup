@@ -21,7 +21,7 @@ export const LocaleSwitcher = () => {
             <button
               type="button"
               onClick={() => setLocale(option.code)}
-              className={`peer inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 ${
+              className={`peer inline-flex h-8 w-8 cursor-pointer items-center justify-center !rounded-full text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 ${
                 isActive
                   ? 'border border-[var(--tab-active-border)] bg-[var(--tab-active-bg)] text-[var(--tab-active-text)]'
                   : 'border border-transparent text-[var(--text-muted)] hover:bg-[var(--tab-idle-hover-bg)] hover:text-[var(--text)]'
@@ -30,7 +30,7 @@ export const LocaleSwitcher = () => {
               aria-label={option.label}
             >
               <span
-                className={`inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] ${
+                className={`inline-flex h-6 w-6 items-center justify-center overflow-hidden !rounded-full border border-[var(--border)] ${
                   isActive ? '' : 'opacity-85'
                 }`}
                 aria-hidden="true"

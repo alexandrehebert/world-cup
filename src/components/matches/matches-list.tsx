@@ -89,8 +89,8 @@ export const MatchesList = ({
   )
   const groupedMatches = useMemo(() => {
     const dateLocale = getDateLocale(locale)
-    const groups = new Map<string, { dayLabel: string; matches: MatchRecord[] }>()
-    const todayKey = getMatchDayKey(new Date().toISOString())
+    const groups = new Map<string, { dayKey: string; dayLabel: string; matches: MatchRecord[] }>()
+    const todayKey = getMatchDayKey(new Date(nowMs).toISOString())
 
     for (const match of matches) {
       const date = new Date(match.kickoff)
@@ -104,6 +104,7 @@ export const MatchesList = ({
       }
 
       groups.set(dayKey, {
+        dayKey,
         dayLabel: dayKey === todayKey
           ? t.labels.today
           : new Intl.DateTimeFormat(dateLocale, {
@@ -114,13 +115,18 @@ export const MatchesList = ({
       })
     }
 
-    return [...groups.values()]
-  }, [locale, matches, t.labels.today])
+    const sections = [...groups.values()]
+    const todaySections = sections.filter((section) => section.dayKey === todayKey)
+    const futureSections = sections.filter((section) => section.dayKey > todayKey).sort((a, b) => a.dayKey.localeCompare(b.dayKey))
+    const pastSections = sections.filter((section) => section.dayKey < todayKey).sort((a, b) => b.dayKey.localeCompare(a.dayKey))
+
+    return [...todaySections, ...futureSections, ...pastSections]
+  }, [locale, matches, nowMs, t.labels.today])
 
   return (
     <div className="space-y-6">
       {groupedMatches.map((group) => (
-        <section key={group.dayLabel}>
+        <section key={group.dayKey}>
           <div className="mb-3 flex items-center gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">{group.dayLabel}</p>
             <span className="flex-1 border-t border-[var(--border)]" />
