@@ -9,6 +9,7 @@ import { ClosedMatchCard } from '../components/predictions/closed-match-card'
 import { OpenMatchCard } from '../components/predictions/open-match-card'
 import { usePredictionDrafts } from '../components/predictions/use-prediction-drafts'
 import { FeedbackPopup } from '../components/ui/feedback-popup'
+import { Icon } from '../lib/icons'
 import { getDateLocale, getMatchDayKey, formatNextKickoffCountdown } from '../lib/predictions'
 import { useShareLink } from '../lib/use-share-link'
 import type { MatchRecord } from '../types/tournament'
@@ -153,6 +154,8 @@ export const PredictionsPage = () => {
     [desktopDaySections, todayKey],
   )
 
+  const actionButtonClassName = 'inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface-soft)] text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)] sm:h-auto sm:w-auto sm:rounded-none sm:px-3 sm:py-2'
+
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -161,22 +164,28 @@ export const PredictionsPage = () => {
           <button
             type="button"
             onClick={() => void shareLeaderboard()}
-            className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+            className={`cursor-pointer ${actionButtonClassName}`}
+            aria-label={isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}
           >
-            {isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}
+            <Icon name={isLeaderboardCopied ? 'check' : 'share'} className="text-[20px] leading-none sm:hidden" />
+            <span className="hidden sm:inline">{isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}</span>
           </button>
           <Link
             to="/leaderboard"
-            className="border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+            className={actionButtonClassName}
+            aria-label={t.labels.viewLeaderboard}
           >
-            {t.labels.viewLeaderboard}
+            <Icon name="leaderboard" className="text-[20px] leading-none sm:hidden" />
+            <span className="hidden sm:inline">{t.labels.viewLeaderboard}</span>
           </Link>
           {user ? (
             <Link
               to={`/profile/${encodeURIComponent(user.username)}`}
-              className="border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+              className={actionButtonClassName}
+              aria-label={t.labels.myProfile}
             >
-              {t.labels.myProfile}
+              <Icon name="person" className="text-[20px] leading-none sm:hidden" />
+              <span className="hidden sm:inline">{t.labels.myProfile}</span>
             </Link>
           ) : null}
         </div>
