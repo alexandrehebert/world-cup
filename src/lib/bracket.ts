@@ -28,6 +28,43 @@ export const resolveG1G2Placeholder = (
 }
 
 /**
+ * Gets the potential team IDs from a G1:X or G2:X placeholder.
+ * Returns all teams in the referenced group.
+ */
+export const getPotentialTeamsFromPlaceholder = (
+  placeholder: string,
+  groupsById: Map<string, GroupRecord>,
+): string[] => {
+  const [type, groupId] = placeholder.split(':')
+
+  if (type !== 'G1' && type !== 'G2') return []
+
+  const group = groupsById.get(groupId)
+  if (!group) return []
+
+  return group.teamIds
+}
+
+/**
+ * Gets the team currently in the position specified by the placeholder (1st or 2nd).
+ * Returns the teamId if the group has standings, undefined otherwise.
+ */
+export const getTopTeamFromPlaceholder = (
+  placeholder: string,
+  groupsById: Map<string, GroupRecord>,
+): string | undefined => {
+  const [type, groupId] = placeholder.split(':')
+
+  if (type !== 'G1' && type !== 'G2') return undefined
+
+  const group = groupsById.get(groupId)
+  if (!group || group.standings.length === 0) return undefined
+
+  const positionIndex = type === 'G1' ? 0 : 1
+  return group.standings[positionIndex]?.teamId
+}
+
+/**
  * Iterates over all bracket matches and fills in known team IDs from completed group standings.
  * Only resolves G1/G2 placeholders (1st/2nd place of a specific group).
  * G3 (best 3rd-place) placeholders are left for ESPN or manual resolution.
