@@ -5,6 +5,7 @@ import type {
   TeamRecord,
   TournamentData,
 } from '../types/tournament'
+import { resolveGroupBracketTeams } from './bracket'
 import { sortGroupStandings } from './standings'
 
 export interface TournamentModel extends TournamentData {
@@ -31,9 +32,10 @@ export const buildTournamentModel = (data: TournamentData): TournamentModel => {
     }
   })
   const groupsById = Object.fromEntries(groups.map((group) => [group.id, group]))
-  const matchesById = Object.fromEntries(data.matches.map((match) => [match.id, match]))
+  const matches = resolveGroupBracketTeams(data.matches, groups)
+  const matchesById = Object.fromEntries(matches.map((match) => [match.id, match]))
   const roundsById = Object.fromEntries(data.bracketRounds.map((round) => [round.id, round]))
-  const upcomingMatches = [...data.matches].sort((first, second) => first.kickoff.localeCompare(second.kickoff))
+  const upcomingMatches = [...matches].sort((first, second) => first.kickoff.localeCompare(second.kickoff))
 
   return {
     ...data,

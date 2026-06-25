@@ -1,4 +1,5 @@
 import type { MatchLiveRecord, MatchRecord, TournamentData } from '../types/tournament'
+import { resolveGroupBracketTeams } from '../lib/bracket'
 import { sortGroupStandings } from '../lib/standings'
 import { loadTournamentData, saveTournamentData } from './tournament-data'
 import { scoreFinishedMatches } from './predictions-scoring'
@@ -168,6 +169,8 @@ type UpstreamMatchUpdate = {
   home?: { score?: number | string }
   away?: { score?: number | string }
   score?: { home?: number | string; away?: number | string }
+  homeTeamId?: string
+  awayTeamId?: string
   live?: Partial<MatchLiveRecord>
 }
 
@@ -208,14 +211,22 @@ const normalizeEspnState = (state: string | undefined, completed: boolean | unde
 
 const buildMatchIndexes = (data: TournamentData) => {
   const teamCodeById = new Map(data.teams.map((team) => [team.id, team.code]))
+  const teamIdByCode = new Map(data.teams.map((team) => [team.code, team.id]))
   const byExact = new Map<string, string>()
   const byPair = new Map<string, string[]>()
+  const byKickoff = new Map<string, string>()
 
   for (const match of data.matches) {
     const homeId = match.home?.teamId
     const awayId = match.away?.teamId
 
     if (!homeId || !awayId) {
+      // Bracket match without both teams: index by kickoff minute for ESPN fallback matching.
+      // Slice to 16 characters to extract 'YYYY-MM-DDTHH:MM' from the ISO 8601 datetime.
+      if (match.stage !== 'group') {
+        const kickoffKey = match.kickoff.slice(0, 16)
+        byKickoff.set(kickoffKey, match.id)
+      }
       continue
     }
 
@@ -237,7 +248,7 @@ const buildMatchIndexes = (data: TournamentData) => {
     byPair.set(pairKey, pairMatches)
   }
 
-  return { byExact, byPair }
+  return { byExact, byPair, byKickoff, teamIdByCode }
 }
 
 const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): UpstreamMatchUpdate[] => {
@@ -245,7 +256,7 @@ const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): Upstrea
     return []
   }
 
-  const { byExact, byPair } = buildMatchIndexes(data)
+  const { byExact, byPair, byKickoff, teamIdByCode } = buildMatchIndexes(data)
   const updates: UpstreamMatchUpdate[] = []
   const syncedAt = new Date().toISOString()
 
@@ -257,19 +268,36 @@ const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): Upstrea
     const homeCode = home?.team?.abbreviation
     const awayCode = away?.team?.abbreviation
 
-    if (!homeCode || !awayCode) {
-      continue
+    let matchId: string | undefined
+
+    if (homeCode && awayCode) {
+      const eventDay = typeof event?.date === 'string' ? new Date(event.date).toISOString().slice(0, 10) : ''
+      const exactKey = `${homeCode}::${awayCode}::${eventDay}`
+      const pairKey = `${homeCode}::${awayCode}`
+      const pairMatches = byPair.get(pairKey)
+      matchId = byExact.get(exactKey) ?? (pairMatches?.length === 1 ? pairMatches[0] : undefined)
     }
 
-    const eventDay = typeof event?.date === 'string' ? new Date(event.date).toISOString().slice(0, 10) : ''
-    const exactKey = `${homeCode}::${awayCode}::${eventDay}`
-    const pairKey = `${homeCode}::${awayCode}`
-    const pairMatches = byPair.get(pairKey)
-    const matchId = byExact.get(exactKey) ?? (pairMatches?.length === 1 ? pairMatches[0] : undefined)
+    // Fallback: match bracket matches by kickoff time when teams are not yet assigned
+    if (!matchId && typeof event?.date === 'string') {
+      const eventMinute = new Date(event.date).toISOString().slice(0, 16)
+      matchId = byKickoff.get(eventMinute)
+    }
 
     if (!matchId) {
       continue
     }
+
+    // Resolve team IDs for bracket matches that ESPN now knows about
+    const existingMatch = data.matches.find((m) => m.id === matchId)
+    const homeTeamId =
+      existingMatch && existingMatch.home && !existingMatch.home.teamId && homeCode
+        ? teamIdByCode.get(homeCode)
+        : undefined
+    const awayTeamId =
+      existingMatch && existingMatch.away && !existingMatch.away.teamId && awayCode
+        ? teamIdByCode.get(awayCode)
+        : undefined
 
     const nextStatus = normalizeEspnState(competition?.status?.type?.state, competition?.status?.type?.completed)
     const hasPlayableStatus = nextStatus === 'live' || nextStatus === 'finished'
@@ -279,6 +307,8 @@ const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): Upstrea
       status: nextStatus,
       homeScore: hasPlayableStatus ? home?.score : undefined,
       awayScore: hasPlayableStatus ? away?.score : undefined,
+      homeTeamId,
+      awayTeamId,
       live: nextStatus
         ? {
             state: competition?.status?.type?.state as MatchLiveRecord['state'],
@@ -343,6 +373,8 @@ type NormalizedUpdate = {
   status?: MatchRecord['status']
   homeScore?: number
   awayScore?: number
+  homeTeamId?: string
+  awayTeamId?: string
   live?: Partial<MatchLiveRecord>
 }
 
@@ -355,6 +387,8 @@ const toNormalizedUpdate = (entry: UpstreamMatchUpdate): NormalizedUpdate => {
     status: normalizeStatus(entry.status),
     homeScore,
     awayScore,
+    homeTeamId: typeof entry.homeTeamId === 'string' ? entry.homeTeamId : undefined,
+    awayTeamId: typeof entry.awayTeamId === 'string' ? entry.awayTeamId : undefined,
     live: entry.live
       ? {
           state: typeof entry.live.state === 'string' ? (entry.live.state as MatchLiveRecord['state']) : undefined,
@@ -508,6 +542,8 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
       const homeScoreChanged = nextHomeScore !== undefined && nextHomeScore !== match.home?.score
       const awayScoreChanged = nextAwayScore !== undefined && nextAwayScore !== match.away?.score
       const statusChanged = nextStatus !== match.status
+      const homeTeamChanged = update.homeTeamId !== undefined && !!match.home && !match.home.teamId
+      const awayTeamChanged = update.awayTeamId !== undefined && !!match.away && !match.away.teamId
       const mergedLive =
         nextLive !== undefined
           ? {
@@ -519,7 +555,7 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
             : match.live
       const liveChanged = JSON.stringify(mergedLive ?? null) !== JSON.stringify(match.live ?? null)
 
-      if (!statusChanged && !homeScoreChanged && !awayScoreChanged && !liveChanged) {
+      if (!statusChanged && !homeScoreChanged && !awayScoreChanged && !liveChanged && !homeTeamChanged && !awayTeamChanged) {
         return match
       }
 
@@ -531,10 +567,12 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
         home: {
           ...match.home,
           ...(nextHomeScore !== undefined ? { score: nextHomeScore } : {}),
+          ...(homeTeamChanged ? { teamId: update.homeTeamId } : {}),
         },
         away: {
           ...match.away,
           ...(nextAwayScore !== undefined ? { score: nextAwayScore } : {}),
+          ...(awayTeamChanged ? { teamId: update.awayTeamId } : {}),
         },
         live: mergedLive,
       }
@@ -542,14 +580,17 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
 
     const payloadUpdatedAt = payload && typeof payload === 'object' ? (payload as { updatedAt?: string }).updatedAt : undefined
 
+    const recomputedGroups = recomputeGroups(currentData.groups, nextMatches)
+    const resolvedMatches = resolveGroupBracketTeams(nextMatches, recomputedGroups)
+
     const nextData: TournamentData = {
       ...currentData,
       meta: {
         ...currentData.meta,
         updatedAt: typeof payloadUpdatedAt === 'string' ? payloadUpdatedAt : new Date().toISOString(),
       },
-      matches: nextMatches,
-      groups: recomputeGroups(currentData.groups, nextMatches),
+      matches: resolvedMatches,
+      groups: recomputedGroups,
     }
 
     await saveTournamentData(nextData)
