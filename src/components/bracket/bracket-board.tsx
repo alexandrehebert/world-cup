@@ -1,3 +1,4 @@
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useLocale } from '../../contexts/locale-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useTournament } from '../../contexts/tournament-context'
@@ -5,17 +6,17 @@ import { formatMatchDate, formatPlaceholder } from '../../lib/format'
 import { getPotentialTeamsFromPlaceholder, getTopTeamFromPlaceholder } from '../../lib/bracket'
 import { Icon } from '../../lib/icons'
 
-const NODE_HEIGHT = 196
+const MIN_NODE_HEIGHT = 216
 const BASE_GAP = 20
 const CONNECTOR_WIDTH = 32
 
-const getRoundMetrics = (roundIndex: number) => {
-  const unit = NODE_HEIGHT + BASE_GAP
+const getRoundMetrics = (roundIndex: number, nodeHeight: number) => {
+  const unit = nodeHeight + BASE_GAP
   const roundFactor = 2 ** roundIndex
 
   return {
     topOffset: roundIndex === 0 ? 0 : ((roundFactor - 1) * unit) / 2,
-    gap: roundIndex === 0 ? BASE_GAP : roundFactor * unit - NODE_HEIGHT,
+    gap: roundIndex === 0 ? BASE_GAP : roundFactor * unit - nodeHeight,
   }
 }
 
@@ -28,6 +29,8 @@ export const BracketBoard = ({
   const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
   const { matchesById, teamsById, groupsById } = useTournament()
   const groupsByIdMap = new Map(Object.entries(groupsById || {}))
+  const boardRef = useRef<HTMLDivElement | null>(null)
+  const [measuredNodeHeight, setMeasuredNodeHeight] = useState<number>(MIN_NODE_HEIGHT)
 
   // Debug: Log if groupsByIdMap is empty
   if (typeof window !== 'undefined' && groupsByIdMap.size === 0 && Object.keys(groupsById || {}).length === 0) {
@@ -120,15 +123,30 @@ export const BracketBoard = ({
 
   const thirdPlaceRound = rounds.find((round) => round.id === 'thirdPlace')
   const mainRounds = rounds.filter((round) => round.id !== 'thirdPlace')
+  const nodeHeight = useMemo(() => Math.max(MIN_NODE_HEIGHT, measuredNodeHeight), [measuredNodeHeight])
   const firstRoundMatchCount = mainRounds.at(0)?.matchIds.length ?? 0
-  const boardTrackHeight = Math.max(NODE_HEIGHT, firstRoundMatchCount * NODE_HEIGHT + Math.max(0, firstRoundMatchCount - 1) * BASE_GAP)
+  const boardTrackHeight = Math.max(nodeHeight, firstRoundMatchCount * nodeHeight + Math.max(0, firstRoundMatchCount - 1) * BASE_GAP)
+
+  useLayoutEffect(() => {
+    if (!boardRef.current) return
+
+    const mainRoundCards = Array.from(
+      boardRef.current.querySelectorAll<HTMLElement>('[data-bracket-main-card="true"]'),
+    )
+
+    if (mainRoundCards.length === 0) return
+
+    const maxCardHeight = Math.max(...mainRoundCards.map((card) => card.scrollHeight))
+    const nextHeight = Math.max(MIN_NODE_HEIGHT, maxCardHeight)
+    setMeasuredNodeHeight((previousHeight) => (previousHeight === nextHeight ? previousHeight : nextHeight))
+  }, [mainRounds, locale, t, matchesById, teamsById, groupsById])
 
   return (
     <div className="bg-[var(--surface)] p-4 sm:p-5 lg:p-6">
       <div className="overflow-x-auto pb-2">
-        <div className="flex min-w-full items-start" style={{ gap: `${CONNECTOR_WIDTH}px` }}>
+        <div ref={boardRef} className="flex min-w-full items-start" style={{ gap: `${CONNECTOR_WIDTH}px` }}>
           {mainRounds.map((round, roundIndex) => {
-            const metrics = getRoundMetrics(roundIndex)
+            const metrics = getRoundMetrics(roundIndex, nodeHeight)
             const hasPreviousRound = roundIndex > 0
             const hasNextRound = roundIndex < mainRounds.length - 1
             const isFinalRound = round.id === 'final'
@@ -171,23 +189,27 @@ export const BracketBoard = ({
                             {showVerticalBridge ? (
                               <span
                                 className="pointer-events-none absolute top-1/2 -right-[16px] z-0 w-px bg-[var(--border)]"
-                                style={{ height: `${NODE_HEIGHT + metrics.gap}px` }}
+                                style={{ height: `${nodeHeight + metrics.gap}px` }}
                               />
                             ) : null}
 
                             {hasNextRound ? (
                               <span
-                                className="pointer-events-none absolute top-1/2 -right-[16px] z-0 h-px bg-[var(--border)]"
-                                style={{ width: `${CONNECTOR_WIDTH}px` }}
+                                className="pointer-events-none absolute top-1/2 left-full z-0 h-px bg-[var(--border)]"
+                                style={{ width: `${CONNECTOR_WIDTH / 2}px` }}
                               />
                             ) : null}
 
-                            <div className={`relative z-10 h-[196px] overflow-hidden p-3 cursor-pointer transition ${
+                            <div
+                              className={`relative z-10 overflow-hidden p-3 cursor-pointer transition ${
                               hasFavorite
                                 ? 'bg-[var(--accent-muted)] ring-2 ring-inset ring-[var(--accent-border)]'
                                 : 'bg-[var(--surface-soft)] hover:brightness-105'
                             }`}
-                            onClick={() => setSelectedMatchId(match.id)}>
+                              data-bracket-main-card="true"
+                              style={{ minHeight: `${nodeHeight}px` }}
+                              onClick={() => setSelectedMatchId(match.id)}
+                            >
                               <div className="space-y-2">
                                 <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
                                   {homeTeam ? (
