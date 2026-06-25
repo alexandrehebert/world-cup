@@ -28,7 +28,12 @@ export const BracketBoard = ({
   const { locale, t } = useLocale()
   const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
   const { matchesById, teamsById, groupsById } = useTournament()
-  const groupsByIdMap = new Map(Object.entries(groupsById))
+  const groupsByIdMap = new Map(Object.entries(groupsById || {}))
+
+  // Debug: Log if groupsByIdMap is empty
+  if (typeof window !== 'undefined' && groupsByIdMap.size === 0 && Object.keys(groupsById || {}).length === 0) {
+    console.warn('[BracketBoard] groupsById is empty - potential teams will not display')
+  }
 
   const getRoundLabel = (id: string): string => ({
     roundOf32: t.labels.stageRoundOf32,
