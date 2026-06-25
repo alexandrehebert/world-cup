@@ -39,7 +39,7 @@ const toDayKey = (year: number, month: number, day: number) => `${toMonthKey(yea
 
 const statusBadgeClass: Record<MatchRecord['status'], string> = {
   scheduled: 'bg-[var(--surface-strong)] text-[var(--text-soft)] hover:bg-[var(--calendar-scheduled-hover-bg)]',
-  live: 'bg-[var(--surface-strong)] text-[var(--text-soft)] hover:bg-[var(--calendar-scheduled-hover-bg)]',
+  live: 'bg-[var(--calendar-live-bg)] text-[var(--text-soft)] hover:bg-[var(--calendar-live-hover-bg)]',
   finished: 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50 text-[var(--text-muted)] hover:bg-[var(--calendar-finished-hover-bg)]',
 }
 
@@ -315,9 +315,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                         : statusBadgeClass[displayStatus]
                     const borderClassName = hasFavorite
                       ? 'border-l-4 border-l-[var(--accent)]'
-                      : displayStatus === 'live'
-                        ? 'border-l-2 border-l-[var(--accent)]'
-                        : ''
+                      : ''
 
                     return (
                       <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card w-full cursor-pointer space-y-1 px-2 py-1.5 text-left text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none ${cardClassName} ${borderClassName}`}>
@@ -424,9 +422,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                       : statusBadgeClass[displayStatus]
                   const borderClassName = hasFavorite
                     ? 'border-l-4 border-l-[var(--accent)]'
-                    : displayStatus === 'live'
-                      ? 'border-l-2 border-l-[var(--accent)]'
-                      : ''
+                    : ''
 
                   return (
                     <button type="button" key={match.id} onClick={() => setSelectedMatchId(match.id)} className={`calendar-match-card flex w-full cursor-pointer flex-col items-center gap-2 px-2 py-2 text-xs transition hover:opacity-100 focus:outline-none focus-visible:outline-none md:items-stretch ${cardClassName} ${borderClassName}`}>

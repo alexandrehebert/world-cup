@@ -201,9 +201,9 @@ export const BracketBoard = ({
                             ) : null}
 
                             <div
-                              className={`relative z-10 overflow-hidden p-3 cursor-pointer transition ${
+                              className={`relative z-10 cursor-pointer overflow-hidden rounded-[var(--radius-sm)] p-3 transition ${
                               hasFavorite
-                                ? 'bg-[var(--accent-muted)] ring-2 ring-inset ring-[var(--accent-border)]'
+                                ? 'border-l-4 border-l-[var(--accent)] bg-[var(--accent-muted)]'
                                 : 'bg-[var(--surface-soft)] hover:brightness-105'
                             }`}
                               data-bracket-main-card="true"
@@ -298,9 +298,9 @@ export const BracketBoard = ({
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
 
                         return (
-                          <div key={match.id} className={`p-3 cursor-pointer transition ${
+                          <div key={match.id} className={`cursor-pointer rounded-[var(--radius-sm)] p-3 transition ${
                             hasFavorite
-                              ? 'bg-[var(--accent-muted)] ring-2 ring-inset ring-[var(--accent-border)]'
+                              ? 'border-l-4 border-l-[var(--accent)] bg-[var(--accent-muted)]'
                               : 'bg-[var(--surface-soft)] hover:brightness-105'
                           }`}
                           onClick={() => setSelectedMatchId(match.id)}>
