@@ -19,6 +19,7 @@ import { PredictionsPage } from './predictions-page'
 type PublicPrediction = PredictionRecord & { displayName: string }
 
 const normalizeCode = (value: string | undefined) => String(value ?? '').trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
+const normalizeName = (value: string | undefined) => String(value ?? '').trim().toLowerCase()
 
 const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLocale>['t']['labels']) => {
   if (stage === 'group') return labels.stageGroup
@@ -81,7 +82,13 @@ export const MatchPredictionPage = () => {
     ? bootstrapPublicPrediction
     : null
   const currentUserId = currentPredictorId ?? (user ? user.id : null)
-  const currentPrediction = predictions.find((prediction) => prediction.userId === currentUserId)
+  const currentPredictionById = currentUserId
+    ? predictions.find((prediction) => prediction.userId === currentUserId) ?? null
+    : null
+  const currentPrediction = currentPredictionById
+    ?? (user
+      ? predictions.find((prediction) => normalizeName(prediction.displayName) === normalizeName(user.username)) ?? null
+      : null)
   const hasSavedPrediction = Boolean(currentPrediction)
   const persistedOutcome = currentPrediction?.outcome ?? null
   const persistedHomeScore = currentPrediction?.type === 'score' && currentPrediction.homeScore !== undefined ? String(currentPrediction.homeScore) : ''

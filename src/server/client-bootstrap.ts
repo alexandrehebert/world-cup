@@ -6,6 +6,7 @@ import {
   listPredictionDistributions,
   listPredictionsByUser,
   listPublicPredictionsByMatch,
+  normalizeUsername,
 } from './kv-store'
 import { loadTournamentData } from './tournament-data'
 import type { ClientBootstrapData } from '../types/bootstrap'
@@ -82,14 +83,18 @@ export const loadClientBootstrapData = async (options?: { publicMatchId?: string
   const initialPublicMatchPrediction = publicMatchId
     ? await listPublicPredictionsByMatch(publicMatchId)
         .then((predictions) => {
-          const currentPrediction = currentPredictorId
+          const byPredictorId = currentPredictorId
             ? predictions.find((prediction) => prediction.userId === currentPredictorId) ?? null
             : null
+          const currentPrediction = byPredictorId
+            ?? (session
+              ? predictions.find((prediction) => normalizeUsername(prediction.displayName) === normalizeUsername(session.username)) ?? null
+              : null)
           return {
             matchId: publicMatchId,
             predictions,
             predictionDistribution: buildDistributionFromPredictions(publicMatchId, predictions),
-            currentPredictorId,
+            currentPredictorId: currentPrediction?.userId ?? currentPredictorId,
             currentPrediction,
           }
         })

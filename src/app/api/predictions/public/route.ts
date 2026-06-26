@@ -5,6 +5,7 @@ import {
   getPrediction,
   listPredictionsByMatch,
   listPublicPredictionsByMatch,
+  normalizeUsername,
   upsertPrediction,
 } from '../../../../server/kv-store'
 import { loadTournamentData } from '../../../../server/tournament-data'
@@ -98,6 +99,28 @@ const resolveRequesterUserId = (request: NextRequest) => {
   return GUEST_PREDICTOR_ID_REGEX.test(guestPredictorId) ? `guest:${guestPredictorId}` : null
 }
 
+const resolveCurrentPrediction = (
+  predictions: Array<{ userId: string; displayName: string }>,
+  request: NextRequest,
+) => {
+  const session = parseSessionToken(request.cookies.get(sessionCookieName)?.value)
+  const requesterUserId = resolveRequesterUserId(request)
+  const byUserId = requesterUserId
+    ? predictions.find((prediction) => prediction.userId === requesterUserId) ?? null
+    : null
+
+  if (byUserId) {
+    return byUserId
+  }
+
+  if (!session) {
+    return null
+  }
+
+  const normalizedUsername = normalizeUsername(session.username)
+  return predictions.find((prediction) => normalizeUsername(prediction.displayName) === normalizedUsername) ?? null
+}
+
 const getRequestIp = (request: NextRequest) => {
   const forwardedFor = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
   const realIp = request.headers.get('x-real-ip')?.trim()
@@ -118,10 +141,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const predictions = await listPublicPredictionsByMatch(matchId)
-    const currentPredictorId = resolveRequesterUserId(request)
-    const currentPrediction = currentPredictorId
-      ? predictions.find((prediction) => prediction.userId === currentPredictorId) ?? null
-      : null
+    const currentPrediction = resolveCurrentPrediction(predictions, request)
+    const currentPredictorId = currentPrediction?.userId ?? resolveRequesterUserId(request)
 
     return NextResponse.json({
       predictions,
