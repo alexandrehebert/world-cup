@@ -68,12 +68,12 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
           padding: '56px 64px',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: 2 }}>FIFA WORLD CUP 2026</div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: '#f4c542' }}>{status}</div>
-            {liveClock ? <div style={{ fontSize: 22, fontWeight: 700, color: '#7fe5c5' }}>{liveClock}</div> : null}
-            {utcDateTime ? <div style={{ fontSize: 26, fontWeight: 600, color: '#c5d5f5', opacity: 0.9 }}>{utcDateTime}</div> : null}
+            <div style={{ fontSize: 36, fontWeight: 800, color: '#f4c542' }}>{status}</div>
+            {liveClock ? <div style={{ fontSize: 28, fontWeight: 800, color: '#7fe5c5' }}>{liveClock}</div> : null}
+            {stadiumLocalTime ? <div style={{ fontSize: 32, fontWeight: 700, color: '#c5d5f5', opacity: 0.95 }}>{stadiumLocalTime}</div> : null}
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ fontSize: 28, opacity: 0.86 }}>{venue}</div>
-            {stadiumLocalTime ? <div style={{ fontSize: 22, fontWeight: 500, color: '#f4c542', opacity: 0.9 }}>{stadiumLocalTime}</div> : null}
+            {utcDateTime ? <div style={{ fontSize: 22, fontWeight: 500, color: '#f4c542', opacity: 0.9 }}>{utcDateTime}</div> : null}
           </div>
           <div style={{ fontSize: 26, opacity: 0.76 }}>world-cup.hebert.app</div>
         </div>

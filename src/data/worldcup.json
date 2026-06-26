@@ -1033,7 +1033,7 @@
       },
       "kickoff": "2026-06-11T19:00:00Z",
       "venue": {
-        "stadium": "Mexico City Stadium",
+        "stadium": "Estadio Azteca",
         "city": "Mexico City",
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
@@ -1065,7 +1065,7 @@
       },
       "kickoff": "2026-06-12T02:00:00Z",
       "venue": {
-        "stadium": "Zapopan Stadium",
+        "stadium": "Estadio Akron",
         "city": "Zapopan",
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
@@ -1097,7 +1097,7 @@
       },
       "kickoff": "2026-06-12T19:00:00Z",
       "venue": {
-        "stadium": "Toronto Stadium",
+        "stadium": "BMO Field",
         "city": "Toronto",
         "country": "Canada",
         "timeZone": "America/Toronto"
@@ -1129,7 +1129,7 @@
       },
       "kickoff": "2026-06-13T01:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -1161,7 +1161,7 @@
       },
       "kickoff": "2026-06-14T01:00:00Z",
       "venue": {
-        "stadium": "Foxborough Stadium",
+        "stadium": "Gillette Stadium",
         "city": "Foxborough",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1193,7 +1193,7 @@
       },
       "kickoff": "2026-06-14T04:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -1225,7 +1225,7 @@
       },
       "kickoff": "2026-06-13T22:00:00Z",
       "venue": {
-        "stadium": "East Rutherford Stadium",
+        "stadium": "MetLife Stadium",
         "city": "East Rutherford",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1257,7 +1257,7 @@
       },
       "kickoff": "2026-06-13T19:00:00Z",
       "venue": {
-        "stadium": "Santa Clara Stadium",
+        "stadium": "Levi's Stadium",
         "city": "Santa Clara",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -1289,7 +1289,7 @@
       },
       "kickoff": "2026-06-14T23:00:00Z",
       "venue": {
-        "stadium": "Houston Stadium",
+        "stadium": "NRG Stadium",
         "city": "Houston",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -1321,7 +1321,7 @@
       },
       "kickoff": "2026-06-14T17:00:00Z",
       "venue": {
-        "stadium": "Dallas Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Dallas",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -1353,7 +1353,7 @@
       },
       "kickoff": "2026-06-14T20:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -1385,7 +1385,7 @@
       },
       "kickoff": "2026-06-15T02:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -1417,7 +1417,7 @@
       },
       "kickoff": "2026-06-15T22:00:00Z",
       "venue": {
-        "stadium": "Atlanta Stadium",
+        "stadium": "Mercedes-Benz Stadium",
         "city": "Atlanta",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1449,7 +1449,7 @@
       },
       "kickoff": "2026-06-15T16:00:00Z",
       "venue": {
-        "stadium": "Miami Gardens Stadium",
+        "stadium": "Hard Rock Stadium",
         "city": "Miami Gardens",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1481,7 +1481,7 @@
       },
       "kickoff": "2026-06-16T01:00:00Z",
       "venue": {
-        "stadium": "Seattle Stadium",
+        "stadium": "Lumen Field",
         "city": "Seattle",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -1513,7 +1513,7 @@
       },
       "kickoff": "2026-06-15T19:00:00Z",
       "venue": {
-        "stadium": "Seattle Stadium",
+        "stadium": "Lumen Field",
         "city": "Seattle",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -1545,7 +1545,7 @@
       },
       "kickoff": "2026-06-16T19:00:00Z",
       "venue": {
-        "stadium": "East Rutherford Stadium",
+        "stadium": "MetLife Stadium",
         "city": "East Rutherford",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1577,7 +1577,7 @@
       },
       "kickoff": "2026-06-16T22:00:00Z",
       "venue": {
-        "stadium": "East Rutherford Stadium",
+        "stadium": "MetLife Stadium",
         "city": "East Rutherford",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1609,7 +1609,7 @@
       },
       "kickoff": "2026-06-17T01:00:00Z",
       "venue": {
-        "stadium": "Kansas City Stadium",
+        "stadium": "Arrowhead Stadium",
         "city": "Kansas City",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -1641,7 +1641,7 @@
       },
       "kickoff": "2026-06-17T04:00:00Z",
       "venue": {
-        "stadium": "Santa Clara Stadium",
+        "stadium": "Levi's Stadium",
         "city": "Santa Clara",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -1671,7 +1671,7 @@
       },
       "kickoff": "2026-06-17T23:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -1700,7 +1700,7 @@
       },
       "kickoff": "2026-06-17T20:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -1729,7 +1729,7 @@
       },
       "kickoff": "2026-06-17T17:00:00Z",
       "venue": {
-        "stadium": "Houston Stadium",
+        "stadium": "NRG Stadium",
         "city": "Houston",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -1758,7 +1758,7 @@
       },
       "kickoff": "2026-06-18T02:00:00Z",
       "venue": {
-        "stadium": "Houston Stadium",
+        "stadium": "NRG Stadium",
         "city": "Houston",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -1787,7 +1787,7 @@
       },
       "kickoff": "2026-06-18T16:00:00Z",
       "venue": {
-        "stadium": "Atlanta Stadium",
+        "stadium": "Mercedes-Benz Stadium",
         "city": "Atlanta",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1816,7 +1816,7 @@
       },
       "kickoff": "2026-06-18T19:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -1845,7 +1845,7 @@
       },
       "kickoff": "2026-06-18T22:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -1874,7 +1874,7 @@
       },
       "kickoff": "2026-06-19T01:00:00Z",
       "venue": {
-        "stadium": "Zapopan Stadium",
+        "stadium": "Estadio Akron",
         "city": "Zapopan",
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
@@ -1903,7 +1903,7 @@
       },
       "kickoff": "2026-06-20T00:30:00Z",
       "venue": {
-        "stadium": "Foxborough Stadium",
+        "stadium": "Gillette Stadium",
         "city": "Foxborough",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1922,7 +1922,7 @@
       },
       "kickoff": "2026-06-19T22:00:00Z",
       "venue": {
-        "stadium": "Foxborough Stadium",
+        "stadium": "Gillette Stadium",
         "city": "Foxborough",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1941,7 +1941,7 @@
       },
       "kickoff": "2026-06-20T03:00:00Z",
       "venue": {
-        "stadium": "Seattle Stadium",
+        "stadium": "Lumen Field",
         "city": "Seattle",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -1960,7 +1960,7 @@
       },
       "kickoff": "2026-06-19T19:00:00Z",
       "venue": {
-        "stadium": "Vancouver Stadium",
+        "stadium": "BC Place",
         "city": "Vancouver",
         "country": "Canada",
         "timeZone": "America/Vancouver"
@@ -1979,7 +1979,7 @@
       },
       "kickoff": "2026-06-20T20:00:00Z",
       "venue": {
-        "stadium": "Philadelphia Stadium",
+        "stadium": "Lincoln Financial Field",
         "city": "Philadelphia",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -1998,7 +1998,7 @@
       },
       "kickoff": "2026-06-21T00:00:00Z",
       "venue": {
-        "stadium": "Toronto Stadium",
+        "stadium": "BMO Field",
         "city": "Toronto",
         "country": "Canada",
         "timeZone": "America/Toronto"
@@ -2017,7 +2017,7 @@
       },
       "kickoff": "2026-06-20T17:00:00Z",
       "venue": {
-        "stadium": "Guadalupe Stadium",
+        "stadium": "Estadio BBVA",
         "city": "Guadalupe",
         "country": "Mexico",
         "timeZone": "America/Monterrey"
@@ -2036,7 +2036,7 @@
       },
       "kickoff": "2026-06-21T04:00:00Z",
       "venue": {
-        "stadium": "Houston Stadium",
+        "stadium": "NRG Stadium",
         "city": "Houston",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -2055,7 +2055,7 @@
       },
       "kickoff": "2026-06-21T22:00:00Z",
       "venue": {
-        "stadium": "Atlanta Stadium",
+        "stadium": "Mercedes-Benz Stadium",
         "city": "Atlanta",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2074,7 +2074,7 @@
       },
       "kickoff": "2026-06-21T16:00:00Z",
       "venue": {
-        "stadium": "Miami Gardens Stadium",
+        "stadium": "Hard Rock Stadium",
         "city": "Miami Gardens",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2093,7 +2093,7 @@
       },
       "kickoff": "2026-06-21T19:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2112,7 +2112,7 @@
       },
       "kickoff": "2026-06-22T01:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2131,7 +2131,7 @@
       },
       "kickoff": "2026-06-23T00:00:00Z",
       "venue": {
-        "stadium": "Philadelphia Stadium",
+        "stadium": "Lincoln Financial Field",
         "city": "Philadelphia",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2150,7 +2150,7 @@
       },
       "kickoff": "2026-06-22T21:00:00Z",
       "venue": {
-        "stadium": "Foxborough Stadium",
+        "stadium": "Gillette Stadium",
         "city": "Foxborough",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2169,7 +2169,7 @@
       },
       "kickoff": "2026-06-22T17:00:00Z",
       "venue": {
-        "stadium": "Santa Clara Stadium",
+        "stadium": "Levi's Stadium",
         "city": "Santa Clara",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2188,7 +2188,7 @@
       },
       "kickoff": "2026-06-23T03:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -2207,7 +2207,7 @@
       },
       "kickoff": "2026-06-23T20:00:00Z",
       "venue": {
-        "stadium": "Toronto Stadium",
+        "stadium": "BMO Field",
         "city": "Toronto",
         "country": "Canada",
         "timeZone": "America/Toronto"
@@ -2226,7 +2226,7 @@
       },
       "kickoff": "2026-06-23T23:00:00Z",
       "venue": {
-        "stadium": "Foxborough Stadium",
+        "stadium": "Gillette Stadium",
         "city": "Foxborough",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2245,7 +2245,7 @@
       },
       "kickoff": "2026-06-23T17:00:00Z",
       "venue": {
-        "stadium": "Mexico City Stadium",
+        "stadium": "Estadio Azteca",
         "city": "Mexico City",
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
@@ -2264,7 +2264,7 @@
       },
       "kickoff": "2026-06-24T02:00:00Z",
       "venue": {
-        "stadium": "Houston Stadium",
+        "stadium": "NRG Stadium",
         "city": "Houston",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -2283,7 +2283,7 @@
       },
       "kickoff": "2026-06-24T22:00:00Z",
       "venue": {
-        "stadium": "Philadelphia Stadium",
+        "stadium": "Lincoln Financial Field",
         "city": "Philadelphia",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2302,7 +2302,7 @@
       },
       "kickoff": "2026-06-24T22:00:00Z",
       "venue": {
-        "stadium": "Miami Gardens Stadium",
+        "stadium": "Hard Rock Stadium",
         "city": "Miami Gardens",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2321,7 +2321,7 @@
       },
       "kickoff": "2026-06-24T19:00:00Z",
       "venue": {
-        "stadium": "Vancouver Stadium",
+        "stadium": "BC Place",
         "city": "Vancouver",
         "country": "Canada",
         "timeZone": "America/Vancouver"
@@ -2340,7 +2340,7 @@
       },
       "kickoff": "2026-06-24T19:00:00Z",
       "venue": {
-        "stadium": "Vancouver Stadium",
+        "stadium": "BC Place",
         "city": "Vancouver",
         "country": "Canada",
         "timeZone": "America/Vancouver"
@@ -2359,7 +2359,7 @@
       },
       "kickoff": "2026-06-25T01:00:00Z",
       "venue": {
-        "stadium": "Zapopan Stadium",
+        "stadium": "Estadio Akron",
         "city": "Zapopan",
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
@@ -2378,7 +2378,7 @@
       },
       "kickoff": "2026-06-25T01:00:00Z",
       "venue": {
-        "stadium": "Mexico City Stadium",
+        "stadium": "Estadio Azteca",
         "city": "Mexico City",
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
@@ -2397,7 +2397,7 @@
       },
       "kickoff": "2026-06-25T20:00:00Z",
       "venue": {
-        "stadium": "Kansas City Stadium",
+        "stadium": "Arrowhead Stadium",
         "city": "Kansas City",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -2416,7 +2416,7 @@
       },
       "kickoff": "2026-06-25T20:00:00Z",
       "venue": {
-        "stadium": "Philadelphia Stadium",
+        "stadium": "Lincoln Financial Field",
         "city": "Philadelphia",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2435,7 +2435,7 @@
       },
       "kickoff": "2026-06-25T23:00:00Z",
       "venue": {
-        "stadium": "Guadalupe Stadium",
+        "stadium": "Estadio BBVA",
         "city": "Guadalupe",
         "country": "Mexico",
         "timeZone": "America/Monterrey"
@@ -2454,7 +2454,7 @@
       },
       "kickoff": "2026-06-25T23:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -2473,7 +2473,7 @@
       },
       "kickoff": "2026-06-26T02:00:00Z",
       "venue": {
-        "stadium": "Santa Clara Stadium",
+        "stadium": "Levi's Stadium",
         "city": "Santa Clara",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2492,7 +2492,7 @@
       },
       "kickoff": "2026-06-26T02:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2511,7 +2511,7 @@
       },
       "kickoff": "2026-06-26T19:00:00Z",
       "venue": {
-        "stadium": "East Rutherford Stadium",
+        "stadium": "MetLife Stadium",
         "city": "East Rutherford",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2530,7 +2530,7 @@
       },
       "kickoff": "2026-06-26T19:00:00Z",
       "venue": {
-        "stadium": "Foxborough Stadium",
+        "stadium": "Gillette Stadium",
         "city": "Foxborough",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2549,7 +2549,7 @@
       },
       "kickoff": "2026-06-27T03:00:00Z",
       "venue": {
-        "stadium": "Vancouver Stadium",
+        "stadium": "BC Place",
         "city": "Vancouver",
         "country": "Canada",
         "timeZone": "America/Vancouver"
@@ -2568,7 +2568,7 @@
       },
       "kickoff": "2026-06-27T03:00:00Z",
       "venue": {
-        "stadium": "Seattle Stadium",
+        "stadium": "Lumen Field",
         "city": "Seattle",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2587,7 +2587,7 @@
       },
       "kickoff": "2026-06-27T00:00:00Z",
       "venue": {
-        "stadium": "Miami Gardens Stadium",
+        "stadium": "Hard Rock Stadium",
         "city": "Miami Gardens",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2606,7 +2606,7 @@
       },
       "kickoff": "2026-06-27T00:00:00Z",
       "venue": {
-        "stadium": "Houston Stadium",
+        "stadium": "NRG Stadium",
         "city": "Houston",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -2625,7 +2625,7 @@
       },
       "kickoff": "2026-06-27T21:00:00Z",
       "venue": {
-        "stadium": "Toronto Stadium",
+        "stadium": "BMO Field",
         "city": "Toronto",
         "country": "Canada",
         "timeZone": "America/Toronto"
@@ -2644,7 +2644,7 @@
       },
       "kickoff": "2026-06-27T21:00:00Z",
       "venue": {
-        "stadium": "East Rutherford Stadium",
+        "stadium": "MetLife Stadium",
         "city": "East Rutherford",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2663,7 +2663,7 @@
       },
       "kickoff": "2026-06-28T02:00:00Z",
       "venue": {
-        "stadium": "Santa Clara Stadium",
+        "stadium": "Levi's Stadium",
         "city": "Santa Clara",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2682,7 +2682,7 @@
       },
       "kickoff": "2026-06-28T02:00:00Z",
       "venue": {
-        "stadium": "Kansas City Stadium",
+        "stadium": "Arrowhead Stadium",
         "city": "Kansas City",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -2701,7 +2701,7 @@
       },
       "kickoff": "2026-06-27T23:30:00Z",
       "venue": {
-        "stadium": "Zapopan Stadium",
+        "stadium": "Estadio Akron",
         "city": "Zapopan",
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
@@ -2720,7 +2720,7 @@
       },
       "kickoff": "2026-06-27T23:30:00Z",
       "venue": {
-        "stadium": "Miami Gardens Stadium",
+        "stadium": "Hard Rock Stadium",
         "city": "Miami Gardens",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2739,7 +2739,7 @@
       },
       "kickoff": "2026-06-28T19:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2758,7 +2758,7 @@
       },
       "kickoff": "2026-06-29T20:30:00Z",
       "venue": {
-        "stadium": "Foxborough Stadium",
+        "stadium": "Gillette Stadium",
         "city": "Foxborough",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2777,7 +2777,7 @@
       },
       "kickoff": "2026-06-30T01:00:00Z",
       "venue": {
-        "stadium": "Guadalupe Stadium",
+        "stadium": "Estadio BBVA",
         "city": "Guadalupe",
         "country": "Mexico",
         "timeZone": "America/Monterrey"
@@ -2796,7 +2796,7 @@
       },
       "kickoff": "2026-06-29T17:00:00Z",
       "venue": {
-        "stadium": "Houston Stadium",
+        "stadium": "NRG Stadium",
         "city": "Houston",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -2815,7 +2815,7 @@
       },
       "kickoff": "2026-06-30T21:00:00Z",
       "venue": {
-        "stadium": "East Rutherford Stadium",
+        "stadium": "MetLife Stadium",
         "city": "East Rutherford",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2834,7 +2834,7 @@
       },
       "kickoff": "2026-06-30T17:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -2853,7 +2853,7 @@
       },
       "kickoff": "2026-07-01T01:00:00Z",
       "venue": {
-        "stadium": "Mexico City Stadium",
+        "stadium": "Estadio Azteca",
         "city": "Mexico City",
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
@@ -2872,7 +2872,7 @@
       },
       "kickoff": "2026-07-01T16:00:00Z",
       "venue": {
-        "stadium": "Atlanta Stadium",
+        "stadium": "Mercedes-Benz Stadium",
         "city": "Atlanta",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -2891,7 +2891,7 @@
       },
       "kickoff": "2026-07-02T00:00:00Z",
       "venue": {
-        "stadium": "Santa Clara Stadium",
+        "stadium": "Levi's Stadium",
         "city": "Santa Clara",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2910,7 +2910,7 @@
       },
       "kickoff": "2026-07-01T20:00:00Z",
       "venue": {
-        "stadium": "Seattle Stadium",
+        "stadium": "Lumen Field",
         "city": "Seattle",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2929,7 +2929,7 @@
       },
       "kickoff": "2026-07-02T23:00:00Z",
       "venue": {
-        "stadium": "Toronto Stadium",
+        "stadium": "BMO Field",
         "city": "Toronto",
         "country": "Canada",
         "timeZone": "America/Toronto"
@@ -2948,7 +2948,7 @@
       },
       "kickoff": "2026-07-02T19:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -2967,7 +2967,7 @@
       },
       "kickoff": "2026-07-03T03:00:00Z",
       "venue": {
-        "stadium": "Vancouver Stadium",
+        "stadium": "BC Place",
         "city": "Vancouver",
         "country": "Canada",
         "timeZone": "America/Vancouver"
@@ -2986,7 +2986,7 @@
       },
       "kickoff": "2026-07-03T22:00:00Z",
       "venue": {
-        "stadium": "Miami Gardens Stadium",
+        "stadium": "Hard Rock Stadium",
         "city": "Miami Gardens",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -3005,7 +3005,7 @@
       },
       "kickoff": "2026-07-04T01:30:00Z",
       "venue": {
-        "stadium": "Kansas City Stadium",
+        "stadium": "Arrowhead Stadium",
         "city": "Kansas City",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -3024,7 +3024,7 @@
       },
       "kickoff": "2026-07-03T18:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -3043,7 +3043,7 @@
       },
       "kickoff": "2026-07-04T22:00:00Z",
       "venue": {
-        "stadium": "Philadelphia Stadium",
+        "stadium": "Lincoln Financial Field",
         "city": "Philadelphia",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -3062,7 +3062,7 @@
       },
       "kickoff": "2026-07-04T17:00:00Z",
       "venue": {
-        "stadium": "Houston Stadium",
+        "stadium": "NRG Stadium",
         "city": "Houston",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -3081,7 +3081,7 @@
       },
       "kickoff": "2026-07-05T20:00:00Z",
       "venue": {
-        "stadium": "East Rutherford Stadium",
+        "stadium": "MetLife Stadium",
         "city": "East Rutherford",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -3100,7 +3100,7 @@
       },
       "kickoff": "2026-07-06T00:00:00Z",
       "venue": {
-        "stadium": "Mexico City Stadium",
+        "stadium": "Estadio Azteca",
         "city": "Mexico City",
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
@@ -3119,7 +3119,7 @@
       },
       "kickoff": "2026-07-06T19:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -3138,7 +3138,7 @@
       },
       "kickoff": "2026-07-07T00:00:00Z",
       "venue": {
-        "stadium": "Seattle Stadium",
+        "stadium": "Lumen Field",
         "city": "Seattle",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -3157,7 +3157,7 @@
       },
       "kickoff": "2026-07-07T19:00:00Z",
       "venue": {
-        "stadium": "Atlanta Stadium",
+        "stadium": "Mercedes-Benz Stadium",
         "city": "Atlanta",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -3176,7 +3176,7 @@
       },
       "kickoff": "2026-07-08T00:00:00Z",
       "venue": {
-        "stadium": "Vancouver Stadium",
+        "stadium": "BC Place",
         "city": "Vancouver",
         "country": "Canada",
         "timeZone": "America/Vancouver"
@@ -3195,7 +3195,7 @@
       },
       "kickoff": "2026-07-09T20:00:00Z",
       "venue": {
-        "stadium": "Foxborough Stadium",
+        "stadium": "Gillette Stadium",
         "city": "Foxborough",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -3214,7 +3214,7 @@
       },
       "kickoff": "2026-07-10T19:00:00Z",
       "venue": {
-        "stadium": "Inglewood Stadium",
+        "stadium": "SoFi Stadium",
         "city": "Inglewood",
         "country": "United States",
         "timeZone": "America/Los_Angeles"
@@ -3233,7 +3233,7 @@
       },
       "kickoff": "2026-07-11T21:00:00Z",
       "venue": {
-        "stadium": "Miami Gardens Stadium",
+        "stadium": "Hard Rock Stadium",
         "city": "Miami Gardens",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -3252,7 +3252,7 @@
       },
       "kickoff": "2026-07-12T01:00:00Z",
       "venue": {
-        "stadium": "Kansas City Stadium",
+        "stadium": "Arrowhead Stadium",
         "city": "Kansas City",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -3271,7 +3271,7 @@
       },
       "kickoff": "2026-07-14T19:00:00Z",
       "venue": {
-        "stadium": "Arlington Stadium",
+        "stadium": "AT&T Stadium",
         "city": "Arlington",
         "country": "United States",
         "timeZone": "America/Chicago"
@@ -3290,7 +3290,7 @@
       },
       "kickoff": "2026-07-15T19:00:00Z",
       "venue": {
-        "stadium": "Atlanta Stadium",
+        "stadium": "Mercedes-Benz Stadium",
         "city": "Atlanta",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -3309,7 +3309,7 @@
       },
       "kickoff": "2026-07-18T21:00:00Z",
       "venue": {
-        "stadium": "Miami Gardens Stadium",
+        "stadium": "Hard Rock Stadium",
         "city": "Miami Gardens",
         "country": "United States",
         "timeZone": "America/New_York"
@@ -3328,7 +3328,7 @@
       },
       "kickoff": "2026-07-19T19:00:00Z",
       "venue": {
-        "stadium": "East Rutherford Stadium",
+        "stadium": "MetLife Stadium",
         "city": "East Rutherford",
         "country": "United States",
         "timeZone": "America/New_York"

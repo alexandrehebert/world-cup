@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import ClientApp from '../client-app'
 import { loadClientBootstrapData } from '../../server/client-bootstrap'
 import { loadTournamentData } from '../../server/tournament-data'
@@ -15,6 +16,20 @@ const normalizeCode = (value: string | undefined) => String(value ?? '').trim().
 
 type TeamsById = Record<string, TeamRecord>
 type MenuPageMeta = { title: string; description: string; imagePath: string; imageAlt: string; canonical: string }
+const DEFAULT_METADATA_BASE = 'http://localhost:3000'
+
+const extractForwardedHeaderValue = (value: string | null) => value?.split(',')[0]?.trim() ?? null
+
+const resolveMetadataBase = async () => {
+  const requestHeaders = await headers()
+  const forwardedHost = extractForwardedHeaderValue(requestHeaders.get('x-forwarded-host'))
+  const host = forwardedHost ?? extractForwardedHeaderValue(requestHeaders.get('host')) ?? 'localhost:3000'
+  const forwardedProto = extractForwardedHeaderValue(requestHeaders.get('x-forwarded-proto'))
+  const protocol = forwardedProto ?? (host.startsWith('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https')
+  const candidate = `${protocol}://${host}`
+
+  return new URL(URL.canParse(candidate) ? candidate : DEFAULT_METADATA_BASE)
+}
 
 const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: string, awayCode: string) => {
   const normalizedHome = normalizeCode(homeCode)
@@ -106,7 +121,8 @@ const menuMetaBySegment: Record<string, MenuPageMeta> = {
   },
 }
 
-const buildMenuMetadata = (meta: MenuPageMeta): Metadata => ({
+const buildMenuMetadata = (meta: MenuPageMeta, metadataBase: URL): Metadata => ({
+  metadataBase,
   title: meta.title,
   description: meta.description,
   alternates: { canonical: meta.canonical },
@@ -127,7 +143,9 @@ const buildMenuMetadata = (meta: MenuPageMeta): Metadata => ({
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
   const { slug } = await params
+  const metadataBase = await resolveMetadataBase()
   const defaultMeta = {
+    metadataBase,
     title: 'FIFA World Cup 2026',
     description: 'World Cup dashboard with live results, fixtures, groups, and bracket.',
   }
@@ -136,7 +154,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const menuMeta = firstSegment ? menuMetaBySegment[firstSegment] : undefined
 
   if (menuMeta && slug?.length === 1) {
-    return buildMenuMetadata(menuMeta)
+    return buildMenuMetadata(menuMeta, metadataBase)
   }
 
   if (firstSegment === 'profile' && slug?.length === 2) {
@@ -152,6 +170,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const canonical = `/profile/${encodeURIComponent(decodedUsername)}`
 
     return {
+      metadataBase,
       title,
       description,
       alternates: { canonical },
@@ -185,6 +204,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!meta) {
     return {
+      metadataBase,
       title: 'Match not found | FIFA World Cup 2026',
       description: 'The shared match link does not match a known fixture.',
     }
@@ -194,6 +214,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const canonical = `/match/${encodeURIComponent(homeCode)}/vs/${encodeURIComponent(awayCode)}`
 
   return {
+    metadataBase,
     title: meta.title,
     description: meta.description,
     alternates: { canonical },

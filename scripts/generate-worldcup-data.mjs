@@ -205,8 +205,28 @@ const timeZoneByCity = {
   'Miami Gardens': 'America/New_York',
 }
 
+const stadiumByCity = {
+  Toronto: 'BMO Field',
+  Vancouver: 'BC Place',
+  'Mexico City': 'Estadio Azteca',
+  Zapopan: 'Estadio Akron',
+  Guadalupe: 'Estadio BBVA',
+  Inglewood: 'SoFi Stadium',
+  'Santa Clara': "Levi's Stadium",
+  Seattle: 'Lumen Field',
+  Arlington: 'AT&T Stadium',
+  Dallas: 'AT&T Stadium',
+  Houston: 'NRG Stadium',
+  'Kansas City': 'Arrowhead Stadium',
+  Atlanta: 'Mercedes-Benz Stadium',
+  'East Rutherford': 'MetLife Stadium',
+  Foxborough: 'Gillette Stadium',
+  Philadelphia: 'Lincoln Financial Field',
+  'Miami Gardens': 'Hard Rock Stadium',
+}
+
 const buildVenue = (city) => ({
-  stadium: { en: `${city} Stadium`, fr: `${city} Stadium` },
+  stadium: { en: stadiumByCity[city] ?? `${city} Stadium`, fr: stadiumByCity[city] ?? `${city} Stadium` },
   city: { en: city, fr: city },
   country: { en: countryByCity[city] ?? 'United States', fr: countryByCity[city] ?? 'United States' },
   timeZone: timeZoneByCity[city] ?? 'UTC',
