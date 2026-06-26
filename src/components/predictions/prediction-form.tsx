@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import type { ReactNode } from 'react'
 import { useLocale } from '../../contexts/locale-context'
 import type { MatchOutcome } from '../../types/predictions'
 
@@ -43,6 +44,8 @@ interface BaseProps {
   awayLabel: string
   selectedOutcome: MatchOutcome | null
   scoreInput: { home: string; away: string }
+  homeOptionIcon?: ReactNode
+  awayOptionIcon?: ReactNode
   /** Constrains the score row height and centers text — used in compact card layout. */
   compact?: boolean
 }
@@ -72,12 +75,12 @@ type Props = EditableProps | ReadOnlyProps
 
 export const PredictionForm = (props: Props) => {
   const { t } = useLocale()
-  const { homeLabel, awayLabel, selectedOutcome, scoreInput, compact = false } = props
+  const { homeLabel, awayLabel, selectedOutcome, scoreInput, compact = false, homeOptionIcon, awayOptionIcon } = props
 
-  const outcomes: Array<{ value: MatchOutcome; label: string }> = [
-    { value: 'home', label: homeLabel },
+  const outcomes: Array<{ value: MatchOutcome; label: string; icon?: ReactNode }> = [
+    { value: 'home', label: homeLabel, icon: homeOptionIcon },
     { value: 'draw', label: t.labels.draw },
-    { value: 'away', label: awayLabel },
+    { value: 'away', label: awayLabel, icon: awayOptionIcon },
   ]
 
   if (props.readOnly) {
@@ -86,15 +89,23 @@ export const PredictionForm = (props: Props) => {
 
     return (
       <div className="space-y-2">
-        <div className="grid grid-cols-3 items-start gap-2">
+        <div
+          className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-1"
+          role="group"
+        >
           {outcomes.map((item) => (
             <button
               key={item.value}
               type="button"
               disabled
-              className={`w-full cursor-not-allowed px-2 py-2 text-xs font-semibold sm:text-sm ${getClosedButtonClass(item.value, selectedOutcome ?? undefined, actualOutcome, isScored, isCorrect, isLive)}`}
+              className={`w-full cursor-not-allowed rounded-xl py-2 text-xs font-semibold sm:text-sm ${
+                item.value === 'draw' ? 'px-3 sm:px-4' : 'px-2'
+              } ${getClosedButtonClass(item.value, selectedOutcome ?? undefined, actualOutcome, isScored, isCorrect, isLive)}`}
             >
-              {item.label}
+              <span className="inline-flex items-center justify-center gap-1.5">
+                {item.icon ? <span className="shrink-0">{item.icon}</span> : null}
+                <span className="truncate">{item.label}</span>
+              </span>
             </button>
           ))}
         </div>
@@ -123,20 +134,31 @@ export const PredictionForm = (props: Props) => {
 
   return (
     <div className="space-y-2">
-      <div className="grid grid-cols-3 items-start gap-2">
+      <div
+        className={`grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-1 ${
+          isOutcomeInvalid ? 'ring-1 ring-rose-400' : ''
+        }`}
+        role="group"
+      >
         {outcomes.map((item) => (
           <button
             key={item.value}
             type="button"
             disabled={isSaving}
             onClick={() => onOutcomeChange(item.value)}
-            className={`w-full cursor-pointer px-2 py-2 text-xs font-semibold transition hover:brightness-105 sm:text-sm ${
+            className={`w-full cursor-pointer rounded-xl py-2 text-xs font-semibold transition hover:brightness-105 sm:text-sm ${
+              item.value === 'draw' ? 'px-3 sm:px-4' : 'px-2'
+            } ${
               selectedOutcome === item.value
-                ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                : 'bg-[var(--surface-soft)] text-[var(--text)]'
-            } ${isOutcomeInvalid ? 'ring-1 ring-rose-400' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
+                ? 'border border-[var(--tab-active-border)] bg-[var(--tab-active-bg)] text-[var(--tab-active-text)]'
+                : 'border border-transparent text-[var(--text)] hover:bg-[var(--tab-idle-hover-bg)]'
+            } disabled:cursor-not-allowed disabled:opacity-50`}
+            aria-pressed={selectedOutcome === item.value}
           >
-            {item.label}
+            <span className="inline-flex items-center justify-center gap-1.5">
+              {item.icon ? <span className="shrink-0">{item.icon}</span> : null}
+              <span className="truncate">{item.label}</span>
+            </span>
           </button>
         ))}
       </div>
@@ -166,7 +188,7 @@ export const PredictionForm = (props: Props) => {
               }`}
             />
           </>
-        ) : (
+        ) : onShowScores ? (
           <button
             type="button"
             disabled={isSaving}
@@ -175,7 +197,7 @@ export const PredictionForm = (props: Props) => {
           >
             {t.labels.predictScores}
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   )

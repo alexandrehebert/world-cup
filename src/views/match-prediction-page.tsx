@@ -264,10 +264,10 @@ export const MatchPredictionPage = () => {
         }
       >
         <section className="space-y-4">
-      <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4">
+      <div className={`space-y-4 border bg-[var(--surface)] p-4 ${hasSavedPrediction ? 'border-emerald-400/70' : 'border-[var(--border)]'}`}>
         <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
         <p className="text-sm text-[var(--text-muted)]">{localDateTime}</p>
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-[var(--border)] pb-4">
           <div className="text-center">
             {homeTeam ? <FlagAvatar team={homeTeam} className="mx-auto h-12 w-12" /> : null}
             <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{homeLabel}</p>
@@ -278,9 +278,6 @@ export const MatchPredictionPage = () => {
             <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{awayLabel}</p>
           </div>
         </div>
-      </div>
-
-      <div className={`space-y-4 border bg-[var(--surface)] p-4 ${hasSavedPrediction ? 'border-emerald-400/70' : 'border-[var(--border)]'}`}>
         <h3 className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
           {locale === 'fr' ? 'Ton pronostic' : 'Your prediction'}
         </h3>
@@ -311,8 +308,11 @@ export const MatchPredictionPage = () => {
         <PredictionForm
           homeLabel={homeLabel}
           awayLabel={awayLabel}
+          homeOptionIcon={homeTeam ? <FlagAvatar team={homeTeam} className="h-4 w-4" /> : undefined}
+          awayOptionIcon={awayTeam ? <FlagAvatar team={awayTeam} className="h-4 w-4" /> : undefined}
           selectedOutcome={selectedOutcome}
           scoreInput={scoreInput}
+          isScoreVisible={Boolean(selectedOutcome)}
           onOutcomeChange={(outcome) => {
             setError(null)
             setSelectedOutcome(outcome)
