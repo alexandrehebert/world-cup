@@ -30,6 +30,12 @@ const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLo
   return labels.stageFinal
 }
 
+const getOutcomeFromScores = (homeScore: number, awayScore: number): MatchOutcome => {
+  if (homeScore > awayScore) return 'home'
+  if (homeScore < awayScore) return 'away'
+  return 'draw'
+}
+
 export const MatchPredictionPage = () => {
   const { homeCode, awayCode } = useParams<{ homeCode: string; awayCode: string }>()
   const navigate = useNavigate()
@@ -209,6 +215,13 @@ export const MatchPredictionPage = () => {
   const heatOpacity = totalPredictions > 0 ? 0.25 + maxShare * 0.55 : 0.2
   const trendPos = Math.round((drawShare * 50 + awayShare * 100) * 10) / 10
   const trendTooltip = `${homeLabel}: ${Math.round(homeShare * 100)}% • ${t.labels.draw}: ${Math.round(drawShare * 100)}% • ${awayLabel}: ${Math.round(awayShare * 100)}%`
+  const isMatchLive = match.status === 'live'
+  const isMatchFinished = match.status === 'finished'
+  const liveHomeScore = typeof match.home.score === 'number' ? match.home.score : null
+  const liveAwayScore = typeof match.away.score === 'number' ? match.away.score : null
+  const currentOutcome = (isMatchLive || isMatchFinished) && liveHomeScore !== null && liveAwayScore !== null
+    ? getOutcomeFromScores(liveHomeScore, liveAwayScore)
+    : null
 
   return (
     <>
@@ -340,13 +353,35 @@ export const MatchPredictionPage = () => {
           <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionsYet}</p>
         ) : null}
         <ul className="space-y-2">
-          {predictions.map((prediction) => (
-            <li key={`${prediction.userId}-${prediction.matchId}`} className="flex items-center justify-between gap-3 border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2">
-              <div className="min-w-0">
+          {predictions.map((prediction) => {
+            const isCorrect = currentOutcome ? prediction.outcome === currentOutcome : null
+            const rowStateClass = !currentOutcome
+              ? 'border-[var(--border)] bg-[var(--surface-soft)]'
+              : isCorrect
+                ? isMatchFinished
+                  ? 'border-emerald-400/70 bg-emerald-500/10'
+                  : 'border-amber-400/70 bg-amber-500/10'
+                : isMatchFinished
+                  ? 'border-rose-400/70 bg-rose-500/10'
+                  : 'border-rose-400/50 bg-rose-500/10'
+
+            return (
+            <li key={`${prediction.userId}-${prediction.matchId}`} className={`flex items-center justify-between gap-3 border px-3 py-2 ${rowStateClass}`}>
+              <div className="min-w-0 space-y-1">
                 <p className="truncate text-sm font-semibold text-[var(--text-strong)]">{prediction.displayName}</p>
                 <p className="text-xs text-[var(--text-muted)]">
                   {new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(prediction.updatedAt))}
                 </p>
+                {currentOutcome !== null ? (
+                  <p className={`inline-flex items-center gap-1 text-[11px] font-semibold ${
+                    isCorrect ? (isMatchFinished ? 'text-emerald-300' : 'text-amber-300') : 'text-rose-300'
+                  }`}>
+                    <Icon name={isCorrect ? 'check_circle' : 'cancel'} className="text-sm" />
+                    {isMatchFinished
+                      ? (isCorrect ? t.labels.predictionSuccessful : t.labels.predictionUnsuccessful)
+                      : t.labels.predictionLive}
+                  </p>
+                ) : null}
               </div>
               <span className="text-sm font-semibold text-[var(--accent-text)]">
                 {prediction.type === 'score' && prediction.homeScore !== undefined && prediction.awayScore !== undefined
@@ -358,7 +393,8 @@ export const MatchPredictionPage = () => {
                       : t.labels.draw}
               </span>
             </li>
-          ))}
+            )
+          })}
         </ul>
       </div>
       <div className="space-y-2 border border-[var(--border)] bg-[var(--surface)] p-4">
