@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PredictionForm } from '../components/predictions/prediction-form'
 import { FlagAvatar } from '../components/ui/flag-avatar'
@@ -17,6 +17,12 @@ import type { MatchRecord } from '../types/tournament'
 import { PredictionsPage } from './predictions-page'
 
 type PublicPrediction = PredictionRecord & { displayName: string }
+type PublicPredictionResponse = {
+  predictions: PublicPrediction[]
+  predictionDistribution: PredictionDistribution
+  currentPredictorId?: string | null
+  currentPrediction?: PublicPrediction | null
+}
 
 const normalizeCode = (value: string | undefined) => String(value ?? '').trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
 const normalizeName = (value: string | undefined) => String(value ?? '').trim().toLowerCase()
@@ -81,6 +87,7 @@ export const MatchPredictionPage = () => {
   const initialPublicMatchPrediction = match?.id && bootstrapPublicPrediction?.matchId === match.id
     ? bootstrapPublicPrediction
     : null
+  const matchId = match?.id ?? null
   const currentUserId = currentPredictorId ?? (user ? user.id : null)
   const currentPredictionById = currentUserId
     ? predictions.find((prediction) => prediction.userId === currentUserId) ?? null
@@ -100,19 +107,60 @@ export const MatchPredictionPage = () => {
     scoreInput.home.trim() !== persistedHomeScore ||
     scoreInput.away.trim() !== persistedAwayScore
   const isNameFieldError = !user && (error === t.labels.enterNameToPredict || error === 'Name is required')
+  const applyPublicPredictionResponse = useCallback((payload: PublicPredictionResponse) => {
+    setPredictions(payload.predictions)
+    setDistribution(payload.predictionDistribution)
+    const resolvedPredictorId = payload.currentPrediction?.userId ?? payload.currentPredictorId ?? (user ? user.id : null)
+    setCurrentPredictorId(resolvedPredictorId)
+    if (!user && payload.currentPrediction?.displayName) {
+      setGuestName(payload.currentPrediction.displayName)
+    }
+  }, [user])
 
   useEffect(() => {
     if (!initialPublicMatchPrediction) {
       return
     }
 
-    setPredictions(initialPublicMatchPrediction.predictions)
-    setDistribution(initialPublicMatchPrediction.predictionDistribution)
-    setCurrentPredictorId(initialPublicMatchPrediction.currentPredictorId ?? (user ? user.id : null))
-    if (!user && initialPublicMatchPrediction.currentPrediction?.displayName) {
-      setGuestName(initialPublicMatchPrediction.currentPrediction.displayName)
+    applyPublicPredictionResponse(initialPublicMatchPrediction)
+  }, [applyPublicPredictionResponse, initialPublicMatchPrediction])
+
+  useEffect(() => {
+    if (!matchId) {
+      return
     }
-  }, [initialPublicMatchPrediction, user])
+
+    const controller = new AbortController()
+
+    const loadPublicPredictions = async () => {
+      try {
+        const response = await fetch(`/api/predictions/public?matchId=${encodeURIComponent(matchId)}`, {
+          method: 'GET',
+          credentials: 'include',
+          signal: controller.signal,
+        })
+
+        if (!response.ok) {
+          const payload = (await response.json()) as { error?: string }
+          throw new Error(payload.error ?? t.labels.saveFailed)
+        }
+
+        const payload = (await response.json()) as PublicPredictionResponse
+        applyPublicPredictionResponse(payload)
+      } catch (loadError) {
+        if (loadError instanceof DOMException && loadError.name === 'AbortError') {
+          return
+        }
+        setError(loadError instanceof Error ? loadError.message : t.labels.saveFailed)
+      }
+    }
+
+    void loadPublicPredictions()
+
+    return () => {
+      controller.abort()
+    }
+  }, [applyPublicPredictionResponse, matchId, t.labels.saveFailed])
 
   useEffect(() => {
     setSelectedOutcome(persistedOutcome)
@@ -165,18 +213,8 @@ export const MatchPredictionPage = () => {
         throw new Error(payload.error ?? t.labels.saveFailed)
       }
 
-      const payload = (await response.json()) as {
-        predictions: PublicPrediction[]
-        predictionDistribution: PredictionDistribution
-        currentPredictorId?: string | null
-        currentPrediction?: PublicPrediction | null
-      }
-      setPredictions(payload.predictions)
-      setDistribution(payload.predictionDistribution)
-      setCurrentPredictorId(payload.currentPredictorId ?? currentUserId)
-      if (!user && payload.currentPrediction?.displayName) {
-        setGuestName(payload.currentPrediction.displayName)
-      }
+      const payload = (await response.json()) as PublicPredictionResponse
+      applyPublicPredictionResponse(payload)
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : t.labels.saveFailed)
     } finally {
