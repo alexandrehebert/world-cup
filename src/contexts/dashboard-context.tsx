@@ -45,6 +45,7 @@ interface DashboardContextValue {
   selectedMatchId: string | null
   setSelectedMatchId: (matchId: string | null) => void
   getMatchSharePath: (matchId: string) => string
+  getMatchPredictionPath: (matchId: string) => string
   selectedTeamId: string | null
   setSelectedTeamId: (teamId: string | null) => void
   favoriteTeamIds: string[]
@@ -184,6 +185,15 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     [matchIdToPath],
   )
 
+  const getMatchPredictionPath = useCallback(
+    (matchId: string) => {
+      const matchPath = matchIdToPath[matchId]
+
+      return matchPath ? `/predict/${matchPath}` : '/predictions'
+    },
+    [matchIdToPath],
+  )
+
   const isFavoriteTeam = useCallback((teamId: string) => favoriteTeamIds.includes(teamId), [favoriteTeamIds])
 
   const toggleFavoriteTeam = useCallback((teamId: string) => {
@@ -287,6 +297,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       selectedMatchId,
       setSelectedMatchId,
       getMatchSharePath,
+      getMatchPredictionPath,
       selectedTeamId,
       setSelectedTeamId,
       favoriteTeamIds,
@@ -294,7 +305,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       toggleFavoriteTeam,
       clearFavoriteTeams,
     }),
-    [selectedMatchId, setSelectedMatchId, getMatchSharePath, selectedTeamId, setSelectedTeamId, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
+    [selectedMatchId, setSelectedMatchId, getMatchSharePath, getMatchPredictionPath, selectedTeamId, setSelectedTeamId, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
   )
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>

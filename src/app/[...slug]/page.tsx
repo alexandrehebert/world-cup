@@ -194,8 +194,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const [first, homeCode, third, awayCode] = slug
   const isMatchRoute = first?.toLowerCase() === 'match' && third?.toLowerCase() === 'vs'
+  const isPredictRoute = first?.toLowerCase() === 'predict' && third?.toLowerCase() === 'vs'
 
-  if (!isMatchRoute) {
+  if (!isMatchRoute && !isPredictRoute) {
     return defaultMeta
   }
 
@@ -207,6 +208,33 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       metadataBase,
       title: 'Match not found | FIFA World Cup 2026',
       description: 'The shared match link does not match a known fixture.',
+    }
+  }
+
+  if (isPredictRoute) {
+    const title = `Do your prediction: ${meta.title}`
+    const description = `Quickly make your prediction for this match and compare with current picks.`
+    const imagePath = `/predict/${encodeURIComponent(homeCode)}/vs/${encodeURIComponent(awayCode)}/opengraph-image`
+    const canonical = `/predict/${encodeURIComponent(homeCode)}/vs/${encodeURIComponent(awayCode)}`
+
+    return {
+      metadataBase,
+      title,
+      description,
+      alternates: { canonical },
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+        url: canonical,
+        images: [{ url: imagePath, width: 1200, height: 630, alt: title }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [imagePath],
+      },
     }
   }
 
@@ -234,8 +262,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function SlugPage() {
-  const [tournamentData, bootstrapData] = await Promise.all([loadTournamentData(), loadClientBootstrapData()])
+export default async function SlugPage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params
+  const tournamentData = await loadTournamentData()
+  const first = slug?.[0]?.toLowerCase()
+  const isPredictRoute = first === 'predict' && slug?.[2]?.toLowerCase() === 'vs'
+  const homeCode = slug?.[1]
+  const awayCode = slug?.[3]
+  const teamsById = Object.fromEntries(tournamentData.teams.map((team: TeamRecord) => [team.id, team]))
+  const match = isPredictRoute && homeCode && awayCode
+    ? findMatchByCodes(tournamentData, teamsById, homeCode, awayCode)
+    : null
+  const bootstrapData = await loadClientBootstrapData({
+    publicMatchId: match?.id,
+  })
 
   return <ClientApp initialData={tournamentData} bootstrapData={bootstrapData} />
 }

@@ -1,7 +1,6 @@
 import { cloneElement, isValidElement, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { useAuth } from '../../contexts/auth-context'
 import { useLocale } from '../../contexts/locale-context'
 import { Icon } from '../../lib/icons'
 import { AuthModal } from '../auth/auth-modal'
@@ -24,7 +23,6 @@ const tabs = [
 
 export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   const { t } = useLocale()
-  const { user, openAuthModal } = useAuth()
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const headerScrollTimeoutRef = useRef<number | null>(null)
 
@@ -86,12 +84,6 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
               <NavLink
                 key={tab.to}
                 to={tab.to}
-                onClick={(event) => {
-                  if (tab.to === '/predictions' && !user) {
-                    event.preventDefault()
-                    openAuthModal('login')
-                  }
-                }}
                 aria-label={t.sections[tab.labelKey]}
                 className={({ isActive }) =>
                   `-mb-px inline-flex cursor-pointer items-center justify-center gap-2 border-b-2 px-3 py-4 text-sm font-semibold transition sm:px-5 ${

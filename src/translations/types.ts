@@ -158,6 +158,14 @@ export interface TranslationSet {
     loadingProfile: string
     profileNotFound: string
     noProfilePredictions: string
+    doYourPrediction: string
+    shareOnWhatsApp: string
+    inviteToPredict: string
+    yourName: string
+    enterNameToPredict: string
+    currentPredictions: string
+    noPredictionsYet: string
+    predictionSaved: string
   }
   teams: Record<string, string>
   groups: Record<string, string>

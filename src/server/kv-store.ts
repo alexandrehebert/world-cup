@@ -3,6 +3,7 @@ import { MongoServerError } from 'mongodb'
 import { getPredictionsCollection, getUsersCollection } from './mongo'
 
 export const normalizeUsername = (value: string) => value.trim().toLowerCase()
+const GUEST_USER_PREFIX = 'guest:'
 
 export const getUserById = async (userId: string) => {
   const users = await getUsersCollection()
@@ -89,6 +90,8 @@ export const getPrediction = async (userId: string, matchId: string) => {
 
   const storedPrediction: PredictionRecord = {
     userId: prediction.userId,
+    displayName: prediction.displayName,
+    sourceIpHash: prediction.sourceIpHash,
     matchId: prediction.matchId,
     type: prediction.type,
     outcome: prediction.outcome,
@@ -133,6 +136,8 @@ export const listPredictionsByUser = async (userId: string) => {
   return entries.map(
     (entry): PredictionRecord => ({
       userId: entry.userId,
+      displayName: entry.displayName,
+      sourceIpHash: entry.sourceIpHash,
       matchId: entry.matchId,
       type: entry.type,
       outcome: entry.outcome,
@@ -152,6 +157,8 @@ export const listPredictionsByMatch = async (matchId: string) => {
   return entries.map(
     (entry): PredictionRecord => ({
       userId: entry.userId,
+      displayName: entry.displayName,
+      sourceIpHash: entry.sourceIpHash,
       matchId: entry.matchId,
       type: entry.type,
       outcome: entry.outcome,
@@ -164,6 +171,72 @@ export const listPredictionsByMatch = async (matchId: string) => {
     }),
   )
 }
+
+const resolveDisplayName = (
+  prediction: PredictionRecord,
+  userNamesById: Map<string, string>,
+) => {
+  if (prediction.displayName && prediction.displayName.trim().length > 0) {
+    return prediction.displayName
+  }
+
+  const knownUserName = userNamesById.get(prediction.userId)
+  if (knownUserName) {
+    return knownUserName
+  }
+
+  if (prediction.userId.startsWith(GUEST_USER_PREFIX)) {
+    const guestName = prediction.userId.slice(GUEST_USER_PREFIX.length).trim()
+    return guestName.length > 0 ? guestName : null
+  }
+
+  return null
+}
+
+export const listPublicPredictionsByMatch = async (matchId: string) => {
+  const predictions = await listPredictionsByMatch(matchId)
+  const knownUserIds = [...new Set(predictions
+    .map((prediction) => prediction.userId)
+    .filter((userId) => !userId.startsWith(GUEST_USER_PREFIX)))]
+
+  const users = await getUsersCollection()
+  const userEntries = knownUserIds.length > 0
+    ? await users
+      .find(
+        {
+          $or: [
+            { _id: { $in: knownUserIds } },
+            { id: { $in: knownUserIds } },
+          ],
+        },
+        { projection: { _id: 1, id: 1, username: 1 } },
+      )
+      .toArray()
+    : []
+  const userNamesById = new Map<string, string>()
+  for (const entry of userEntries) {
+    userNamesById.set(entry._id, entry.username)
+    if (typeof entry.id === 'string') {
+      userNamesById.set(entry.id, entry.username)
+    }
+  }
+
+  return predictions
+    .map((prediction) => {
+      const displayName = resolveDisplayName(prediction, userNamesById)
+      if (!displayName) {
+        return null
+      }
+      return {
+        ...prediction,
+        displayName,
+      }
+    })
+    .filter((prediction): prediction is PredictionRecord & { displayName: string } => Boolean(prediction))
+    .sort((first, second) => second.updatedAt.localeCompare(first.updatedAt))
+}
+
+export const getGuestPredictionUserId = (displayName: string) => `${GUEST_USER_PREFIX}${normalizeUsername(displayName)}`
 
 export const listPredictionDistributions = async (matchIds?: string[]) => {
   if (matchIds && matchIds.length === 0) {

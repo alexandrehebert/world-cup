@@ -25,6 +25,8 @@ export interface AuthUser {
 
 export interface PredictionRecord {
   userId: string
+  displayName?: string
+  sourceIpHash?: string
   matchId: string
   type: PredictionType
   outcome: MatchOutcome

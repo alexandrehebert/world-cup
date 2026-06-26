@@ -71,18 +71,16 @@ export const usePredictionDrafts = (): PredictionDraftState => {
     }
 
     const values = scoreInputs[matchId] ?? { home: '', away: '' }
-    const hasHomeScore = values.home.trim().length > 0
-    const hasAwayScore = values.away.trim().length > 0
-    const inferredOutcome = hasHomeScore && hasAwayScore ? inferOutcomeFromScores(values.home, values.away) : null
+    const homeRaw = values.home.trim()
+    const awayRaw = values.away.trim()
+    const hasAnyScore = homeRaw.length > 0 || awayRaw.length > 0
+    const normalizedHomeScore = homeRaw.length > 0 ? homeRaw : '0'
+    const normalizedAwayScore = awayRaw.length > 0 ? awayRaw : '0'
+    const inferredOutcome = hasAnyScore ? inferOutcomeFromScores(normalizedHomeScore, normalizedAwayScore) : null
     const outcome = inferredOutcome ?? selectedOutcomes[matchId]
 
     if (!outcome) {
       setPredictionError({ message: t.labels.pickWinnerOrDrawFirst, matchId, issue: 'outcome' })
-      return
-    }
-
-    if ((hasHomeScore && !hasAwayScore) || (!hasHomeScore && hasAwayScore)) {
-      setPredictionError({ message: t.labels.enterBothScoresOrLeaveEmpty, matchId, issue: 'scores' })
       return
     }
 
@@ -92,7 +90,7 @@ export const usePredictionDrafts = (): PredictionDraftState => {
       const saved = await savePrediction({
         matchId,
         outcome,
-        ...(hasHomeScore && hasAwayScore ? { homeScore: values.home, awayScore: values.away } : {}),
+        ...(hasAnyScore ? { homeScore: normalizedHomeScore, awayScore: normalizedAwayScore } : {}),
       })
       setSelectedOutcomes((current) => ({ ...current, [matchId]: saved.outcome }))
       setScoreInputs((current) => ({

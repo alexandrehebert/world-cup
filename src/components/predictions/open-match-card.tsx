@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { useAuth } from '../../contexts/auth-context'
+import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
 import { useNow } from '../../contexts/time-context'
@@ -22,10 +25,13 @@ const STATUS_CLASS = {
 } as const
 
 export const OpenMatchCard = ({ match, drafts }: Props) => {
+  const { user, openAuthModal } = useAuth()
+  const { getMatchPredictionPath } = useDashboard()
   const { locale, t } = useLocale()
   const { teamsById } = useTournament()
   const { predictionsByMatch, predictionDistributionsByMatch, savingMatchId } = usePredictions()
   const nowMs = useNow()
+  const [isCopied, setIsCopied] = useState(false)
 
   const {
     selectedOutcomes, scoreInputs, scoreFieldsVisibleByMatch, dirtyMatches,
@@ -94,6 +100,45 @@ export const OpenMatchCard = ({ match, drafts }: Props) => {
     if (predictionError?.matchId === match.id) setPredictionError(null)
   }
 
+  useEffect(() => {
+    if (!isCopied) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsCopied(false)
+    }, 1400)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [isCopied])
+
+  const copyPredictionLink = async () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    try {
+      await window.navigator.clipboard.writeText(`${window.location.origin}${getMatchPredictionPath(match.id)}`)
+      setIsCopied(true)
+    } catch {
+      setIsCopied(false)
+    }
+  }
+
+  const shareOnWhatsApp = () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const shareUrl = `${window.location.origin}${getMatchPredictionPath(match.id)}`
+    const message = locale === 'fr'
+      ? `Fais ton pronostic pour ${homeLabel} vs ${awayLabel} : ${shareUrl}`
+      : `Do your prediction for ${homeLabel} vs ${awayLabel}: ${shareUrl}`
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <article className="space-y-3 bg-[var(--surface)] p-4">
       <div className="flex items-start justify-between gap-3">
@@ -102,6 +147,26 @@ export const OpenMatchCard = ({ match, drafts }: Props) => {
           <p className="text-xs text-[var(--text-muted)]">{localDateTime}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              void copyPredictionLink()
+            }}
+            className="cursor-pointer rounded-full p-1 text-[var(--text-muted)] transition hover:text-[var(--text-strong)]"
+            aria-label={t.labels.doYourPrediction}
+            title={isCopied ? t.labels.copied : t.labels.doYourPrediction}
+          >
+            <Icon name={isCopied ? 'check' : 'share'} className="text-[18px]" />
+          </button>
+          <button
+            type="button"
+            onClick={shareOnWhatsApp}
+            className="cursor-pointer rounded-full p-1 text-[var(--text-muted)] transition hover:text-[var(--text-strong)]"
+            aria-label={t.labels.shareOnWhatsApp}
+            title={t.labels.shareOnWhatsApp}
+          >
+            <Icon name="chat" className="text-[18px]" />
+          </button>
           {predictionStatus && !hasChanges ? (
             <span title={statusTitle[predictionStatus]} className={`inline-flex h-5 w-5 items-center justify-center rounded-full ${STATUS_CLASS[predictionStatus]}`}>
               <Icon name={STATUS_ICON[predictionStatus]} className="text-sm leading-none" />
@@ -140,6 +205,18 @@ export const OpenMatchCard = ({ match, drafts }: Props) => {
         </div>
       </div>
 
+      {!user ? (
+        <div className="space-y-2">
+          <p className="text-xs text-[var(--text-muted)]">{t.labels.signInToSavePrediction}</p>
+          <button
+            type="button"
+            onClick={() => openAuthModal('login')}
+            className="cursor-pointer bg-[var(--surface-soft)] px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)]"
+          >
+            {t.labels.signIn}
+          </button>
+        </div>
+      ) : (
       <PredictionForm
         homeLabel={homeLabel}
         awayLabel={awayLabel}
@@ -167,6 +244,7 @@ export const OpenMatchCard = ({ match, drafts }: Props) => {
         isSaving={isSaving}
         compact
       />
+      )}
 
       <div className="space-y-1">
         <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">

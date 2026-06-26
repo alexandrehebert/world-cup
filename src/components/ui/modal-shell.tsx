@@ -52,7 +52,7 @@ export const ModalShell = ({
         className={`flex max-h-[calc(100dvh-2rem)] w-full ${maxWidthClass} flex-col overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-strong)] shadow-2xl shadow-slate-950/30 sm:max-h-[calc(100dvh-3rem)]`}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)]/70 px-5 py-4 backdrop-blur sm:px-6">
+        <div className="flex shrink-0 items-center justify-between gap-3 rounded-none border-b border-[var(--border)] bg-[var(--surface)]/70 px-5 py-4 backdrop-blur sm:px-6">
           <h3 id={titleId} className="text-lg font-semibold text-[var(--text-strong)]">
             {title}
           </h3>
@@ -72,9 +72,13 @@ export const ModalShell = ({
         <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5 sm:px-6">
           {children}
         </div>
-      </div>
 
-      {footer}
+        {footer ? (
+          <div className="shrink-0 rounded-none border-t border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 sm:px-6">
+            {footer}
+          </div>
+        ) : null}
+      </div>
     </div>
   )
 }

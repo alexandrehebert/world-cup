@@ -49,7 +49,7 @@ const buildDayGroups = (
 
 export const PredictionsPage = () => {
   const { locale, t } = useLocale()
-  const { user, isLoading, openAuthModal } = useAuth()
+  const { user, isLoading } = useAuth()
   const { predictionsByMatch, isLoading: isPredictionsLoading } = usePredictions()
   const { upcomingMatches, teamsById } = useTournament()
   const navigate = useNavigate()
@@ -187,26 +187,6 @@ export const PredictionsPage = () => {
 
       {isLoading ? (
         <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{t.labels.loadingSession}</div>
-      ) : !user ? (
-        <div className="space-y-4 bg-[var(--surface)] p-4">
-          <p className="text-sm text-[var(--text-muted)]">{t.labels.signInToAccessPredictions}</p>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => openAuthModal('login')}
-              className="cursor-pointer bg-[var(--accent-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-text)] transition hover:brightness-105"
-            >
-              {t.labels.signIn}
-            </button>
-            <button
-              type="button"
-              onClick={() => openAuthModal('register')}
-              className="cursor-pointer bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)]"
-            >
-              {t.labels.createAccount}
-            </button>
-          </div>
-        </div>
       ) : null}
 
       <FeedbackPopup
@@ -215,7 +195,7 @@ export const PredictionsPage = () => {
         dismissLabel={t.labels.close}
       />
 
-      {user && !isPredictionsLoading ? (
+      {!isPredictionsLoading ? (
         <>
           {/* DESKTOP: left = today + past | right = future */}
           <div className="hidden xl:grid xl:grid-cols-2 xl:items-start xl:gap-8">

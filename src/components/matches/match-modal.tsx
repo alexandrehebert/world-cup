@@ -74,7 +74,7 @@ const getUtcOffsetLabel = (kickoff: string, timeZone: string) => {
 }
 
 export const MatchModal = () => {
-  const { getMatchSharePath, isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
+  const { getMatchPredictionPath, isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
   const { user, openAuthModal } = useAuth()
   const { locale, t } = useLocale()
   const { predictionsByMatch, savePrediction, savingMatchId } = usePredictions()
@@ -197,20 +197,18 @@ export const MatchModal = () => {
   ]
 
   const submitPrediction = async () => {
-    const outcome = effectiveOutcome
+    const homeRaw = draftScoreInput.home.trim()
+    const awayRaw = draftScoreInput.away.trim()
+    const hasAnyScore = homeRaw.length > 0 || awayRaw.length > 0
+    const normalizedHomeScore = homeRaw.length > 0 ? homeRaw : '0'
+    const normalizedAwayScore = awayRaw.length > 0 ? awayRaw : '0'
+    const normalizedScoreOutcome = hasAnyScore ? inferOutcomeFromScores(normalizedHomeScore, normalizedAwayScore) : null
+    const outcome = normalizedScoreOutcome ?? effectiveOutcome
 
     if (!outcome) {
       setPredictionError({
         message: t.labels.pickWinnerOrDrawFirst,
         issue: 'outcome',
-      })
-      return
-    }
-
-    if ((hasDraftHomeScore && !hasDraftAwayScore) || (!hasDraftHomeScore && hasDraftAwayScore)) {
-      setPredictionError({
-        message: t.labels.enterBothScoresOrLeaveEmpty,
-        issue: 'scores',
       })
       return
     }
@@ -221,7 +219,7 @@ export const MatchModal = () => {
       const saved = await savePrediction({
         matchId: match.id,
         outcome,
-        ...(hasDraftHomeScore && hasDraftAwayScore ? { homeScore: draftScoreInput.home, awayScore: draftScoreInput.away } : {}),
+        ...(hasAnyScore ? { homeScore: normalizedHomeScore, awayScore: normalizedAwayScore } : {}),
       })
 
       setSelectedOutcome(saved.outcome)
@@ -243,12 +241,24 @@ export const MatchModal = () => {
       return
     }
 
-    const shareUrl = new URL(getMatchSharePath(match.id), window.location.origin).href
+    const shareUrl = new URL(getMatchPredictionPath(match.id), window.location.origin).href
     await window.navigator.clipboard.writeText(shareUrl)
     setIsCopied(true)
     window.setTimeout(() => {
       setIsCopied(false)
     }, 1400)
+  }
+
+  const shareOnWhatsApp = () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const shareUrl = new URL(getMatchPredictionPath(match.id), window.location.origin).href
+    const message = locale === 'fr'
+      ? `Fais ton pronostic pour ${homeTeamLabel} vs ${awayTeamLabel} : ${shareUrl}`
+      : `Do your prediction for ${homeTeamLabel} vs ${awayTeamLabel}: ${shareUrl}`
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -257,15 +267,26 @@ export const MatchModal = () => {
       title={t.labels.details}
       onClose={closeModal}
       headerActions={
-        <button
-          type="button"
-          onClick={() => void copyShareLink()}
-          className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
-          aria-label={t.labels.share}
-          title={isCopied ? t.labels.copied : t.labels.share}
-        >
-          <Icon name={isCopied ? 'check' : 'share'} className={`text-[20px] ${isCopied ? 'text-[var(--accent-text)]' : ''}`.trim()} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={shareOnWhatsApp}
+            className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
+            aria-label={t.labels.shareOnWhatsApp}
+            title={t.labels.shareOnWhatsApp}
+          >
+            <Icon name="chat" className="text-[20px]" />
+          </button>
+          <button
+            type="button"
+            onClick={() => void copyShareLink()}
+            className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
+            aria-label={t.labels.share}
+            title={isCopied ? t.labels.copied : t.labels.share}
+          >
+            <Icon name={isCopied ? 'check' : 'share'} className={`text-[20px] ${isCopied ? 'text-[var(--accent-text)]' : ''}`.trim()} />
+          </button>
+        </div>
       }
       footer={
         <FeedbackPopup

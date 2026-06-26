@@ -13,7 +13,7 @@ export const FavoriteTeamsPicker = () => {
   const pickerRef = useRef<HTMLDivElement>(null)
 
   const favoriteSet = useMemo(() => new Set(favoriteTeamIds), [favoriteTeamIds])
-  const footerButtonClassName = 'inline-flex h-9 items-center justify-center gap-1 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] disabled:cursor-not-allowed disabled:opacity-40'
+  const footerButtonClassName = 'inline-flex h-10 items-center justify-center gap-1 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] disabled:cursor-not-allowed disabled:opacity-40'
 
   const sortedTeams = useMemo(() => {
     return [...teams].sort((first, second) => {
@@ -53,7 +53,7 @@ export const FavoriteTeamsPicker = () => {
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex h-9 w-full cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto"
+        className="inline-flex h-10 w-full cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto"
       >
         <Icon name="star" className="text-[18px] text-[var(--accent-text)]" />
         <span>{t.labels.favoriteTeams}</span>

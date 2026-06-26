@@ -121,6 +121,7 @@ export async function POST(request: NextRequest) {
 
     const prediction = await upsertPrediction({
       userId: session.id,
+      displayName: session.username,
       matchId,
       type,
       outcome,
