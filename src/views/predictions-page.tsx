@@ -1,20 +1,22 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth-context'
+import { useLeaderboardBootstrap } from '../contexts/leaderboard-context'
 import { useLocale } from '../contexts/locale-context'
 import { usePredictions } from '../contexts/predictions-context'
 import { useNow } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
 import { ClosedMatchCard } from '../components/predictions/closed-match-card'
 import { OpenMatchCard } from '../components/predictions/open-match-card'
-import { usePredictionDrafts } from '../components/predictions/use-prediction-drafts'
-import { FeedbackPopup } from '../components/ui/feedback-popup'
 import { Icon } from '../lib/icons'
 import { getDateLocale, getMatchDayKey, formatNextKickoffCountdown } from '../lib/predictions'
 import { useShareLink } from '../lib/use-share-link'
+import type { RankedLeaderboardEntry } from '../types/bootstrap'
+import type { LeaderboardEntry } from '../types/predictions'
 import type { MatchRecord } from '../types/tournament'
 
 type DayGroup = { dayLabel: string; matches: MatchRecord[] }
+type LeaderboardResponse = { leaderboard: Array<LeaderboardEntry & { rank: number }> }
 
 const buildDayGroups = (
   matches: MatchRecord[],
@@ -50,12 +52,45 @@ const buildDayGroups = (
 export const PredictionsPage = () => {
   const { locale, t } = useLocale()
   const { user, isLoading } = useAuth()
+  const { initialEntries } = useLeaderboardBootstrap()
   const { predictionsByMatch, isLoading: isPredictionsLoading } = usePredictions()
   const { upcomingMatches, teamsById } = useTournament()
   const navigate = useNavigate()
   const nowMs = useNow()
-  const drafts = usePredictionDrafts()
   const { isCopied: isLeaderboardCopied, share: shareLeaderboard } = useShareLink('/leaderboard')
+  const [isLeaderboardDrawerOpen, setIsLeaderboardDrawerOpen] = useState(false)
+  const [leaderboardEntries, setLeaderboardEntries] = useState<RankedLeaderboardEntry[]>(initialEntries)
+
+  useEffect(() => {
+    if (!isLeaderboardDrawerOpen) {
+      return
+    }
+
+    let isCancelled = false
+
+    void fetch('/api/leaderboard?limit=100', {
+      method: 'GET',
+      cache: 'no-store',
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          return
+        }
+        const payload = (await response.json()) as LeaderboardResponse
+        if (!isCancelled) {
+          setLeaderboardEntries(payload.leaderboard)
+        }
+      })
+      .catch(() => {
+        if (!isCancelled) {
+          setLeaderboardEntries([])
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [isLeaderboardDrawerOpen])
 
   const openMatches = useMemo(() => {
     return upcomingMatches
@@ -163,15 +198,9 @@ export const PredictionsPage = () => {
         <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.predictions}</h2>
         <div className="flex flex-wrap items-center gap-2">
           <TopActionButton
-            label={isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}
-            iconName={isLeaderboardCopied ? 'check' : 'share'}
-            onClick={() => void shareLeaderboard()}
-            className={actionButtonClassName}
-          />
-          <TopActionButton
             label={t.labels.viewLeaderboard}
             iconName="leaderboard"
-            onClick={() => navigate('/leaderboard')}
+            onClick={() => setIsLeaderboardDrawerOpen(true)}
             className={actionButtonClassName}
           />
           {user ? (
@@ -189,12 +218,6 @@ export const PredictionsPage = () => {
         <div className="bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{t.labels.loadingSession}</div>
       ) : null}
 
-      <FeedbackPopup
-        message={drafts.predictionError?.message ?? null}
-        onDismiss={() => drafts.setPredictionError(null)}
-        dismissLabel={t.labels.close}
-      />
-
       {!isPredictionsLoading ? (
         <>
           {/* DESKTOP: left = today + past | right = future */}
@@ -208,14 +231,14 @@ export const PredictionsPage = () => {
               {desktopLeftSections.length === 0 ? (
                 <p className="text-sm text-[var(--text-muted)]">{t.labels.noPastPredictions}</p>
               ) : desktopLeftSections.map((section) => (
-                <DesktopDaySection key={section.dayKey} section={section} drafts={drafts} />
+                <DesktopDaySection key={section.dayKey} section={section} />
               ))}
             </div>
             <div className="space-y-6">
               {desktopRightSections.length === 0 ? (
                 <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionMatches}</p>
               ) : desktopRightSections.map((section) => (
-                <DesktopDaySection key={section.dayKey} section={section} drafts={drafts} />
+                <DesktopDaySection key={section.dayKey} section={section} />
               ))}
             </div>
           </div>
@@ -235,7 +258,7 @@ export const PredictionsPage = () => {
                 ) : null}
                 {mobileTodayMatches.map(({ match, isOpen }) =>
                   isOpen
-                    ? <OpenMatchCard key={match.id} match={match} drafts={drafts} />
+                    ? <OpenMatchCard key={match.id} match={match} />
                     : <ClosedMatchCard key={match.id} match={match} />,
                 )}
               </DaySection>
@@ -243,7 +266,7 @@ export const PredictionsPage = () => {
 
             {mobileOpenNonToday.map((group) => (
               <DaySection key={group.dayLabel} dayLabel={group.dayLabel} accent>
-                {group.matches.map((m) => <OpenMatchCard key={m.id} match={m} drafts={drafts} />)}
+                {group.matches.map((m) => <OpenMatchCard key={m.id} match={m} />)}
               </DaySection>
             ))}
 
@@ -255,6 +278,90 @@ export const PredictionsPage = () => {
           </div>
         </>
       ) : null}
+
+      {isLeaderboardDrawerOpen ? (
+        <div className="fixed inset-0 z-50 bg-slate-950/55 backdrop-blur-sm" onClick={() => setIsLeaderboardDrawerOpen(false)}>
+          <aside
+            role="dialog"
+            aria-modal="true"
+            aria-label={t.headings.leaderboard}
+            className="absolute right-0 top-0 flex h-full w-full max-w-xl flex-col border-l border-[var(--border)] bg-[var(--surface-strong)] shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
+              <h3 className="text-lg font-semibold text-[var(--text-strong)]">{t.headings.leaderboard}</h3>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => void shareLeaderboard()}
+                  className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface-soft)] text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface)] sm:h-auto sm:w-auto sm:gap-1 sm:px-2 sm:py-1"
+                >
+                  <Icon name={isLeaderboardCopied ? 'check' : 'share'} className="text-[16px]" />
+                  <span className="hidden sm:inline">{isLeaderboardCopied ? t.labels.copied : t.labels.shareLeaderboard}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsLeaderboardDrawerOpen(false)}
+                  className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[var(--text)] transition hover:text-[var(--text-strong)]"
+                  aria-label={t.labels.close}
+                >
+                  <Icon name="close" className="text-[20px] leading-none" />
+                </button>
+              </div>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-auto p-4">
+              <div className="overflow-x-auto bg-[var(--surface)]">
+                <table className="min-w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b border-[var(--border)] text-left text-[var(--text-muted)]">
+                      <th className="px-4 py-3">#</th>
+                      <th className="px-4 py-3">{t.labels.player}</th>
+                      <th className="px-4 py-3">{t.labels.points}</th>
+                      <th className="px-4 py-3">{t.labels.predictions}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leaderboardEntries.length > 0 ? (
+                      leaderboardEntries.map((entry) => (
+                        <tr
+                          key={entry.userId}
+                          tabIndex={0}
+                          role="button"
+                          aria-label={`${t.labels.viewProfile}: ${entry.username}`}
+                          onClick={() => {
+                            setIsLeaderboardDrawerOpen(false)
+                            navigate(`/profile/${encodeURIComponent(entry.username)}`)
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault()
+                              setIsLeaderboardDrawerOpen(false)
+                              navigate(`/profile/${encodeURIComponent(entry.username)}`)
+                            }
+                          }}
+                          className="border-b border-[var(--border)] text-[var(--text)] transition hover:bg-[var(--surface-soft)] focus-visible:bg-[var(--surface-soft)] focus-visible:outline-none last:border-b-0"
+                        >
+                          <td className="px-4 py-3">{entry.rank}</td>
+                          <td className="px-4 py-3 font-semibold text-[var(--accent-text)]">{entry.username}</td>
+                          <td className="px-4 py-3">{entry.points}</td>
+                          <td className="px-4 py-3">{entry.predictionsCount}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td className="px-4 py-4 text-[var(--text-muted)]" colSpan={4}>
+                          {locale === 'fr' ? 'Aucun joueur classé pour le moment.' : 'No ranked players yet.'}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </aside>
+        </div>
+      ) : null}
     </section>
   )
 }
@@ -263,17 +370,15 @@ export const PredictionsPage = () => {
 
 const DesktopDaySection = ({
   section,
-  drafts,
 }: {
   section: { dayKey: string; dayLabel: string; items: { match: MatchRecord; isOpen: boolean }[] }
-  drafts: ReturnType<typeof usePredictionDrafts>
 }) => (
   <DaySection dayLabel={section.dayLabel} accent={section.items.some((i) => i.isOpen)}>
     {[...section.items]
       .sort((a, b) => a.match.kickoff.localeCompare(b.match.kickoff))
       .map(({ match, isOpen }) =>
         isOpen
-          ? <OpenMatchCard key={match.id} match={match} drafts={drafts} />
+          ? <OpenMatchCard key={match.id} match={match} />
           : <ClosedMatchCard key={match.id} match={match} />,
       )}
   </DaySection>

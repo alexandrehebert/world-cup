@@ -144,8 +144,8 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                         : isLive
                           ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
                         : anyFavoriteVisible
-                          ? 'bg-[var(--surface)] opacity-75 hover:opacity-100'
-                          : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)]'
+                         ? 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
+                         : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
                   } ${hasFavorite ? 'border-l-4 border-l-[var(--accent)]' : ''}`}
                 >
                   <div className="flex w-full flex-col gap-4 text-left">
@@ -156,7 +156,10 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                         </p>
                         <p className={`${compact ? 'mt-1 text-sm' : 'mt-1 text-base'} font-semibold text-[var(--text-strong)]`}>{displayDateTime}</p>
                       </div>
-                      <StatusPill status={displayStatus} label={statusLabel(displayStatus, t.labels)} />
+                      <div className="flex items-center gap-1.5">
+                        <StatusPill status={displayStatus} label={statusLabel(displayStatus, t.labels)} />
+                        <Icon name="chevron_right" className="text-[20px] text-[var(--text-muted)]" />
+                      </div>
                     </div>
 
                     <div className="flex flex-nowrap items-center gap-2 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-3">

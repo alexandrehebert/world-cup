@@ -18,7 +18,6 @@ const tabs = [
   { to: '/matches', labelKey: 'matches', icon: 'sports_soccer', iconClassName: '' },
   { to: '/bracket', labelKey: 'bracket', icon: 'account_tree', iconClassName: '-scale-x-100' },
   { to: '/predictions', labelKey: 'predictions', icon: 'edit_note', iconClassName: '' },
-  { to: '/leaderboard', labelKey: 'leaderboard', icon: 'leaderboard', iconClassName: '' },
 ] as const
 
 export const DashboardLayout = ({ header }: { header: ReactNode }) => {

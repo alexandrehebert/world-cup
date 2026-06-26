@@ -61,10 +61,10 @@ export const ModalShell = ({
             <button
               type="button"
               onClick={onClose}
-              className="cursor-pointer rounded-full p-1 text-[var(--text)] transition hover:text-[var(--text-strong)]"
+              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[var(--text)] transition hover:text-[var(--text-strong)]"
               aria-label={t.labels.close}
             >
-              <Icon name="close" className="text-[24px]" />
+              <Icon name="close" className="text-[20px] leading-none" />
             </button>
           </div>
         </div>

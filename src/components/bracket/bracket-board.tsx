@@ -142,9 +142,8 @@ export const BracketBoard = ({
   }, [mainRounds, locale, t, matchesById, teamsById, groupsById])
 
   return (
-    <div className="bg-[var(--surface)] p-4 sm:p-5 lg:p-6">
-      <div className="overflow-x-auto pb-2">
-        <div ref={boardRef} className="flex min-w-full items-start" style={{ gap: `${CONNECTOR_WIDTH}px` }}>
+    <div className="overflow-x-auto pb-2">
+      <div ref={boardRef} className="flex min-w-full items-start" style={{ gap: `${CONNECTOR_WIDTH}px` }}>
           {mainRounds.map((round, roundIndex) => {
             const metrics = getRoundMetrics(roundIndex, nodeHeight)
             const hasPreviousRound = roundIndex > 0
@@ -201,10 +200,18 @@ export const BracketBoard = ({
                             ) : null}
 
                             <div
-                              className={`relative z-10 cursor-pointer overflow-hidden rounded-[var(--radius-sm)] p-3 transition ${
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(event) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                  event.preventDefault()
+                                  setSelectedMatchId(match.id)
+                                }
+                              }}
+                              className={`relative z-10 cursor-pointer overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                               hasFavorite
-                                ? 'border-l-4 border-l-[var(--accent)] bg-[var(--accent-muted)]'
-                                : 'bg-[var(--surface-soft)] hover:brightness-105'
+                                ? 'border-l-4 border-l-[var(--accent)] bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)]'
+                                : 'hover:bg-[var(--surface-soft)]'
                             }`}
                               data-bracket-main-card="true"
                               style={{ minHeight: `${nodeHeight}px` }}
@@ -298,13 +305,23 @@ export const BracketBoard = ({
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
 
                         return (
-                          <div key={match.id} className={`cursor-pointer rounded-[var(--radius-sm)] p-3 transition ${
-                            hasFavorite
-                              ? 'border-l-4 border-l-[var(--accent)] bg-[var(--accent-muted)]'
-                              : 'bg-[var(--surface-soft)] hover:brightness-105'
+                          <div
+                           key={match.id}
+                           role="button"
+                           tabIndex={0}
+                           onKeyDown={(event) => {
+                             if (event.key === 'Enter' || event.key === ' ') {
+                               event.preventDefault()
+                               setSelectedMatchId(match.id)
+                             }
+                           }}
+                           className={`relative cursor-pointer rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
+                           hasFavorite
+                             ? 'border-l-4 border-l-[var(--accent)] bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)]'
+                             : 'hover:bg-[var(--surface-soft)]'
                           }`}
                           onClick={() => setSelectedMatchId(match.id)}>
-                            <div className="space-y-2">
+                           <div className="space-y-2">
                               <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
                                 {homeTeam ? (
                                   renderKnownTeamAvatar(homeTeam.id)
@@ -363,7 +380,6 @@ export const BracketBoard = ({
               </div>
             )
           })}
-        </div>
       </div>
     </div>
   )

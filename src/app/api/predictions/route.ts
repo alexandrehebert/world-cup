@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseSessionToken, sessionCookieName } from '../../../server/auth'
-import { getPrediction, upsertPrediction, listPredictionDistributions, listPredictionsByUser } from '../../../server/kv-store'
+import {
+  getPrediction,
+  listPredictionsByUser,
+  listPublicPredictionDistributions,
+  upsertPrediction,
+} from '../../../server/kv-store'
 import { loadTournamentData } from '../../../server/tournament-data'
 import type { MatchOutcome, PredictionType } from '../../../types/predictions'
 
@@ -11,6 +16,9 @@ type UpsertPredictionBody = {
   homeScore?: number
   awayScore?: number
 }
+
+const GUEST_PREDICTOR_COOKIE_NAME = 'wc_guest_predictor'
+const GUEST_PREDICTOR_ID_REGEX = /^[a-z0-9_-]{16,64}$/
 
 const normalizeScore = (value: unknown) => {
   if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
@@ -45,19 +53,29 @@ const getSessionUser = (request: NextRequest) => {
   return parseSessionToken(token)
 }
 
-export async function GET(request: NextRequest) {
+const resolveRequesterUserId = (request: NextRequest) => {
   const session = getSessionUser(request)
 
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (session) {
+    return session.id
   }
 
+  const guestPredictorId = request.cookies.get(GUEST_PREDICTOR_COOKIE_NAME)?.value?.trim() ?? ''
+  return GUEST_PREDICTOR_ID_REGEX.test(guestPredictorId) ? `guest:${guestPredictorId}` : null
+}
+
+export async function GET(request: NextRequest) {
+  const requesterUserId = resolveRequesterUserId(request)
+
   try {
-    const [predictions, tournamentData] = await Promise.all([listPredictionsByUser(session.id), loadTournamentData()])
+    const [predictions, tournamentData] = await Promise.all([
+      requesterUserId ? listPredictionsByUser(requesterUserId) : Promise.resolve([]),
+      loadTournamentData(),
+    ])
     const openMatchIds = tournamentData.matches
       .filter((match) => match.status === 'scheduled' && new Date(match.kickoff).getTime() > Date.now())
       .map((match) => match.id)
-    const predictionDistributions = await listPredictionDistributions(openMatchIds)
+    const predictionDistributions = await listPublicPredictionDistributions(openMatchIds)
 
     return NextResponse.json({ predictions, predictionDistributions }, { status: 200 })
   } catch {
@@ -130,7 +148,7 @@ export async function POST(request: NextRequest) {
       pointsAwarded: existing?.pointsAwarded ?? 0,
     })
 
-    const [predictionDistribution] = await listPredictionDistributions([matchId])
+    const [predictionDistribution] = await listPublicPredictionDistributions([matchId])
 
     return NextResponse.json({ prediction, predictionDistribution }, { status: 200 })
   } catch {

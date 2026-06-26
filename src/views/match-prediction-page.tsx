@@ -239,7 +239,7 @@ export const MatchPredictionPage = () => {
             aria-label={t.labels.shareOnWhatsApp}
             title={t.labels.shareOnWhatsApp}
           >
-            <Icon name="chat" className="text-[20px]" />
+            <Icon name="share" className="text-[20px]" />
           </button>
         }
         footer={

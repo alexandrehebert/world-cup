@@ -249,18 +249,6 @@ export const MatchModal = () => {
     }, 1400)
   }
 
-  const shareOnWhatsApp = () => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    const shareUrl = new URL(getMatchPredictionPath(match.id), window.location.origin).href
-    const message = locale === 'fr'
-      ? `Fais ton pronostic pour ${homeTeamLabel} vs ${awayTeamLabel} : ${shareUrl}`
-      : `Do your prediction for ${homeTeamLabel} vs ${awayTeamLabel}: ${shareUrl}`
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer')
-  }
-
   return (
     <ModalShell
       titleId="match-modal-title"
@@ -268,15 +256,6 @@ export const MatchModal = () => {
       onClose={closeModal}
       headerActions={
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={shareOnWhatsApp}
-            className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
-            aria-label={t.labels.shareOnWhatsApp}
-            title={t.labels.shareOnWhatsApp}
-          >
-            <Icon name="chat" className="text-[20px]" />
-          </button>
           <button
             type="button"
             onClick={() => void copyShareLink()}
@@ -289,11 +268,13 @@ export const MatchModal = () => {
         </div>
       }
       footer={
-        <FeedbackPopup
-          message={predictionError?.message ?? null}
-          onDismiss={() => setPredictionError(null)}
-          dismissLabel={t.labels.close}
-        />
+        predictionError?.message ? (
+          <FeedbackPopup
+            message={predictionError.message}
+            onDismiss={() => setPredictionError(null)}
+            dismissLabel={t.labels.close}
+          />
+        ) : null
       }
     >
       <div className="flex items-start justify-between gap-3">
@@ -370,8 +351,9 @@ export const MatchModal = () => {
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
             {t.labels.prediction}
           </p>
-          {user && isPredictionOpen && hasPredictionChanges ? (
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            {user && isPredictionOpen && hasPredictionChanges ? (
+              <div className="flex items-center gap-2">
               <button
                 type="button"
                 disabled={isSavingPrediction}
@@ -396,8 +378,9 @@ export const MatchModal = () => {
               >
                 {t.labels.save}
               </button>
-            </div>
-          ) : null}
+              </div>
+            ) : null}
+          </div>
         </div>
 
         {isPredictionOpen ? (

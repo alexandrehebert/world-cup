@@ -238,6 +238,41 @@ export const listPublicPredictionsByMatch = async (matchId: string) => {
 
 export const getGuestPredictionUserId = (displayName: string) => `${GUEST_USER_PREFIX}${normalizeUsername(displayName)}`
 
+export const listPublicPredictionDistributions = async (matchIds: string[]) => {
+  if (matchIds.length === 0) {
+    return []
+  }
+
+  const distributions = await Promise.all(
+    matchIds.map(async (matchId): Promise<PredictionDistribution> => {
+      const predictions = await listPublicPredictionsByMatch(matchId)
+      let homeCount = 0
+      let drawCount = 0
+      let awayCount = 0
+
+      for (const prediction of predictions) {
+        if (prediction.outcome === 'home') {
+          homeCount += 1
+        } else if (prediction.outcome === 'draw') {
+          drawCount += 1
+        } else {
+          awayCount += 1
+        }
+      }
+
+      return {
+        matchId,
+        homeCount,
+        drawCount,
+        awayCount,
+        totalPredictions: homeCount + drawCount + awayCount,
+      }
+    }),
+  )
+
+  return distributions
+}
+
 export const listPredictionDistributions = async (matchIds?: string[]) => {
   if (matchIds && matchIds.length === 0) {
     return []

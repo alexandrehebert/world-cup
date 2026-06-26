@@ -3,7 +3,6 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { useAuth } from './auth-context'
 import type { MatchOutcome, PredictionDistribution, PredictionRecord } from '../types/predictions'
 
 type PredictionsResponse = {
@@ -50,7 +49,6 @@ export const PredictionsProvider = ({
   initialPredictions?: PredictionRecord[]
   initialPredictionDistributions?: PredictionDistribution[]
 }) => {
-  const { user } = useAuth()
   const hasInitialPredictions = initialPredictions !== undefined
   const [predictionsByMatch, setPredictionsByMatch] = useState<Record<string, PredictionRecord>>(() =>
     Object.fromEntries((initialPredictions ?? []).map((prediction) => [prediction.matchId, prediction])),
@@ -62,12 +60,6 @@ export const PredictionsProvider = ({
   const [savingMatchId, setSavingMatchId] = useState<string | null>(null)
 
   const refreshPredictions = useCallback(async (options?: { showLoading?: boolean }) => {
-    if (!user) {
-      setPredictionsByMatch({})
-      setPredictionDistributionsByMatch({})
-      return
-    }
-
     const showLoading = options?.showLoading ?? true
     if (showLoading) {
       setIsLoading(true)
@@ -94,12 +86,12 @@ export const PredictionsProvider = ({
         setIsLoading(false)
       }
     }
-  }, [user])
+  }, [])
 
   useEffect(() => {
-    const shouldShowLoading = !(hasInitialPredictions && user)
+    const shouldShowLoading = !hasInitialPredictions
     void refreshPredictions({ showLoading: shouldShowLoading })
-  }, [hasInitialPredictions, refreshPredictions, user])
+  }, [hasInitialPredictions, refreshPredictions])
 
   const savePrediction = useCallback(async ({ matchId, outcome, homeScore, awayScore }: SavePredictionInput) => {
     const hasHomeScore = homeScore !== undefined && String(homeScore).trim().length > 0
