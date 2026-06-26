@@ -111,9 +111,9 @@ export const PredictionForm = (props: Props) => {
         </div>
 
         {hasScores ? (
-          <div className={`grid grid-cols-3 items-center gap-2 ${compact ? 'h-9' : ''}`}>
+          <div className={`grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 ${compact ? 'h-9' : ''}`}>
             <input type="number" readOnly value={scoreInput.home} className={`${compact ? 'h-full' : ''} w-full cursor-not-allowed border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-center text-sm opacity-60`} />
-            <span className="self-center text-center text-sm text-[var(--text-muted)]">-</span>
+            <span className="self-center px-3 text-center text-sm text-[var(--text-muted)] sm:px-4">-</span>
             <input type="number" readOnly value={scoreInput.away} className={`${compact ? 'h-full' : ''} w-full cursor-not-allowed border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-center text-sm opacity-60`} />
           </div>
         ) : null}
@@ -163,7 +163,7 @@ export const PredictionForm = (props: Props) => {
         ))}
       </div>
 
-      <div className={`grid grid-cols-3 items-center gap-2 ${compact ? 'h-9' : ''}`}>
+      <div className={`grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 ${compact ? 'h-9' : ''}`}>
         {isScoreVisible ? (
           <>
             <input
@@ -176,7 +176,7 @@ export const PredictionForm = (props: Props) => {
                 isHomeScoreInvalid ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'
               }`}
             />
-            <span className="self-center text-center text-sm text-[var(--text-muted)]">-</span>
+            <span className="self-center px-3 text-center text-sm text-[var(--text-muted)] sm:px-4">-</span>
             <input
               type="number"
               min={0}
