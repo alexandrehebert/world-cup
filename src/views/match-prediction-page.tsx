@@ -51,9 +51,11 @@ export const MatchPredictionPage = () => {
   const { locale, t } = useLocale()
   const nowMs = useNow()
   const { matchesById, teamsById } = useTournament()
-  const [predictions, setPredictions] = useState<PublicPrediction[]>([])
-  const [currentPredictorId, setCurrentPredictorId] = useState<string | null>(null)
-  const [distribution, setDistribution] = useState<PredictionDistribution | null>(null)
+  const bootstrapPublicPrediction = bootstrapData?.initialPublicMatchPrediction
+  const [predictionsByMatchId, setPredictionsByMatchId] = useState<Record<string, PublicPredictionResponse>>(() =>
+    bootstrapPublicPrediction ? { [bootstrapPublicPrediction.matchId]: bootstrapPublicPrediction } : {},
+  )
+  const [isLoadingPredictions, setIsLoadingPredictions] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [guestName, setGuestName] = useState(user?.username ?? '')
@@ -81,13 +83,15 @@ export const MatchPredictionPage = () => {
 
   const homeTeam = match?.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined
-  const bootstrapPublicPrediction = bootstrapData?.initialPublicMatchPrediction
   const homeLabel = homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.tbd
   const awayLabel = awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.tbd
-  const initialPublicMatchPrediction = match?.id && bootstrapPublicPrediction?.matchId === match.id
-    ? bootstrapPublicPrediction
-    : null
   const matchId = match?.id ?? null
+  const cachedPredictionResponse = matchId ? predictionsByMatchId[matchId] : undefined
+  const predictions = cachedPredictionResponse?.predictions ?? []
+  const distribution = cachedPredictionResponse?.predictionDistribution ?? null
+  const currentPredictorId = cachedPredictionResponse?.currentPrediction?.userId
+    ?? cachedPredictionResponse?.currentPredictorId
+    ?? (user ? user.id : null)
   const currentUserId = currentPredictorId ?? (user ? user.id : null)
   const currentPredictionById = currentUserId
     ? predictions.find((prediction) => prediction.userId === currentUserId) ?? null
@@ -107,23 +111,26 @@ export const MatchPredictionPage = () => {
     scoreInput.home.trim() !== persistedHomeScore ||
     scoreInput.away.trim() !== persistedAwayScore
   const isNameFieldError = !user && (error === t.labels.enterNameToPredict || error === 'Name is required')
-  const applyPublicPredictionResponse = useCallback((payload: PublicPredictionResponse) => {
-    setPredictions(payload.predictions)
-    setDistribution(payload.predictionDistribution)
-    const resolvedPredictorId = payload.currentPrediction?.userId ?? payload.currentPredictorId ?? (user ? user.id : null)
-    setCurrentPredictorId(resolvedPredictorId)
+  const applyPublicPredictionResponse = useCallback((matchIdToUpdate: string, payload: PublicPredictionResponse) => {
+    setPredictionsByMatchId((current) => ({
+      ...current,
+      [matchIdToUpdate]: payload,
+    }))
     if (!user && payload.currentPrediction?.displayName) {
       setGuestName(payload.currentPrediction.displayName)
     }
   }, [user])
 
   useEffect(() => {
-    if (!initialPublicMatchPrediction) {
+    if (!bootstrapPublicPrediction) {
       return
     }
 
-    applyPublicPredictionResponse(initialPublicMatchPrediction)
-  }, [applyPublicPredictionResponse, initialPublicMatchPrediction])
+    setPredictionsByMatchId((current) => ({
+      ...current,
+      [bootstrapPublicPrediction.matchId]: bootstrapPublicPrediction,
+    }))
+  }, [bootstrapPublicPrediction])
 
   useEffect(() => {
     if (!matchId) {
@@ -133,10 +140,14 @@ export const MatchPredictionPage = () => {
     const controller = new AbortController()
 
     const loadPublicPredictions = async () => {
+      setError(null)
+      setIsLoadingPredictions(true)
+
       try {
         const response = await fetch(`/api/predictions/public?matchId=${encodeURIComponent(matchId)}`, {
           method: 'GET',
           credentials: 'include',
+          cache: 'no-store',
           signal: controller.signal,
         })
 
@@ -146,12 +157,16 @@ export const MatchPredictionPage = () => {
         }
 
         const payload = (await response.json()) as PublicPredictionResponse
-        applyPublicPredictionResponse(payload)
+        applyPublicPredictionResponse(matchId, payload)
       } catch (loadError) {
         if (loadError instanceof DOMException && loadError.name === 'AbortError') {
           return
         }
         setError(loadError instanceof Error ? loadError.message : t.labels.saveFailed)
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoadingPredictions(false)
+        }
       }
     }
 
@@ -214,7 +229,7 @@ export const MatchPredictionPage = () => {
       }
 
       const payload = (await response.json()) as PublicPredictionResponse
-      applyPublicPredictionResponse(payload)
+      applyPublicPredictionResponse(match.id, payload)
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : t.labels.saveFailed)
     } finally {
@@ -394,7 +409,9 @@ export const MatchPredictionPage = () => {
 
       <div className="space-y-2 border border-[var(--border)] bg-[var(--surface)] p-4">
         <h3 className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.currentPredictions}</h3>
-        {predictions.length === 0 ? (
+        {isLoadingPredictions && !cachedPredictionResponse ? (
+          <p className="text-sm text-[var(--text-muted)]">{t.labels.loadingSession}</p>
+        ) : predictions.length === 0 ? (
           <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionsYet}</p>
         ) : null}
         <ul className="space-y-2">
