@@ -166,6 +166,13 @@ export interface TranslationSet {
     currentPredictions: string
     noPredictionsYet: string
     predictionSaved: string
+    bracketPathTeam: string
+    bracketPathHint: string
+    bracketPathOpponent: string
+    clearBracketPath: string
+    bracketViewMode: string
+    bracketViewDetailed: string
+    bracketViewCondensed: string
   }
   teams: Record<string, string>
   groups: Record<string, string>

@@ -5,8 +5,12 @@ import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, formatPlaceholder } from '../../lib/format'
 import { getPotentialTeamsFromPlaceholder, getTopTeamFromPlaceholder } from '../../lib/bracket'
 import { Icon } from '../../lib/icons'
+import { compareStandings } from '../../lib/standings'
+import type { GroupRecord, MatchRecord, ParticipantRef, StandingRecord } from '../../types/tournament'
 
 const MIN_NODE_HEIGHT = 216
+const CONDENSED_NODE_HEIGHT = 48
+const CONDENSED_CONNECTOR_WIDTH = 16
 const BASE_GAP = 20
 const CONNECTOR_WIDTH = 32
 
@@ -20,15 +24,306 @@ const getRoundMetrics = (roundIndex: number, nodeHeight: number) => {
   }
 }
 
+type BracketParticipantPosition = {
+  roundId: string
+  roundIndex: number
+  matchId: string
+  slotIndex: number
+}
+
+type ForecastPath = {
+  pathMatchIds: Set<string>
+  projectedOpponentByMatchId: Map<string, string | undefined>
+  forcedWinnerByMatchId: Map<string, string>
+}
+
+type BracketViewMode = 'detailed' | 'condensed'
+
+type PlaceholderResolutionContext = {
+  groupsByIdMap: Map<string, GroupRecord>
+  matchesById: Record<string, MatchRecord>
+  positionByMatchId: Map<string, BracketParticipantPosition>
+  matchIdByRoundAndSlot: Map<string, string>
+  standingsByTeamId: Map<string, StandingRecord>
+  teamsById: Record<string, { id: string; name: string; code: string }>
+}
+
+const getRoundSlotKey = (roundId: string, slotIndex: number) => `${roundId}:${slotIndex}`
+
+const hasNumericScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
+
+const getWinnerSourceMatchId = (
+  participant: ParticipantRef | undefined,
+  expectedRoundId: string,
+  roundMatchIdsById: Map<string, string[]>,
+): string | undefined => {
+  const placeholder = participant?.placeholder
+  if (!placeholder) return undefined
+
+  const [placeholderType, sourceRoundId, sourceSlotIndex] = placeholder.split(':')
+  if (placeholderType !== 'W' || sourceRoundId !== expectedRoundId) return undefined
+
+  const parsedSlot = Number.parseInt(sourceSlotIndex ?? '', 10)
+  if (!Number.isInteger(parsedSlot) || parsedSlot <= 0) return undefined
+
+  return roundMatchIdsById.get(sourceRoundId)?.[parsedSlot - 1]
+}
+
+const alignSideRoundsByNextRound = (
+  sideRounds: { id: string; matchIds: string[] }[],
+  matchesById: Record<string, MatchRecord>,
+  roundMatchIdsById: Map<string, string[]>,
+) => {
+  const alignedRounds = sideRounds.map((round) => ({ ...round, matchIds: [...round.matchIds] }))
+
+  for (let roundIndex = 0; roundIndex < alignedRounds.length - 1; roundIndex += 1) {
+    const currentRound = alignedRounds[roundIndex]
+    const nextRound = alignedRounds[roundIndex + 1]
+    const currentMatchIds = new Set(currentRound.matchIds)
+    const orderedCurrentMatchIds: string[] = []
+
+    for (const nextMatchId of nextRound.matchIds) {
+      const nextMatch = matchesById[nextMatchId]
+      if (!nextMatch) continue
+
+      const sourceHomeMatchId = getWinnerSourceMatchId(nextMatch.home, currentRound.id, roundMatchIdsById)
+      const sourceAwayMatchId = getWinnerSourceMatchId(nextMatch.away, currentRound.id, roundMatchIdsById)
+
+      if (sourceHomeMatchId && currentMatchIds.has(sourceHomeMatchId) && !orderedCurrentMatchIds.includes(sourceHomeMatchId)) {
+        orderedCurrentMatchIds.push(sourceHomeMatchId)
+      }
+
+      if (sourceAwayMatchId && currentMatchIds.has(sourceAwayMatchId) && !orderedCurrentMatchIds.includes(sourceAwayMatchId)) {
+        orderedCurrentMatchIds.push(sourceAwayMatchId)
+      }
+    }
+
+    for (const fallbackMatchId of currentRound.matchIds) {
+      if (!orderedCurrentMatchIds.includes(fallbackMatchId)) {
+        orderedCurrentMatchIds.push(fallbackMatchId)
+      }
+    }
+
+    currentRound.matchIds = orderedCurrentMatchIds
+  }
+
+  return alignedRounds
+}
+
+const getThirdPlaceStanding = (
+  groupPlaceholder: string,
+  groupsByIdMap: Map<string, GroupRecord>,
+): StandingRecord | undefined => {
+  const candidateThirdPlaceStandings = groupPlaceholder
+    .split('')
+    .map((candidateGroupId) => groupsByIdMap.get(candidateGroupId)?.standings[2])
+    .filter((standing): standing is StandingRecord => Boolean(standing))
+
+  if (candidateThirdPlaceStandings.length === 0) {
+    return undefined
+  }
+
+  candidateThirdPlaceStandings.sort((first, second) => compareStandings(first, second))
+  return candidateThirdPlaceStandings[0]
+}
+
+const pickMostProbableWinner = (
+  match: MatchRecord,
+  context: PlaceholderResolutionContext,
+  visitedPlaceholders: Set<string>,
+  forcedWinnerByMatchId: Map<string, string> = new Map(),
+): string | undefined => {
+  const forcedWinnerTeamId = forcedWinnerByMatchId.get(match.id)
+  if (forcedWinnerTeamId) {
+    return forcedWinnerTeamId
+  }
+
+  const homeTeamId = getProjectedTeamIdFromParticipant(match.home, context, visitedPlaceholders, forcedWinnerByMatchId)
+  const awayTeamId = getProjectedTeamIdFromParticipant(match.away, context, visitedPlaceholders, forcedWinnerByMatchId)
+
+  if (homeTeamId && !awayTeamId) return homeTeamId
+  if (awayTeamId && !homeTeamId) return awayTeamId
+  if (!homeTeamId || !awayTeamId) return undefined
+
+  if (
+    match.status === 'finished' &&
+    hasNumericScore(match.home.score) &&
+    hasNumericScore(match.away.score) &&
+    match.home.score !== match.away.score
+  ) {
+    return match.home.score > match.away.score ? homeTeamId : awayTeamId
+  }
+
+  const homeStanding = context.standingsByTeamId.get(homeTeamId)
+  const awayStanding = context.standingsByTeamId.get(awayTeamId)
+
+  if (homeStanding && awayStanding) {
+    const standingComparison = compareStandings(homeStanding, awayStanding)
+    if (standingComparison !== 0) {
+      return standingComparison < 0 ? homeTeamId : awayTeamId
+    }
+  }
+
+  const homeTeamName = context.teamsById[homeTeamId]?.name ?? homeTeamId
+  const awayTeamName = context.teamsById[awayTeamId]?.name ?? awayTeamId
+  return homeTeamName.localeCompare(awayTeamName) <= 0 ? homeTeamId : awayTeamId
+}
+
+const getProjectedTeamIdFromParticipant = (
+  participant: ParticipantRef | undefined,
+  context: PlaceholderResolutionContext,
+  visitedPlaceholders: Set<string> = new Set(),
+  forcedWinnerByMatchId: Map<string, string> = new Map(),
+): string | undefined => {
+  if (!participant) return undefined
+  if (participant.teamId) return participant.teamId
+  if (!participant.placeholder) return undefined
+
+  const placeholder = participant.placeholder
+  if (visitedPlaceholders.has(placeholder)) {
+    return undefined
+  }
+
+  const nextVisitedPlaceholders = new Set(visitedPlaceholders)
+  nextVisitedPlaceholders.add(placeholder)
+
+  const [placeholderType, placeholderValue, maybeSlotIndex] = placeholder.split(':')
+
+  if (placeholderType === 'G1' || placeholderType === 'G2') {
+    return getTopTeamFromPlaceholder(placeholder, context.groupsByIdMap)
+  }
+
+  if (placeholderType === 'G3') {
+    return getThirdPlaceStanding(placeholderValue ?? '', context.groupsByIdMap)?.teamId
+  }
+
+  if ((placeholderType === 'W' || placeholderType === 'L') && placeholderValue && maybeSlotIndex) {
+    const parsedSlotIndex = Number.parseInt(maybeSlotIndex, 10)
+    if (!Number.isInteger(parsedSlotIndex) || parsedSlotIndex <= 0) return undefined
+    const sourceMatchId = context.matchIdByRoundAndSlot.get(getRoundSlotKey(placeholderValue, parsedSlotIndex - 1))
+    if (!sourceMatchId) return undefined
+    const sourceMatch = context.matchesById[sourceMatchId]
+    if (!sourceMatch) return undefined
+
+    const probableWinnerId = pickMostProbableWinner(
+      sourceMatch,
+      context,
+      nextVisitedPlaceholders,
+      forcedWinnerByMatchId,
+    )
+    if (placeholderType === 'W') {
+      return probableWinnerId
+    }
+
+    const probableHomeId = getProjectedTeamIdFromParticipant(
+      sourceMatch.home,
+      context,
+      nextVisitedPlaceholders,
+      forcedWinnerByMatchId,
+    )
+    const probableAwayId = getProjectedTeamIdFromParticipant(
+      sourceMatch.away,
+      context,
+      nextVisitedPlaceholders,
+      forcedWinnerByMatchId,
+    )
+    if (!probableWinnerId || !probableHomeId || !probableAwayId) return undefined
+    return probableWinnerId === probableHomeId ? probableAwayId : probableHomeId
+  }
+
+  return undefined
+}
+
+const getForecastPathToFinal = (
+  forecastTeamId: string,
+  rounds: { id: string; matchIds: string[] }[],
+  context: PlaceholderResolutionContext,
+): ForecastPath => {
+  const projectedOpponentByMatchId = new Map<string, string | undefined>()
+  const pathMatchIds = new Set<string>()
+  const forcedWinnerByMatchId = new Map<string, string>()
+  const mainRounds = rounds.filter((round) => round.id !== 'thirdPlace')
+
+  let startingMatch: BracketParticipantPosition | undefined
+
+  for (const [roundIndex, round] of mainRounds.entries()) {
+    for (const [slotIndex, matchId] of round.matchIds.entries()) {
+      const match = context.matchesById[matchId]
+      if (!match) continue
+      const projectedHome = getProjectedTeamIdFromParticipant(match.home, context)
+      const projectedAway = getProjectedTeamIdFromParticipant(match.away, context)
+      if (projectedHome === forecastTeamId || projectedAway === forecastTeamId) {
+        startingMatch = {
+          roundId: round.id,
+          roundIndex,
+          matchId,
+          slotIndex,
+        }
+        break
+      }
+    }
+    if (startingMatch) break
+  }
+
+  if (!startingMatch) {
+    return { pathMatchIds, projectedOpponentByMatchId, forcedWinnerByMatchId }
+  }
+
+  let currentMatch = startingMatch
+
+  while (currentMatch) {
+    const match = context.matchesById[currentMatch.matchId]
+    if (!match) break
+
+    forcedWinnerByMatchId.set(match.id, forecastTeamId)
+
+    const projectedHome = getProjectedTeamIdFromParticipant(match.home, context, new Set(), forcedWinnerByMatchId)
+    const projectedAway = getProjectedTeamIdFromParticipant(match.away, context, new Set(), forcedWinnerByMatchId)
+    const opponentParticipant = projectedHome === forecastTeamId ? match.away : projectedAway === forecastTeamId ? match.home : undefined
+
+    pathMatchIds.add(match.id)
+    projectedOpponentByMatchId.set(
+      match.id,
+      opponentParticipant
+        ? getProjectedTeamIdFromParticipant(opponentParticipant, context, new Set(), forcedWinnerByMatchId)
+        : undefined,
+    )
+
+    if (currentMatch.roundId === 'final') {
+      break
+    }
+
+    const winnerToken = `W:${currentMatch.roundId}:${currentMatch.slotIndex + 1}`
+    const nextRound = mainRounds[currentMatch.roundIndex + 1]
+    if (!nextRound) break
+
+    const nextMatchId = nextRound.matchIds.find((candidateMatchId) => {
+      const candidateMatch = context.matchesById[candidateMatchId]
+      return candidateMatch?.home.placeholder === winnerToken || candidateMatch?.away.placeholder === winnerToken
+    })
+
+    if (!nextMatchId) break
+    const nextPosition = context.positionByMatchId.get(nextMatchId)
+    if (!nextPosition) break
+    currentMatch = nextPosition
+  }
+
+  return { pathMatchIds, projectedOpponentByMatchId, forcedWinnerByMatchId }
+}
+
 export const BracketBoard = ({
   rounds,
+  forecastTeamId,
+  viewMode = 'detailed',
 }: {
   rounds: { id: string; matchIds: string[] }[]
+  forecastTeamId?: string
+  viewMode?: BracketViewMode
 }) => {
   const { locale, t } = useLocale()
   const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
   const { matchesById, teamsById, groupsById } = useTournament()
-  const groupsByIdMap = new Map(Object.entries(groupsById || {}))
+  const groupsByIdMap = useMemo(() => new Map(Object.entries(groupsById || {})), [groupsById])
   const boardRef = useRef<HTMLDivElement | null>(null)
   const [measuredNodeHeight, setMeasuredNodeHeight] = useState<number>(MIN_NODE_HEIGHT)
 
@@ -121,10 +416,266 @@ export const BracketBoard = ({
     )
   }
 
+  const renderCondensedMatchCard = (matchId: string) => {
+    const match = matchesById[matchId]
+    if (!match) return null
+
+    const isForecastPathMatch = forecastPath?.pathMatchIds.has(match.id) ?? false
+    const shouldResolveUnknownTeams = Boolean(forecastTeamId)
+    const homeTeamId = match.home.teamId ?? (
+      shouldResolveUnknownTeams
+        ? getProjectedTeamIdFromParticipant(match.home, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
+        : undefined
+    )
+    const awayTeamId = match.away.teamId ?? (
+      shouldResolveUnknownTeams
+        ? getProjectedTeamIdFromParticipant(match.away, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
+        : undefined
+    )
+
+    const renderFlag = (teamId: string | undefined) => {
+      const team = teamId ? teamsById[teamId] : undefined
+      if (!team) {
+        return <span className="inline-flex h-6 w-6" />
+      }
+
+      return (
+        <span className="inline-flex h-6 w-6 items-center overflow-hidden rounded-[6px] border border-[var(--border)]">
+          <span className={`fi fi-${team.flagCode} flag-avatar-fill`} aria-hidden="true" />
+          <span className="sr-only">{t.teams[team.id] ?? team.name}</span>
+        </span>
+      )
+    }
+
+    return (
+      <div
+        key={match.id}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            setSelectedMatchId(match.id)
+          }
+        }}
+        className={`cursor-pointer rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] p-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
+          isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : 'hover:bg-[var(--surface-soft)]'
+        }`}
+        style={{ height: `${CONDENSED_NODE_HEIGHT}px` }}
+        onClick={() => setSelectedMatchId(match.id)}
+      >
+        <div className="flex h-full items-center justify-center gap-2">
+          {renderFlag(homeTeamId)}
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{t.labels.vs}</span>
+          {renderFlag(awayTeamId)}
+        </div>
+      </div>
+    )
+  }
+
+  const renderCondensedTreeSide = (
+    sideRounds: { id: string; matchIds: string[] }[],
+    centerConnectionSide: 'left' | 'right',
+  ) => {
+    const startsAtCenter = centerConnectionSide === 'left'
+    const sideFirstRoundMatchCount = Math.max(...sideRounds.map((round) => round.matchIds.length), 0)
+    const sideTrackHeight = Math.max(
+      CONDENSED_NODE_HEIGHT,
+      sideFirstRoundMatchCount * CONDENSED_NODE_HEIGHT + Math.max(0, sideFirstRoundMatchCount - 1) * BASE_GAP,
+    )
+
+    return (
+      <div className="pb-2 lg:flex-[4] lg:min-w-0">
+        <div className="flex min-w-max items-start lg:min-w-0 lg:w-full" style={{ gap: `${CONDENSED_CONNECTOR_WIDTH}px` }}>
+          {sideRounds.map((round, roundIndex) => {
+            const effectiveRoundIndex = startsAtCenter
+              ? sideRounds.length - 1 - roundIndex
+              : roundIndex
+            const metrics = getRoundMetrics(effectiveRoundIndex, CONDENSED_NODE_HEIGHT)
+            const hasPreviousRound = roundIndex > 0
+            const hasForwardConnection = roundIndex < sideRounds.length - 1
+            const isCenterConnectorRound = round.id === 'semiFinal'
+            const connectsTowardCenter = startsAtCenter ? hasPreviousRound : hasForwardConnection
+
+            return (
+              <div
+                key={`${centerConnectionSide}-${round.id}`}
+                className="flex w-[112px] min-w-[112px] flex-col lg:min-w-0 lg:flex-1 lg:w-auto"
+              >
+                <p className="border-b border-[var(--border)] pb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--accent-text)]">
+                  {getRoundLabel(round.id)}
+                </p>
+                <div
+                  className="relative mt-3"
+                  style={{ minHeight: `${sideTrackHeight}px`, paddingTop: `${metrics.topOffset}px` }}
+                >
+                  <div className="flex flex-col" style={{ gap: `${metrics.gap}px` }}>
+                    {round.matchIds.map((matchId, matchIndex) => {
+                      const showVerticalBridge =
+                        connectsTowardCenter && matchIndex % 2 === 0 && matchIndex + 1 < round.matchIds.length
+
+                      return (
+                        <div key={`${round.id}-${matchId}`} className="relative">
+                          {hasPreviousRound ? (
+                            <span
+                              className="pointer-events-none absolute top-1/2 -left-[8px] z-0 h-px bg-[var(--border)]"
+                              style={{ width: `${CONDENSED_CONNECTOR_WIDTH / 2}px` }}
+                            />
+                          ) : null}
+
+                          {showVerticalBridge ? (
+                            <span
+                              className={`pointer-events-none absolute top-1/2 z-0 w-px bg-[var(--border)] ${
+                                startsAtCenter ? '-left-[8px]' : '-right-[8px]'
+                              }`}
+                              style={{ height: `${CONDENSED_NODE_HEIGHT + metrics.gap}px` }}
+                            />
+                          ) : null}
+
+                          {hasForwardConnection ? (
+                            <span
+                              className="pointer-events-none absolute top-1/2 left-full z-0 h-px bg-[var(--border)]"
+                              style={{ width: `${CONDENSED_CONNECTOR_WIDTH / 2}px` }}
+                            />
+                          ) : null}
+
+                          {isCenterConnectorRound ? (
+                            <span
+                              className={`pointer-events-none absolute top-1/2 z-0 h-px bg-[var(--border)] ${
+                                centerConnectionSide === 'right' ? 'left-full' : '-left-[8px]'
+                              }`}
+                              style={{ width: `${CONDENSED_CONNECTOR_WIDTH / 2}px` }}
+                            />
+                          ) : null}
+
+                          {renderCondensedMatchCard(matchId)}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
   const thirdPlaceRound = rounds.find((round) => round.id === 'thirdPlace')
   const mainRounds = rounds.filter((round) => round.id !== 'thirdPlace')
+  const mainRoundMatchIdsById = useMemo(
+    () => new Map(mainRounds.map((round) => [round.id, round.matchIds])),
+    [mainRounds],
+  )
+  const standingsByTeamId = useMemo(
+    () => new Map(Object.values(groupsById).flatMap((group) => group.standings.map((standing) => [standing.teamId, standing]))),
+    [groupsById],
+  )
+  const positionByMatchId = useMemo(() => {
+    const map = new Map<string, BracketParticipantPosition>()
+
+    mainRounds.forEach((round, roundIndex) => {
+      round.matchIds.forEach((matchId, slotIndex) => {
+        map.set(matchId, {
+          roundId: round.id,
+          roundIndex,
+          matchId,
+          slotIndex,
+        })
+      })
+    })
+
+    return map
+  }, [mainRounds])
+  const matchIdByRoundAndSlot = useMemo(() => {
+    const map = new Map<string, string>()
+
+    mainRounds.forEach((round) => {
+      round.matchIds.forEach((matchId, slotIndex) => {
+        map.set(getRoundSlotKey(round.id, slotIndex), matchId)
+      })
+    })
+
+    return map
+  }, [mainRounds])
+  const placeholderResolutionContext: PlaceholderResolutionContext = {
+    groupsByIdMap,
+    matchesById,
+    positionByMatchId,
+    matchIdByRoundAndSlot,
+    standingsByTeamId,
+    teamsById,
+  }
+  const forecastPath = forecastTeamId
+    ? getForecastPathToFinal(forecastTeamId, rounds, placeholderResolutionContext)
+    : null
+  const forcedWinnerByMatchId = forecastPath?.forcedWinnerByMatchId
+  const shouldResolveUnknownTeams = Boolean(forecastTeamId)
+  const preFinalRounds = useMemo(
+    () => mainRounds.filter((round) => round.id !== 'final'),
+    [mainRounds],
+  )
+  const orderedMainRounds = useMemo(
+    () => alignSideRoundsByNextRound(mainRounds, matchesById, mainRoundMatchIdsById),
+    [mainRounds, matchesById, mainRoundMatchIdsById],
+  )
+  const leftSplitBaseRounds = useMemo(
+    () =>
+      preFinalRounds.map((round) => ({
+        ...round,
+        matchIds: round.matchIds.slice(0, Math.ceil(round.matchIds.length / 2)),
+      })),
+    [preFinalRounds],
+  )
+  const rightSplitBaseRounds = useMemo(
+    () =>
+      preFinalRounds.map((round) => ({
+        ...round,
+        matchIds: round.matchIds.slice(Math.ceil(round.matchIds.length / 2)),
+      })),
+    [preFinalRounds],
+  )
+  const leftSplitRounds = useMemo(
+    () => alignSideRoundsByNextRound(leftSplitBaseRounds, matchesById, mainRoundMatchIdsById),
+    [leftSplitBaseRounds, mainRoundMatchIdsById, matchesById],
+  )
+  const rightSplitRounds = useMemo(
+    () => alignSideRoundsByNextRound(rightSplitBaseRounds, matchesById, mainRoundMatchIdsById),
+    [rightSplitBaseRounds, mainRoundMatchIdsById, matchesById],
+  )
+  const rightSplitRoundsFromCenter = useMemo(
+    () => [...rightSplitRounds].reverse(),
+    [rightSplitRounds],
+  )
+  const finalMatch = useMemo(() => {
+    const finalRound = mainRounds.find((round) => round.id === 'final')
+    const finalMatchId = finalRound?.matchIds[0]
+    return finalMatchId ? matchesById[finalMatchId] : undefined
+  }, [mainRounds, matchesById])
+  const condensedOuterRoundMatchCount = useMemo(
+    () =>
+      Math.max(
+        leftSplitRounds[0]?.matchIds.length ?? 0,
+        rightSplitRoundsFromCenter[rightSplitRoundsFromCenter.length - 1]?.matchIds.length ?? 0,
+      ),
+    [leftSplitRounds, rightSplitRoundsFromCenter],
+  )
+  const condensedTrackHeight = useMemo(
+    () =>
+      Math.max(
+        CONDENSED_NODE_HEIGHT,
+        condensedOuterRoundMatchCount * CONDENSED_NODE_HEIGHT +
+          Math.max(0, condensedOuterRoundMatchCount - 1) * BASE_GAP,
+      ),
+    [condensedOuterRoundMatchCount],
+  )
+  const condensedSemiTopOffset = useMemo(
+    () => getRoundMetrics(Math.max(0, preFinalRounds.length - 1), CONDENSED_NODE_HEIGHT).topOffset,
+    [preFinalRounds.length],
+  )
   const nodeHeight = useMemo(() => Math.max(MIN_NODE_HEIGHT, measuredNodeHeight), [measuredNodeHeight])
-  const firstRoundMatchCount = mainRounds.at(0)?.matchIds.length ?? 0
+  const firstRoundMatchCount = orderedMainRounds.at(0)?.matchIds.length ?? 0
   const boardTrackHeight = Math.max(nodeHeight, firstRoundMatchCount * nodeHeight + Math.max(0, firstRoundMatchCount - 1) * BASE_GAP)
 
   useLayoutEffect(() => {
@@ -139,12 +690,58 @@ export const BracketBoard = ({
     const maxCardHeight = Math.max(...mainRoundCards.map((card) => card.scrollHeight))
     const nextHeight = Math.max(MIN_NODE_HEIGHT, maxCardHeight)
     setMeasuredNodeHeight((previousHeight) => (previousHeight === nextHeight ? previousHeight : nextHeight))
-  }, [mainRounds, locale, t, matchesById, teamsById, groupsById])
+  }, [orderedMainRounds, locale, t, matchesById, teamsById, groupsById])
+
+  if (viewMode === 'condensed') {
+    return (
+      <div className="space-y-4">
+        <div className="overflow-x-auto pb-2 lg:overflow-x-visible">
+          <div className="flex min-w-max items-start gap-2 lg:min-w-0 lg:w-full">
+            {renderCondensedTreeSide(leftSplitRounds, 'right')}
+
+            <div className="flex w-[112px] min-w-[112px] flex-col lg:min-w-0 lg:flex-1 lg:w-auto">
+              <p className="border-b border-[var(--border)] pb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--accent-text)]">
+                {t.labels.stageFinal}
+              </p>
+              <div className="relative mt-3" style={{ minHeight: `${condensedTrackHeight}px` }}>
+                <div className="absolute left-0 right-0" style={{ top: `${condensedSemiTopOffset}px` }}>
+                  <span className="pointer-events-none absolute top-1/2 -left-2 h-px w-2 bg-[var(--border)]" />
+                  <span className="pointer-events-none absolute top-1/2 -right-2 h-px w-2 bg-[var(--border)]" />
+                  {finalMatch ? renderCondensedMatchCard(finalMatch.id) : (
+                    <div className="rounded-[var(--radius-sm)] border border-dashed border-[var(--border)] bg-[var(--surface-soft)] p-2 text-xs text-[var(--text-soft)]">
+                      {t.labels.comingSoon}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <p className="mb-2 border-b border-[var(--border)] pb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--accent-text)]">
+                  {t.labels.stageThirdPlace}
+                </p>
+                <div className="space-y-2">
+                  {thirdPlaceRound?.matchIds.length ? (
+                    thirdPlaceRound.matchIds.map((matchId) => renderCondensedMatchCard(matchId))
+                  ) : (
+                    <div className="rounded-[var(--radius-sm)] border border-dashed border-[var(--border)] bg-[var(--surface-soft)] p-2 text-xs text-[var(--text-soft)]">
+                      {t.labels.comingSoon}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {renderCondensedTreeSide(rightSplitRoundsFromCenter, 'left')}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="overflow-x-auto pb-2">
       <div ref={boardRef} className="flex min-w-full items-start" style={{ gap: `${CONNECTOR_WIDTH}px` }}>
-          {mainRounds.map((round, roundIndex) => {
+          {orderedMainRounds.map((round, roundIndex) => {
             const metrics = getRoundMetrics(roundIndex, nodeHeight)
             const hasPreviousRound = roundIndex > 0
             const hasNextRound = roundIndex < mainRounds.length - 1
@@ -165,13 +762,44 @@ export const BracketBoard = ({
                         const match = matchesById[matchId]
                         const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                         const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-                        const homePotentialTeamIds = !homeTeam && match.home.placeholder ? getPotentialTeamsFromPlaceholder(match.home.placeholder, groupsByIdMap) : []
-                        const awayPotentialTeamIds = !awayTeam && match.away.placeholder ? getPotentialTeamsFromPlaceholder(match.away.placeholder, groupsByIdMap) : []
-                        const homeTopTeamId = !homeTeam && match.home.placeholder ? getTopTeamFromPlaceholder(match.home.placeholder, groupsByIdMap) : undefined
-                        const awayTopTeamId = !awayTeam && match.away.placeholder ? getTopTeamFromPlaceholder(match.away.placeholder, groupsByIdMap) : undefined
+                        const homePotentialTeamIds =
+                          (shouldResolveUnknownTeams || round.id === 'roundOf32') && !homeTeam && match.home.placeholder
+                            ? getPotentialTeamsFromPlaceholder(match.home.placeholder, groupsByIdMap)
+                            : []
+                        const awayPotentialTeamIds =
+                          (shouldResolveUnknownTeams || round.id === 'roundOf32') && !awayTeam && match.away.placeholder
+                            ? getPotentialTeamsFromPlaceholder(match.away.placeholder, groupsByIdMap)
+                            : []
+                        const shouldShowHomeRoundOf32GroupTopTeam =
+                          round.id === 'roundOf32' &&
+                          Boolean(
+                            match.home.placeholder?.startsWith('G1:') ||
+                              match.home.placeholder?.startsWith('G2:') ||
+                              match.home.placeholder?.startsWith('G3:'),
+                          )
+                        const shouldShowAwayRoundOf32GroupTopTeam =
+                          round.id === 'roundOf32' &&
+                          Boolean(
+                            match.away.placeholder?.startsWith('G1:') ||
+                              match.away.placeholder?.startsWith('G2:') ||
+                              match.away.placeholder?.startsWith('G3:'),
+                          )
+                        const homeTopTeamId = !homeTeam && match.home.placeholder
+                          ? (shouldResolveUnknownTeams || shouldShowHomeRoundOf32GroupTopTeam)
+                            ? getProjectedTeamIdFromParticipant(match.home, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
+                            : undefined
+                          : undefined
+                        const awayTopTeamId = !awayTeam && match.away.placeholder
+                          ? (shouldResolveUnknownTeams || shouldShowAwayRoundOf32GroupTopTeam)
+                            ? getProjectedTeamIdFromParticipant(match.away, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
+                            : undefined
+                          : undefined
                         const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
                         const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
                         const hasFavorite = homeIsFavorite || awayIsFavorite
+                        const isForecastPathMatch = forecastPath?.pathMatchIds.has(match.id) ?? false
+                        const projectedOpponentTeamId = forecastPath?.projectedOpponentByMatchId.get(match.id)
+                        const projectedOpponentTeam = projectedOpponentTeamId ? teamsById[projectedOpponentTeamId] : undefined
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
                         const showVerticalBridge =
                           hasNextRound && matchIndex % 2 === 0 && matchIndex + 1 < round.matchIds.length
@@ -212,7 +840,7 @@ export const BracketBoard = ({
                               hasFavorite
                                 ? 'border-l-4 border-l-[var(--accent)] bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)]'
                                 : 'hover:bg-[var(--surface-soft)]'
-                            }`}
+                              } ${isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : ''}`}
                               data-bracket-main-card="true"
                               style={{ minHeight: `${nodeHeight}px` }}
                               onClick={() => setSelectedMatchId(match.id)}
@@ -264,6 +892,12 @@ export const BracketBoard = ({
                                 </div>
                               </div>
 
+                              {isForecastPathMatch ? (
+                                <div className="mt-2 truncate border-t border-[var(--border)] pt-2 text-xs font-medium text-[var(--accent-text)]">
+                                  {t.labels.bracketPathOpponent}: {projectedOpponentTeam ? (t.teams[projectedOpponentTeam.id] ?? projectedOpponentTeam.name) : t.labels.tbd}
+                                </div>
+                              ) : null}
+
                               <div className="mt-2 border-t border-[var(--border)] pt-2 text-[11px] uppercase tracking-[0.2em] text-[var(--text-soft)]">
                                 {t.meta.localTime} · {localTime}
                               </div>
@@ -295,10 +929,24 @@ export const BracketBoard = ({
                         const match = matchesById[matchId]
                         const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                         const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-                        const homePotentialTeamIds = !homeTeam && match.home.placeholder ? getPotentialTeamsFromPlaceholder(match.home.placeholder, groupsByIdMap) : []
-                        const awayPotentialTeamIds = !awayTeam && match.away.placeholder ? getPotentialTeamsFromPlaceholder(match.away.placeholder, groupsByIdMap) : []
-                        const homeTopTeamId = !homeTeam && match.home.placeholder ? getTopTeamFromPlaceholder(match.home.placeholder, groupsByIdMap) : undefined
-                        const awayTopTeamId = !awayTeam && match.away.placeholder ? getTopTeamFromPlaceholder(match.away.placeholder, groupsByIdMap) : undefined
+                        const homePotentialTeamIds =
+                          shouldResolveUnknownTeams && !homeTeam && match.home.placeholder
+                            ? getPotentialTeamsFromPlaceholder(match.home.placeholder, groupsByIdMap)
+                            : []
+                        const awayPotentialTeamIds =
+                          shouldResolveUnknownTeams && !awayTeam && match.away.placeholder
+                            ? getPotentialTeamsFromPlaceholder(match.away.placeholder, groupsByIdMap)
+                            : []
+                        const homeTopTeamId = !homeTeam && match.home.placeholder
+                          ? shouldResolveUnknownTeams
+                            ? getProjectedTeamIdFromParticipant(match.home, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
+                            : undefined
+                          : undefined
+                        const awayTopTeamId = !awayTeam && match.away.placeholder
+                          ? shouldResolveUnknownTeams
+                            ? getProjectedTeamIdFromParticipant(match.away, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
+                            : undefined
+                          : undefined
                         const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
                         const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
                         const hasFavorite = homeIsFavorite || awayIsFavorite

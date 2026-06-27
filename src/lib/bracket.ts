@@ -1,4 +1,5 @@
 import type { GroupRecord, MatchRecord } from '../types/tournament'
+import { compareStandings } from './standings'
 
 const isGroupComplete = (group: GroupRecord, matches: MatchRecord[]): boolean => {
   const groupMatches = matches.filter((m) => m.stage === 'group' && m.groupId === group.id)
@@ -37,6 +38,18 @@ export const getPotentialTeamsFromPlaceholder = (
 ): string[] => {
   const [type, groupId] = placeholder.split(':')
 
+  if (type === 'G3') {
+    const projectedThirdPlaces = groupId
+      .split('')
+      .map((candidateGroupId) => groupsById.get(candidateGroupId)?.standings[2])
+      .filter((standing): standing is NonNullable<GroupRecord['standings'][number]> => Boolean(standing))
+
+    if (projectedThirdPlaces.length === 0) return []
+
+    projectedThirdPlaces.sort((first, second) => compareStandings(first, second))
+    return projectedThirdPlaces.slice(0, 4).map((standing) => standing.teamId)
+  }
+
   if (type !== 'G1' && type !== 'G2') return []
 
   const group = groupsById.get(groupId)
@@ -54,6 +67,18 @@ export const getTopTeamFromPlaceholder = (
   groupsById: Map<string, GroupRecord>,
 ): string | undefined => {
   const [type, groupId] = placeholder.split(':')
+
+  if (type === 'G3') {
+    const projectedThirdPlaces = groupId
+      .split('')
+      .map((candidateGroupId) => groupsById.get(candidateGroupId)?.standings[2])
+      .filter((standing): standing is NonNullable<GroupRecord['standings'][number]> => Boolean(standing))
+
+    if (projectedThirdPlaces.length === 0) return undefined
+
+    projectedThirdPlaces.sort((first, second) => compareStandings(first, second))
+    return projectedThirdPlaces[0]?.teamId
+  }
 
   if (type !== 'G1' && type !== 'G2') return undefined
 

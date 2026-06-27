@@ -168,6 +168,13 @@ export const en: TranslationSet = {
     currentPredictions: 'Current predictions',
     noPredictionsYet: 'No predictions yet for this match.',
     predictionSaved: 'Prediction saved.',
+    bracketPathTeam: 'Path to final',
+    bracketPathHint: 'Pick a team to forecast each projected opponent if they keep winning.',
+    bracketPathOpponent: 'Projected opponent',
+    clearBracketPath: 'Clear path',
+    bracketViewMode: 'View',
+    bracketViewDetailed: 'Detailed bracket',
+    bracketViewCondensed: 'Condensed split bracket',
   },
   teams: {
     mex: 'Mexico',
