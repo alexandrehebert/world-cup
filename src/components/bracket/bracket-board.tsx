@@ -508,7 +508,7 @@ export const BracketBoard = ({
                 key={`${centerConnectionSide}-${round.id}`}
                 className="flex w-[112px] min-w-[112px] flex-col lg:min-w-0 lg:flex-1 lg:w-auto"
               >
-                <p className="border-b border-[var(--border)] pb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--accent-text)]">
+                <p className="border-b border-[var(--border)] pb-1 text-[10px] font-semibold whitespace-nowrap uppercase tracking-[0.2em] text-[var(--accent-text)]">
                   {getRoundLabel(round.id)}
                 </p>
                 <div
@@ -756,7 +756,7 @@ export const BracketBoard = ({
             {renderCondensedTreeSide(leftSplitRounds, 'right')}
 
             <div className="flex w-[112px] min-w-[112px] flex-col lg:min-w-0 lg:flex-1 lg:w-auto">
-              <p className="border-b border-[var(--border)] pb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--accent-text)]">
+              <p className="border-b border-[var(--border)] pb-1 text-[10px] font-semibold whitespace-nowrap uppercase tracking-[0.2em] text-[var(--accent-text)]">
                 {t.labels.stageFinal}
               </p>
               <div className="relative mt-3" style={{ minHeight: `${condensedTrackHeight}px` }}>
@@ -784,7 +784,7 @@ export const BracketBoard = ({
               </div>
 
               <div className="mt-3">
-                <p className="mb-2 border-b border-[var(--border)] pb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--accent-text)]">
+                <p className="mb-2 border-b border-[var(--border)] pb-1 text-[10px] font-semibold whitespace-nowrap uppercase tracking-[0.2em] text-[var(--accent-text)]">
                   {t.labels.stageThirdPlace}
                 </p>
                 <div className="space-y-2">
@@ -818,7 +818,7 @@ export const BracketBoard = ({
             return (
               <div key={round.id} className="flex min-w-[230px] flex-1 basis-0 flex-col">
                 <div className="border-b border-[var(--border)] pb-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
+                  <p className="text-xs font-semibold whitespace-nowrap uppercase tracking-[0.24em] text-[var(--accent-text)]">
                     {getRoundLabel(round.id)}
                   </p>
                 </div>
