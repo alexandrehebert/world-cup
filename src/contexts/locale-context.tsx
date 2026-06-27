@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, type R
 import { en } from '../translations/en'
 import { fr } from '../translations/fr'
 import { useAuth } from './auth-context'
+import { LOCALE_COOKIE_NAME, LOCALE_STORAGE_KEY } from '../lib/user-preferences'
 import type { TranslationSet } from '../translations/types'
 import type { LocaleCode } from '../types/tournament'
 
@@ -24,7 +25,7 @@ const detectLocale = (): LocaleCode => {
     return 'en'
   }
 
-  const storedLocale = typeof localStorage === 'undefined' ? null : localStorage.getItem('locale')
+  const storedLocale = typeof localStorage === 'undefined' ? null : localStorage.getItem(LOCALE_STORAGE_KEY)
   if (storedLocale === 'en' || storedLocale === 'fr') {
     return storedLocale
   }
@@ -32,18 +33,28 @@ const detectLocale = (): LocaleCode => {
   return navigator.language.toLowerCase().startsWith('fr') ? 'fr' : 'en'
 }
 
-export const LocaleProvider = ({ children }: { children: ReactNode }) => {
+export const LocaleProvider = ({
+  children,
+  initialLocale,
+}: {
+  children: ReactNode
+  initialLocale?: LocaleCode
+}) => {
   const { user, updateUserPreferences } = useAuth()
-  const [locale, setLocaleState] = useState<LocaleCode>(detectLocale)
+  const [locale, setLocaleState] = useState<LocaleCode>(() => initialLocale ?? detectLocale())
   const isApplyingUserLocaleRef = useRef(false)
 
-  const setLocale = (nextLocale: LocaleCode) => {
-    setLocaleState(nextLocale)
+  const setLocale = (nextLocale: LocaleCode) => setLocaleState(nextLocale)
 
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('locale', nextLocale)
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return
     }
-  }
+
+    document.documentElement.lang = locale
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale)
+    document.cookie = `${LOCALE_COOKIE_NAME}=${encodeURIComponent(locale)}; Path=/; Max-Age=31536000; SameSite=Lax`
+  }, [locale])
 
   useEffect(() => {
     const preferredLocale = user?.preferences?.locale
@@ -58,7 +69,6 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
       }
 
       isApplyingUserLocaleRef.current = true
-      localStorage.setItem('locale', preferredLocale)
       return preferredLocale
     })
   }, [user?.preferences?.locale])

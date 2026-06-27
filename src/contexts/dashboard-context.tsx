@@ -152,14 +152,16 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [matchesById, teamsById])
   const [selectedMatchId, setSelectedMatchIdState] = useState<string | null>(() => {
-    if (typeof window === 'undefined') {
-      return null
-    }
-
-    return getMatchIdFromSearch(window.location.pathname, window.location.search, pathToMatchId, slugToMatchId, matchesById)
+    return getMatchIdFromSearch(location.pathname, location.search, pathToMatchId, slugToMatchId, matchesById)
   })
   const [selectedTeamId, setSelectedTeamIdState] = useState<string | null>(null)
-  const [favoriteTeamIds, setFavoriteTeamIds] = useState<string[]>(readFavoriteTeamsFromStorage)
+  const [favoriteTeamIds, setFavoriteTeamIds] = useState<string[]>(() => {
+    if (Array.isArray(user?.preferences?.favoriteTeamIds)) {
+      return user.preferences.favoriteTeamIds
+    }
+
+    return []
+  })
   const isApplyingUserFavoritesRef = useRef(false)
 
   const setSelectedMatchId = useCallback((matchId: string | null) => {
@@ -209,6 +211,18 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const clearFavoriteTeams = useCallback(() => {
     setFavoriteTeamIds([])
   }, [])
+
+  useEffect(() => {
+    if (user) {
+      return
+    }
+
+    const storedFavoriteTeamIds = readFavoriteTeamsFromStorage()
+
+    setFavoriteTeamIds((current) => (
+      areFavoriteListsEqual(current, storedFavoriteTeamIds) ? current : storedFavoriteTeamIds
+    ))
+  }, [user])
 
   useEffect(() => {
     if (typeof window === 'undefined') {

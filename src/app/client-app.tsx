@@ -1,8 +1,6 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 'use client'
 
-import { useEffect, useState } from 'react'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, MemoryRouter } from 'react-router-dom'
 import 'flag-icons/css/flag-icons.min.css'
 import App from '../App'
 import { AuthProvider } from '../contexts/auth-context'
@@ -20,27 +18,23 @@ import type { TournamentData } from '../types/tournament'
 export default function ClientApp({
   initialData,
   bootstrapData,
+  initialPath = '/',
 }: {
   initialData?: TournamentData
   bootstrapData?: ClientBootstrapData
+  initialPath?: string
 }) {
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  if (!isMounted) {
-    return null
-  }
+  const isServerRender = typeof window === 'undefined'
+  const Router = isServerRender ? MemoryRouter : BrowserRouter
+  const routerProps = isServerRender ? { initialEntries: [initialPath] } : undefined
 
   return (
-    <BrowserRouter>
+    <Router {...routerProps}>
       <BootstrapProvider value={bootstrapData ?? null}>
         <AuthProvider initialUser={bootstrapData?.initialUser} sessionResolved={bootstrapData?.sessionResolved ?? false}>
-          <ThemeProvider>
-            <TimeProvider>
-              <LocaleProvider>
+          <ThemeProvider initialThemePreference={bootstrapData?.initialThemePreference ?? undefined}>
+            <TimeProvider initialNowMs={bootstrapData?.initialNowMs} initialTimeZone={bootstrapData?.initialTimeZone}>
+              <LocaleProvider initialLocale={bootstrapData?.initialLocale}>
                 <TournamentProvider initialData={initialData}>
                   <PredictionsProvider
                     initialPredictions={bootstrapData?.initialPredictions}
@@ -58,6 +52,6 @@ export default function ClientApp({
           </ThemeProvider>
         </AuthProvider>
       </BootstrapProvider>
-    </BrowserRouter>
+    </Router>
   )
 }

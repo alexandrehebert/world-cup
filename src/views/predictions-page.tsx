@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/auth-context'
 import { useLeaderboardBootstrap } from '../contexts/leaderboard-context'
 import { useLocale } from '../contexts/locale-context'
 import { usePredictions } from '../contexts/predictions-context'
-import { useNow } from '../contexts/time-context'
+import { useNow, useTimeZone } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
 import { ClosedMatchCard } from '../components/predictions/closed-match-card'
 import { OpenMatchCard } from '../components/predictions/open-match-card'
@@ -22,14 +22,16 @@ const buildDayGroups = (
   matches: MatchRecord[],
   locale: ReturnType<typeof useLocale>['locale'],
   todayLabel: string,
+  nowMs: number,
+  fallbackTimeZone: string,
 ): DayGroup[] => {
   const dateLocale = getDateLocale(locale)
   const groups = new Map<string, DayGroup>()
-  const todayKey = getMatchDayKey(new Date().toISOString())
+  const todayKey = getMatchDayKey(new Date(nowMs).toISOString(), fallbackTimeZone)
 
   for (const match of matches) {
     const date = new Date(match.kickoff)
-    const resolvedTz = match.venue.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+    const resolvedTz = match.venue.timeZone ?? fallbackTimeZone
     const dayKey = getMatchDayKey(match.kickoff, match.venue.timeZone)
     const existing = groups.get(dayKey)
 
@@ -57,6 +59,7 @@ export const PredictionsPage = () => {
   const { upcomingMatches, teamsById } = useTournament()
   const navigate = useNavigate()
   const nowMs = useNow()
+  const timeZone = useTimeZone()
   const { isCopied: isLeaderboardCopied, share: shareLeaderboard } = useShareLink('/leaderboard')
   const [isLeaderboardDrawerOpen, setIsLeaderboardDrawerOpen] = useState(false)
   const [leaderboardEntries, setLeaderboardEntries] = useState<RankedLeaderboardEntry[]>(initialEntries)
@@ -122,13 +125,13 @@ export const PredictionsPage = () => {
   const todayKey = useMemo(() => getMatchDayKey(new Date(nowMs).toISOString()), [nowMs])
 
   const groupedOpen = useMemo(
-    () => buildDayGroups(openMatches, locale, t.labels.today),
-    [openMatches, locale, t.labels.today],
+    () => buildDayGroups(openMatches, locale, t.labels.today, nowMs, timeZone),
+    [openMatches, locale, nowMs, t.labels.today, timeZone],
   )
 
   const groupedClosed = useMemo(
-    () => buildDayGroups(closedMatches, locale, t.labels.today),
-    [closedMatches, locale, t.labels.today],
+    () => buildDayGroups(closedMatches, locale, t.labels.today, nowMs, timeZone),
+    [closedMatches, locale, nowMs, t.labels.today, timeZone],
   )
 
   const mobileTodayMatches = useMemo(() => {
@@ -162,7 +165,7 @@ export const PredictionsPage = () => {
           existing.items.push({ match, isOpen })
         } else {
           const date = new Date(match.kickoff)
-          const resolvedTz = match.venue.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+          const resolvedTz = match.venue.timeZone ?? timeZone
           const dayLabel = dayKey === todayKey
             ? t.labels.today
             : new Intl.DateTimeFormat(dateLocale, { dateStyle: 'full', timeZone: resolvedTz }).format(date)
@@ -174,7 +177,7 @@ export const PredictionsPage = () => {
     add(openMatches, true)
     add(closedMatches, false)
     return [...dayMap.values()]
-  }, [openMatches, closedMatches, locale, todayKey, t.labels.today])
+  }, [openMatches, closedMatches, locale, timeZone, todayKey, t.labels.today])
 
   const desktopLeftSections = useMemo(
     () => desktopDaySections

@@ -264,6 +264,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function SlugPage({ params }: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await params
+  const initialPath = `/${slug.map((segment) => encodeURIComponent(segment)).join('/')}`
   const tournamentData = await loadTournamentData()
   const first = slug?.[0]?.toLowerCase()
   const isPredictRoute = first === 'predict' && slug?.[2]?.toLowerCase() === 'vs'
@@ -277,5 +278,5 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
     publicMatchId: match?.id,
   })
 
-  return <ClientApp initialData={tournamentData} bootstrapData={bootstrapData} />
+  return <ClientApp initialData={tournamentData} bootstrapData={bootstrapData} initialPath={initialPath} />
 }

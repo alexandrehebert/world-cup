@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseSessionToken, sessionCookieName } from '../../../../server/auth'
 import { getUserById, updateUserPreferences } from '../../../../server/kv-store'
+import {
+  LOCALE_COOKIE_NAME,
+  THEME_PREFERENCE_COOKIE_NAME,
+  isLocaleCode,
+  isThemePreference,
+} from '../../../../lib/user-preferences'
 import type { UserPreferences } from '../../../../types/predictions'
 
 type PreferencesBody = Partial<UserPreferences>
@@ -36,12 +42,36 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         preferences: refreshedUser.preferences ?? {},
       },
       { status: 200 },
     )
+    const localePreference = refreshedUser.preferences?.locale
+    if (isLocaleCode(localePreference)) {
+      response.cookies.set({
+        name: LOCALE_COOKIE_NAME,
+        value: localePreference,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 365,
+      })
+    }
+    const themePreference = refreshedUser.preferences?.themePreference
+    if (isThemePreference(themePreference)) {
+      response.cookies.set({
+        name: THEME_PREFERENCE_COOKIE_NAME,
+        value: themePreference,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 365,
+      })
+    }
+
+    return response
   } catch {
     return NextResponse.json({ error: 'Unable to save preferences' }, { status: 500 })
   }

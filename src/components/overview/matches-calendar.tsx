@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
-import { useNow } from '../../contexts/time-context'
+import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -58,8 +58,9 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
   const { locale, t } = useLocale()
   const { teamsById } = useTournament()
   const nowMs = useNow()
+  const timeZone = useTimeZone()
   const dateLocale = getDateLocale(locale)
-  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const localTimeZone = timeZone
 
   const calendarData = useMemo(() => {
     const byDay = new Map<string, MatchRecord[]>()
@@ -106,7 +107,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
     return startOfIsoWeekUtc(new Date(earliestKickoff))
   }, [matches])
 
-  const todayParts = getDateParts(new Date(), Intl.DateTimeFormat().resolvedOptions().timeZone)
+  const todayParts = getDateParts(new Date(nowMs), localTimeZone)
   const todayMonthKey = toMonthKey(todayParts.year, todayParts.month)
   const fallbackIndex = calendarData.monthKeys.length > 0 ? 0 : -1
   const initialIndex = Math.max(calendarData.monthKeys.indexOf(todayMonthKey), fallbackIndex)

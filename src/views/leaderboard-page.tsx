@@ -20,6 +20,10 @@ export const LeaderboardPage = () => {
   const actionButtonClassName = 'appearance-none inline-flex h-10 w-10 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface-soft)] text-sm font-semibold leading-normal text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto sm:justify-start sm:gap-2 sm:px-3 sm:py-2'
 
   useEffect(() => {
+    if (initialEntries.length > 0) {
+      return
+    }
+
     const loadLeaderboard = async () => {
       try {
         const response = await fetch('/api/leaderboard?limit=100', {
@@ -39,7 +43,7 @@ export const LeaderboardPage = () => {
     }
 
     void loadLeaderboard()
-  }, [])
+  }, [initialEntries.length])
 
   return (
     <section className="space-y-4">

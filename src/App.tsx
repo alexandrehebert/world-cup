@@ -1,5 +1,5 @@
 import { Header } from './components/layout/header'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { DashboardLayout } from './components/layout/dashboard-layout'
 import { OverviewPage } from './views/overview-page'
 import { GroupsPage } from './views/groups-page'
@@ -14,7 +14,7 @@ function App() {
   return (
     <Routes>
       <Route element={<DashboardLayout header={<Header />} />}>
-        <Route index element={<Navigate to="/overview" replace />} />
+        <Route index element={<OverviewPage />} />
         <Route path="/overview" element={<OverviewPage />} />
         <Route path="/groups" element={<GroupsPage />} />
         <Route path="/matches" element={<MatchesPage />} />

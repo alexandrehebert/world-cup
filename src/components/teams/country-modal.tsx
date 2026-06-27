@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
-import { useNow } from '../../contexts/time-context'
+import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import {
   formatMatchDate,
@@ -36,7 +36,7 @@ export const CountryModal = () => {
   const { locale, t } = useLocale()
   const { teamsById, groupsById, matches } = useTournament()
   const nowMs = useNow()
-  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const localTimeZone = useTimeZone()
 
   const team = selectedTeamId ? teamsById[selectedTeamId] : undefined
 

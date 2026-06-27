@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
+import { useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate } from '../../lib/format'
 import { Icon } from '../../lib/icons'
@@ -15,6 +16,7 @@ export const OpenMatchCard = ({ match }: Props) => {
   const navigate = useNavigate()
   const { getMatchPredictionPath } = useDashboard()
   const { locale, t } = useLocale()
+  const timeZone = useTimeZone()
   const { teamsById } = useTournament()
   const { predictionsByMatch, predictionDistributionsByMatch } = usePredictions()
 
@@ -52,7 +54,7 @@ export const OpenMatchCard = ({ match }: Props) => {
   const trendPos = Math.round((drawShare * 50 + awayShare * 100) * 10) / 10
   const trendTooltip = `${homeLabel}: ${Math.round(homeShare * 100)}% • ${t.labels.draw}: ${Math.round(drawShare * 100)}% • ${awayLabel}: ${Math.round(awayShare * 100)}%`
 
-  const { localDateTime } = formatMatchDate(match.kickoff, locale, Intl.DateTimeFormat().resolvedOptions().timeZone, t.labels.today)
+  const { localDateTime } = formatMatchDate(match.kickoff, locale, timeZone, t.labels.today)
 
   return (
     <button

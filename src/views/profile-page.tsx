@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useLocale } from '../contexts/locale-context'
+import { useTimeZone } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
 import { formatMatchDate } from '../lib/format'
 import { Icon } from '../lib/icons'
@@ -40,7 +41,7 @@ export const ProfilePage = () => {
   const { username } = useParams<{ username: string }>()
   const { locale, t } = useLocale()
   const { matchesById, teamsById } = useTournament()
-  const resolvedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const resolvedTimeZone = useTimeZone()
   const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isMissing, setIsMissing] = useState(false)

@@ -1,5 +1,6 @@
 import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
+import { useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate } from '../../lib/format'
 import { Icon } from '../../lib/icons'
@@ -20,6 +21,7 @@ const STATUS_CLASS = {
 
 export const ClosedMatchCard = ({ match }: Props) => {
   const { locale, t } = useLocale()
+  const timeZone = useTimeZone()
   const { teamsById } = useTournament()
   const { predictionsByMatch } = usePredictions()
 
@@ -29,7 +31,7 @@ export const ClosedMatchCard = ({ match }: Props) => {
   const awayLabel = awayTeam ? (t.teams[awayTeam.id] ?? awayTeam.name) : t.labels.tbd
 
   const prediction = predictionsByMatch[match.id]
-  const { localDateTime } = formatMatchDate(match.kickoff, locale, Intl.DateTimeFormat().resolvedOptions().timeZone, t.labels.today)
+  const { localDateTime } = formatMatchDate(match.kickoff, locale, timeZone, t.labels.today)
 
   const isLive = match.status === 'live'
   const isFinished = match.status === 'finished'

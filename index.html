@@ -2,6 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <style>
+      #loader-root {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 12% -8%, rgba(0, 217, 143, 0.19), transparent 35%),
+          radial-gradient(circle at 90% 8%, rgba(0, 160, 255, 0.22), transparent 41%),
+          linear-gradient(160deg, #070e19 0%, #0d1728 52%, #111f35 100%);
+        color: #00d98f;
+        opacity: 1;
+        pointer-events: auto;
+        transition: opacity 300ms ease-out;
+      }
+
+      [data-theme='light'] #loader-root {
+        background: radial-gradient(circle at 7% 2%, rgba(0, 123, 79, 0.18), transparent 31%),
+          radial-gradient(circle at 97% 0%, rgba(40, 127, 207, 0.2), transparent 39%),
+          linear-gradient(180deg, #f6fbff 0%, #e9f3fb 55%, #deebf8 100%);
+        color: #007b4f;
+      }
+
+      [data-theme='colorblind'] #loader-root {
+        background: radial-gradient(circle at 16% -8%, rgba(255, 176, 0, 0.17), transparent 35%),
+          radial-gradient(circle at 88% 10%, rgba(70, 140, 220, 0.2), transparent 43%),
+          linear-gradient(160deg, #0a1424 0%, #0f1d33 52%, #12233b 100%);
+        color: #ffb000;
+      }
+
+      .loader-svg {
+        width: 120px;
+        height: 120px;
+        color: inherit;
+        animation: loader-spin 2s linear infinite;
+      }
+
+      @keyframes loader-spin {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
     <script>
       ;(() => {
         try {
@@ -33,6 +81,14 @@
     <title>World Cup</title>
   </head>
   <body>
+    <div id="loader-root">
+      <svg class="loader-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+        <path
+          fill="currentColor"
+          d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm200-500 54-18 16-54q-32-48-77-82.5T574-786l-54 38v56l160 112Zm-400 0 160-112v-56l-54-38q-54 17-99 51.5T210-652l16 54 54 18Zm-42 308 46-4 30-54-58-174-56-20-40 30q0 65 18 118.5T238-272Zm293 108q25-4 49-12l28-60-26-44H378l-26 44 28 60q24 8 49 12t51 4q26 0 51-4ZM390-360h180l56-160-146-102-144 102 54 160Zm332 88q42-50 60-103.5T800-494l-40-28-56 18-58 174 30 54 46 4Z"
+        />
+      </svg>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

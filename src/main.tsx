@@ -32,6 +32,26 @@ const bootstrapTournamentData = async (): Promise<TournamentData | undefined> =>
   }
 }
 
+const hideBootstrapLoader = async () => {
+  const loader = document.getElementById('loader-root')
+  if (!loader) {
+    return
+  }
+
+  if (document.fonts) {
+    await document.fonts.ready
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 120))
+
+  loader.style.opacity = '0'
+  loader.style.pointerEvents = 'none'
+
+  window.setTimeout(() => {
+    loader.remove()
+  }, 300)
+}
+
 const renderApp = async () => {
   const initialTournamentData = await bootstrapTournamentData()
 
@@ -52,6 +72,8 @@ const renderApp = async () => {
       </BrowserRouter>
     </StrictMode>,
   )
+
+  void hideBootstrapLoader()
 }
 
 void renderApp()

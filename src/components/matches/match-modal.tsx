@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/auth-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
-import { useNow } from '../../contexts/time-context'
+import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
@@ -79,6 +79,7 @@ export const MatchModal = () => {
   const { locale, t } = useLocale()
   const { predictionsByMatch, savePrediction, savingMatchId } = usePredictions()
   const nowMs = useNow()
+  const timeZone = useTimeZone()
   const [isCopied, setIsCopied] = useState(false)
   const [selectedOutcome, setSelectedOutcome] = useState<MatchOutcome | null>(null)
   const [scoreInput, setScoreInput] = useState({ home: '', away: '' })
@@ -152,7 +153,7 @@ export const MatchModal = () => {
   const hasScore = hasDisplayScore(match, nowMs)
   const homeWon = displayStatus === 'finished' && hasScore && (match.home.score ?? 0) > (match.away.score ?? 0)
   const awayWon = displayStatus === 'finished' && hasScore && (match.away.score ?? 0) > (match.home.score ?? 0)
-  const { localDateTime } = formatMatchDate(match.kickoff, locale, undefined, t.labels.today)
+  const { localDateTime } = formatMatchDate(match.kickoff, locale, timeZone, t.labels.today)
   const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
   const displayTime = displayStatus === 'live' ? getMatchDisplayTime(match, t.labels, nowMs, locale) : localTime
   const venueUtcOffset = getUtcOffsetLabel(match.kickoff, match.venue.timeZone)

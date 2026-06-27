@@ -49,7 +49,7 @@ export const PredictionsProvider = ({
   initialPredictions?: PredictionRecord[]
   initialPredictionDistributions?: PredictionDistribution[]
 }) => {
-  const hasInitialPredictions = initialPredictions !== undefined
+  const hasInitialBootstrapData = initialPredictions !== undefined && initialPredictionDistributions !== undefined
   const [predictionsByMatch, setPredictionsByMatch] = useState<Record<string, PredictionRecord>>(() =>
     Object.fromEntries((initialPredictions ?? []).map((prediction) => [prediction.matchId, prediction])),
   )
@@ -89,9 +89,12 @@ export const PredictionsProvider = ({
   }, [])
 
   useEffect(() => {
-    const shouldShowLoading = !hasInitialPredictions
-    void refreshPredictions({ showLoading: shouldShowLoading })
-  }, [hasInitialPredictions, refreshPredictions])
+    if (hasInitialBootstrapData) {
+      return
+    }
+
+    void refreshPredictions({ showLoading: true })
+  }, [hasInitialBootstrapData, refreshPredictions])
 
   const savePrediction = useCallback(async ({ matchId, outcome, homeScore, awayScore }: SavePredictionInput) => {
     const hasHomeScore = homeScore !== undefined && String(homeScore).trim().length > 0

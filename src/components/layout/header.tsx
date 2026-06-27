@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/auth-context'
 import { useLocale } from '../../contexts/locale-context'
+import { useTimeZone } from '../../contexts/time-context'
 import { Icon } from '../../lib/icons'
 import { LocaleSwitcher } from './locale-switcher'
 import { ThemeToggle } from './theme-toggle'
@@ -12,6 +13,7 @@ const getUserInitial = (username: string) => username.trim().charAt(0).toUpperCa
 
 export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isCompact?: boolean }) => {
   const { locale, t } = useLocale()
+  const timeZone = useTimeZone()
   const { user, logout, openAuthModal } = useAuth()
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false)
   const [isMobileSettingsMenuOpen, setIsMobileSettingsMenuOpen] = useState(false)
@@ -87,6 +89,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
               ? `${meta.host} · ${meta.season} · ${new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', {
                   dateStyle: 'medium',
                   timeStyle: 'short',
+                  timeZone,
                 }).format(new Date(meta.updatedAt))}`
               : ''}
           </p>

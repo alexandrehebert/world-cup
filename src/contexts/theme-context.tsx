@@ -1,6 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from './auth-context'
+import {
+  THEME_PREFERENCE_COOKIE_NAME,
+  THEME_PREFERENCE_STORAGE_KEY,
+  isThemePreference,
+} from '../lib/user-preferences'
 
 export type ThemePreference = 'light' | 'dark' | 'colorblind'
 export type ResolvedTheme = 'light' | 'dark'
@@ -12,7 +17,6 @@ interface ThemeContextValue {
   toggleTheme: () => void
 }
 
-const THEME_STORAGE_KEY = 'theme-preference'
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
 const getSystemTheme = (): ResolvedTheme => {
@@ -28,18 +32,24 @@ const getStoredPreference = (): ThemePreference => {
     return 'dark'
   }
 
-  const storedPreference = window.localStorage.getItem(THEME_STORAGE_KEY)
+  const storedPreference = window.localStorage.getItem(THEME_PREFERENCE_STORAGE_KEY)
 
-  if (storedPreference === 'light' || storedPreference === 'dark' || storedPreference === 'colorblind') {
+  if (isThemePreference(storedPreference)) {
     return storedPreference
   }
 
   return getSystemTheme()
 }
 
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+export const ThemeProvider = ({
+  children,
+  initialThemePreference,
+}: {
+  children: ReactNode
+  initialThemePreference?: ThemePreference
+}) => {
   const { user, updateUserPreferences } = useAuth()
-  const [themePreference, setThemePreference] = useState<ThemePreference>(getStoredPreference)
+  const [themePreference, setThemePreference] = useState<ThemePreference>(() => initialThemePreference ?? getStoredPreference())
   const isApplyingUserThemeRef = useRef(false)
   const resolvedTheme: ResolvedTheme = themePreference === 'light' ? 'light' : 'dark'
 
@@ -49,7 +59,8 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     root.setAttribute('data-theme', themePreference)
 
     root.style.colorScheme = resolvedTheme
-    window.localStorage.setItem(THEME_STORAGE_KEY, themePreference)
+    window.localStorage.setItem(THEME_PREFERENCE_STORAGE_KEY, themePreference)
+    document.cookie = `${THEME_PREFERENCE_COOKIE_NAME}=${encodeURIComponent(themePreference)}; Path=/; Max-Age=31536000; SameSite=Lax`
   }, [resolvedTheme, themePreference])
 
   useEffect(() => {

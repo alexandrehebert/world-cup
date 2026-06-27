@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
-import { useNow } from '../../contexts/time-context'
+import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
@@ -13,7 +13,7 @@ const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (local
 
 const getMatchDayKey = (kickoff: string, timeZone?: string) => {
   const date = new Date(kickoff)
-  const resolvedTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+  const resolvedTimeZone = timeZone ?? 'UTC'
 
   return new Intl.DateTimeFormat('en-CA', {
     year: 'numeric',
@@ -68,7 +68,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
   const { isFavoriteTeam, favoriteTeamIds, setSelectedTeamId } = useDashboard()
   const { teamsById } = useTournament()
   const nowMs = useNow()
-  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const localTimeZone = useTimeZone()
   const anyFavoriteVisible = useMemo(
     () => favoriteTeamIds.length > 0 && matches.some((m) => (m.home.teamId && favoriteTeamIds.includes(m.home.teamId)) || (m.away.teamId && favoriteTeamIds.includes(m.away.teamId))),
     [favoriteTeamIds, matches],
@@ -76,11 +76,11 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
   const groupedMatches = useMemo(() => {
     const dateLocale = getDateLocale(locale)
     const groups = new Map<string, { dayLabel: string; matches: MatchRecord[] }>()
-    const todayKey = getMatchDayKey(new Date().toISOString())
+    const todayKey = getMatchDayKey(new Date(nowMs).toISOString(), localTimeZone)
 
     for (const match of matches) {
       const date = new Date(match.kickoff)
-      const resolvedTimeZone = match.venue.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+      const resolvedTimeZone = match.venue.timeZone ?? localTimeZone
       const dayKey = getMatchDayKey(match.kickoff, match.venue.timeZone)
       const existingGroup = groups.get(dayKey)
 
@@ -101,7 +101,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
     }
 
     return [...groups.values()]
-  }, [locale, matches, t.labels.today])
+  }, [locale, localTimeZone, matches, nowMs, t.labels.today])
 
   return (
     <div className="space-y-6">

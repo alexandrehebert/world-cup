@@ -7,7 +7,7 @@ import { ModalShell } from '../components/ui/modal-shell'
 import { useAuth } from '../contexts/auth-context'
 import { useBootstrapData } from '../contexts/bootstrap-context'
 import { useLocale } from '../contexts/locale-context'
-import { useNow } from '../contexts/time-context'
+import { useNow, useTimeZone } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
 import { formatMatchDate } from '../lib/format'
 import { Icon } from '../lib/icons'
@@ -50,6 +50,7 @@ export const MatchPredictionPage = () => {
   const bootstrapData = useBootstrapData()
   const { locale, t } = useLocale()
   const nowMs = useNow()
+  const timeZone = useTimeZone()
   const { matchesById, teamsById } = useTournament()
   const bootstrapPublicPrediction = bootstrapData?.initialPublicMatchPrediction
   const [predictionsByMatchId, setPredictionsByMatchId] = useState<Record<string, PublicPredictionResponse>>(() =>
@@ -136,6 +137,9 @@ export const MatchPredictionPage = () => {
     if (!matchId) {
       return
     }
+    if (cachedPredictionResponse) {
+      return
+    }
 
     const controller = new AbortController()
 
@@ -175,7 +179,7 @@ export const MatchPredictionPage = () => {
     return () => {
       controller.abort()
     }
-  }, [applyPublicPredictionResponse, matchId, t.labels.saveFailed])
+  }, [applyPublicPredictionResponse, cachedPredictionResponse, matchId, t.labels.saveFailed])
 
   useEffect(() => {
     setSelectedOutcome(persistedOutcome)
@@ -264,7 +268,7 @@ export const MatchPredictionPage = () => {
     )
   }
 
-  const { localDateTime } = formatMatchDate(match.kickoff, locale, undefined, t.labels.today)
+  const { localDateTime } = formatMatchDate(match.kickoff, locale, timeZone, t.labels.today)
   const totalPredictions = distribution?.totalPredictions ?? 0
   const homeShare = totalPredictions > 0 && distribution ? distribution.homeCount / totalPredictions : 0
   const drawShare = totalPredictions > 0 && distribution ? distribution.drawCount / totalPredictions : 0
@@ -432,7 +436,7 @@ export const MatchPredictionPage = () => {
               <div className="min-w-0 space-y-1">
                 <p className="truncate text-sm font-semibold text-[var(--text-strong)]">{prediction.displayName}</p>
                 <p className="text-xs text-[var(--text-muted)]">
-                  {new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(prediction.updatedAt))}
+                  {new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', { dateStyle: 'short', timeStyle: 'short', timeZone }).format(new Date(prediction.updatedAt))}
                 </p>
                 {currentOutcome !== null ? (
                   <p className={`inline-flex items-center gap-1 text-[11px] font-semibold ${

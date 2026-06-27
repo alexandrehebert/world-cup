@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/auth-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
-import { useNow } from '../../contexts/time-context'
+import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, getDisplayMatchStatus, getLocalizedText, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
@@ -17,7 +17,7 @@ const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (local
 
 const getMatchDayKey = (kickoff: string, timeZone?: string) => {
   const date = new Date(kickoff)
-  const resolvedTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+  const resolvedTimeZone = timeZone ?? 'UTC'
 
   return new Intl.DateTimeFormat('en-CA', {
     year: 'numeric',
@@ -82,7 +82,7 @@ export const MatchesList = ({
   const { predictionsByMatch, savePrediction, savingMatchId } = usePredictions()
   const { teamsById } = useTournament()
   const nowMs = useNow()
-  const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const localTimeZone = useTimeZone()
   const anyFavoriteVisible = useMemo(
     () => favoriteTeamIds.length > 0 && matches.some((m) => (m.home.teamId && favoriteTeamIds.includes(m.home.teamId)) || (m.away.teamId && favoriteTeamIds.includes(m.away.teamId))),
     [favoriteTeamIds, matches],
@@ -94,7 +94,7 @@ export const MatchesList = ({
 
     for (const match of matches) {
       const date = new Date(match.kickoff)
-      const resolvedTimeZone = match.venue.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+      const resolvedTimeZone = match.venue.timeZone ?? localTimeZone
       const dayKey = getMatchDayKey(match.kickoff, match.venue.timeZone)
       const existingGroup = groups.get(dayKey)
 
@@ -121,7 +121,7 @@ export const MatchesList = ({
     const pastSections = sections.filter((section) => section.dayKey < todayKey).sort((a, b) => b.dayKey.localeCompare(a.dayKey))
 
     return [...todaySections, ...futureSections, ...pastSections]
-  }, [locale, matches, nowMs, t.labels.today])
+  }, [locale, localTimeZone, matches, nowMs, t.labels.today])
 
   return (
     <div className="space-y-6">
