@@ -416,18 +416,25 @@ export const BracketBoard = ({
     )
   }
 
-  const renderCondensedMatchCard = (matchId: string) => {
+  const thirdPlaceRound = rounds.find((round) => round.id === 'thirdPlace')
+  const mainRounds = rounds.filter((round) => round.id !== 'thirdPlace')
+
+  const renderCondensedMatchCard = (
+    matchId: string,
+    projectedHomeTeamId?: string,
+    projectedAwayTeamId?: string,
+  ) => {
     const match = matchesById[matchId]
     if (!match) return null
 
     const isForecastPathMatch = forecastPath?.pathMatchIds.has(match.id) ?? false
     const shouldResolveUnknownTeams = Boolean(forecastTeamId)
-    const homeTeamId = match.home.teamId ?? (
+    const homeTeamId = projectedHomeTeamId ?? match.home.teamId ?? (
       shouldResolveUnknownTeams
         ? getProjectedTeamIdFromParticipant(match.home, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
         : undefined
     )
-    const awayTeamId = match.away.teamId ?? (
+    const awayTeamId = projectedAwayTeamId ?? match.away.teamId ?? (
       shouldResolveUnknownTeams
         ? getProjectedTeamIdFromParticipant(match.away, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
         : undefined
@@ -516,8 +523,59 @@ export const BracketBoard = ({
                   style={{ minHeight: `${sideTrackHeight}px`, paddingTop: `${metrics.topOffset}px` }}
                 >
                   <div className="flex flex-col" style={{ gap: `${metrics.gap}px` }}>
-                    {round.matchIds.map((matchId, matchIndex) => {
-                      const isForecastPathMatch = forecastPath?.pathMatchIds.has(matchId) ?? false
+                    {(() => {
+                      const projectedTeamIdsInRound = new Set<string>()
+
+                      round.matchIds.forEach((matchId) => {
+                        const candidateMatch = matchesById[matchId]
+                        if (!candidateMatch) return
+                        if (candidateMatch.home.teamId) projectedTeamIdsInRound.add(candidateMatch.home.teamId)
+                        if (candidateMatch.away.teamId) projectedTeamIdsInRound.add(candidateMatch.away.teamId)
+                      })
+
+                      const resolveProjectedTopTeamId = (
+                        participant: ParticipantRef | undefined,
+                      ) => {
+                        if (!participant?.placeholder || !shouldResolveUnknownTeams) return undefined
+
+                        const projectedTeamId = getProjectedTeamIdFromParticipant(
+                          participant,
+                          placeholderResolutionContext,
+                          new Set(),
+                          forcedWinnerByMatchId,
+                        )
+
+                        if (!projectedTeamId) return undefined
+                        if (!projectedTeamIdsInRound.has(projectedTeamId)) {
+                          projectedTeamIdsInRound.add(projectedTeamId)
+                          return projectedTeamId
+                        }
+
+                        const [placeholderType, placeholderValue] = participant.placeholder.split(':')
+                        if (placeholderType !== 'G3') return undefined
+
+                        const fallbackTeamId = placeholderValue
+                          .split('')
+                          .map((candidateGroupId) => groupsByIdMap.get(candidateGroupId)?.standings[2])
+                          .filter((standing): standing is StandingRecord => Boolean(standing))
+                          .sort((first, second) => compareStandings(first, second))
+                          .map((standing) => standing.teamId)
+                          .find((teamId) => !projectedTeamIdsInRound.has(teamId))
+
+                        if (!fallbackTeamId) return undefined
+                        projectedTeamIdsInRound.add(fallbackTeamId)
+                        return fallbackTeamId
+                      }
+
+                      return round.matchIds.map((matchId, matchIndex) => {
+                        const match = matchesById[matchId]
+                        const projectedHomeTeamId = match?.home.teamId
+                          ? undefined
+                          : resolveProjectedTopTeamId(match?.home)
+                        const projectedAwayTeamId = match?.away.teamId
+                          ? undefined
+                          : resolveProjectedTopTeamId(match?.away)
+                        const isForecastPathMatch = forecastPath?.pathMatchIds.has(matchId) ?? false
                       const nextMatchId = round.matchIds[matchIndex + 1]
                       const nextIsForecastPathMatch = (
                         nextMatchId
@@ -588,10 +646,11 @@ export const BracketBoard = ({
                             />
                           ) : null}
 
-                          {renderCondensedMatchCard(matchId)}
+                          {renderCondensedMatchCard(matchId, projectedHomeTeamId, projectedAwayTeamId)}
                         </div>
                       )
-                    })}
+                    })
+                    })()}
                   </div>
                 </div>
               </div>
@@ -602,8 +661,6 @@ export const BracketBoard = ({
     )
   }
 
-  const thirdPlaceRound = rounds.find((round) => round.id === 'thirdPlace')
-  const mainRounds = rounds.filter((round) => round.id !== 'thirdPlace')
   const mainRoundMatchIdsById = useMemo(
     () => new Map(mainRounds.map((round) => [round.id, round.matchIds])),
     [mainRounds],
@@ -789,7 +846,7 @@ export const BracketBoard = ({
                 </p>
                 <div className="space-y-2">
                   {thirdPlaceRound?.matchIds.length ? (
-                    thirdPlaceRound.matchIds.map((matchId) => renderCondensedMatchCard(matchId))
+                  thirdPlaceRound.matchIds.map((matchId) => renderCondensedMatchCard(matchId))
                   ) : (
                     <div className="rounded-[var(--radius-sm)] border border-dashed border-[var(--border)] bg-[var(--surface-soft)] p-2 text-xs text-[var(--text-soft)]">
                       {t.labels.comingSoon}
@@ -826,7 +883,52 @@ export const BracketBoard = ({
                 <div className="relative mt-4" style={{ minHeight: `${boardTrackHeight}px`, paddingTop: `${metrics.topOffset}px` }}>
                   <div className="flex flex-col" style={{ gap: `${metrics.gap}px` }}>
                     {round.matchIds.length > 0 ? (
-                      round.matchIds.map((matchId, matchIndex) => {
+                      (() => {
+                        const projectedTeamIdsInRound = new Set<string>()
+
+                        round.matchIds.forEach((matchId) => {
+                          const candidateMatch = matchesById[matchId]
+                          if (!candidateMatch) return
+                          if (candidateMatch.home.teamId) projectedTeamIdsInRound.add(candidateMatch.home.teamId)
+                          if (candidateMatch.away.teamId) projectedTeamIdsInRound.add(candidateMatch.away.teamId)
+                        })
+
+                        const resolveProjectedTopTeamId = (
+                          participant: ParticipantRef | undefined,
+                          shouldProjectParticipant: boolean,
+                        ) => {
+                          if (!participant?.placeholder || !shouldProjectParticipant) return undefined
+
+                          const projectedTeamId = getProjectedTeamIdFromParticipant(
+                            participant,
+                            placeholderResolutionContext,
+                            new Set(),
+                            forcedWinnerByMatchId,
+                          )
+
+                          if (!projectedTeamId) return undefined
+                          if (!projectedTeamIdsInRound.has(projectedTeamId)) {
+                            projectedTeamIdsInRound.add(projectedTeamId)
+                            return projectedTeamId
+                          }
+
+                          const [placeholderType, placeholderValue] = participant.placeholder.split(':')
+                          if (placeholderType !== 'G3') return undefined
+
+                          const fallbackTeamId = placeholderValue
+                            .split('')
+                            .map((candidateGroupId) => groupsByIdMap.get(candidateGroupId)?.standings[2])
+                            .filter((standing): standing is StandingRecord => Boolean(standing))
+                            .sort((first, second) => compareStandings(first, second))
+                            .map((standing) => standing.teamId)
+                            .find((teamId) => !projectedTeamIdsInRound.has(teamId))
+
+                          if (!fallbackTeamId) return undefined
+                          projectedTeamIdsInRound.add(fallbackTeamId)
+                          return fallbackTeamId
+                        }
+
+                        return round.matchIds.map((matchId, matchIndex) => {
                         const match = matchesById[matchId]
                         const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                         const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
@@ -853,20 +955,26 @@ export const BracketBoard = ({
                               match.away.placeholder?.startsWith('G3:'),
                           )
                         const homeTopTeamId = !homeTeam && match.home.placeholder
-                          ? (shouldResolveUnknownTeams || shouldShowHomeRoundOf32GroupTopTeam)
-                            ? getProjectedTeamIdFromParticipant(match.home, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
-                            : undefined
+                          ? resolveProjectedTopTeamId(match.home, shouldResolveUnknownTeams || shouldShowHomeRoundOf32GroupTopTeam)
                           : undefined
                         const awayTopTeamId = !awayTeam && match.away.placeholder
-                          ? (shouldResolveUnknownTeams || shouldShowAwayRoundOf32GroupTopTeam)
-                            ? getProjectedTeamIdFromParticipant(match.away, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
-                            : undefined
+                          ? resolveProjectedTopTeamId(match.away, shouldResolveUnknownTeams || shouldShowAwayRoundOf32GroupTopTeam)
                           : undefined
+                        const displayedHomeTeamId = homeTeam?.id ?? homeTopTeamId
+                        const displayedAwayTeamId = awayTeam?.id ?? awayTopTeamId
                         const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
                         const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
                         const hasFavorite = homeIsFavorite || awayIsFavorite
                         const isForecastPathMatch = forecastPath?.pathMatchIds.has(match.id) ?? false
-                        const projectedOpponentTeamId = forecastPath?.projectedOpponentByMatchId.get(match.id)
+                        const projectedOpponentTeamId = (
+                          forecastTeamId && isForecastPathMatch
+                            ? displayedHomeTeamId === forecastTeamId
+                              ? displayedAwayTeamId
+                              : displayedAwayTeamId === forecastTeamId
+                                ? displayedHomeTeamId
+                                : forecastPath?.projectedOpponentByMatchId.get(match.id)
+                            : forecastPath?.projectedOpponentByMatchId.get(match.id)
+                        )
                         const projectedOpponentTeam = projectedOpponentTeamId ? teamsById[projectedOpponentTeamId] : undefined
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
                         const showVerticalBridge =
@@ -1006,6 +1114,7 @@ export const BracketBoard = ({
                           </div>
                         )
                       })
+                      })()
                     ) : (
                       <div className="border border-dashed border-[var(--border)] bg-[var(--surface-soft)] p-4 text-sm text-[var(--text-soft)]">
                         {t.labels.comingSoon}
