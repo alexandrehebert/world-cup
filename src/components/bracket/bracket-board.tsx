@@ -517,37 +517,71 @@ export const BracketBoard = ({
                 >
                   <div className="flex flex-col" style={{ gap: `${metrics.gap}px` }}>
                     {round.matchIds.map((matchId, matchIndex) => {
+                      const isForecastPathMatch = forecastPath?.pathMatchIds.has(matchId) ?? false
+                      const nextMatchId = round.matchIds[matchIndex + 1]
+                      const nextIsForecastPathMatch = (
+                        nextMatchId
+                          ? (forecastPath?.pathMatchIds.has(nextMatchId) ?? false)
+                          : false
+                      )
                       const showVerticalBridge =
                         connectsTowardCenter && matchIndex % 2 === 0 && matchIndex + 1 < round.matchIds.length
+                      const bridgeHeight = CONDENSED_NODE_HEIGHT + metrics.gap
+                      const highlightedBridgeHalfHeight = bridgeHeight / 2
 
                       return (
                         <div key={`${round.id}-${matchId}`} className="relative">
                           {hasPreviousRound ? (
                             <span
-                              className="pointer-events-none absolute top-1/2 -left-[8px] z-0 h-px bg-[var(--border)]"
+                              className={`pointer-events-none absolute top-1/2 -left-[8px] z-0 ${
+                                isForecastPathMatch
+                                  ? 'h-[2px] bg-[var(--accent-border)]'
+                                  : 'h-px bg-[var(--border)]'
+                              }`}
                               style={{ width: `${CONDENSED_CONNECTOR_WIDTH / 2}px` }}
                             />
                           ) : null}
 
                           {showVerticalBridge ? (
-                            <span
-                              className={`pointer-events-none absolute top-1/2 z-0 w-px bg-[var(--border)] ${
-                                startsAtCenter ? '-left-[8px]' : '-right-[8px]'
-                              }`}
-                              style={{ height: `${CONDENSED_NODE_HEIGHT + metrics.gap}px` }}
-                            />
+                            <>
+                              <span
+                                className={`pointer-events-none absolute top-1/2 z-0 w-px bg-[var(--border)] ${
+                                  startsAtCenter ? '-left-[8px]' : '-right-[8px]'
+                                }`}
+                                style={{ height: `${bridgeHeight}px` }}
+                              />
+                              {(isForecastPathMatch || nextIsForecastPathMatch) ? (
+                                <span
+                                  className={`pointer-events-none absolute z-0 w-[2px] bg-[var(--accent-border)] ${
+                                    startsAtCenter ? '-left-[8px]' : '-right-[8px]'
+                                  }`}
+                                  style={{
+                                    top: isForecastPathMatch ? '50%' : `calc(50% + ${highlightedBridgeHalfHeight}px)`,
+                                    height: `${highlightedBridgeHalfHeight}px`,
+                                  }}
+                                />
+                              ) : null}
+                            </>
                           ) : null}
 
                           {hasForwardConnection ? (
                             <span
-                              className="pointer-events-none absolute top-1/2 left-full z-0 h-px bg-[var(--border)]"
+                              className={`pointer-events-none absolute top-1/2 left-full z-0 ${
+                                isForecastPathMatch
+                                  ? 'h-[2px] bg-[var(--accent-border)]'
+                                  : 'h-px bg-[var(--border)]'
+                              }`}
                               style={{ width: `${CONDENSED_CONNECTOR_WIDTH / 2}px` }}
                             />
                           ) : null}
 
                           {isCenterConnectorRound ? (
                             <span
-                              className={`pointer-events-none absolute top-1/2 z-0 h-px bg-[var(--border)] ${
+                              className={`pointer-events-none absolute top-1/2 z-0 ${
+                                isForecastPathMatch
+                                  ? 'h-[2px] bg-[var(--accent-border)]'
+                                  : 'h-px bg-[var(--border)]'
+                              } ${
                                 centerConnectionSide === 'right' ? 'left-full' : '-left-[8px]'
                               }`}
                               style={{ width: `${CONDENSED_CONNECTOR_WIDTH / 2}px` }}
@@ -659,6 +693,22 @@ export const BracketBoard = ({
     const finalMatchId = finalRound?.matchIds[0]
     return finalMatchId ? matchesById[finalMatchId] : undefined
   }, [mainRounds, matchesById])
+  const finalHomeSemiSourceMatchId = useMemo(
+    () => (
+      finalMatch
+        ? getWinnerSourceMatchId(finalMatch.home, 'semiFinal', mainRoundMatchIdsById)
+        : undefined
+    ),
+    [finalMatch, mainRoundMatchIdsById],
+  )
+  const finalAwaySemiSourceMatchId = useMemo(
+    () => (
+      finalMatch
+        ? getWinnerSourceMatchId(finalMatch.away, 'semiFinal', mainRoundMatchIdsById)
+        : undefined
+    ),
+    [finalMatch, mainRoundMatchIdsById],
+  )
   const condensedOuterRoundMatchCount = useMemo(
     () =>
       Math.max(
@@ -711,8 +761,20 @@ export const BracketBoard = ({
               </p>
               <div className="relative mt-3" style={{ minHeight: `${condensedTrackHeight}px` }}>
                 <div className="absolute left-0 right-0" style={{ top: `${condensedSemiTopOffset}px` }}>
-                  <span className="pointer-events-none absolute top-1/2 -left-2 h-px w-2 bg-[var(--border)]" />
-                  <span className="pointer-events-none absolute top-1/2 -right-2 h-px w-2 bg-[var(--border)]" />
+                  <span
+                    className={`pointer-events-none absolute top-1/2 -left-2 w-2 ${
+                      finalHomeSemiSourceMatchId && (forecastPath?.pathMatchIds.has(finalHomeSemiSourceMatchId) ?? false)
+                        ? 'h-[2px] bg-[var(--accent-border)]'
+                        : 'h-px bg-[var(--border)]'
+                    }`}
+                  />
+                  <span
+                    className={`pointer-events-none absolute top-1/2 -right-2 w-2 ${
+                      finalAwaySemiSourceMatchId && (forecastPath?.pathMatchIds.has(finalAwaySemiSourceMatchId) ?? false)
+                        ? 'h-[2px] bg-[var(--accent-border)]'
+                        : 'h-px bg-[var(--border)]'
+                    }`}
+                  />
                   {finalMatch ? renderCondensedMatchCard(finalMatch.id) : (
                     <div className="rounded-[var(--radius-sm)] border border-dashed border-[var(--border)] bg-[var(--surface-soft)] p-2 text-xs text-[var(--text-soft)]">
                       {t.labels.comingSoon}
@@ -809,26 +871,53 @@ export const BracketBoard = ({
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
                         const showVerticalBridge =
                           hasNextRound && matchIndex % 2 === 0 && matchIndex + 1 < round.matchIds.length
+                        const nextMatchId = round.matchIds[matchIndex + 1]
+                        const nextIsForecastPathMatch = (
+                          nextMatchId
+                            ? (forecastPath?.pathMatchIds.has(nextMatchId) ?? false)
+                            : false
+                        )
+                        const bridgeHeight = nodeHeight + metrics.gap
+                        const highlightedBridgeHalfHeight = bridgeHeight / 2
 
                         return (
                           <div key={match.id} className="relative">
                             {hasPreviousRound ? (
                               <span
-                                className="pointer-events-none absolute top-1/2 -left-[16px] z-0 h-px bg-[var(--border)]"
+                                className={`pointer-events-none absolute top-1/2 -left-[16px] z-0 ${
+                                  isForecastPathMatch
+                                    ? 'h-[2px] bg-[var(--accent-border)]'
+                                    : 'h-px bg-[var(--border)]'
+                                }`}
                                 style={{ width: `${CONNECTOR_WIDTH / 2}px` }}
                               />
                             ) : null}
 
                             {showVerticalBridge ? (
-                              <span
-                                className="pointer-events-none absolute top-1/2 -right-[16px] z-0 w-px bg-[var(--border)]"
-                                style={{ height: `${nodeHeight + metrics.gap}px` }}
-                              />
+                              <>
+                                <span
+                                  className="pointer-events-none absolute top-1/2 -right-[16px] z-0 w-px bg-[var(--border)]"
+                                  style={{ height: `${bridgeHeight}px` }}
+                                />
+                                {(isForecastPathMatch || nextIsForecastPathMatch) ? (
+                                  <span
+                                    className="pointer-events-none absolute -right-[16px] z-0 w-[2px] bg-[var(--accent-border)]"
+                                    style={{
+                                      top: isForecastPathMatch ? '50%' : `calc(50% + ${highlightedBridgeHalfHeight}px)`,
+                                      height: `${highlightedBridgeHalfHeight}px`,
+                                    }}
+                                  />
+                                ) : null}
+                              </>
                             ) : null}
 
                             {hasNextRound ? (
                               <span
-                                className="pointer-events-none absolute top-1/2 left-full z-0 h-px bg-[var(--border)]"
+                                className={`pointer-events-none absolute top-1/2 left-full z-0 ${
+                                  isForecastPathMatch
+                                    ? 'h-[2px] bg-[var(--accent-border)]'
+                                    : 'h-px bg-[var(--border)]'
+                                }`}
                                 style={{ width: `${CONNECTOR_WIDTH / 2}px` }}
                               />
                             ) : null}
