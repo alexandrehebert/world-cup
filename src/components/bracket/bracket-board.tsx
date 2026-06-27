@@ -436,12 +436,18 @@ export const BracketBoard = ({
     const renderFlag = (teamId: string | undefined) => {
       const team = teamId ? teamsById[teamId] : undefined
       if (!team) {
-        return <span className="inline-flex h-6 w-6" />
+        return (
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-[8px] border border-dashed border-[var(--border)] p-[2px]">
+            <span className="h-full w-full rounded-[6px] border border-dashed border-[var(--border)]/60" />
+          </span>
+        )
       }
 
       return (
-        <span className="inline-flex h-6 w-6 items-center overflow-hidden rounded-[6px] border border-[var(--border)]">
-          <span className={`fi fi-${team.flagCode} flag-avatar-fill`} aria-hidden="true" />
+        <span className="inline-flex h-7 w-7 items-center justify-center rounded-[8px] border border-[var(--border)] p-[2px]">
+          <span className="inline-flex h-full w-full items-center overflow-hidden rounded-[6px]">
+            <span className={`fi fi-${team.flagCode} flag-avatar-fill`} aria-hidden="true" />
+          </span>
           <span className="sr-only">{t.teams[team.id] ?? team.name}</span>
         </span>
       )
@@ -464,7 +470,7 @@ export const BracketBoard = ({
         style={{ height: `${CONDENSED_NODE_HEIGHT}px` }}
         onClick={() => setSelectedMatchId(match.id)}
       >
-        <div className="flex h-full items-center justify-center gap-2">
+        <div className="flex h-full items-center justify-between gap-2 px-1">
           {renderFlag(homeTeamId)}
           <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{t.labels.vs}</span>
           {renderFlag(awayTeamId)}
@@ -838,7 +844,7 @@ export const BracketBoard = ({
                               }}
                               className={`relative z-10 cursor-pointer overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                               hasFavorite
-                                ? 'border-l-4 border-l-[var(--accent)] bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)]'
+                                ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
                                 : 'hover:bg-[var(--surface-soft)]'
                               } ${isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : ''}`}
                               data-bracket-main-card="true"
@@ -965,7 +971,7 @@ export const BracketBoard = ({
                            }}
                            className={`relative cursor-pointer rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                            hasFavorite
-                             ? 'border-l-4 border-l-[var(--accent)] bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)]'
+                             ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
                              : 'hover:bg-[var(--surface-soft)]'
                           }`}
                           onClick={() => setSelectedMatchId(match.id)}>

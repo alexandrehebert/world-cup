@@ -175,6 +175,7 @@ export const fr: TranslationSet = {
     bracketViewMode: 'Affichage',
     bracketViewDetailed: 'Arbre détaillé',
     bracketViewCondensed: 'Arbre condensé séparé',
+    bracketPathSearchPlaceholder: "Rechercher une équipe pour afficher son parcours le plus probable",
   },
   teams: {
     mex: 'Mexique',

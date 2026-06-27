@@ -175,6 +175,7 @@ export const en: TranslationSet = {
     bracketViewMode: 'View',
     bracketViewDetailed: 'Detailed bracket',
     bracketViewCondensed: 'Condensed split bracket',
+    bracketPathSearchPlaceholder: 'Search a team to show its most probable path',
   },
   teams: {
     mex: 'Mexico',

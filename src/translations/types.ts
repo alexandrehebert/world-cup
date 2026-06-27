@@ -173,6 +173,7 @@ export interface TranslationSet {
     bracketViewMode: string
     bracketViewDetailed: string
     bracketViewCondensed: string
+    bracketPathSearchPlaceholder: string
   }
   teams: Record<string, string>
   groups: Record<string, string>
