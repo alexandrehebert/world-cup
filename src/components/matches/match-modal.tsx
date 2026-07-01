@@ -326,7 +326,7 @@ export const MatchModal = () => {
                   {match.home.score} - {match.away.score}
                 </p>
                 {homePenaltyScore !== null && awayPenaltyScore !== null ? (
-                  <p className="text-sm text-[var(--text-soft)]">
+                  <p className="text-sm text-[var(--text-soft)]" aria-label={`${t.labels.penalties}: ${homePenaltyScore} - ${awayPenaltyScore}`}>
                     ({homePenaltyScore}) {t.labels.penalties} ({awayPenaltyScore})
                   </p>
                 ) : null}

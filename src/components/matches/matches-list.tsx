@@ -259,7 +259,7 @@ export const MatchesList = ({
                               {homeScore} - {awayScore}
                             </p>
                             {homePenaltyScore !== null && awayPenaltyScore !== null ? (
-                              <p className="text-xs text-[var(--text-soft)]">
+                              <p className="text-xs text-[var(--text-soft)]" aria-label={`${t.labels.penalties}: ${homePenaltyScore} - ${awayPenaltyScore}`}>
                                 ({homePenaltyScore}) {t.labels.penalties} ({awayPenaltyScore})
                               </p>
                             ) : null}

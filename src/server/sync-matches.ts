@@ -269,7 +269,7 @@ const extractPenaltyScore = (competitor: EspnCompetitor): number | undefined => 
 
   const penaltyLinescore = linescores.find((ls) => {
     const name = ls?.period?.type?.name?.toLowerCase() ?? ''
-    return name.includes('penalty') || name.includes('shootout') || name.includes('shoot')
+    return name === 'penalty' || name === 'shootout' || name === 'penalty shootout' || name === 'penaltyshootout'
   })
 
   if (penaltyLinescore && typeof penaltyLinescore.points === 'number' && Number.isFinite(penaltyLinescore.points)) {

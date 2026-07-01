@@ -52,6 +52,22 @@ const getRoundSlotKey = (roundId: string, slotIndex: number) => `${roundId}:${sl
 
 const hasNumericScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
 
+const getBracketCardWinner = (match: MatchRecord): 'home' | 'away' | null => {
+  if (match.status !== 'finished') return null
+  const home = match.home.score
+  const away = match.away.score
+  if (!hasNumericScore(home) || !hasNumericScore(away)) return null
+  if (home > away) return 'home'
+  if (away > home) return 'away'
+  const hp = match.home.penaltyScore
+  const ap = match.away.penaltyScore
+  if (hasNumericScore(hp) && hasNumericScore(ap)) {
+    if (hp > ap) return 'home'
+    if (ap > hp) return 'away'
+  }
+  return null
+}
+
 const getWinnerSourceMatchId = (
   participant: ParticipantRef | undefined,
   expectedRoundId: string,
@@ -994,20 +1010,13 @@ export const BracketBoard = ({
                         )
                         const bridgeHeight = nodeHeight + metrics.gap
                         const highlightedBridgeHalfHeight = bridgeHeight / 2
-                        const isMatchFinished = match.status === 'finished'
+                        const cardWinner = getBracketCardWinner(match)
                         const homeScore = hasNumericScore(match.home.score) ? match.home.score : null
                         const awayScore = hasNumericScore(match.away.score) ? match.away.score : null
                         const homePenaltyScore = hasNumericScore(match.home.penaltyScore) ? match.home.penaltyScore : null
                         const awayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
-                        const hasPenalties = homePenaltyScore !== null && awayPenaltyScore !== null
-                        const homeWonBracket = isMatchFinished && homeScore !== null && awayScore !== null && (
-                          homeScore > awayScore ||
-                          (homeScore === awayScore && hasPenalties && (homePenaltyScore as number) > (awayPenaltyScore as number))
-                        )
-                        const awayWonBracket = isMatchFinished && homeScore !== null && awayScore !== null && (
-                          awayScore > homeScore ||
-                          (homeScore === awayScore && hasPenalties && (awayPenaltyScore as number) > (homePenaltyScore as number))
-                        )
+                        const homeWonBracket = cardWinner === 'home'
+                        const awayWonBracket = cardWinner === 'away'
 
                         return (
                           <div key={match.id} className="relative">
@@ -1186,20 +1195,13 @@ export const BracketBoard = ({
                         const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
                         const hasFavorite = homeIsFavorite || awayIsFavorite
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
-                        const isThirdPlaceFinished = match.status === 'finished'
+                        const tpCardWinner = getBracketCardWinner(match)
                         const tpHomeScore = hasNumericScore(match.home.score) ? match.home.score : null
                         const tpAwayScore = hasNumericScore(match.away.score) ? match.away.score : null
                         const tpHomePenaltyScore = hasNumericScore(match.home.penaltyScore) ? match.home.penaltyScore : null
                         const tpAwayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
-                        const tpHasPenalties = tpHomePenaltyScore !== null && tpAwayPenaltyScore !== null
-                        const tpHomeWon = isThirdPlaceFinished && tpHomeScore !== null && tpAwayScore !== null && (
-                          tpHomeScore > tpAwayScore ||
-                          (tpHomeScore === tpAwayScore && tpHasPenalties && (tpHomePenaltyScore as number) > (tpAwayPenaltyScore as number))
-                        )
-                        const tpAwayWon = isThirdPlaceFinished && tpHomeScore !== null && tpAwayScore !== null && (
-                          tpAwayScore > tpHomeScore ||
-                          (tpHomeScore === tpAwayScore && tpHasPenalties && (tpAwayPenaltyScore as number) > (tpHomePenaltyScore as number))
-                        )
+                        const tpHomeWon = tpCardWinner === 'home'
+                        const tpAwayWon = tpCardWinner === 'away'
 
                         return (
                           <div
