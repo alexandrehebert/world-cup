@@ -63,7 +63,7 @@ export const OpenMatchCard = ({ match }: Props) => {
       className="block w-full cursor-pointer text-left"
       aria-label={`${homeLabel} ${t.labels.vs} ${awayLabel}`}
     >
-      <article className="space-y-3 bg-[var(--surface)] p-4 transition hover:bg-[var(--surface-soft)]">
+      <article className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 transition hover:bg-[var(--surface-soft)]">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <p className="text-sm font-semibold text-[var(--text-strong)]">{homeLabel} {t.labels.vs} {awayLabel}</p>

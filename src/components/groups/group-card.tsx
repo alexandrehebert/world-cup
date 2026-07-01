@@ -7,12 +7,12 @@ import { FlagAvatar } from '../ui/flag-avatar'
 export const GroupCard = ({ groupId }: { groupId: string }) => {
   const { t } = useLocale()
   const { isFavoriteTeam, favoriteTeamIds, setSelectedTeamId } = useDashboard()
-  const { groupsById, teamsById } = useTournament()
+  const { groupsById, teamsById, matches } = useTournament()
   const group = groupsById[groupId]
   const anyFavoriteInGroup = favoriteTeamIds.length > 0 && group.standings.some((s) => favoriteTeamIds.includes(s.teamId))
 
   return (
-    <div className="bg-[var(--surface)]">
+    <div className="border border-[var(--border)] bg-[var(--surface)]">
       <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] px-5 py-4">
         <h3 className="text-lg font-bold text-[var(--text-strong)]">{t.groups[group.id] ?? group.label}</h3>
         <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-text)]">
@@ -34,19 +34,31 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
           {group.standings.map((standing, index) => {
             const team = teamsById[standing.teamId]
             const isQualifier = index < 2
+            const isThirdPlaceQualifierCandidate = index === 2
+            const isKnockoutQualified = matches.some(
+              (match) => match.stage !== 'group' && (match.home.teamId === team.id || match.away.teamId === team.id),
+            )
+            const isEliminated = !isQualifier && !isKnockoutQualified
             const isFavorite = isFavoriteTeam(team.id)
+            const leftBorderClass = isQualifier
+              ? 'border-l-[var(--accent)]'
+              : isThirdPlaceQualifierCandidate
+                ? 'border-l-[var(--accent-border)]'
+                : 'border-l-transparent'
+            const rowStateClass = isEliminated
+              ? 'past-match-stripes bg-[var(--surface-soft)] opacity-70 saturate-50 hover:opacity-90'
+              : isFavorite
+                ? 'bg-[var(--accent-muted)] hover:bg-[color:color-mix(in_srgb,var(--accent)_20%,var(--surface)_80%)]'
+                : 'hover:bg-[var(--tab-idle-hover-bg)]'
+            const noRadiusClass = isThirdPlaceQualifierCandidate && isEliminated ? 'rounded-none' : ''
 
             return (
               <div
                 key={standing.teamId}
-                className={`grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] items-center gap-1 px-3 py-3 text-sm transition ${
+                className={`grid grid-cols-[1.95fr_repeat(4,minmax(0,0.3fr))_0.45fr] items-center gap-1 px-3 py-3 text-sm transition ${rowStateClass} ${noRadiusClass} sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 ${
                   isFavorite
-                    ? 'hover:bg-[color:color-mix(in_srgb,var(--accent)_20%,var(--surface)_80%)]'
-                    : 'hover:bg-[var(--tab-idle-hover-bg)]'
-                } sm:grid-cols-[1.55fr_repeat(4,minmax(0,0.4fr))_0.6fr] sm:gap-3 sm:px-5 ${
-                  isFavorite
-                    ? (isQualifier ? 'border-l-4 border-l-[var(--accent)]' : 'border-l-4 border-l-[var(--accent)]') + ' bg-[var(--accent-muted)]'
-                    : (isQualifier ? 'border-l-2 border-l-[var(--accent)]' : 'border-l-2 border-l-transparent') + (anyFavoriteInGroup ? ' opacity-75' : '')
+                    ? `border-l-4 ${leftBorderClass}`
+                    : `border-l-2 ${leftBorderClass}${anyFavoriteInGroup && !isEliminated ? ' opacity-75' : ''}`
                 }`}
               >
                 <button

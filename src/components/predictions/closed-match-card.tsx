@@ -66,7 +66,7 @@ export const ClosedMatchCard = ({ match }: Props) => {
     : 'text-[var(--text-muted)]'
 
   return (
-    <article className={`space-y-3 bg-[var(--surface)] p-4 opacity-90 ${finishedBorderClass}`}>
+    <article className={`space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 opacity-90 ${finishedBorderClass}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <p className="text-sm font-semibold text-[var(--text-strong)]">{homeLabel} vs {awayLabel}</p>
