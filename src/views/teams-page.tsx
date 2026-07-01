@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { FlagAvatar } from '../components/ui/flag-avatar'
 import { useDashboard } from '../contexts/dashboard-context'
 import { useLocale } from '../contexts/locale-context'
@@ -9,6 +10,9 @@ import { Icon } from '../lib/icons'
 import type { MatchRecord } from '../types/tournament'
 
 type TeamStatusFilter = 'all' | 'active' | 'eliminated'
+const FAVORITES_FILTER_PARAM = 'favorites'
+const STATUS_FILTER_PARAM = 'status'
+const QUERY_FILTER_PARAM = 'q'
 
 const stageLabel = (
   stage: MatchRecord['stage'],
@@ -29,9 +33,44 @@ export const TeamsPage = () => {
   const { teamsById, groupsById, matches } = useTournament()
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
-  const [favoritesOnly, setFavoritesOnly] = useState(false)
-  const [statusFilter, setStatusFilter] = useState<TeamStatusFilter>('all')
-  const [query, setQuery] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const favoritesOnly = searchParams.get(FAVORITES_FILTER_PARAM) === '1'
+  const statusFilterParam = searchParams.get(STATUS_FILTER_PARAM)
+  const statusFilter: TeamStatusFilter = statusFilterParam === 'active' || statusFilterParam === 'eliminated' ? statusFilterParam : 'all'
+  const query = searchParams.get(QUERY_FILTER_PARAM) ?? ''
+  const setFavoritesOnly = (nextValue: boolean) => {
+    const nextParams = new URLSearchParams(searchParams)
+
+    if (nextValue) {
+      nextParams.set(FAVORITES_FILTER_PARAM, '1')
+    } else {
+      nextParams.delete(FAVORITES_FILTER_PARAM)
+    }
+
+    setSearchParams(nextParams, { replace: true })
+  }
+  const setStatusFilter = (nextValue: TeamStatusFilter) => {
+    const nextParams = new URLSearchParams(searchParams)
+
+    if (nextValue === 'all') {
+      nextParams.delete(STATUS_FILTER_PARAM)
+    } else {
+      nextParams.set(STATUS_FILTER_PARAM, nextValue)
+    }
+
+    setSearchParams(nextParams, { replace: true })
+  }
+  const setQuery = (nextValue: string) => {
+    const nextParams = new URLSearchParams(searchParams)
+
+    if (nextValue.trim().length > 0) {
+      nextParams.set(QUERY_FILTER_PARAM, nextValue)
+    } else {
+      nextParams.delete(QUERY_FILTER_PARAM)
+    }
+
+    setSearchParams(nextParams, { replace: true })
+  }
 
   const groupByTeamId = useMemo(() => {
     const mapping: Record<string, { id: string; standingIndex: number; standing: NonNullable<(typeof groupsById)[string]['standings'][number] | undefined> }> = {}
@@ -130,7 +169,7 @@ export const TeamsPage = () => {
         <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
           <button
             type="button"
-            onClick={() => setFavoritesOnly((current) => !current)}
+            onClick={() => setFavoritesOnly(!favoritesOnly)}
             disabled={favoriteTeamIds.length === 0}
             className={`inline-flex h-10 flex-1 items-center justify-center gap-2 border px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none ${
               favoritesOnly

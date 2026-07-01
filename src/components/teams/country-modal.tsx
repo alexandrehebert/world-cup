@@ -117,7 +117,7 @@ export const CountryModal = () => {
         key={match.id}
         type="button"
         onClick={() => openMatch(match.id)}
-        className={`w-full text-left transition ${
+        className={`w-full appearance-none rounded-none border-0 text-left transition focus:outline-none focus-visible:outline-none ${
           isFinished
             ? 'past-match-stripes bg-[var(--surface-soft)] opacity-70 saturate-50 hover:opacity-90'
             : isLive
@@ -261,7 +261,7 @@ export const CountryModal = () => {
                 <LivePulse className="h-2.5 w-2.5" />
                 {t.labels.liveMatchesSection}
               </p>
-              <div className="divide-y divide-[var(--border)] border border-[var(--border)]">
+              <div className="overflow-hidden rounded-[var(--radius-sm)] divide-y divide-[var(--border)] border border-[var(--border)]">
                 {liveMatches.map(renderMatchRow)}
               </div>
             </div>
@@ -272,7 +272,7 @@ export const CountryModal = () => {
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--text-soft)]">
                 {t.labels.upcomingMatchesSection}
               </p>
-              <div className="divide-y divide-[var(--border)] border border-[var(--border)]">
+              <div className="overflow-hidden rounded-[var(--radius-sm)] divide-y divide-[var(--border)] border border-[var(--border)]">
                 {upcomingMatches.map(renderMatchRow)}
               </div>
             </div>
@@ -283,7 +283,7 @@ export const CountryModal = () => {
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--text-soft)]">
                 {t.labels.pastMatchesSection}
               </p>
-              <div className="divide-y divide-[var(--border)] border border-[var(--border)]">
+              <div className="overflow-hidden rounded-[var(--radius-sm)] divide-y divide-[var(--border)] border border-[var(--border)]">
                 {pastMatches.map(renderMatchRow)}
               </div>
             </div>

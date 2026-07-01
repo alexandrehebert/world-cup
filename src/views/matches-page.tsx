@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type SetStateAction } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useDashboard } from '../contexts/dashboard-context'
 import { useLocale } from '../contexts/locale-context'
 import { useTournament } from '../contexts/tournament-context'
@@ -6,12 +7,14 @@ import { MatchesList } from '../components/matches/matches-list'
 import { Icon } from '../lib/icons'
 import { getLocalizedText } from '../lib/format'
 
+const FAVORITES_FILTER_PARAM = 'favorites'
+const TEAM_CODES_FILTER_PARAM = 'teams'
+
 export const MatchesPage = () => {
   const { locale, t } = useLocale()
   const { favoriteTeamIds } = useDashboard()
   const { upcomingMatches, teamsById } = useTournament()
-  const [favoritesOnly, setFavoritesOnly] = useState(false)
-  const [selectedTeamIds, setSelectedTeamIds] = useState<string[]>([])
+  const [searchParams, setSearchParams] = useSearchParams()
   const [countryQuery, setCountryQuery] = useState('')
   const [isCountryMenuOpen, setIsCountryMenuOpen] = useState(false)
   const countryFilterRef = useRef<HTMLDivElement>(null)
@@ -40,6 +43,95 @@ export const MatchesPage = () => {
       .filter((team): team is NonNullable<typeof team> => Boolean(team))
       .sort((first, second) => getTeamLabel(first).localeCompare(getTeamLabel(second)))
   }, [getTeamLabel, teamsById, upcomingMatches])
+
+  const { teamIdToCode, codeToTeamId } = useMemo(() => {
+    const idToCode: Record<string, string> = {}
+    const codeToId: Record<string, string> = {}
+
+    for (const team of Object.values(teamsById)) {
+      const normalizedCode = team.code.trim().toUpperCase()
+
+      if (!normalizedCode) {
+        continue
+      }
+
+      idToCode[team.id] = normalizedCode
+
+      if (!codeToId[normalizedCode]) {
+        codeToId[normalizedCode] = team.id
+      }
+    }
+
+    return {
+      teamIdToCode: idToCode,
+      codeToTeamId: codeToId,
+    }
+  }, [teamsById])
+
+  const updateFilterParams = useCallback((updater: (params: URLSearchParams) => void) => {
+    const nextParams = new URLSearchParams(searchParams)
+    updater(nextParams)
+
+    if (nextParams.toString() === searchParams.toString()) {
+      return
+    }
+
+    setSearchParams(nextParams, { replace: true })
+  }, [searchParams, setSearchParams])
+
+  const favoritesOnly = searchParams.get(FAVORITES_FILTER_PARAM) === '1'
+  const selectedTeamIds = useMemo(() => {
+    const serializedTeamCodes = searchParams.get(TEAM_CODES_FILTER_PARAM)
+
+    if (!serializedTeamCodes) {
+      return [] as string[]
+    }
+
+    const uniqueTeamIds = new Set<string>()
+
+    for (const teamCode of serializedTeamCodes.split(',')) {
+      const normalizedCode = teamCode.trim().toUpperCase()
+
+      if (!normalizedCode) {
+        continue
+      }
+
+      const teamId = codeToTeamId[normalizedCode]
+
+      if (teamId) {
+        uniqueTeamIds.add(teamId)
+      }
+    }
+
+    return [...uniqueTeamIds]
+  }, [codeToTeamId, searchParams])
+
+  const setFavoritesOnly = useCallback((nextValue: boolean) => {
+    updateFilterParams((params) => {
+      if (nextValue) {
+        params.set(FAVORITES_FILTER_PARAM, '1')
+      } else {
+        params.delete(FAVORITES_FILTER_PARAM)
+      }
+    })
+  }, [updateFilterParams])
+
+  const setSelectedTeamIds = useCallback((nextTeamIds: SetStateAction<string[]>) => {
+    updateFilterParams((params) => {
+      const resolvedTeamIds = typeof nextTeamIds === 'function' ? nextTeamIds(selectedTeamIds) : nextTeamIds
+      const serializedTeamCodes = resolvedTeamIds
+        .map((teamId) => teamIdToCode[teamId])
+        .filter((teamCode): teamCode is string => Boolean(teamCode))
+        .join(',')
+
+      if (!serializedTeamCodes) {
+        params.delete(TEAM_CODES_FILTER_PARAM)
+        return
+      }
+
+      params.set(TEAM_CODES_FILTER_PARAM, serializedTeamCodes)
+    })
+  }, [selectedTeamIds, teamIdToCode, updateFilterParams])
 
   const filteredMatches = useMemo(() => {
     let matches = upcomingMatches
@@ -116,7 +208,7 @@ export const MatchesPage = () => {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
         <button
           type="button"
-          onClick={() => setFavoritesOnly((current) => !current)}
+          onClick={() => setFavoritesOnly(!favoritesOnly)}
           disabled={favoriteTeamIds.length === 0}
           className={`inline-flex w-full shrink-0 items-center gap-2 border px-3 py-0 h-10 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto ${
             favoritesOnly

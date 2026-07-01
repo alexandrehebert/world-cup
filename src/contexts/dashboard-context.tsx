@@ -68,6 +68,13 @@ const normalizeSlugPart = (value: string) => {
 
 const normalizeMatchCode = (value: string) => value.trim().toUpperCase()
 const normalizeTeamCode = (value: string) => value.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
+const getSearchWithoutLegacyMatchParam = (search: string) => {
+  const params = new URLSearchParams(search)
+  params.delete(MATCH_QUERY_PARAM)
+  const nextSearch = params.toString()
+
+  return nextSearch ? `?${nextSearch}` : ''
+}
 
 const getMatchPathDetails = (pathname: string): { section: MatchPathSection; pathKey: string } | null => {
   const match = pathname.match(MATCH_PATH_REGEX)
@@ -373,7 +380,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       navigate(
         {
           pathname: `/${currentMatchSection === 'bracket' ? 'bracket' : 'match'}/${nextMatchPath}`,
-          search: '',
+          search: getSearchWithoutLegacyMatchParam(location.search),
         },
         { replace: false },
       )
@@ -384,14 +391,18 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       navigate(
         {
           pathname: currentMatchSection === 'bracket' ? '/bracket' : '/matches',
-          search: '',
+          search: getSearchWithoutLegacyMatchParam(location.search),
         },
         { replace: false },
       )
     }
-  }, [location.pathname, matchIdToPath, navigate, selectedMatchId])
+  }, [location.pathname, location.search, matchIdToPath, navigate, selectedMatchId])
 
   useEffect(() => {
+    if (selectedMatchId !== null) {
+      return
+    }
+
     const currentTeamCode = getTeamPathCode(location.pathname)
     const nextTeamCode = selectedTeamId ? (teamIdToCode[selectedTeamId] ?? null) : null
     const isTeamsRoute = location.pathname === '/teams' || location.pathname === '/team'
@@ -409,7 +420,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       navigate(
         {
           pathname: `/team/${nextTeamCode}`,
-          search: '',
+          search: location.search,
         },
         { replace: false },
       )
@@ -420,12 +431,12 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       navigate(
         {
           pathname: '/teams',
-          search: '',
+          search: location.search,
         },
         { replace: false },
       )
     }
-  }, [location.pathname, navigate, selectedTeamId, teamIdToCode])
+  }, [location.pathname, location.search, navigate, selectedMatchId, selectedTeamId, teamIdToCode])
 
   const value = useMemo(
     () => ({

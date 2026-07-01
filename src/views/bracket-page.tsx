@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useLocale } from '../contexts/locale-context'
 import { useTournament } from '../contexts/tournament-context'
 import { BracketBoard } from '../components/bracket/bracket-board'
@@ -6,18 +7,68 @@ import { Icon } from '../lib/icons'
 import { getTopTeamFromPlaceholder } from '../lib/bracket'
 
 type BracketViewMode = 'detailed' | 'condensed'
+const FORECAST_TEAM_FILTER_PARAM = 'team'
+const VIEW_MODE_FILTER_PARAM = 'view'
 
 export const BracketPage = () => {
   const { t } = useLocale()
   const { bracketRounds, teams, matchesById, groupsById } = useTournament()
-  const [forecastTeamId, setForecastTeamId] = useState<string>('')
   const [kalshiProbabilitiesByPairKey, setKalshiProbabilitiesByPairKey] = useState<Record<string, Record<string, number>>>({})
   const [hasLoadedKalshiPredictions, setHasLoadedKalshiPredictions] = useState(false)
-  const [viewMode, setViewMode] = useState<BracketViewMode>('detailed')
+  const [searchParams, setSearchParams] = useSearchParams()
   const [teamQuery, setTeamQuery] = useState('')
   const [isTeamMenuOpen, setIsTeamMenuOpen] = useState(false)
   const teamFilterRef = useRef<HTMLDivElement>(null)
   const teamInputRef = useRef<HTMLInputElement>(null)
+  const { teamIdToCode, codeToTeamId } = useMemo(() => {
+    const idToCode: Record<string, string> = {}
+    const codeToId: Record<string, string> = {}
+
+    for (const team of teams) {
+      const normalizedCode = team.code.trim().toUpperCase()
+
+      if (!normalizedCode) {
+        continue
+      }
+
+      idToCode[team.id] = normalizedCode
+
+      if (!codeToId[normalizedCode]) {
+        codeToId[normalizedCode] = team.id
+      }
+    }
+
+    return {
+      teamIdToCode: idToCode,
+      codeToTeamId: codeToId,
+    }
+  }, [teams])
+  const serializedTeamCode = searchParams.get(FORECAST_TEAM_FILTER_PARAM)?.trim().toUpperCase() ?? ''
+  const forecastTeamId = serializedTeamCode ? (codeToTeamId[serializedTeamCode] ?? '') : ''
+  const viewMode = searchParams.get(VIEW_MODE_FILTER_PARAM) === 'condensed' ? 'condensed' : 'detailed'
+  const setForecastTeamId = (nextTeamId: string) => {
+    const nextParams = new URLSearchParams(searchParams)
+    const nextTeamCode = nextTeamId ? teamIdToCode[nextTeamId] : undefined
+
+    if (nextTeamCode) {
+      nextParams.set(FORECAST_TEAM_FILTER_PARAM, nextTeamCode)
+    } else {
+      nextParams.delete(FORECAST_TEAM_FILTER_PARAM)
+    }
+
+    setSearchParams(nextParams, { replace: true })
+  }
+  const setViewMode = (nextViewMode: BracketViewMode) => {
+    const nextParams = new URLSearchParams(searchParams)
+
+    if (nextViewMode === 'condensed') {
+      nextParams.set(VIEW_MODE_FILTER_PARAM, 'condensed')
+    } else {
+      nextParams.delete(VIEW_MODE_FILTER_PARAM)
+    }
+
+    setSearchParams(nextParams, { replace: true })
+  }
   const knockoutAutocompleteTeams = useMemo(() => {
     const roundOf32 = bracketRounds.find((round) => round.id === 'roundOf32')
     const groupsByIdMap = new Map(Object.entries(groupsById))
