@@ -52,6 +52,22 @@ const getRoundSlotKey = (roundId: string, slotIndex: number) => `${roundId}:${sl
 
 const hasNumericScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
 
+const getBracketCardWinner = (match: MatchRecord): 'home' | 'away' | null => {
+  if (match.status !== 'finished') return null
+  const home = match.home.score
+  const away = match.away.score
+  if (!hasNumericScore(home) || !hasNumericScore(away)) return null
+  if (home > away) return 'home'
+  if (away > home) return 'away'
+  const hp = match.home.penaltyScore
+  const ap = match.away.penaltyScore
+  if (hasNumericScore(hp) && hasNumericScore(ap)) {
+    if (hp > ap) return 'home'
+    if (ap > hp) return 'away'
+  }
+  return null
+}
+
 const getWinnerSourceMatchId = (
   participant: ParticipantRef | undefined,
   expectedRoundId: string,
@@ -148,10 +164,17 @@ const pickMostProbableWinner = (
   if (
     match.status === 'finished' &&
     hasNumericScore(match.home.score) &&
-    hasNumericScore(match.away.score) &&
-    match.home.score !== match.away.score
+    hasNumericScore(match.away.score)
   ) {
-    return match.home.score > match.away.score ? homeTeamId : awayTeamId
+    if (match.home.score !== match.away.score) {
+      return match.home.score > match.away.score ? homeTeamId : awayTeamId
+    }
+    // Tied after regulation/AET — check penalty scores
+    if (hasNumericScore(match.home.penaltyScore) && hasNumericScore(match.away.penaltyScore)) {
+      if (match.home.penaltyScore !== match.away.penaltyScore) {
+        return match.home.penaltyScore > match.away.penaltyScore ? homeTeamId : awayTeamId
+      }
+    }
   }
 
   const homeStanding = context.standingsByTeamId.get(homeTeamId)
@@ -987,6 +1010,13 @@ export const BracketBoard = ({
                         )
                         const bridgeHeight = nodeHeight + metrics.gap
                         const highlightedBridgeHalfHeight = bridgeHeight / 2
+                        const cardWinner = getBracketCardWinner(match)
+                        const homeScore = hasNumericScore(match.home.score) ? match.home.score : null
+                        const awayScore = hasNumericScore(match.away.score) ? match.away.score : null
+                        const homePenaltyScore = hasNumericScore(match.home.penaltyScore) ? match.home.penaltyScore : null
+                        const awayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
+                        const homeWonBracket = cardWinner === 'home'
+                        const awayWonBracket = cardWinner === 'away'
 
                         return (
                           <div key={match.id} className="relative">
@@ -1056,7 +1086,7 @@ export const BracketBoard = ({
                                     renderPotentialTeamAvatar(homeTopTeamId)
                                   )}
                                   <div className="min-w-0 flex-1">
-                                    <span className="inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
+                                    <span className={`inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold ${homeWonBracket ? 'text-[var(--accent-text)]' : 'text-[var(--text-strong)]'}`}>
                                       <span className="truncate">
                                         {homeTeam
                                         ? t.teams[homeTeam.id] ?? homeTeam.name
@@ -1070,6 +1100,11 @@ export const BracketBoard = ({
                                       )
                                     )}
                                   </div>
+                                  {homeScore !== null && (
+                                    <span className={`shrink-0 text-sm font-bold ${homeWonBracket ? 'text-[var(--accent-text)]' : 'text-[var(--text-strong)]'}`}>
+                                      {homeScore}{homePenaltyScore !== null ? ` (${homePenaltyScore})` : ''}
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="flex min-w-0 items-center gap-2.5 pb-1">
                                   {awayTeam ? (
@@ -1078,7 +1113,7 @@ export const BracketBoard = ({
                                     renderPotentialTeamAvatar(awayTopTeamId)
                                   )}
                                   <div className="min-w-0 flex-1">
-                                    <span className="inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
+                                    <span className={`inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold ${awayWonBracket ? 'text-[var(--accent-text)]' : 'text-[var(--text-strong)]'}`}>
                                       <span className="truncate">
                                         {awayTeam
                                         ? t.teams[awayTeam.id] ?? awayTeam.name
@@ -1092,6 +1127,11 @@ export const BracketBoard = ({
                                       )
                                     )}
                                   </div>
+                                  {awayScore !== null && (
+                                    <span className={`shrink-0 text-sm font-bold ${awayWonBracket ? 'text-[var(--accent-text)]' : 'text-[var(--text-strong)]'}`}>
+                                      {awayScore}{awayPenaltyScore !== null ? ` (${awayPenaltyScore})` : ''}
+                                    </span>
+                                  )}
                                 </div>
                               </div>
 
@@ -1155,6 +1195,13 @@ export const BracketBoard = ({
                         const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
                         const hasFavorite = homeIsFavorite || awayIsFavorite
                         const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
+                        const tpCardWinner = getBracketCardWinner(match)
+                        const tpHomeScore = hasNumericScore(match.home.score) ? match.home.score : null
+                        const tpAwayScore = hasNumericScore(match.away.score) ? match.away.score : null
+                        const tpHomePenaltyScore = hasNumericScore(match.home.penaltyScore) ? match.home.penaltyScore : null
+                        const tpAwayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
+                        const tpHomeWon = tpCardWinner === 'home'
+                        const tpAwayWon = tpCardWinner === 'away'
 
                         return (
                           <div
@@ -1181,7 +1228,7 @@ export const BracketBoard = ({
                                   renderPotentialTeamAvatar(homeTopTeamId)
                                 )}
                                 <div className="min-w-0 flex-1">
-                                  <span className="inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
+                                  <span className={`inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold ${tpHomeWon ? 'text-[var(--accent-text)]' : 'text-[var(--text-strong)]'}`}>
                                     <span className="truncate">
                                       {homeTeam
                                         ? t.teams[homeTeam.id] ?? homeTeam.name
@@ -1195,6 +1242,11 @@ export const BracketBoard = ({
                                     )
                                   )}
                                 </div>
+                                {tpHomeScore !== null && (
+                                  <span className={`shrink-0 text-sm font-bold ${tpHomeWon ? 'text-[var(--accent-text)]' : 'text-[var(--text-strong)]'}`}>
+                                    {tpHomeScore}{tpHomePenaltyScore !== null ? ` (${tpHomePenaltyScore})` : ''}
+                                  </span>
+                                )}
                               </div>
                               <div className="flex min-w-0 items-center gap-2.5 pb-1">
                                 {awayTeam ? (
@@ -1203,7 +1255,7 @@ export const BracketBoard = ({
                                   renderPotentialTeamAvatar(awayTopTeamId)
                                 )}
                                 <div className="min-w-0 flex-1">
-                                  <span className="inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold text-[var(--text-strong)]">
+                                  <span className={`inline-flex min-w-0 items-center gap-1 truncate text-sm font-semibold ${tpAwayWon ? 'text-[var(--accent-text)]' : 'text-[var(--text-strong)]'}`}>
                                     <span className="truncate">
                                       {awayTeam
                                         ? t.teams[awayTeam.id] ?? awayTeam.name
@@ -1217,6 +1269,11 @@ export const BracketBoard = ({
                                     )
                                   )}
                                 </div>
+                                {tpAwayScore !== null && (
+                                  <span className={`shrink-0 text-sm font-bold ${tpAwayWon ? 'text-[var(--accent-text)]' : 'text-[var(--text-strong)]'}`}>
+                                    {tpAwayScore}{tpAwayPenaltyScore !== null ? ` (${tpAwayPenaltyScore})` : ''}
+                                  </span>
+                                )}
                               </div>
                             </div>
 

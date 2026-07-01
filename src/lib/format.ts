@@ -117,6 +117,33 @@ export const hasDisplayScore = (match: MatchRecord, nowMs = Date.now()) => {
   )
 }
 
+/**
+ * Returns the winner side ('home' | 'away') of a finished match, considering
+ * penalty scores when regular scores are tied. Returns null when the winner
+ * cannot be determined (match not finished, no scores, or a true draw).
+ */
+export const getMatchWinner = (match: MatchRecord, nowMs = Date.now()): 'home' | 'away' | null => {
+  const displayStatus = getDisplayMatchStatus(match, nowMs)
+  if (displayStatus !== 'finished') return null
+
+  const homeScore = match.home.score
+  const awayScore = match.away.score
+  if (!Number.isFinite(homeScore) || !Number.isFinite(awayScore)) return null
+
+  if ((homeScore as number) > (awayScore as number)) return 'home'
+  if ((awayScore as number) > (homeScore as number)) return 'away'
+
+  // Tied after regulation/AET — check penalty shootout
+  const homePenalty = match.home.penaltyScore
+  const awayPenalty = match.away.penaltyScore
+  if (Number.isFinite(homePenalty) && Number.isFinite(awayPenalty)) {
+    if ((homePenalty as number) > (awayPenalty as number)) return 'home'
+    if ((awayPenalty as number) > (homePenalty as number)) return 'away'
+  }
+
+  return null
+}
+
 export const getLocalizedText = (value: unknown, locale: LocaleCode): string | null => {
   if (typeof value === 'string') {
     const normalized = value.trim()

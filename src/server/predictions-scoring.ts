@@ -6,7 +6,7 @@ const OUTCOME_POINTS = 2
 const SCORE_OUTCOME_POINTS = 3
 const EXACT_SCORE_POINTS = 5
 
-const getMatchOutcome = (homeScore: number, awayScore: number): MatchOutcome => {
+const getMatchOutcome = (homeScore: number, awayScore: number, homePenaltyScore?: number, awayPenaltyScore?: number): MatchOutcome => {
   if (homeScore > awayScore) {
     return 'home'
   }
@@ -15,11 +15,17 @@ const getMatchOutcome = (homeScore: number, awayScore: number): MatchOutcome => 
     return 'away'
   }
 
+  // Tied — check penalty shootout
+  if (homePenaltyScore !== undefined && awayPenaltyScore !== undefined) {
+    if (homePenaltyScore > awayPenaltyScore) return 'home'
+    if (awayPenaltyScore > homePenaltyScore) return 'away'
+  }
+
   return 'draw'
 }
 
-const computePointsForPrediction = (prediction: PredictionRecord, homeScore: number, awayScore: number) => {
-  const outcome = getMatchOutcome(homeScore, awayScore)
+const computePointsForPrediction = (prediction: PredictionRecord, homeScore: number, awayScore: number, homePenaltyScore?: number, awayPenaltyScore?: number) => {
+  const outcome = getMatchOutcome(homeScore, awayScore, homePenaltyScore, awayPenaltyScore)
 
   if (prediction.type === 'score') {
     if (prediction.homeScore === homeScore && prediction.awayScore === awayScore) {
@@ -43,13 +49,15 @@ export const scoreFinishedMatches = async (data: TournamentData) => {
     const predictions = await listPredictionsByMatch(match.id)
     const homeScore = match.home.score as number
     const awayScore = match.away.score as number
+    const homePenaltyScore = typeof match.home.penaltyScore === 'number' ? match.home.penaltyScore : undefined
+    const awayPenaltyScore = typeof match.away.penaltyScore === 'number' ? match.away.penaltyScore : undefined
 
     await Promise.all(
       predictions.map((prediction) =>
         setPredictionPoints(
           prediction.userId,
           match.id,
-          computePointsForPrediction(prediction, homeScore, awayScore),
+          computePointsForPrediction(prediction, homeScore, awayScore, homePenaltyScore, awayPenaltyScore),
         ),
       ),
     )

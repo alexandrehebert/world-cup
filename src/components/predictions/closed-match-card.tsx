@@ -36,7 +36,7 @@ export const ClosedMatchCard = ({ match }: Props) => {
   const isLive = match.status === 'live'
   const isFinished = match.status === 'finished'
   const hasScore = match.home.score !== undefined && match.away.score !== undefined
-  const actualOutcome = getActualOutcome(match.home.score, match.away.score, match.status)
+  const actualOutcome = getActualOutcome(match.home.score, match.away.score, match.status, match.home.penaltyScore, match.away.penaltyScore)
   const isScored = Boolean(prediction?.scoredAt)
   const isCorrect = isScored && (prediction?.pointsAwarded ?? 0) > 0
 

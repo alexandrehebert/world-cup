@@ -174,6 +174,7 @@ export interface TranslationSet {
     bracketViewDetailed: string
     bracketViewCondensed: string
     bracketPathSearchPlaceholder: string
+    penalties: string
   }
   teams: Record<string, string>
   groups: Record<string, string>

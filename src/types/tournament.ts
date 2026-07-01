@@ -40,6 +40,7 @@ export interface ParticipantRef {
   teamId?: string
   placeholder?: string
   score?: number
+  penaltyScore?: number
 }
 
 export interface MatchVenue {
