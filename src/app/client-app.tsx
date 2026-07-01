@@ -1,7 +1,6 @@
 'use client'
 
 import { BrowserRouter, MemoryRouter } from 'react-router-dom'
-import 'flag-icons/css/flag-icons.min.css'
 import App from '../App'
 import { AuthProvider } from '../contexts/auth-context'
 import { BootstrapProvider } from '../contexts/bootstrap-context'

@@ -2,6 +2,8 @@
 import type { Metadata } from 'next'
 import { cookies, headers } from 'next/headers'
 import Script from 'next/script'
+import { materialSymbolsRounded } from './fonts'
+import { StartupLoader } from './startup-loader'
 import {
   LOCALE_COOKIE_NAME,
   THEME_PREFERENCE_COOKIE_NAME,
@@ -10,6 +12,7 @@ import {
   resolveThemeColorScheme,
 } from '../lib/user-preferences'
 import './globals.css'
+import 'flag-icons/css/flag-icons.min.css'
 
 export const metadata: Metadata = {
   title: 'FIFA World Cup 2026',
@@ -39,11 +42,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Material+Symbols+Rounded:wght,FILL,GRAD@300..700,0..1,0..1&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body>
+      <body className={materialSymbolsRounded.variable}>
         <Script id="theme-init" strategy="beforeInteractive">
           {`(() => {
             try {
@@ -71,6 +74,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             }
           })();`}
         </Script>
+        <StartupLoader />
         {children}
       </body>
     </html>

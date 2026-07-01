@@ -12,6 +12,11 @@ import { TimeProvider } from './contexts/time-context'
 import type { TournamentData } from './types/tournament'
 import { getTournamentApiRequestUrl } from './lib/tournament-api'
 
+const BOOTSTRAP_LOADER_MIN_VISIBLE_MS = 420
+const BOOTSTRAP_LOADER_FADE_MS = 300
+const getNow = () => (typeof performance !== 'undefined' ? performance.now() : Date.now())
+const bootstrapLoaderShownAt = getNow()
+
 const bootstrapTournamentData = async (): Promise<TournamentData | undefined> => {
   try {
     const response = await fetch(getTournamentApiRequestUrl(), {
@@ -32,6 +37,8 @@ const bootstrapTournamentData = async (): Promise<TournamentData | undefined> =>
   }
 }
 
+const waitForNextFrame = async () => new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
+
 const hideBootstrapLoader = async () => {
   const loader = document.getElementById('loader-root')
   if (!loader) {
@@ -42,14 +49,21 @@ const hideBootstrapLoader = async () => {
     await document.fonts.ready
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 120))
+  await waitForNextFrame()
+  await waitForNextFrame()
+
+  const elapsedMs = getNow() - bootstrapLoaderShownAt
+  const remainingVisibleMs = Math.max(0, BOOTSTRAP_LOADER_MIN_VISIBLE_MS - elapsedMs)
+  if (remainingVisibleMs > 0) {
+    await new Promise((resolve) => setTimeout(resolve, remainingVisibleMs))
+  }
 
   loader.style.opacity = '0'
   loader.style.pointerEvents = 'none'
 
   window.setTimeout(() => {
     loader.remove()
-  }, 300)
+  }, BOOTSTRAP_LOADER_FADE_MS)
 }
 
 const renderApp = async () => {

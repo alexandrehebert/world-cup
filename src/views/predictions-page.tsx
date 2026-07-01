@@ -17,6 +17,7 @@ import type { MatchRecord } from '../types/tournament'
 
 type DayGroup = { dayLabel: string; matches: MatchRecord[] }
 type LeaderboardResponse = { leaderboard: Array<LeaderboardEntry & { rank: number }> }
+const LEADERBOARD_DRAWER_EXIT_MS = 220
 
 const buildDayGroups = (
   matches: MatchRecord[],
@@ -62,7 +63,33 @@ export const PredictionsPage = () => {
   const timeZone = useTimeZone()
   const { isCopied: isLeaderboardCopied, share: shareLeaderboard } = useShareLink('/leaderboard')
   const [isLeaderboardDrawerOpen, setIsLeaderboardDrawerOpen] = useState(false)
+  const [isLeaderboardDrawerVisible, setIsLeaderboardDrawerVisible] = useState(false)
   const [leaderboardEntries, setLeaderboardEntries] = useState<RankedLeaderboardEntry[]>(initialEntries)
+
+  const openLeaderboardDrawer = () => {
+    setIsLeaderboardDrawerOpen(true)
+    window.requestAnimationFrame(() => {
+      setIsLeaderboardDrawerVisible(true)
+    })
+  }
+
+  const closeLeaderboardDrawer = () => {
+    setIsLeaderboardDrawerVisible(false)
+  }
+
+  useEffect(() => {
+    if (!isLeaderboardDrawerOpen || isLeaderboardDrawerVisible) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsLeaderboardDrawerOpen(false)
+    }, LEADERBOARD_DRAWER_EXIT_MS)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [isLeaderboardDrawerOpen, isLeaderboardDrawerVisible])
 
   useEffect(() => {
     if (!isLeaderboardDrawerOpen) {
@@ -203,7 +230,7 @@ export const PredictionsPage = () => {
           <TopActionButton
             label={t.labels.viewLeaderboard}
             iconName="leaderboard"
-            onClick={() => setIsLeaderboardDrawerOpen(true)}
+            onClick={openLeaderboardDrawer}
             className={actionButtonClassName}
           />
           {user ? (
@@ -283,12 +310,19 @@ export const PredictionsPage = () => {
       ) : null}
 
       {isLeaderboardDrawerOpen ? (
-        <div className="fixed inset-0 z-50 bg-slate-950/55 backdrop-blur-sm" onClick={() => setIsLeaderboardDrawerOpen(false)}>
+        <div
+          className={`fixed inset-0 z-50 bg-slate-950/55 backdrop-blur-sm transition-opacity duration-200 ease-out ${
+            isLeaderboardDrawerVisible ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={closeLeaderboardDrawer}
+        >
           <aside
             role="dialog"
             aria-modal="true"
             aria-label={t.headings.leaderboard}
-            className="absolute right-0 top-0 flex h-full w-full max-w-xl flex-col border-l border-[var(--border)] bg-[var(--surface-strong)] shadow-2xl"
+            className={`absolute right-0 top-0 flex h-full w-full max-w-xl flex-col border-l border-[var(--border)] bg-[var(--surface-strong)] shadow-2xl transition-all duration-200 ease-out ${
+              isLeaderboardDrawerVisible ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'
+            }`}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
@@ -304,7 +338,7 @@ export const PredictionsPage = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsLeaderboardDrawerOpen(false)}
+                  onClick={closeLeaderboardDrawer}
                   className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[var(--text)] transition hover:text-[var(--text-strong)]"
                   aria-label={t.labels.close}
                 >
@@ -333,13 +367,13 @@ export const PredictionsPage = () => {
                           role="button"
                           aria-label={`${t.labels.viewProfile}: ${entry.username}`}
                           onClick={() => {
-                            setIsLeaderboardDrawerOpen(false)
+                            closeLeaderboardDrawer()
                             navigate(`/profile/${encodeURIComponent(entry.username)}`)
                           }}
                           onKeyDown={(event) => {
                             if (event.key === 'Enter' || event.key === ' ') {
                               event.preventDefault()
-                              setIsLeaderboardDrawerOpen(false)
+                              closeLeaderboardDrawer()
                               navigate(`/profile/${encodeURIComponent(entry.username)}`)
                             }
                           }}
