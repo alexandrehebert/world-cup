@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../contexts/auth-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
@@ -16,6 +16,8 @@ import { StatusPill } from '../ui/status-pill'
 import { FeedbackPopup } from '../ui/feedback-popup'
 import { PredictionForm, getActualOutcome } from '../predictions/prediction-form'
 import type { MatchOutcome } from '../../types/predictions'
+import type { ParticipantRef } from '../../types/tournament'
+import { getWinnerSourceMatchId } from '../../lib/bracket-layout'
 
 type PredictionValidationIssue = 'outcome' | 'scores'
 type PredictionErrorState = {
@@ -87,7 +89,11 @@ export const MatchModal = () => {
   const [draftMatchId, setDraftMatchId] = useState<string | null>(null)
   const [isDraftDirty, setIsDraftDirty] = useState(false)
   const [predictionError, setPredictionError] = useState<PredictionErrorState | null>(null)
-  const { matchesById, teamsById } = useTournament()
+  const { matchesById, teamsById, bracketRounds } = useTournament()
+  const roundMatchIdsById = useMemo(
+    () => new Map(bracketRounds.map((round) => [round.id, [...round.matchIds]])),
+    [bracketRounds],
+  )
   const match = selectedMatchId ? matchesById[selectedMatchId] : undefined
   const existingPrediction = match ? predictionsByMatch[match.id] : undefined
   const closeModal = useCallback(() => {
@@ -131,23 +137,89 @@ export const MatchModal = () => {
     setIsDraftDirty(false)
   }, [existingPrediction, match, selectedMatchId])
 
+  const describeParticipant = (participant: ParticipantRef | undefined) => {
+    if (!participant) {
+      return { displayLabel: t.labels.tbd, codeLabel: null as string | null }
+    }
+
+    if (participant.teamId) {
+      const team = teamsById[participant.teamId]
+      const teamLabel = team ? (t.teams[team.id] ?? team.name) : t.labels.tbd
+      const teamCode = team?.code ?? null
+
+      return { displayLabel: teamLabel, codeLabel: teamCode }
+    }
+
+    if (!participant.placeholder) {
+      return { displayLabel: t.labels.tbd, codeLabel: null as string | null }
+    }
+
+    const placeholderLabel = formatPlaceholder(participant.placeholder, t)
+    const sourceRoundId = participant.placeholder.split(':')[1]
+    const sourceMatchId = sourceRoundId ? getWinnerSourceMatchId(participant, sourceRoundId, roundMatchIdsById) : undefined
+
+    if (!sourceMatchId) {
+      return { displayLabel: placeholderLabel, codeLabel: t.labels.tbd }
+    }
+
+    const sourceMatch = matchesById[sourceMatchId]
+    if (!sourceMatch) {
+      return { displayLabel: placeholderLabel, codeLabel: t.labels.tbd }
+    }
+
+    const sourceHomeCode = sourceMatch.home.teamId ? teamsById[sourceMatch.home.teamId]?.code : undefined
+    const sourceAwayCode = sourceMatch.away.teamId ? teamsById[sourceMatch.away.teamId]?.code : undefined
+
+    if (!sourceHomeCode && !sourceAwayCode) {
+      return {
+        displayLabel: placeholderLabel,
+        codeLabel: t.labels.tbd,
+      }
+    }
+
+    if (sourceHomeCode && sourceAwayCode) {
+      return {
+        displayLabel: placeholderLabel,
+        codeLabel: `${sourceHomeCode} or ${sourceAwayCode}`,
+      }
+    }
+
+    const sourceHomeLabel = sourceMatch.home.teamId
+      ? (t.teams[sourceMatch.home.teamId] ?? teamsById[sourceMatch.home.teamId]?.name ?? t.labels.tbd)
+      : sourceMatch.home.placeholder
+        ? formatPlaceholder(sourceMatch.home.placeholder, t)
+        : t.labels.tbd
+    const sourceAwayLabel = sourceMatch.away.teamId
+      ? (t.teams[sourceMatch.away.teamId] ?? teamsById[sourceMatch.away.teamId]?.name ?? t.labels.tbd)
+      : sourceMatch.away.placeholder
+        ? formatPlaceholder(sourceMatch.away.placeholder, t)
+        : t.labels.tbd
+
+    return {
+      displayLabel: placeholderLabel,
+      codeLabel: `${sourceHomeLabel} or ${sourceAwayLabel}`,
+    }
+  }
+
   if (!selectedMatchId || !match) {
     return null
   }
+
   const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-  const homePlaceholder = match.home.placeholder ? formatPlaceholder(match.home.placeholder, t) : null
-  const awayPlaceholder = match.away.placeholder ? formatPlaceholder(match.away.placeholder, t) : null
+
   const homeTeamLabel = homeTeam
     ? (t.teams[homeTeam.id] ?? homeTeam.name)
-    : homePlaceholder
-      ? homePlaceholder
+    : match.home.placeholder
+      ? describeParticipant(match.home).displayLabel
       : t.labels.tbd
   const awayTeamLabel = awayTeam
     ? (t.teams[awayTeam.id] ?? awayTeam.name)
-    : awayPlaceholder
-      ? awayPlaceholder
+    : match.away.placeholder
+      ? describeParticipant(match.away).displayLabel
       : t.labels.tbd
+  const homeCodeLabel = homeTeam ? homeTeam.code : match.home.placeholder ? describeParticipant(match.home).codeLabel : null
+  const awayCodeLabel = awayTeam ? awayTeam.code : match.away.placeholder ? describeParticipant(match.away).codeLabel : null
   const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
   const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
   const displayStatus = getDisplayMatchStatus(match, nowMs)
@@ -311,7 +383,7 @@ export const MatchModal = () => {
         <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <div className="min-w-0 p-2 text-center">
             <div className="mx-auto mb-2 w-fit">
-              {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
+              {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-dashed border-[var(--border)]" aria-hidden="true" />}
             </div>
             <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
               {homeTeam ? (
@@ -327,7 +399,7 @@ export const MatchModal = () => {
               )}
               {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
             </p>
-            <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? t.labels.tbd}</p>
+            {homeCodeLabel ? <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeCodeLabel}</p> : null}
           </div>
 
           <div className="flex flex-col items-center gap-1 px-2">
@@ -355,7 +427,7 @@ export const MatchModal = () => {
 
           <div className="min-w-0 p-2 text-center">
             <div className="mx-auto mb-2 w-fit">
-              {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
+              {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-dashed border-[var(--border)]" aria-hidden="true" />}
             </div>
             <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
               {awayTeam ? (
@@ -371,7 +443,7 @@ export const MatchModal = () => {
               )}
               {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
             </p>
-            <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? t.labels.tbd}</p>
+            {awayCodeLabel ? <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayCodeLabel}</p> : null}
           </div>
         </div>
       </div>
