@@ -409,19 +409,22 @@ export const BracketBoard = ({
         : undefined
     )
     const isLive = getDisplayMatchStatus(match, nowMs) === 'live'
+    const cardWinner = getBracketCardWinner(match)
+    const homeEliminated = cardWinner === 'away'
+    const awayEliminated = cardWinner === 'home'
 
-    const renderFlag = (teamId: string | undefined) => {
+    const renderFlag = (teamId: string | undefined, isEliminated = false) => {
       const team = teamId ? teamsById[teamId] : undefined
       if (!team) {
         return (
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-[8px] border border-dashed border-[var(--border)] p-[2px]">
+          <span className={`inline-flex h-7 w-7 items-center justify-center rounded-[8px] border border-dashed border-[var(--border)] p-[2px] ${isEliminated ? 'opacity-55' : ''}`}>
             <span className="h-full w-full rounded-[6px] border border-dashed border-[var(--border)]/60" />
           </span>
         )
       }
 
       return (
-        <span className="inline-flex h-7 w-7 items-center justify-center rounded-[8px] border border-[var(--border)] p-[2px]">
+        <span className={`inline-flex h-7 w-7 items-center justify-center rounded-[8px] border border-[var(--border)] p-[2px] ${isEliminated ? 'opacity-55' : ''}`}>
           <span className="inline-flex h-full w-full items-center overflow-hidden rounded-[6px]">
             <span className={`fi fi-${team.flagCode} flag-avatar-fill`} aria-hidden="true" />
           </span>
@@ -455,9 +458,9 @@ export const BracketBoard = ({
           </span>
         ) : null}
         <div className="flex h-full items-center justify-between gap-2 px-1">
-          {renderFlag(homeTeamId)}
+          {renderFlag(homeTeamId, homeEliminated)}
           <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{t.labels.vs}</span>
-          {renderFlag(awayTeamId)}
+          {renderFlag(awayTeamId, awayEliminated)}
         </div>
       </div>
     )
@@ -1042,7 +1045,7 @@ export const BracketBoard = ({
                               onClick={() => setSelectedMatchId(match.id)}
                             >
                               <div className="space-y-2">
-                                <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
+                                <div className={`flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2 ${awayWonBracket ? 'opacity-55' : ''}`}>
                                   {homeTeam ? (
                                     renderKnownTeamAvatar(homeTeam.id)
                                   ) : (
@@ -1069,7 +1072,7 @@ export const BracketBoard = ({
                                     </span>
                                   )}
                                 </div>
-                                <div className="flex min-w-0 items-center gap-2.5 pb-1">
+                                <div className={`flex min-w-0 items-center gap-2.5 pb-1 ${homeWonBracket ? 'opacity-55' : ''}`}>
                                   {awayTeam ? (
                                     renderKnownTeamAvatar(awayTeam.id)
                                   ) : (
@@ -1192,7 +1195,7 @@ export const BracketBoard = ({
                              </span>
                            ) : null}
                            <div className="space-y-2">
-                              <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
+                              <div className={`flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2 ${tpAwayWon ? 'opacity-55' : ''}`}>
                                 {homeTeam ? (
                                   renderKnownTeamAvatar(homeTeam.id)
                                 ) : (
@@ -1219,7 +1222,7 @@ export const BracketBoard = ({
                                   </span>
                                 )}
                               </div>
-                              <div className="flex min-w-0 items-center gap-2.5 pb-1">
+                              <div className={`flex min-w-0 items-center gap-2.5 pb-1 ${tpHomeWon ? 'opacity-55' : ''}`}>
                                 {awayTeam ? (
                                   renderKnownTeamAvatar(awayTeam.id)
                                 ) : (
