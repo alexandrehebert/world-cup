@@ -10,6 +10,27 @@ const getTodayKey = (timeZone: string) =>
 const getDateKey = (kickoff: string, timeZone: string) =>
   new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date(kickoff))
 
+export const formatUtcOffsetLabel = (kickoff: string, timeZone: string) => {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    timeZoneName: 'shortOffset',
+  }).formatToParts(new Date(kickoff))
+
+  const timeZoneName = parts.find((part) => part.type === 'timeZoneName')?.value ?? 'GMT+0'
+  return timeZoneName.replace('GMT', 'UTC').replace('UTC-0', 'UTC+0')
+}
+
+export const formatMatchTime = (kickoff: string, locale: LocaleCode, timeZone?: string) => {
+  const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
+  const resolvedTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+
+  return new Intl.DateTimeFormat(dateLocale, {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: resolvedTimeZone,
+  }).format(new Date(kickoff))
+}
+
 export const formatMatchDate = (kickoff: string, locale: LocaleCode, timeZone?: string, todayLabel?: string) => {
   const date = new Date(kickoff)
   const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
@@ -30,6 +51,11 @@ export const formatMatchDate = (kickoff: string, locale: LocaleCode, timeZone?: 
         timeZone: resolvedTimeZone,
       }).format(date)
 
+  const localShortDate = new Intl.DateTimeFormat(dateLocale, {
+    dateStyle: 'short',
+    timeZone: resolvedTimeZone,
+  }).format(date)
+
   const localTime = new Intl.DateTimeFormat(dateLocale, {
     hour: '2-digit',
     minute: '2-digit',
@@ -43,7 +69,7 @@ export const formatMatchDate = (kickoff: string, locale: LocaleCode, timeZone?: 
     timeZone: 'UTC',
   }).format(date)
 
-  return { localDateTime, localTime, utcDateTime }
+  return { localDateTime, localShortDate, localTime, utcDateTime }
 }
 
 export const formatMatchStage = (match: MatchRecord) => {

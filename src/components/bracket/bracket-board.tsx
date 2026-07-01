@@ -3,7 +3,7 @@ import { useLocale } from '../../contexts/locale-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchWinner } from '../../lib/format'
+import { formatMatchDate, formatMatchTime, formatPlaceholder, formatUtcOffsetLabel, getDisplayMatchStatus, getMatchWinner } from '../../lib/format'
 import { getPotentialTeamsFromPlaceholder, getTopTeamFromPlaceholder } from '../../lib/bracket'
 import { alignSideRoundsByNextRound, getWinnerSourceMatchId } from '../../lib/bracket-layout'
 import { Icon } from '../../lib/icons'
@@ -961,7 +961,9 @@ export const BracketBoard = ({
                             : forecastPath?.projectedOpponentByMatchId.get(match.id)
                         )
                         const projectedOpponentTeam = projectedOpponentTeamId ? teamsById[projectedOpponentTeamId] : undefined
-                        const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
+                        const { localShortDate } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
+                        const localTime = formatMatchTime(match.kickoff, locale, match.venue.timeZone)
+                        const utcOffsetLabel = formatUtcOffsetLabel(match.kickoff, match.venue.timeZone)
                         const showVerticalBridge =
                           hasNextRound && matchIndex % 2 === 0 && matchIndex + 1 < round.matchIds.length
                         const nextMatchId = round.matchIds[matchIndex + 1]
@@ -1116,7 +1118,7 @@ export const BracketBoard = ({
                               ) : null}
 
                               <div className="mt-2 border-t border-[var(--border)] pt-2 text-[11px] uppercase tracking-[0.2em] text-[var(--text-soft)]">
-                                {t.meta.localTime} · {localTime}
+                                {localShortDate} · {localTime} {utcOffsetLabel}
                               </div>
                               <div className="truncate text-xs text-[var(--text-soft)]">
                                 {match.venue.stadium}
@@ -1168,7 +1170,9 @@ export const BracketBoard = ({
                         const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
                         const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
                         const hasFavorite = homeIsFavorite || awayIsFavorite
-                        const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
+                        const { localShortDate } = formatMatchDate(match.kickoff, locale, match.venue.timeZone)
+                        const localTime = formatMatchTime(match.kickoff, locale, match.venue.timeZone)
+                        const utcOffsetLabel = formatUtcOffsetLabel(match.kickoff, match.venue.timeZone)
                         const tpCardWinner = getBracketCardWinner(match)
                         const tpHomeScore = hasNumericScore(match.home.score) ? match.home.score : null
                         const tpAwayScore = hasNumericScore(match.away.score) ? match.away.score : null
@@ -1264,7 +1268,7 @@ export const BracketBoard = ({
                             </div>
 
                             <div className="mt-2 border-t border-[var(--border)] pt-2 text-[11px] uppercase tracking-[0.2em] text-[var(--text-soft)]">
-                              {t.meta.localTime} · {localTime}
+                              {localShortDate} · {localTime} {utcOffsetLabel}
                             </div>
                           </div>
                         )
