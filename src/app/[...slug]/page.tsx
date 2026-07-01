@@ -274,9 +274,31 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function SlugPage({ params }: { params: Promise<{ slug: string[] }> }) {
+export default async function SlugPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string[] }>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}) {
   const { slug } = await params
-  const initialPath = `/${slug.map((segment) => encodeURIComponent(segment)).join('/')}`
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+  const query = resolvedSearchParams
+    ? new URLSearchParams(
+        Object.entries(resolvedSearchParams).flatMap(([key, value]) => {
+          if (typeof value === 'string') {
+            return [[key, value]]
+          }
+
+          if (Array.isArray(value)) {
+            return value.map((entry) => [key, entry] as const)
+          }
+
+          return []
+        }),
+      ).toString()
+    : ''
+  const initialPath = `/${slug.map((segment) => encodeURIComponent(segment)).join('/')}${query ? `?${query}` : ''}`
   const tournamentData = await loadTournamentData()
   const first = slug?.[0]?.toLowerCase()
   const isPredictRoute = isPredictionsFeatureEnabled && first === 'predict' && slug?.[2]?.toLowerCase() === 'vs'

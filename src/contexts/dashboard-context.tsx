@@ -9,6 +9,7 @@ import { isPredictionsFeatureEnabled } from '../lib/features'
 const FAVORITE_TEAMS_STORAGE_KEY = 'football-world-cup.favorite-teams'
 const MATCH_QUERY_PARAM = 'match'
 const MATCH_PATH_REGEX = /^\/(match|bracket)\/([^/]+)\/vs\/([^/]+)\/?$/i
+const TBD_MATCH_PATH_REGEX = /^\/(match|bracket)\/tbd\/([^/]+)\/(\d+)\/?$/i
 const TEAM_PATH_REGEX = /^\/team\/([^/]+)\/?$/i
 type MatchPathSection = 'match' | 'bracket'
 
@@ -77,8 +78,15 @@ const getSearchWithoutLegacyMatchParam = (search: string) => {
 }
 
 const getMatchPathDetails = (pathname: string): { section: MatchPathSection; pathKey: string } | null => {
-  const match = pathname.match(MATCH_PATH_REGEX)
+  const tbdMatch = pathname.match(TBD_MATCH_PATH_REGEX)
+  if (tbdMatch) {
+    return {
+      section: tbdMatch[1].toLowerCase() === 'bracket' ? 'bracket' : 'match',
+      pathKey: `tbd/${decodeURIComponent(tbdMatch[2])}/${tbdMatch[3]}`,
+    }
+  }
 
+  const match = pathname.match(MATCH_PATH_REGEX)
   if (!match) {
     return null
   }
@@ -111,27 +119,25 @@ const getMatchIdFromSearch = (
   slugToMatchId: Record<string, string>,
   matchesById: Record<string, { id: string }>,
 ) => {
+  const params = new URLSearchParams(search)
+  const matchParam = params.get(MATCH_QUERY_PARAM)
+
+  if (matchParam) {
+    const matchIdFromSlug = slugToMatchId[matchParam]
+
+    if (matchIdFromSlug) {
+      return matchIdFromSlug
+    }
+
+    if (matchesById[matchParam]) {
+      return matchParam
+    }
+  }
+
   const pathKey = getMatchPathKey(pathname)
 
   if (pathKey && pathToMatchId[pathKey]) {
     return pathToMatchId[pathKey]
-  }
-
-  const params = new URLSearchParams(search)
-  const matchParam = params.get(MATCH_QUERY_PARAM)
-
-  if (!matchParam) {
-    return null
-  }
-
-  const matchIdFromSlug = slugToMatchId[matchParam]
-
-  if (matchIdFromSlug) {
-    return matchIdFromSlug
-  }
-
-  if (matchesById[matchParam]) {
-    return matchParam
   }
 
   return null
@@ -141,13 +147,21 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, updateUserPreferences } = useAuth()
-  const { matchesById, teamsById } = useTournament()
+  const { matchesById, teamsById, bracketRounds } = useTournament()
   const { matchIdToPath, pathToMatchId, slugToMatchId } = useMemo(() => {
     const idToSlug: Record<string, string> = {}
     const slugToId: Record<string, string> = {}
     const idToPath: Record<string, string> = {}
     const pathToId: Record<string, string> = {}
     const duplicateCounts = new Map<string, number>()
+    const bracketPositionByMatchId = new Map<string, { roundId: string; slotIndex: number }>()
+
+    for (const round of bracketRounds) {
+      round.matchIds.forEach((matchId, slotIndex) => {
+        bracketPositionByMatchId.set(matchId, { roundId: round.id, slotIndex })
+      })
+    }
+
     const matches = Object.values(matchesById).sort((first, second) => {
       if (first.kickoff !== second.kickoff) {
         return first.kickoff.localeCompare(second.kickoff)
@@ -159,18 +173,29 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     for (const match of matches) {
       const homeCode = match.home.teamId ? teamsById[match.home.teamId]?.code : undefined
       const awayCode = match.away.teamId ? teamsById[match.away.teamId]?.code : undefined
-      const baseSlug = `${normalizeSlugPart(homeCode ?? 'tbd')}-${normalizeSlugPart(awayCode ?? 'tbd')}`
+      const bracketPosition = bracketPositionByMatchId.get(match.id)
+      const hasResolvedTeams = Boolean(homeCode && awayCode)
+      const baseSlug = hasResolvedTeams
+        ? `${normalizeSlugPart(homeCode)}-${normalizeSlugPart(awayCode)}`
+        : bracketPosition
+          ? `tbd-${bracketPosition.roundId}-${bracketPosition.slotIndex + 1}`
+          : `match-${match.id}`
       const count = (duplicateCounts.get(baseSlug) ?? 0) + 1
       duplicateCounts.set(baseSlug, count)
       const slug = count === 1 ? baseSlug : `${baseSlug}-${count}`
-      const homePathCode = homeCode ? normalizeMatchCode(homeCode) : 'TBD'
-      const awayPathCode = awayCode ? normalizeMatchCode(awayCode) : 'TBD'
-      const pathKey = `${homePathCode}/vs/${awayPathCode}`
+      const homePathCode = homeCode ? normalizeMatchCode(homeCode) : null
+      const awayPathCode = awayCode ? normalizeMatchCode(awayCode) : null
+      const pathKey = homePathCode && awayPathCode
+        ? `${homePathCode}/vs/${awayPathCode}`
+        : bracketPosition
+          ? `tbd/${bracketPosition.roundId}/${bracketPosition.slotIndex + 1}`
+          : null
+      const matchPath = pathKey ?? `?${new URLSearchParams({ match: match.id }).toString()}`
 
       idToSlug[match.id] = slug
       slugToId[slug] = match.id
-      idToPath[match.id] = pathKey
-      if (!pathToId[pathKey]) {
+      idToPath[match.id] = matchPath
+      if (pathKey && !pathToId[pathKey]) {
         pathToId[pathKey] = match.id
       }
     }
@@ -180,7 +205,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       matchIdToPath: idToPath,
       pathToMatchId: pathToId,
     }
-  }, [matchesById, teamsById])
+  }, [bracketRounds, matchesById, teamsById])
   const { teamIdToCode, codeToTeamId } = useMemo(() => {
     const idToCode: Record<string, string> = {}
     const codeToId: Record<string, string> = {}
@@ -248,7 +273,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         return isBracketContext ? '/bracket' : '/match'
       }
 
-      return isBracketContext ? `/bracket/${matchPath}` : `/match/${matchPath}`
+      return matchPath.startsWith('?')
+        ? `${isBracketContext ? '/bracket' : '/match'}${matchPath}`
+        : `${isBracketContext ? '/bracket' : '/match'}/${matchPath}`
     },
     [location.pathname, matchIdToPath],
   )
@@ -260,7 +287,11 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       }
       const matchPath = matchIdToPath[matchId]
 
-      return matchPath ? `/predict/${matchPath}` : '/predictions'
+      if (!matchPath) {
+        return '/predictions'
+      }
+
+      return matchPath.startsWith('?') ? `/predict${matchPath}` : `/predict/${matchPath}`
     },
     [getMatchSharePath, matchIdToPath],
   )
@@ -357,7 +388,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const currentMatchDetails = getMatchPathDetails(location.pathname)
-    const currentMatchPath = currentMatchDetails?.pathKey ?? null
+    const currentMatchId = getMatchIdFromSearch(location.pathname, location.search, pathToMatchId, slugToMatchId, matchesById)
+    const currentMatchPath = currentMatchId ? (matchIdToPath[currentMatchId] ?? null) : null
     const currentMatchSection: MatchPathSection | null = currentMatchDetails?.section ?? (
       location.pathname === '/bracket'
         ? 'bracket'
@@ -377,10 +409,20 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (nextMatchPath) {
+      const nextPathname = `/${currentMatchSection === 'bracket' ? 'bracket' : 'match'}`
+      const nextSearchParams = new URLSearchParams(getSearchWithoutLegacyMatchParam(location.search))
+
+      if (nextMatchPath.startsWith('?')) {
+        const nextMatchId = new URLSearchParams(nextMatchPath).get(MATCH_QUERY_PARAM)
+        if (nextMatchId) {
+          nextSearchParams.set(MATCH_QUERY_PARAM, nextMatchId)
+        }
+      }
+
       navigate(
         {
-          pathname: `/${currentMatchSection === 'bracket' ? 'bracket' : 'match'}/${nextMatchPath}`,
-          search: getSearchWithoutLegacyMatchParam(location.search),
+          pathname: nextMatchPath.startsWith('?') ? nextPathname : `${nextPathname}/${nextMatchPath}`,
+          search: nextSearchParams.toString() ? `?${nextSearchParams.toString()}` : '',
         },
         { replace: false },
       )
@@ -396,7 +438,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         { replace: false },
       )
     }
-  }, [location.pathname, location.search, matchIdToPath, navigate, selectedMatchId])
+  }, [location.pathname, location.search, matchIdToPath, matchesById, navigate, pathToMatchId, selectedMatchId, slugToMatchId])
 
   useEffect(() => {
     if (selectedMatchId !== null) {

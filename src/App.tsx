@@ -23,12 +23,22 @@ function App() {
         <Route path="/team/:teamCode" element={<TeamsPage />} />
         <Route path="/matches" element={<MatchesPage />} />
         <Route path="/match" element={<MatchesPage />} />
+        <Route path="/match/tbd/:round/:slot" element={<MatchesPage />} />
         <Route path="/match/:homeCode/vs/:awayCode" element={<MatchesPage />} />
         <Route path="/bracket" element={<BracketPage />} />
+        <Route path="/bracket/tbd/:round/:slot" element={<BracketPage />} />
         <Route path="/bracket/:homeCode/vs/:awayCode" element={<BracketPage />} />
         <Route
           path="/predictions"
           element={isPredictionsFeatureEnabled ? <PredictionsPage /> : <Navigate to="/overview" replace />}
+        />
+        <Route
+          path="/predict"
+          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/overview" replace />}
+        />
+        <Route
+          path="/predict/tbd/:round/:slot"
+          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/overview" replace />}
         />
         <Route
           path="/predict/:homeCode/vs/:awayCode"

@@ -19,33 +19,44 @@ export const writeLocalTournamentData = async (data: TournamentData) => {
 }
 
 export const applyCanonicalVenueData = (data: TournamentData, canonical: TournamentData): TournamentData => {
-  const venueByMatchId = new Map(canonical.matches.map((match) => [match.id, match.venue]))
-  let hasVenueChanges = false
+  const canonicalMatchById = new Map(canonical.matches.map((match) => [match.id, match]))
+  let hasChanges = false
 
   const nextMatches = data.matches.map((match) => {
-    const canonicalVenue = venueByMatchId.get(match.id)
-    if (!canonicalVenue) {
+    const canonicalMatch = canonicalMatchById.get(match.id)
+    if (!canonicalMatch) {
       return match
     }
 
-    const isSameVenue =
-      match.venue.stadium === canonicalVenue.stadium
-      && match.venue.city === canonicalVenue.city
-      && match.venue.country === canonicalVenue.country
-      && match.venue.timeZone === canonicalVenue.timeZone
-
-    if (isSameVenue) {
-      return match
-    }
-
-    hasVenueChanges = true
-    return {
+    const nextMatch = {
       ...match,
-      venue: canonicalVenue,
+      venue:
+        match.venue.stadium === canonicalMatch.venue.stadium
+        && match.venue.city === canonicalMatch.venue.city
+        && match.venue.country === canonicalMatch.venue.country
+        && match.venue.timeZone === canonicalMatch.venue.timeZone
+          ? match.venue
+          : canonicalMatch.venue,
+      home:
+        match.home.placeholder === canonicalMatch.home.placeholder
+          ? match.home
+          : { ...match.home, placeholder: canonicalMatch.home.placeholder },
+      away:
+        match.away.placeholder === canonicalMatch.away.placeholder
+          ? match.away
+          : { ...match.away, placeholder: canonicalMatch.away.placeholder },
     }
+
+    const hasMatchChanges =
+      nextMatch.venue !== match.venue
+      || nextMatch.home !== match.home
+      || nextMatch.away !== match.away
+
+    hasChanges ||= hasMatchChanges
+    return nextMatch
   })
 
-  if (!hasVenueChanges) {
+  if (!hasChanges) {
     return data
   }
 

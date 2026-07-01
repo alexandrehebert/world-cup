@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { PredictionForm } from '../components/predictions/prediction-form'
 import { FlagAvatar } from '../components/ui/flag-avatar'
 import { ModalShell } from '../components/ui/modal-shell'
@@ -45,7 +45,8 @@ const getOutcomeFromScores = (homeScore: number, awayScore: number): MatchOutcom
 }
 
 export const MatchPredictionPage = () => {
-  const { homeCode, awayCode } = useParams<{ homeCode: string; awayCode: string }>()
+  const { homeCode, awayCode, round, slot } = useParams<{ homeCode: string; awayCode: string; round: string; slot: string }>()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { user, openAuthModal } = useAuth()
   const bootstrapData = useBootstrapData()
@@ -53,7 +54,7 @@ export const MatchPredictionPage = () => {
   const nowMs = useNow()
   const timeZone = useTimeZone()
   const { getTeamSharePath } = useDashboard()
-  const { matchesById, teamsById } = useTournament()
+  const { bracketRounds, matchesById, teamsById } = useTournament()
   const bootstrapPublicPrediction = bootstrapData?.initialPublicMatchPrediction
   const [predictionsByMatchId, setPredictionsByMatchId] = useState<Record<string, PublicPredictionResponse>>(() =>
     bootstrapPublicPrediction ? { [bootstrapPublicPrediction.matchId]: bootstrapPublicPrediction } : {},
@@ -72,6 +73,25 @@ export const MatchPredictionPage = () => {
   }, [user?.username])
 
   const match = useMemo(() => {
+    const matchIdFromQuery = searchParams.get('match')?.trim() ?? ''
+    if (matchIdFromQuery && matchesById[matchIdFromQuery]) {
+      return matchesById[matchIdFromQuery] ?? null
+    }
+
+    if (round && slot) {
+      const bracketRound = bracketRounds.find((entry) => entry.id === round)
+      const slotIndex = Number.parseInt(slot, 10)
+
+      if (bracketRound && Number.isInteger(slotIndex) && slotIndex > 0) {
+        const matchId = bracketRound.matchIds[slotIndex - 1]
+        return matchId ? matchesById[matchId] ?? null : null
+      }
+    }
+
+    if (!homeCode || !awayCode) {
+      return null
+    }
+
     const normalizedHome = normalizeCode(homeCode)
     const normalizedAway = normalizeCode(awayCode)
 
@@ -82,7 +102,7 @@ export const MatchPredictionPage = () => {
       const awayTeam = entry.away.teamId ? teamsById[entry.away.teamId] : undefined
       return normalizeCode(homeTeam?.code) === normalizedHome && normalizeCode(awayTeam?.code) === normalizedAway
     }) ?? null
-  }, [awayCode, homeCode, matchesById, teamsById])
+  }, [awayCode, bracketRounds, homeCode, matchesById, round, searchParams, slot, teamsById])
 
   const homeTeam = match?.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined
