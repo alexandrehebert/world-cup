@@ -385,6 +385,7 @@ export const BracketBoard = ({
         ? getProjectedTeamIdFromParticipant(match.away, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
         : undefined
     )
+    const isLive = match.status === 'live'
 
     const renderFlag = (teamId: string | undefined) => {
       const team = teamId ? teamsById[teamId] : undefined
@@ -417,9 +418,11 @@ export const BracketBoard = ({
             setSelectedMatchId(match.id)
           }
         }}
-        className={`cursor-pointer rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] p-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
-          isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : 'hover:bg-[var(--surface-soft)]'
-        }`}
+        className={`cursor-pointer rounded-[var(--radius-sm)] border border-[var(--border)] p-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
+          isLive
+            ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
+            : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
+        } ${isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : ''}`}
         style={{ height: `${CONDENSED_NODE_HEIGHT}px` }}
         onClick={() => setSelectedMatchId(match.id)}
       >
@@ -940,6 +943,7 @@ export const BracketBoard = ({
                         const awayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
                         const homeWonBracket = cardWinner === 'home'
                         const awayWonBracket = cardWinner === 'away'
+                        const isLive = match.status === 'live'
 
                         return (
                           <div key={match.id} className="relative">
@@ -995,7 +999,9 @@ export const BracketBoard = ({
                               className={`relative z-10 cursor-pointer overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                               hasFavorite
                                 ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
-                                : 'hover:bg-[var(--surface-soft)]'
+                                : isLive
+                                  ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
+                                  : 'hover:bg-[var(--surface-soft)]'
                               } ${isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : ''}`}
                               data-bracket-main-card="true"
                               style={{ minHeight: `${nodeHeight}px` }}
@@ -1125,6 +1131,7 @@ export const BracketBoard = ({
                         const tpAwayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
                         const tpHomeWon = tpCardWinner === 'home'
                         const tpAwayWon = tpCardWinner === 'away'
+                        const isLive = match.status === 'live'
 
                         return (
                           <div
@@ -1140,7 +1147,9 @@ export const BracketBoard = ({
                            className={`relative cursor-pointer rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                            hasFavorite
                              ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
-                             : 'hover:bg-[var(--surface-soft)]'
+                             : isLive
+                               ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
+                               : 'hover:bg-[var(--surface-soft)]'
                           }`}
                           onClick={() => setSelectedMatchId(match.id)}>
                            <div className="space-y-2">

@@ -6,7 +6,17 @@ const isGroupComplete = (group: GroupRecord, matches: MatchRecord[]): boolean =>
   const groupMatches = matches.filter((m) => m.stage === 'group' && m.groupId === group.id)
   // Expect all round-robin matches to be finished: N teams → N*(N-1)/2 matches
   const expectedMatchCount = (group.teamIds.length * (group.teamIds.length - 1)) / 2
-  return groupMatches.length === expectedMatchCount && groupMatches.every((m) => m.status === 'finished')
+  const hasAllFinishedMatches =
+    groupMatches.length === expectedMatchCount && groupMatches.every((m) => m.status === 'finished')
+
+  // Fallback for stale match statuses: if standings already show every team completed
+  // its full group schedule, treat the group as complete for bracket resolution.
+  const expectedPlayedMatchesPerTeam = Math.max(0, group.teamIds.length - 1)
+  const hasCompleteStandings =
+    group.standings.length === group.teamIds.length &&
+    group.standings.every((standing) => standing.played >= expectedPlayedMatchesPerTeam)
+
+  return hasAllFinishedMatches || hasCompleteStandings
 }
 
 /**
@@ -27,6 +37,48 @@ export const resolveG1G2Placeholder = (
 
   const positionIndex = type === 'G1' ? 0 : 1
   return group.standings[positionIndex]?.teamId
+}
+
+const resolveG3Placeholder = (
+  placeholder: string,
+  groupsById: Map<string, GroupRecord>,
+  matches: MatchRecord[],
+): string | undefined => {
+  const [type, groupIds] = placeholder.split(':')
+  if (type !== 'G3' || !groupIds) return undefined
+
+  const candidateGroups = groupIds
+    .split('')
+    .map((groupId) => groupsById.get(groupId))
+    .filter((group): group is GroupRecord => Boolean(group))
+
+  if (candidateGroups.length !== groupIds.length) return undefined
+  if (!candidateGroups.every((group) => isGroupComplete(group, matches))) return undefined
+
+  const projectedThirdPlaces = candidateGroups
+    .map((group) => group.standings[2])
+    .filter((standing): standing is NonNullable<GroupRecord['standings'][number]> => Boolean(standing))
+
+  if (projectedThirdPlaces.length === 0) return undefined
+
+  projectedThirdPlaces.sort((first, second) => compareStandings(first, second))
+  return projectedThirdPlaces[0]?.teamId
+}
+
+const resolveGroupStagePlaceholder = (
+  placeholder: string,
+  groupsById: Map<string, GroupRecord>,
+  matches: MatchRecord[],
+): string | undefined => {
+  if (placeholder.startsWith('G1:') || placeholder.startsWith('G2:')) {
+    return resolveG1G2Placeholder(placeholder, groupsById, matches)
+  }
+
+  if (placeholder.startsWith('G3:')) {
+    return resolveG3Placeholder(placeholder, groupsById, matches)
+  }
+
+  return undefined
 }
 
 /**
@@ -147,8 +199,8 @@ const resolveKnockoutPlaceholder = (
 
   const [type, roundId, rawSlotIndex] = placeholder.split(':')
 
-  if (type === 'G1' || type === 'G2') {
-    return resolveG1G2Placeholder(placeholder, groupsById, matches)
+  if (type === 'G1' || type === 'G2' || type === 'G3') {
+    return resolveGroupStagePlaceholder(placeholder, groupsById, matches)
   }
 
   if (type !== 'W' && type !== 'L') {
@@ -199,10 +251,8 @@ const resolveKnockoutPlaceholder = (
  * Iterates over all bracket matches and fills in known team IDs from completed group standings.
  * Resolves deterministic bracket participants:
  * - G1/G2 placeholders when their group is complete
+ * - G3 placeholders once all referenced groups are complete
  * - W/L placeholders when the source knockout match is finished
- *
- * G3 (best 3rd-place) placeholders are left for ESPN or manual resolution until
- * a concrete team is known from upstream data.
  */
 export const resolveGroupBracketTeams = (
   matches: MatchRecord[],
@@ -215,12 +265,12 @@ export const resolveGroupBracketTeams = (
 
     const resolvedHomeTeamId =
       match.home && !match.home.teamId && match.home.placeholder
-        ? resolveG1G2Placeholder(match.home.placeholder, groupsById, matches)
+        ? resolveGroupStagePlaceholder(match.home.placeholder, groupsById, matches)
         : undefined
 
     const resolvedAwayTeamId =
       match.away && !match.away.teamId && match.away.placeholder
-        ? resolveG1G2Placeholder(match.away.placeholder, groupsById, matches)
+        ? resolveGroupStagePlaceholder(match.away.placeholder, groupsById, matches)
         : undefined
 
     if (!resolvedHomeTeamId && !resolvedAwayTeamId) return match

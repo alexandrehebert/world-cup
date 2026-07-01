@@ -80,7 +80,7 @@ export const BracketPage = () => {
   }, [])
 
   return (
-    <section className="space-y-4 pb-4">
+    <section className="space-y-4 pb-4" suppressHydrationWarning>
       <div>
         <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.bracket}</h2>
       </div>

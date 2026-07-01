@@ -115,3 +115,125 @@ test('resolveGroupBracketTeams propagates finished knockout winners to the next 
   assert.equal(quarterFinal.home.teamId, 'usa')
   assert.equal(quarterFinal.away.teamId, 'mex')
 })
+
+test('resolveGroupBracketTeams resolves group placeholders when standings are complete even if statuses are stale', () => {
+  const staleGroupMatches = groupMatches.map((match) => ({ ...match, status: 'scheduled' as const }))
+  const staleKnockoutMatch: MatchRecord = {
+    id: 'r32-stale',
+    stage: 'roundOf32',
+    roundId: 'roundOf32',
+    home: { placeholder: 'G1:A' },
+    away: { placeholder: 'G2:B' },
+    kickoff: '2026-06-29T20:00:00Z',
+    venue: {
+      stadium: 'Example Stadium',
+      city: 'Example City',
+      country: 'Example Country',
+      timeZone: 'UTC',
+    },
+    status: 'scheduled',
+  }
+
+  const resolvedMatches = resolveGroupBracketTeams(
+    [...staleGroupMatches, staleKnockoutMatch],
+    groups,
+    [{ id: 'roundOf32', matchIds: ['r32-stale'] }],
+  )
+
+  const roundOf32 = resolvedMatches.find((match) => match.id === 'r32-stale')
+  assert.ok(roundOf32)
+  assert.equal(roundOf32.home.teamId, 'usa')
+  assert.equal(roundOf32.away.teamId, 'arg')
+})
+
+test('resolveGroupBracketTeams resolves G3 placeholders once all referenced groups are complete', () => {
+  const candidateGroups: GroupRecord[] = [
+    {
+      id: 'C',
+      label: 'Group C',
+      teamIds: ['c1', 'c2', 'c3', 'c4'],
+      standings: [
+        { teamId: 'c1', played: 3, won: 3, drawn: 0, lost: 0, goalsFor: 6, goalsAgainst: 1, points: 9 },
+        { teamId: 'c2', played: 3, won: 2, drawn: 0, lost: 1, goalsFor: 5, goalsAgainst: 3, points: 6 },
+        { teamId: 'c3', played: 3, won: 1, drawn: 1, lost: 1, goalsFor: 4, goalsAgainst: 4, points: 4 },
+        { teamId: 'c4', played: 3, won: 0, drawn: 1, lost: 2, goalsFor: 2, goalsAgainst: 6, points: 1 },
+      ],
+      matchIds: [],
+    },
+    {
+      id: 'E',
+      label: 'Group E',
+      teamIds: ['e1', 'e2', 'e3', 'e4'],
+      standings: [
+        { teamId: 'e1', played: 3, won: 3, drawn: 0, lost: 0, goalsFor: 7, goalsAgainst: 1, points: 9 },
+        { teamId: 'e2', played: 3, won: 2, drawn: 0, lost: 1, goalsFor: 5, goalsAgainst: 3, points: 6 },
+        { teamId: 'e3', played: 3, won: 0, drawn: 2, lost: 1, goalsFor: 3, goalsAgainst: 4, points: 2 },
+        { teamId: 'e4', played: 3, won: 0, drawn: 2, lost: 1, goalsFor: 2, goalsAgainst: 5, points: 2 },
+      ],
+      matchIds: [],
+    },
+    {
+      id: 'F',
+      label: 'Group F',
+      teamIds: ['f1', 'f2', 'f3', 'f4'],
+      standings: [
+        { teamId: 'f1', played: 3, won: 2, drawn: 1, lost: 0, goalsFor: 6, goalsAgainst: 2, points: 7 },
+        { teamId: 'f2', played: 3, won: 1, drawn: 1, lost: 1, goalsFor: 4, goalsAgainst: 4, points: 4 },
+        { teamId: 'f3', played: 3, won: 1, drawn: 0, lost: 2, goalsFor: 3, goalsAgainst: 5, points: 3 },
+        { teamId: 'f4', played: 3, won: 1, drawn: 0, lost: 2, goalsFor: 2, goalsAgainst: 4, points: 3 },
+      ],
+      matchIds: [],
+    },
+    {
+      id: 'H',
+      label: 'Group H',
+      teamIds: ['h1', 'h2', 'h3', 'h4'],
+      standings: [
+        { teamId: 'h1', played: 3, won: 2, drawn: 1, lost: 0, goalsFor: 5, goalsAgainst: 2, points: 7 },
+        { teamId: 'h2', played: 3, won: 2, drawn: 0, lost: 1, goalsFor: 4, goalsAgainst: 3, points: 6 },
+        { teamId: 'h3', played: 3, won: 0, drawn: 1, lost: 2, goalsFor: 2, goalsAgainst: 5, points: 1 },
+        { teamId: 'h4', played: 3, won: 0, drawn: 0, lost: 3, goalsFor: 1, goalsAgainst: 4, points: 0 },
+      ],
+      matchIds: [],
+    },
+    {
+      id: 'I',
+      label: 'Group I',
+      teamIds: ['i1', 'i2', 'i3', 'i4'],
+      standings: [
+        { teamId: 'i1', played: 3, won: 2, drawn: 0, lost: 1, goalsFor: 5, goalsAgainst: 3, points: 6 },
+        { teamId: 'i2', played: 3, won: 1, drawn: 1, lost: 1, goalsFor: 4, goalsAgainst: 4, points: 4 },
+        { teamId: 'i3', played: 3, won: 1, drawn: 1, lost: 1, goalsFor: 3, goalsAgainst: 3, points: 4 },
+        { teamId: 'i4', played: 3, won: 0, drawn: 0, lost: 3, goalsFor: 1, goalsAgainst: 6, points: 0 },
+      ],
+      matchIds: [],
+    },
+  ]
+
+  const matchWithG3Placeholder: MatchRecord = {
+    id: 'r32-g3',
+    stage: 'roundOf32',
+    roundId: 'roundOf32',
+    home: { placeholder: 'G1:C' },
+    away: { placeholder: 'G3:CEFHI' },
+    kickoff: '2026-06-29T20:00:00Z',
+    venue: {
+      stadium: 'Example Stadium',
+      city: 'Example City',
+      country: 'Example Country',
+      timeZone: 'UTC',
+    },
+    status: 'scheduled',
+  }
+
+  const resolvedMatches = resolveGroupBracketTeams(
+    [matchWithG3Placeholder],
+    candidateGroups,
+    [{ id: 'roundOf32', matchIds: ['r32-g3'] }],
+  )
+
+  const roundOf32 = resolvedMatches.find((match) => match.id === 'r32-g3')
+  assert.ok(roundOf32)
+  assert.equal(roundOf32.home.teamId, 'c1')
+  assert.equal(roundOf32.away.teamId, 'c3')
+})

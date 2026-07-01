@@ -3,7 +3,7 @@
     "edition": "FIFA World Cup 2026",
     "season": "2026",
     "host": "Canada, Mexico, United States",
-    "updatedAt": "2026-07-01T11:57:16.078Z",
+    "updatedAt": "2026-07-01T16:23:01.785Z",
     "venueCountry": "Canada, Mexico, United States"
   },
   "teams": [
@@ -3262,7 +3262,7 @@
         "shortDetail": "FT",
         "completed": true,
         "startDate": "2026-06-30T21:00Z",
-        "syncedAt": "2026-07-01T11:57:16.076Z"
+        "syncedAt": "2026-07-01T16:23:01.781Z"
       }
     },
     {
@@ -3296,7 +3296,7 @@
         "shortDetail": "FT",
         "completed": true,
         "startDate": "2026-06-30T17:00Z",
-        "syncedAt": "2026-07-01T11:57:16.076Z"
+        "syncedAt": "2026-07-01T16:23:01.781Z"
       }
     },
     {
@@ -3324,11 +3324,13 @@
       "roundId": "roundOf32",
       "home": {
         "placeholder": "G1:L",
-        "teamId": "eng"
+        "teamId": "eng",
+        "score": 0
       },
       "away": {
         "placeholder": "G3:EHIJK",
-        "teamId": "cod"
+        "teamId": "cod",
+        "score": 1
       },
       "kickoff": "2026-07-01T16:00:00Z",
       "venue": {
@@ -3337,16 +3339,18 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled",
+      "status": "live",
       "live": {
-        "state": "pre",
-        "clock": 0,
-        "displayClock": "0'",
-        "detail": "Wed, July 1st at 12:00 PM EDT",
-        "shortDetail": "Scheduled",
+        "state": "in",
+        "period": 1,
+        "clock": 1380,
+        "displayClock": "23'",
+        "detail": "23'",
+        "shortDetail": "23'",
         "completed": false,
         "startDate": "2026-07-01T16:00Z",
-        "syncedAt": "2026-07-01T11:57:16.076Z"
+        "firstSeenLiveAt": "2026-07-01T16:23:01.783Z",
+        "syncedAt": "2026-07-01T16:23:01.781Z"
       }
     },
     {
@@ -3377,7 +3381,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-02T00:00Z",
-        "syncedAt": "2026-07-01T11:57:16.076Z"
+        "syncedAt": "2026-07-01T16:23:01.781Z"
       }
     },
     {
@@ -3408,7 +3412,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-01T20:00Z",
-        "syncedAt": "2026-07-01T11:57:16.076Z"
+        "syncedAt": "2026-07-01T16:23:01.781Z"
       }
     },
     {
@@ -3439,7 +3443,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-02T23:00Z",
-        "syncedAt": "2026-07-01T11:57:16.076Z"
+        "syncedAt": "2026-07-01T16:23:01.781Z"
       }
     },
     {
@@ -3470,7 +3474,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-02T19:00Z",
-        "syncedAt": "2026-07-01T11:57:16.076Z"
+        "syncedAt": "2026-07-01T16:23:01.781Z"
       }
     },
     {
@@ -3501,7 +3505,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-03T03:00Z",
-        "syncedAt": "2026-07-01T11:57:16.076Z"
+        "syncedAt": "2026-07-01T16:23:01.781Z"
       }
     },
     {
@@ -3566,10 +3570,12 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": "W:roundOf32:2"
+        "placeholder": "W:roundOf32:2",
+        "teamId": "par"
       },
       "away": {
-        "placeholder": "W:roundOf32:5"
+        "placeholder": "W:roundOf32:5",
+        "teamId": "fra"
       },
       "kickoff": "2026-07-04T22:00:00Z",
       "venue": {
@@ -3585,10 +3591,12 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": "W:roundOf32:1"
+        "placeholder": "W:roundOf32:1",
+        "teamId": "can"
       },
       "away": {
-        "placeholder": "W:roundOf32:3"
+        "placeholder": "W:roundOf32:3",
+        "teamId": "mar"
       },
       "kickoff": "2026-07-04T17:00:00Z",
       "venue": {
@@ -3604,10 +3612,12 @@
       "stage": "roundOf16",
       "roundId": "roundOf16",
       "home": {
-        "placeholder": "W:roundOf32:4"
+        "placeholder": "W:roundOf32:4",
+        "teamId": "bra"
       },
       "away": {
-        "placeholder": "W:roundOf32:6"
+        "placeholder": "W:roundOf32:6",
+        "teamId": "nor"
       },
       "kickoff": "2026-07-05T20:00:00Z",
       "venue": {

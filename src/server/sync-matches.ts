@@ -14,6 +14,7 @@ import { scoreFinishedMatches } from './predictions-scoring'
 
 const DEFAULT_MATCH_RESULTS_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard'
 const DEFAULT_ESPN_LOOKBACK_DAYS = 7
+const KICKOFF_FALLBACK_WINDOW_MINUTES = 180
 
 const toUtcDateKey = (date: Date) => {
   const year = date.getUTCFullYear()
@@ -61,7 +62,10 @@ export const getEspnDateWindow = (data: TournamentData, now = new Date()) => {
       continue
     }
 
-    if (kickoff <= now && kickoff >= lookbackStart) {
+    const isPastOrNowKickoff = kickoff <= now
+    const shouldBackfillPastUnresolvedMatch = isPastOrNowKickoff && match.status !== 'finished'
+
+    if (shouldBackfillPastUnresolvedMatch || (isPastOrNowKickoff && kickoff >= lookbackStart)) {
       keys.add(toUtcDateKey(kickoff))
 
       // ESPN scoreboard `dates` is based on US local calendar day, which can
@@ -253,12 +257,59 @@ const normalizeEspnState = (state: string | undefined, completed: boolean | unde
   return undefined
 }
 
+type KickoffFallbackCandidate = {
+  matchId: string
+  kickoff: string
+}
+
+export const resolveKickoffFallbackMatchId = (
+  eventDate: string,
+  candidates: KickoffFallbackCandidate[],
+  windowMinutes: number = KICKOFF_FALLBACK_WINDOW_MINUTES,
+): string | undefined => {
+  const eventMs = new Date(eventDate).getTime()
+  if (!Number.isFinite(eventMs)) {
+    return undefined
+  }
+
+  const windowMs = Math.max(0, Math.trunc(windowMinutes)) * 60 * 1000
+  let bestMatchId: string | undefined
+  let bestDiffMs = Number.POSITIVE_INFINITY
+  let hasBestDiffTie = false
+
+  for (const candidate of candidates) {
+    const kickoffMs = new Date(candidate.kickoff).getTime()
+    if (!Number.isFinite(kickoffMs)) {
+      continue
+    }
+
+    const diffMs = Math.abs(kickoffMs - eventMs)
+    if (diffMs > windowMs) {
+      continue
+    }
+
+    if (diffMs < bestDiffMs) {
+      bestDiffMs = diffMs
+      bestMatchId = candidate.matchId
+      hasBestDiffTie = false
+      continue
+    }
+
+    if (diffMs === bestDiffMs) {
+      hasBestDiffTie = true
+    }
+  }
+
+  return hasBestDiffTie ? undefined : bestMatchId
+}
+
 const buildMatchIndexes = (data: TournamentData) => {
   const teamCodeById = new Map(data.teams.map((team) => [team.id, team.code]))
   const teamIdByCode = new Map(data.teams.map((team) => [team.code, team.id]))
   const byExact = new Map<string, string>()
   const byPair = new Map<string, string[]>()
-  const byKickoff = new Map<string, string>()
+  const byKickoff = new Map<string, string[]>()
+  const byKickoffFallbackCandidates: KickoffFallbackCandidate[] = []
 
   for (const match of data.matches) {
     const homeId = match.home?.teamId
@@ -269,7 +320,10 @@ const buildMatchIndexes = (data: TournamentData) => {
       // Slice to 16 characters to extract 'YYYY-MM-DDTHH:MM' from the ISO 8601 datetime.
       if (match.stage !== 'group') {
         const kickoffKey = match.kickoff.slice(0, 16)
-        byKickoff.set(kickoffKey, match.id)
+        const kickoffCandidates = byKickoff.get(kickoffKey) ?? []
+        kickoffCandidates.push(match.id)
+        byKickoff.set(kickoffKey, kickoffCandidates)
+        byKickoffFallbackCandidates.push({ matchId: match.id, kickoff: match.kickoff })
       }
       continue
     }
@@ -292,7 +346,7 @@ const buildMatchIndexes = (data: TournamentData) => {
     byPair.set(pairKey, pairMatches)
   }
 
-  return { byExact, byPair, byKickoff, teamIdByCode }
+  return { byExact, byPair, byKickoff, byKickoffFallbackCandidates, teamIdByCode }
 }
 
 const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): UpstreamMatchUpdate[] => {
@@ -300,8 +354,9 @@ const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): Upstrea
     return []
   }
 
-  const { byExact, byPair, byKickoff, teamIdByCode } = buildMatchIndexes(data)
+  const { byExact, byPair, byKickoff, byKickoffFallbackCandidates, teamIdByCode } = buildMatchIndexes(data)
   const updates: UpstreamMatchUpdate[] = []
+  const usedKickoffFallbackMatchIds = new Set<string>()
   const syncedAt = new Date().toISOString()
 
   for (const event of payload.events) {
@@ -325,12 +380,22 @@ const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): Upstrea
     // Fallback: match bracket matches by kickoff time when teams are not yet assigned
     if (!matchId && typeof event?.date === 'string') {
       const eventMinute = new Date(event.date).toISOString().slice(0, 16)
-      matchId = byKickoff.get(eventMinute)
+      const exactKickoffCandidates = (byKickoff.get(eventMinute) ?? []).filter((candidateMatchId) => !usedKickoffFallbackMatchIds.has(candidateMatchId))
+      matchId = exactKickoffCandidates.length === 1 ? exactKickoffCandidates[0] : undefined
+
+      if (!matchId) {
+        matchId = resolveKickoffFallbackMatchId(
+          event.date,
+          byKickoffFallbackCandidates.filter((candidate) => !usedKickoffFallbackMatchIds.has(candidate.matchId)),
+        )
+      }
     }
 
     if (!matchId) {
       continue
     }
+
+    usedKickoffFallbackMatchIds.add(matchId)
 
     // Resolve team IDs for bracket matches that ESPN now knows about
     const existingMatch = data.matches.find((m) => m.id === matchId)

@@ -85,3 +85,33 @@ test('getEspnDateWindow skips finished FT-Pens matches once penalty scores are a
 
   assert.ok(!dateWindow.includes('20260630'))
 })
+
+test('getEspnDateWindow includes old unresolved past matches even outside lookback window', () => {
+  const previousLookback = process.env.ESPN_LOOKBACK_DAYS
+  process.env.ESPN_LOOKBACK_DAYS = '7'
+
+  const dateWindow = getEspnDateWindow(
+    createData(
+      createMatch({
+        id: 'stale-group-match',
+        stage: 'group',
+        groupId: 'A',
+        status: 'scheduled',
+        kickoff: '2026-06-18T16:00:00Z',
+        home: { teamId: 'mex' },
+        away: { teamId: 'kor' },
+        live: undefined,
+      }),
+    ),
+    new Date('2026-07-01T12:00:00.000Z'),
+  )
+
+  if (previousLookback === undefined) {
+    delete process.env.ESPN_LOOKBACK_DAYS
+  } else {
+    process.env.ESPN_LOOKBACK_DAYS = previousLookback
+  }
+
+  assert.ok(dateWindow.includes('20260618'))
+  assert.ok(dateWindow.includes('20260617'))
+})
