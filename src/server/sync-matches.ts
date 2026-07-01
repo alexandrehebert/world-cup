@@ -22,7 +22,23 @@ const toUtcDateKey = (date: Date) => {
   return `${year}${month}${day}`
 }
 
-const getEspnDateWindow = (data: TournamentData, now = new Date()) => {
+const isMissingKnockoutPenaltyScores = (match: MatchRecord) => {
+  const homeScore = match.home?.score
+  const awayScore = match.away?.score
+  const homePenaltyScore = match.home?.penaltyScore
+  const awayPenaltyScore = match.away?.penaltyScore
+
+  const hasValidRegulationScore = Number.isFinite(homeScore) && Number.isFinite(awayScore)
+  const isRegulationDraw = hasValidRegulationScore && homeScore === awayScore
+  const hasPenaltyScores = Number.isFinite(homePenaltyScore) && Number.isFinite(awayPenaltyScore)
+  const isKnockoutStage = match.stage !== 'group'
+  const liveDetail = `${match.live?.detail ?? ''} ${match.live?.shortDetail ?? ''}`.toLowerCase()
+  const explicitlyPenaltyDecided = liveDetail.includes('pen')
+
+  return match.status === 'finished' && isKnockoutStage && isRegulationDraw && !hasPenaltyScores && explicitlyPenaltyDecided
+}
+
+export const getEspnDateWindow = (data: TournamentData, now = new Date()) => {
   const offsets = [-1, 0, 1]
   const lookbackDays = Number(process.env.ESPN_LOOKBACK_DAYS ?? DEFAULT_ESPN_LOOKBACK_DAYS)
   const sanitizedLookbackDays = Number.isFinite(lookbackDays) && lookbackDays > 0 ? Math.trunc(lookbackDays) : DEFAULT_ESPN_LOOKBACK_DAYS
@@ -36,7 +52,7 @@ const getEspnDateWindow = (data: TournamentData, now = new Date()) => {
   )
 
   for (const match of data.matches) {
-    if (match.status === 'finished') {
+    if (match.status === 'finished' && !isMissingKnockoutPenaltyScores(match)) {
       continue
     }
 
@@ -63,7 +79,8 @@ const isEspnScoreboardUrl = (rawUrl: string) => {
   try {
     const parsed = new URL(rawUrl)
     const isEspnHost = parsed.hostname.includes('espn.com')
-    const isScoreboardPath = parsed.pathname.endsWith('/scoreboard')
+    const normalizedPathname = parsed.pathname.replace(/\/+$/, '')
+    const isScoreboardPath = normalizedPathname.endsWith('/scoreboard')
 
     return isEspnHost && isScoreboardPath
   } catch {
@@ -104,7 +121,7 @@ const mergeEspnPayloads = (payloads: EspnPayload[]): EspnPayload => {
 
 const buildEspnSummaryUrl = (scoreboardUrl: URL, eventId: string) => {
   const summaryUrl = new URL(scoreboardUrl.toString())
-  summaryUrl.pathname = summaryUrl.pathname.replace(/\/scoreboard$/, '/summary')
+  summaryUrl.pathname = summaryUrl.pathname.replace(/\/scoreboard\/?$/, '/summary')
   summaryUrl.search = ''
   summaryUrl.searchParams.set('event', eventId)
   return summaryUrl.toString()
