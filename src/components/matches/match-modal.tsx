@@ -6,7 +6,7 @@ import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -151,8 +151,11 @@ export const MatchModal = () => {
   const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
   const displayStatus = getDisplayMatchStatus(match, nowMs)
   const hasScore = hasDisplayScore(match, nowMs)
-  const homeWon = displayStatus === 'finished' && hasScore && (match.home.score ?? 0) > (match.away.score ?? 0)
-  const awayWon = displayStatus === 'finished' && hasScore && (match.away.score ?? 0) > (match.home.score ?? 0)
+  const winner = getMatchWinner(match, nowMs)
+  const homeWon = winner === 'home'
+  const awayWon = winner === 'away'
+  const homePenaltyScore = typeof match.home.penaltyScore === 'number' ? match.home.penaltyScore : null
+  const awayPenaltyScore = typeof match.away.penaltyScore === 'number' ? match.away.penaltyScore : null
   const { localDateTime } = formatMatchDate(match.kickoff, locale, timeZone, t.labels.today)
   const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
   const displayTime = displayStatus === 'live' ? getMatchDisplayTime(match, t.labels, nowMs, locale) : localTime
@@ -186,7 +189,7 @@ export const MatchModal = () => {
       draftScoreInput.home.trim() !== persistedHomeScore ||
       draftScoreInput.away.trim() !== persistedAwayScore)
 
-  const actualOutcome = getActualOutcome(match.home.score, match.away.score, match.status)
+  const actualOutcome = getActualOutcome(match.home.score, match.away.score, match.status, match.home.penaltyScore, match.away.penaltyScore)
   const isMatchLive = match.status === 'live'
   const isPredictionScored = Boolean(existingPrediction?.scoredAt)
   const isPredictionCorrect = isPredictionScored && (existingPrediction?.pointsAwarded ?? 0) > 0
@@ -322,6 +325,11 @@ export const MatchModal = () => {
                 <p className="text-3xl font-black leading-none text-[var(--text-strong)] sm:text-4xl">
                   {match.home.score} - {match.away.score}
                 </p>
+                {homePenaltyScore !== null && awayPenaltyScore !== null ? (
+                  <p className="text-sm text-[var(--text-soft)]">
+                    ({homePenaltyScore}) {t.labels.penalties} ({awayPenaltyScore})
+                  </p>
+                ) : null}
                 <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">
                   {displayStatus === 'finished' ? t.labels.finished : t.labels.live}
                 </p>

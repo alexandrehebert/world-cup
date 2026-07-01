@@ -9,11 +9,18 @@ export const getActualOutcome = (
   homeScore: number | undefined,
   awayScore: number | undefined,
   status: string,
+  homePenaltyScore?: number,
+  awayPenaltyScore?: number,
 ): MatchOutcome | null => {
   if (status !== 'finished' && status !== 'live') return null
   if (homeScore === undefined || awayScore === undefined) return null
   if (homeScore > awayScore) return 'home'
   if (awayScore > homeScore) return 'away'
+  // Tied — check penalty shootout result
+  if (homePenaltyScore !== undefined && awayPenaltyScore !== undefined) {
+    if (homePenaltyScore > awayPenaltyScore) return 'home'
+    if (awayPenaltyScore > homePenaltyScore) return 'away'
+  }
   return 'draw'
 }
 

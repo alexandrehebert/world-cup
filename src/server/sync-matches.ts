@@ -127,9 +127,19 @@ const fetchMatchResultsPayload = async (resultsUrl: string, data: TournamentData
   return mergeEspnPayloads(payloads)
 }
 
+interface EspnLinescore {
+  points?: number
+  period?: {
+    type?: {
+      name?: string
+    }
+  }
+}
+
 interface EspnCompetitor {
   homeAway?: string
   score?: string | number
+  linescores?: EspnLinescore[]
   team?: {
     abbreviation?: string
   }
@@ -166,8 +176,10 @@ type UpstreamMatchUpdate = {
   status?: MatchRecord['status']
   homeScore?: number | string
   awayScore?: number | string
-  home?: { score?: number | string }
-  away?: { score?: number | string }
+  homePenaltyScore?: number | string
+  awayPenaltyScore?: number | string
+  home?: { score?: number | string; penaltyScore?: number | string }
+  away?: { score?: number | string; penaltyScore?: number | string }
   score?: { home?: number | string; away?: number | string }
   homeTeamId?: string
   awayTeamId?: string
@@ -251,6 +263,22 @@ const buildMatchIndexes = (data: TournamentData) => {
   return { byExact, byPair, byKickoff, teamIdByCode }
 }
 
+const extractPenaltyScore = (competitor: EspnCompetitor): number | undefined => {
+  const linescores = competitor.linescores
+  if (!Array.isArray(linescores)) return undefined
+
+  const penaltyLinescore = linescores.find((ls) => {
+    const name = ls?.period?.type?.name?.toLowerCase() ?? ''
+    return name.includes('penalty') || name.includes('shootout') || name.includes('shoot')
+  })
+
+  if (penaltyLinescore && typeof penaltyLinescore.points === 'number' && Number.isFinite(penaltyLinescore.points)) {
+    return penaltyLinescore.points
+  }
+
+  return undefined
+}
+
 const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): UpstreamMatchUpdate[] => {
   if (!payload || !Array.isArray(payload.events)) {
     return []
@@ -307,6 +335,8 @@ const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): Upstrea
       status: nextStatus,
       homeScore: hasPlayableStatus ? home?.score : undefined,
       awayScore: hasPlayableStatus ? away?.score : undefined,
+      homePenaltyScore: hasPlayableStatus ? extractPenaltyScore(home ?? {}) : undefined,
+      awayPenaltyScore: hasPlayableStatus ? extractPenaltyScore(away ?? {}) : undefined,
       homeTeamId,
       awayTeamId,
       live: nextStatus
@@ -373,6 +403,8 @@ type NormalizedUpdate = {
   status?: MatchRecord['status']
   homeScore?: number
   awayScore?: number
+  homePenaltyScore?: number
+  awayPenaltyScore?: number
   homeTeamId?: string
   awayTeamId?: string
   live?: Partial<MatchLiveRecord>
@@ -381,12 +413,16 @@ type NormalizedUpdate = {
 const toNormalizedUpdate = (entry: UpstreamMatchUpdate): NormalizedUpdate => {
   const homeScore = normalizeScore(entry.homeScore ?? entry.home?.score ?? entry.score?.home)
   const awayScore = normalizeScore(entry.awayScore ?? entry.away?.score ?? entry.score?.away)
+  const homePenaltyScore = normalizeScore(entry.homePenaltyScore ?? entry.home?.penaltyScore)
+  const awayPenaltyScore = normalizeScore(entry.awayPenaltyScore ?? entry.away?.penaltyScore)
 
   return {
     id: entry.id,
     status: normalizeStatus(entry.status),
     homeScore,
     awayScore,
+    homePenaltyScore,
+    awayPenaltyScore,
     homeTeamId: typeof entry.homeTeamId === 'string' ? entry.homeTeamId : undefined,
     awayTeamId: typeof entry.awayTeamId === 'string' ? entry.awayTeamId : undefined,
     live: entry.live
@@ -538,9 +574,13 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
       const nextStatus = update.status ?? match.status
       const nextHomeScore = update.homeScore
       const nextAwayScore = update.awayScore
+      const nextHomePenaltyScore = update.homePenaltyScore
+      const nextAwayPenaltyScore = update.awayPenaltyScore
       const nextLive = update.live
       const homeScoreChanged = nextHomeScore !== undefined && nextHomeScore !== match.home?.score
       const awayScoreChanged = nextAwayScore !== undefined && nextAwayScore !== match.away?.score
+      const homePenaltyScoreChanged = nextHomePenaltyScore !== undefined && nextHomePenaltyScore !== match.home?.penaltyScore
+      const awayPenaltyScoreChanged = nextAwayPenaltyScore !== undefined && nextAwayPenaltyScore !== match.away?.penaltyScore
       const statusChanged = nextStatus !== match.status
       const homeTeamChanged = update.homeTeamId !== undefined && !!match.home && !match.home.teamId
       const awayTeamChanged = update.awayTeamId !== undefined && !!match.away && !match.away.teamId
@@ -555,7 +595,7 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
             : match.live
       const liveChanged = JSON.stringify(mergedLive ?? null) !== JSON.stringify(match.live ?? null)
 
-      if (!statusChanged && !homeScoreChanged && !awayScoreChanged && !liveChanged && !homeTeamChanged && !awayTeamChanged) {
+      if (!statusChanged && !homeScoreChanged && !awayScoreChanged && !homePenaltyScoreChanged && !awayPenaltyScoreChanged && !liveChanged && !homeTeamChanged && !awayTeamChanged) {
         return match
       }
 
@@ -567,11 +607,13 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
         home: {
           ...match.home,
           ...(nextHomeScore !== undefined ? { score: nextHomeScore } : {}),
+          ...(nextHomePenaltyScore !== undefined ? { penaltyScore: nextHomePenaltyScore } : {}),
           ...(homeTeamChanged ? { teamId: update.homeTeamId } : {}),
         },
         away: {
           ...match.away,
           ...(nextAwayScore !== undefined ? { score: nextAwayScore } : {}),
+          ...(nextAwayPenaltyScore !== undefined ? { penaltyScore: nextAwayPenaltyScore } : {}),
           ...(awayTeamChanged ? { teamId: update.awayTeamId } : {}),
         },
         live: mergedLive,

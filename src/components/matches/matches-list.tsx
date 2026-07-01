@@ -5,7 +5,7 @@ import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getLocalizedText, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getLocalizedText, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -159,8 +159,11 @@ export const MatchesList = ({
               const displayScore = hasDisplayScore(match, nowMs)
               const homeScore = typeof match.home.score === 'number' ? match.home.score : null
               const awayScore = typeof match.away.score === 'number' ? match.away.score : null
-              const homeWon = isFinished && homeScore !== null && awayScore !== null && homeScore > awayScore
-              const awayWon = isFinished && homeScore !== null && awayScore !== null && awayScore > homeScore
+              const homePenaltyScore = typeof match.home.penaltyScore === 'number' ? match.home.penaltyScore : null
+              const awayPenaltyScore = typeof match.away.penaltyScore === 'number' ? match.away.penaltyScore : null
+              const winner = getMatchWinner(match, nowMs)
+              const homeWon = winner === 'home'
+              const awayWon = winner === 'away'
               const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
               const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
               const hasFavorite = homeIsFavorite || awayIsFavorite
@@ -251,9 +254,16 @@ export const MatchesList = ({
                       </div>
                       <div className="shrink-0 px-2 py-1 text-center sm:px-3">
                         {displayScore ? (
-                          <p className="text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-                            {match.home.score} - {match.away.score}
-                          </p>
+                          <div className="text-center">
+                            <p className="text-base font-semibold text-[var(--text-strong)] sm:text-lg">
+                              {homeScore} - {awayScore}
+                            </p>
+                            {homePenaltyScore !== null && awayPenaltyScore !== null ? (
+                              <p className="text-xs text-[var(--text-soft)]">
+                                ({homePenaltyScore}) {t.labels.penalties} ({awayPenaltyScore})
+                              </p>
+                            ) : null}
+                          </div>
                         ) : (
                           <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-soft)]">vs</p>
                         )}
