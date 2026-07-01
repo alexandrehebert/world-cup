@@ -49,9 +49,13 @@ type PlaceholderResolutionContext = {
   matchIdByRoundAndSlot: Map<string, string>
   standingsByTeamId: Map<string, StandingRecord>
   teamsById: Record<string, { id: string; name: string; code: string }>
+  kalshiProbabilitiesByPairKey: Record<string, Record<string, number>>
 }
 
 const getRoundSlotKey = (roundId: string, slotIndex: number) => `${roundId}:${slotIndex}`
+const getTeamCodePairKey = (firstTeamCode: string, secondTeamCode: string) => {
+  return [firstTeamCode, secondTeamCode].sort().join('|')
+}
 
 const hasNumericScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
 
@@ -100,6 +104,20 @@ const pickMostProbableWinner = (
   }
   if (winnerSide === 'away') {
     return awayTeamId
+  }
+
+  const homeTeamCode = context.teamsById[homeTeamId]?.code?.toUpperCase()
+  const awayTeamCode = context.teamsById[awayTeamId]?.code?.toUpperCase()
+
+  if (homeTeamCode && awayTeamCode) {
+    const pairKey = getTeamCodePairKey(homeTeamCode, awayTeamCode)
+    const probabilities = context.kalshiProbabilitiesByPairKey[pairKey]
+    const homeProbability = probabilities?.[homeTeamCode]
+    const awayProbability = probabilities?.[awayTeamCode]
+
+    if (typeof homeProbability === 'number' && typeof awayProbability === 'number' && homeProbability !== awayProbability) {
+      return homeProbability > awayProbability ? homeTeamId : awayTeamId
+    }
   }
 
   const homeStanding = context.standingsByTeamId.get(homeTeamId)
@@ -263,10 +281,12 @@ export const BracketBoard = ({
   rounds,
   forecastTeamId,
   viewMode = 'detailed',
+  kalshiProbabilitiesByPairKey = {},
 }: {
   rounds: { id: string; matchIds: string[] }[]
   forecastTeamId?: string
   viewMode?: BracketViewMode
+  kalshiProbabilitiesByPairKey?: Record<string, Record<string, number>>
 }) => {
   const { locale, t } = useLocale()
   const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
@@ -660,6 +680,7 @@ export const BracketBoard = ({
     matchIdByRoundAndSlot,
     standingsByTeamId,
     teamsById,
+    kalshiProbabilitiesByPairKey,
   }
   const forecastPath = forecastTeamId
     ? getForecastPathToFinal(forecastTeamId, rounds, placeholderResolutionContext)

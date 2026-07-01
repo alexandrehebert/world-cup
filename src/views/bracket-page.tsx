@@ -11,6 +11,8 @@ export const BracketPage = () => {
   const { t } = useLocale()
   const { bracketRounds, teams, matchesById, groupsById } = useTournament()
   const [forecastTeamId, setForecastTeamId] = useState<string>('')
+  const [kalshiProbabilitiesByPairKey, setKalshiProbabilitiesByPairKey] = useState<Record<string, Record<string, number>>>({})
+  const [hasLoadedKalshiPredictions, setHasLoadedKalshiPredictions] = useState(false)
   const [viewMode, setViewMode] = useState<BracketViewMode>('detailed')
   const [teamQuery, setTeamQuery] = useState('')
   const [isTeamMenuOpen, setIsTeamMenuOpen] = useState(false)
@@ -78,6 +80,43 @@ export const BracketPage = () => {
       document.removeEventListener('mousedown', handleOutsideClick)
     }
   }, [])
+
+  useEffect(() => {
+    if (!forecastTeamId || hasLoadedKalshiPredictions) {
+      return
+    }
+
+    let isCancelled = false
+
+    void fetch('/api/kalshi/bracket-predictions', {
+      method: 'GET',
+      cache: 'no-store',
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Kalshi bracket predictions request failed (${response.status})`)
+        }
+
+        const payload = (await response.json()) as {
+          probabilitiesByPairKey?: Record<string, Record<string, number>>
+        }
+
+        if (!isCancelled) {
+          setKalshiProbabilitiesByPairKey(payload.probabilitiesByPairKey ?? {})
+          setHasLoadedKalshiPredictions(true)
+        }
+      })
+      .catch((error: unknown) => {
+        if (!isCancelled) {
+          console.warn('[BracketPage] Unable to load Kalshi bracket predictions', error)
+          setHasLoadedKalshiPredictions(true)
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [forecastTeamId, hasLoadedKalshiPredictions])
 
   return (
     <section className="space-y-4 pb-4" suppressHydrationWarning>
@@ -234,7 +273,12 @@ export const BracketPage = () => {
           </div>
         </div>
       </div>
-      <BracketBoard rounds={bracketRounds} forecastTeamId={forecastTeamId || undefined} viewMode={viewMode} />
+      <BracketBoard
+        rounds={bracketRounds}
+        forecastTeamId={forecastTeamId || undefined}
+        viewMode={viewMode}
+        kalshiProbabilitiesByPairKey={kalshiProbabilitiesByPairKey}
+      />
     </section>
   )
 }
