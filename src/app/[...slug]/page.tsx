@@ -6,6 +6,7 @@ import { loadClientBootstrapData } from '../../server/client-bootstrap'
 import { loadTournamentData } from '../../server/tournament-data'
 import { getDisplayMatchStatus, formatMatchDate } from '../../lib/format'
 import { isPredictionsFeatureEnabled } from '../../lib/features'
+import { getMatchStageSlug, parseMatchSlugSegments } from '../../lib/match-path'
 import type { TournamentData } from '../../types/tournament'
 
 export const dynamic = 'force-dynamic'
@@ -32,7 +33,13 @@ const resolveMetadataBase = async () => {
   return new URL(URL.canParse(candidate) ? candidate : DEFAULT_METADATA_BASE)
 }
 
-const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: string, awayCode: string) => {
+const findMatchByCodes = (
+  data: TournamentData,
+  teamsById: TeamsById,
+  homeCode: string,
+  awayCode: string,
+  stage?: TournamentData['matches'][number]['stage'] | null,
+) => {
   const normalizedHome = normalizeCode(homeCode)
   const normalizedAway = normalizeCode(awayCode)
 
@@ -41,6 +48,10 @@ const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: 
   }
 
   return data.matches.find((match: MatchRecord) => {
+    if (stage && match.stage !== stage) {
+      return false
+    }
+
     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
     const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
 
@@ -48,9 +59,9 @@ const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: 
   })
 }
 
-const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string) => {
+const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string, stage?: TournamentData['matches'][number]['stage'] | null) => {
   const teamsById = Object.fromEntries(data.teams.map((team: TeamRecord) => [team.id, team]))
-  const match = findMatchByCodes(data, teamsById, homeCode, awayCode)
+  const match = findMatchByCodes(data, teamsById, homeCode, awayCode, stage)
 
   if (!match) {
     return null
@@ -74,7 +85,7 @@ const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string) 
     utcDateStr,
   ].filter(Boolean).join(' · ')
 
-  return { title, description }
+  return { title, description, match }
 }
 
 const menuMetaBySegment: Record<string, MenuPageMeta> = {
@@ -155,6 +166,7 @@ const buildMenuMetadata = (meta: MenuPageMeta, metadataBase: URL): Metadata => (
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
   const { slug } = await params
+  const matchPath = slug ? parseMatchSlugSegments(slug) : null
   const metadataBase = await resolveMetadataBase()
   const defaultMeta = {
     metadataBase,
@@ -200,20 +212,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   }
 
-  if (!slug || slug.length < 4) {
+  if (!matchPath || !firstSegment || (firstSegment !== 'match' && firstSegment !== 'predict')) {
     return defaultMeta
   }
 
-  const [first, homeCode, third, awayCode] = slug
-  const isMatchRoute = first?.toLowerCase() === 'match' && third?.toLowerCase() === 'vs'
-  const isPredictRoute = isPredictionsFeatureEnabled && first?.toLowerCase() === 'predict' && third?.toLowerCase() === 'vs'
+  const isMatchRoute = matchPath.section === 'match'
+  const isPredictRoute = isPredictionsFeatureEnabled && matchPath.section === 'predict'
 
   if (!isMatchRoute && !isPredictRoute) {
     return defaultMeta
   }
 
   const tournamentData = await loadTournamentData()
-  const meta = getMatchMeta(tournamentData, homeCode, awayCode)
+  const meta = getMatchMeta(tournamentData, matchPath.homeCode, matchPath.awayCode, matchPath.stage)
 
   if (!meta) {
     return {
@@ -226,8 +237,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (isPredictRoute) {
     const title = `Do your prediction: ${meta.title}`
     const description = `Quickly make your prediction for this match and compare with current picks.`
-    const imagePath = `/predict/${encodeURIComponent(homeCode)}/vs/${encodeURIComponent(awayCode)}/opengraph-image`
-    const canonical = `/predict/${encodeURIComponent(homeCode)}/vs/${encodeURIComponent(awayCode)}`
+    const imagePath = `/predict/${getMatchStageSlug(meta.match.stage)}/${encodeURIComponent(matchPath.homeCode)}/vs/${encodeURIComponent(matchPath.awayCode)}/opengraph-image`
+    const canonical = `/predict/${getMatchStageSlug(meta.match.stage)}/${encodeURIComponent(matchPath.homeCode)}/vs/${encodeURIComponent(matchPath.awayCode)}`
 
     return {
       metadataBase,
@@ -250,8 +261,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   }
 
-  const imagePath = `/match/${encodeURIComponent(homeCode)}/vs/${encodeURIComponent(awayCode)}/opengraph-image`
-  const canonical = `/match/${encodeURIComponent(homeCode)}/vs/${encodeURIComponent(awayCode)}`
+  const imagePath = `/match/${getMatchStageSlug(meta.match.stage)}/${encodeURIComponent(matchPath.homeCode)}/vs/${encodeURIComponent(matchPath.awayCode)}/opengraph-image`
+  const canonical = `/match/${getMatchStageSlug(meta.match.stage)}/${encodeURIComponent(matchPath.homeCode)}/vs/${encodeURIComponent(matchPath.awayCode)}`
 
   return {
     metadataBase,
@@ -283,30 +294,32 @@ export default async function SlugPage({
 }) {
   const { slug } = await params
   const resolvedSearchParams = searchParams ? await searchParams : undefined
-  const query = resolvedSearchParams
-    ? new URLSearchParams(
-        Object.entries(resolvedSearchParams).flatMap(([key, value]) => {
-          if (typeof value === 'string') {
-            return [[key, value]]
-          }
+  const queryEntries: [string, string][] = []
 
-          if (Array.isArray(value)) {
-            return value.map((entry) => [key, entry] as const)
-          }
+  if (resolvedSearchParams) {
+    for (const [key, value] of Object.entries(resolvedSearchParams)) {
+      if (typeof value === 'string') {
+        queryEntries.push([key, value])
+        continue
+      }
 
-          return []
-        }),
-      ).toString()
-    : ''
+      if (Array.isArray(value)) {
+        for (const entry of value) {
+          queryEntries.push([key, entry])
+        }
+      }
+    }
+  }
+
+  const query = resolvedSearchParams ? new URLSearchParams(queryEntries).toString() : ''
   const initialPath = `/${slug.map((segment) => encodeURIComponent(segment)).join('/')}${query ? `?${query}` : ''}`
   const tournamentData = await loadTournamentData()
   const first = slug?.[0]?.toLowerCase()
-  const isPredictRoute = isPredictionsFeatureEnabled && first === 'predict' && slug?.[2]?.toLowerCase() === 'vs'
-  const homeCode = slug?.[1]
-  const awayCode = slug?.[3]
+  const matchPath = slug ? parseMatchSlugSegments(slug) : null
+  const isPredictRoute = isPredictionsFeatureEnabled && first === 'predict' && matchPath?.section === 'predict'
   const teamsById = Object.fromEntries(tournamentData.teams.map((team: TeamRecord) => [team.id, team]))
-  const match = isPredictRoute && homeCode && awayCode
-    ? findMatchByCodes(tournamentData, teamsById, homeCode, awayCode)
+  const match = isPredictRoute && matchPath
+    ? findMatchByCodes(tournamentData, teamsById, matchPath.homeCode, matchPath.awayCode, matchPath.stage)
     : null
   const bootstrapData = await loadClientBootstrapData({
     publicMatchId: isPredictionsFeatureEnabled ? match?.id : undefined,

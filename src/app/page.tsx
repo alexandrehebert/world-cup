@@ -7,21 +7,24 @@ export const dynamic = 'force-dynamic'
 export default async function HomePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined
   const [tournamentData, bootstrapData] = await Promise.all([loadTournamentData(), loadClientBootstrapData()])
-  const query = resolvedSearchParams
-    ? new URLSearchParams(
-        Object.entries(resolvedSearchParams).flatMap(([key, value]) => {
-          if (typeof value === 'string') {
-            return [[key, value]]
-          }
+  const queryEntries: [string, string][] = []
 
-          if (Array.isArray(value)) {
-            return value.map((entry) => [key, entry] as const)
-          }
+  if (resolvedSearchParams) {
+    for (const [key, value] of Object.entries(resolvedSearchParams)) {
+      if (typeof value === 'string') {
+        queryEntries.push([key, value])
+        continue
+      }
 
-          return []
-        }),
-      ).toString()
-    : ''
+      if (Array.isArray(value)) {
+        for (const entry of value) {
+          queryEntries.push([key, entry])
+        }
+      }
+    }
+  }
+
+  const query = resolvedSearchParams ? new URLSearchParams(queryEntries).toString() : ''
 
   return <ClientApp initialData={tournamentData} bootstrapData={bootstrapData} initialPath={query ? `/?${query}` : '/'} />
 }

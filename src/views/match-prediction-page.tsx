@@ -10,6 +10,7 @@ import { useLocale } from '../contexts/locale-context'
 import { useNow, useTimeZone } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
 import { useDashboard } from '../contexts/dashboard-context'
+import { getMatchStageFromSlug } from '../lib/match-path'
 import { formatMatchDate } from '../lib/format'
 import { Icon } from '../lib/icons'
 import { inferOutcomeFromScores } from '../lib/predictions'
@@ -45,7 +46,13 @@ const getOutcomeFromScores = (homeScore: number, awayScore: number): MatchOutcom
 }
 
 export const MatchPredictionPage = () => {
-  const { homeCode, awayCode, round, slot } = useParams<{ homeCode: string; awayCode: string; round: string; slot: string }>()
+  const { homeCode, awayCode, stage, round, slot } = useParams<{
+    homeCode: string
+    awayCode: string
+    stage: string
+    round: string
+    slot: string
+  }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { user, openAuthModal } = useAuth()
@@ -65,6 +72,7 @@ export const MatchPredictionPage = () => {
   const [guestName, setGuestName] = useState(user?.username ?? '')
   const [selectedOutcome, setSelectedOutcome] = useState<MatchOutcome | null>(null)
   const [scoreInput, setScoreInput] = useState({ home: '', away: '' })
+  const routeStage = stage ? getMatchStageFromSlug(stage) : null
 
   useEffect(() => {
     if (user?.username) {
@@ -76,6 +84,27 @@ export const MatchPredictionPage = () => {
     const matchIdFromQuery = searchParams.get('match')?.trim() ?? ''
     if (matchIdFromQuery && matchesById[matchIdFromQuery]) {
       return matchesById[matchIdFromQuery] ?? null
+    }
+
+    if (routeStage && homeCode && awayCode) {
+      const normalizedHome = normalizeCode(homeCode)
+      const normalizedAway = normalizeCode(awayCode)
+
+      if (normalizedHome && normalizedAway) {
+        const stageMatch = Object.values(matchesById).find((entry) => {
+          if (entry.stage !== routeStage) {
+            return false
+          }
+
+          const homeTeam = entry.home.teamId ? teamsById[entry.home.teamId] : undefined
+          const awayTeam = entry.away.teamId ? teamsById[entry.away.teamId] : undefined
+          return normalizeCode(homeTeam?.code) === normalizedHome && normalizeCode(awayTeam?.code) === normalizedAway
+        })
+
+        if (stageMatch) {
+          return stageMatch
+        }
+      }
     }
 
     if (round && slot) {
@@ -102,7 +131,7 @@ export const MatchPredictionPage = () => {
       const awayTeam = entry.away.teamId ? teamsById[entry.away.teamId] : undefined
       return normalizeCode(homeTeam?.code) === normalizedHome && normalizeCode(awayTeam?.code) === normalizedAway
     }) ?? null
-  }, [awayCode, bracketRounds, homeCode, matchesById, round, searchParams, slot, teamsById])
+  }, [awayCode, bracketRounds, homeCode, matchesById, routeStage, round, searchParams, slot, teamsById])
 
   const homeTeam = match?.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined

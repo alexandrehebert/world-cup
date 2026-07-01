@@ -5,13 +5,19 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './auth-context'
 import { useTournament } from './tournament-context'
 import { isPredictionsFeatureEnabled } from '../lib/features'
+import {
+  buildLegacyMatchPathKey,
+  buildMatchPathKey,
+  buildTbdMatchPathKey,
+  parseMatchPathname,
+  type BracketRoundId,
+  type MatchPathSection,
+} from '../lib/match-path'
 
 const FAVORITE_TEAMS_STORAGE_KEY = 'football-world-cup.favorite-teams'
 const MATCH_QUERY_PARAM = 'match'
-const MATCH_PATH_REGEX = /^\/(match|bracket)\/([^/]+)\/vs\/([^/]+)\/?$/i
-const TBD_MATCH_PATH_REGEX = /^\/(match|bracket)\/tbd\/([^/]+)\/(\d+)\/?$/i
+const TBD_MATCH_PATH_REGEX = /^\/(match|bracket|predict)\/tbd\/([^/]+)\/(\d+)\/?$/i
 const TEAM_PATH_REGEX = /^\/team\/([^/]+)\/?$/i
-type MatchPathSection = 'match' | 'bracket'
 
 const areFavoriteListsEqual = (first: string[], second: string[]) => {
   if (first.length !== second.length) {
@@ -81,20 +87,20 @@ const getMatchPathDetails = (pathname: string): { section: MatchPathSection; pat
   const tbdMatch = pathname.match(TBD_MATCH_PATH_REGEX)
   if (tbdMatch) {
     return {
-      section: tbdMatch[1].toLowerCase() === 'bracket' ? 'bracket' : 'match',
+      section: tbdMatch[1].toLowerCase() as MatchPathSection,
       pathKey: `tbd/${decodeURIComponent(tbdMatch[2])}/${tbdMatch[3]}`,
     }
   }
 
-  const match = pathname.match(MATCH_PATH_REGEX)
-  if (!match) {
+  const parsedPath = parseMatchPathname(pathname)
+  if (!parsedPath) {
     return null
   }
 
-  const section = match[1].toLowerCase() === 'bracket' ? 'bracket' : 'match'
-  const pathKey = `${normalizeMatchCode(decodeURIComponent(match[2]))}/vs/${normalizeMatchCode(decodeURIComponent(match[3]))}`
-
-  return { section, pathKey }
+  return {
+    section: parsedPath.section,
+    pathKey: parsedPath.pathKey,
+  }
 }
 
 const getMatchPathKey = (pathname: string) => {
@@ -174,22 +180,26 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       const homeCode = match.home.teamId ? teamsById[match.home.teamId]?.code : undefined
       const awayCode = match.away.teamId ? teamsById[match.away.teamId]?.code : undefined
       const bracketPosition = bracketPositionByMatchId.get(match.id)
-      const hasResolvedTeams = Boolean(homeCode && awayCode)
-      const baseSlug = hasResolvedTeams
-        ? `${normalizeSlugPart(homeCode)}-${normalizeSlugPart(awayCode)}`
-        : bracketPosition
-          ? `tbd-${bracketPosition.roundId}-${bracketPosition.slotIndex + 1}`
-          : `match-${match.id}`
+      let baseSlug: string
+
+      if (homeCode && awayCode) {
+        baseSlug = `${normalizeSlugPart(homeCode)}-${normalizeSlugPart(awayCode)}`
+      } else if (bracketPosition) {
+        baseSlug = `tbd-${bracketPosition.roundId}-${bracketPosition.slotIndex + 1}`
+      } else {
+        baseSlug = `match-${match.id}`
+      }
       const count = (duplicateCounts.get(baseSlug) ?? 0) + 1
       duplicateCounts.set(baseSlug, count)
       const slug = count === 1 ? baseSlug : `${baseSlug}-${count}`
       const homePathCode = homeCode ? normalizeMatchCode(homeCode) : null
       const awayPathCode = awayCode ? normalizeMatchCode(awayCode) : null
       const pathKey = homePathCode && awayPathCode
-        ? `${homePathCode}/vs/${awayPathCode}`
+        ? buildMatchPathKey(match.stage, homePathCode, awayPathCode)
         : bracketPosition
-          ? `tbd/${bracketPosition.roundId}/${bracketPosition.slotIndex + 1}`
+          ? buildTbdMatchPathKey(bracketPosition.roundId as BracketRoundId, bracketPosition.slotIndex)
           : null
+      const legacyPathKey = homePathCode && awayPathCode ? buildLegacyMatchPathKey(homePathCode, awayPathCode) : null
       const matchPath = pathKey ?? `?${new URLSearchParams({ match: match.id }).toString()}`
 
       idToSlug[match.id] = slug
@@ -197,6 +207,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       idToPath[match.id] = matchPath
       if (pathKey && !pathToId[pathKey]) {
         pathToId[pathKey] = match.id
+      }
+      if (legacyPathKey && !pathToId[legacyPathKey]) {
+        pathToId[legacyPathKey] = match.id
       }
     }
 
@@ -268,14 +281,17 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     (matchId: string) => {
       const matchPath = matchIdToPath[matchId]
       const isBracketContext = location.pathname === '/bracket' || location.pathname.startsWith('/bracket/')
+      const isPredictContext = location.pathname === '/predict' || location.pathname.startsWith('/predict/')
 
       if (!matchPath) {
-        return isBracketContext ? '/bracket' : '/match'
+        if (isBracketContext) return '/bracket'
+        if (isPredictContext) return '/predict'
+        return '/match'
       }
 
       return matchPath.startsWith('?')
-        ? `${isBracketContext ? '/bracket' : '/match'}${matchPath}`
-        : `${isBracketContext ? '/bracket' : '/match'}/${matchPath}`
+        ? `${isBracketContext ? '/bracket' : isPredictContext ? '/predict' : '/match'}${matchPath}`
+        : `${isBracketContext ? '/bracket' : isPredictContext ? '/predict' : '/match'}/${matchPath}`
     },
     [location.pathname, matchIdToPath],
   )
@@ -393,9 +409,11 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     const currentMatchSection: MatchPathSection | null = currentMatchDetails?.section ?? (
       location.pathname === '/bracket'
         ? 'bracket'
-        : location.pathname === '/matches' || location.pathname === '/match'
-          ? 'match'
-          : null
+        : location.pathname === '/predict' || location.pathname.startsWith('/predict/')
+          ? 'predict'
+          : location.pathname === '/matches' || location.pathname === '/match' || location.pathname.startsWith('/match/')
+            ? 'match'
+            : null
     )
     const nextMatchPath = selectedMatchId ? (matchIdToPath[selectedMatchId] ?? null) : null
     const shouldSyncMatchUrl = currentMatchSection !== null || currentMatchPath !== null
@@ -409,7 +427,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (nextMatchPath) {
-      const nextPathname = `/${currentMatchSection === 'bracket' ? 'bracket' : 'match'}`
+      const nextPathname = `/${currentMatchSection === 'bracket' ? 'bracket' : currentMatchSection === 'predict' ? 'predict' : 'match'}`
       const nextSearchParams = new URLSearchParams(getSearchWithoutLegacyMatchParam(location.search))
 
       if (nextMatchPath.startsWith('?')) {
@@ -432,7 +450,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     if (currentMatchPath) {
       navigate(
         {
-          pathname: currentMatchSection === 'bracket' ? '/bracket' : '/matches',
+          pathname: currentMatchSection === 'bracket' ? '/bracket' : currentMatchSection === 'predict' ? '/predictions' : '/matches',
           search: getSearchWithoutLegacyMatchParam(location.search),
         },
         { replace: false },
