@@ -74,7 +74,7 @@ const getUtcOffsetLabel = (kickoff: string, timeZone: string) => {
 }
 
 export const MatchModal = () => {
-  const { getMatchPredictionPath, isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
+  const { getMatchSharePath, isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
   const { user, openAuthModal } = useAuth()
   const { locale, t } = useLocale()
   const { predictionsByMatch, savePrediction, savingMatchId } = usePredictions()
@@ -245,7 +245,7 @@ export const MatchModal = () => {
       return
     }
 
-    const shareUrl = new URL(getMatchPredictionPath(match.id), window.location.origin).href
+    const shareUrl = new URL(getMatchSharePath(match.id), window.location.origin).href
     await window.navigator.clipboard.writeText(shareUrl)
     setIsCopied(true)
     window.setTimeout(() => {
