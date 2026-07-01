@@ -4,6 +4,7 @@ export interface TranslationSet {
   sections: {
     overview: string
     groups: string
+    teams: string
     matches: string
     bracket: string
     predictions: string
@@ -13,6 +14,7 @@ export interface TranslationSet {
     groups: string
     upcomingMatches: string
     matches: string
+    teams: string
     bracket: string
     predictions: string
     leaderboard: string
@@ -175,6 +177,11 @@ export interface TranslationSet {
     bracketViewCondensed: string
     bracketPathSearchPlaceholder: string
     penalties: string
+    filterAll: string
+    filterActiveTeams: string
+    filterEliminatedTeams: string
+    noTeamsForFilters: string
+    eliminated: string
   }
   teams: Record<string, string>
   groups: Record<string, string>

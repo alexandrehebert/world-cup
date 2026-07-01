@@ -19,6 +19,11 @@ const copyBySection: Record<string, MenuImageCopy> = {
     subheading: 'Follow points, rankings, and qualification races.',
     accent: '#8ec5ff',
   },
+  teams: {
+    heading: 'World Cup Teams',
+    subheading: 'Open team details, fixtures, and group context.',
+    accent: '#7fe5c5',
+  },
   matches: {
     heading: 'Match Center',
     subheading: 'Live scores, status, and fixture details.',

@@ -8,6 +8,7 @@ import { useTournament } from './tournament-context'
 const FAVORITE_TEAMS_STORAGE_KEY = 'football-world-cup.favorite-teams'
 const MATCH_QUERY_PARAM = 'match'
 const MATCH_PATH_REGEX = /^\/match\/([^/]+)\/vs\/([^/]+)\/?$/i
+const TEAM_PATH_REGEX = /^\/team\/([^/]+)\/?$/i
 
 const areFavoriteListsEqual = (first: string[], second: string[]) => {
   if (first.length !== second.length) {
@@ -46,6 +47,7 @@ interface DashboardContextValue {
   setSelectedMatchId: (matchId: string | null) => void
   getMatchSharePath: (matchId: string) => string
   getMatchPredictionPath: (matchId: string) => string
+  getTeamSharePath: (teamId: string) => string
   selectedTeamId: string | null
   setSelectedTeamId: (teamId: string | null) => void
   favoriteTeamIds: string[]
@@ -63,6 +65,7 @@ const normalizeSlugPart = (value: string) => {
 }
 
 const normalizeMatchCode = (value: string) => value.trim().toUpperCase()
+const normalizeTeamCode = (value: string) => value.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
 
 const getMatchPathKey = (pathname: string) => {
   const match = pathname.match(MATCH_PATH_REGEX)
@@ -72,6 +75,16 @@ const getMatchPathKey = (pathname: string) => {
   }
 
   return `${normalizeMatchCode(decodeURIComponent(match[1]))}/vs/${normalizeMatchCode(decodeURIComponent(match[2]))}`
+}
+
+const getTeamPathCode = (pathname: string) => {
+  const match = pathname.match(TEAM_PATH_REGEX)
+
+  if (!match) {
+    return null
+  }
+
+  return normalizeTeamCode(decodeURIComponent(match[1]))
 }
 
 const getMatchIdFromSearch = (
@@ -151,10 +164,41 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       pathToMatchId: pathToId,
     }
   }, [matchesById, teamsById])
+  const { teamIdToCode, codeToTeamId } = useMemo(() => {
+    const idToCode: Record<string, string> = {}
+    const codeToId: Record<string, string> = {}
+
+    for (const team of Object.values(teamsById)) {
+      const normalizedCode = normalizeTeamCode(team.code)
+
+      if (!normalizedCode) {
+        continue
+      }
+
+      idToCode[team.id] = normalizedCode
+
+      if (!codeToId[normalizedCode]) {
+        codeToId[normalizedCode] = team.id
+      }
+    }
+
+    return {
+      teamIdToCode: idToCode,
+      codeToTeamId: codeToId,
+    }
+  }, [teamsById])
   const [selectedMatchId, setSelectedMatchIdState] = useState<string | null>(() => {
     return getMatchIdFromSearch(location.pathname, location.search, pathToMatchId, slugToMatchId, matchesById)
   })
-  const [selectedTeamId, setSelectedTeamIdState] = useState<string | null>(null)
+  const [selectedTeamId, setSelectedTeamIdState] = useState<string | null>(() => {
+    const teamCodeFromUrl = getTeamPathCode(location.pathname)
+
+    if (!teamCodeFromUrl) {
+      return null
+    }
+
+    return codeToTeamId[teamCodeFromUrl] ?? null
+  })
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<string[]>(() => {
     if (Array.isArray(user?.preferences?.favoriteTeamIds)) {
       return user.preferences.favoriteTeamIds
@@ -194,6 +238,15 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       return matchPath ? `/predict/${matchPath}` : '/predictions'
     },
     [matchIdToPath],
+  )
+
+  const getTeamSharePath = useCallback(
+    (teamId: string) => {
+      const teamCode = teamIdToCode[teamId]
+
+      return teamCode ? `/team/${teamCode}` : '/teams'
+    },
+    [teamIdToCode],
   )
 
   const isFavoriteTeam = useCallback((teamId: string) => favoriteTeamIds.includes(teamId), [favoriteTeamIds])
@@ -271,6 +324,13 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   }, [location.pathname, location.search, matchesById, pathToMatchId, slugToMatchId])
 
   useEffect(() => {
+    const teamCodeFromUrl = getTeamPathCode(location.pathname)
+    const teamIdFromUrl = teamCodeFromUrl ? (codeToTeamId[teamCodeFromUrl] ?? null) : null
+
+    setSelectedTeamIdState((current) => (current === teamIdFromUrl ? current : teamIdFromUrl))
+  }, [codeToTeamId, location.pathname])
+
+  useEffect(() => {
     const currentMatchPath = getMatchPathKey(location.pathname)
     const nextMatchPath = selectedMatchId ? (matchIdToPath[selectedMatchId] ?? null) : null
     const isMatchesRoute = location.pathname === '/matches' || location.pathname === '/match'
@@ -306,12 +366,49 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [location.pathname, matchIdToPath, navigate, selectedMatchId])
 
+  useEffect(() => {
+    const currentTeamCode = getTeamPathCode(location.pathname)
+    const nextTeamCode = selectedTeamId ? (teamIdToCode[selectedTeamId] ?? null) : null
+    const isTeamsRoute = location.pathname === '/teams' || location.pathname === '/team'
+    const shouldSyncTeamUrl = isTeamsRoute || currentTeamCode !== null
+
+    if (!shouldSyncTeamUrl) {
+      return
+    }
+
+    if (currentTeamCode === nextTeamCode) {
+      return
+    }
+
+    if (nextTeamCode) {
+      navigate(
+        {
+          pathname: `/team/${nextTeamCode}`,
+          search: '',
+        },
+        { replace: false },
+      )
+      return
+    }
+
+    if (currentTeamCode) {
+      navigate(
+        {
+          pathname: '/teams',
+          search: '',
+        },
+        { replace: false },
+      )
+    }
+  }, [location.pathname, navigate, selectedTeamId, teamIdToCode])
+
   const value = useMemo(
     () => ({
       selectedMatchId,
       setSelectedMatchId,
       getMatchSharePath,
       getMatchPredictionPath,
+      getTeamSharePath,
       selectedTeamId,
       setSelectedTeamId,
       favoriteTeamIds,
@@ -319,7 +416,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       toggleFavoriteTeam,
       clearFavoriteTeams,
     }),
-    [selectedMatchId, setSelectedMatchId, getMatchSharePath, getMatchPredictionPath, selectedTeamId, setSelectedTeamId, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
+    [selectedMatchId, setSelectedMatchId, getMatchSharePath, getMatchPredictionPath, getTeamSharePath, selectedTeamId, setSelectedTeamId, favoriteTeamIds, isFavoriteTeam, toggleFavoriteTeam, clearFavoriteTeams],
   )
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>

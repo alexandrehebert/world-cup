@@ -6,6 +6,7 @@ export const fr: TranslationSet = {
   sections: {
     overview: 'Programmation',
     groups: 'Groupes',
+    teams: 'Équipes',
     matches: 'Matchs',
     bracket: 'Phase finale',
     predictions: 'Pronostics',
@@ -15,6 +16,7 @@ export const fr: TranslationSet = {
     groups: 'Groupes',
     upcomingMatches: 'Programmation',
     matches: 'Matchs',
+    teams: 'Équipes',
     bracket: 'Arbre éliminatoire',
     predictions: 'Pronostics',
     leaderboard: 'Classement des joueurs',
@@ -177,6 +179,11 @@ export const fr: TranslationSet = {
     bracketViewCondensed: 'Arbre condensé séparé',
     bracketPathSearchPlaceholder: "Rechercher une équipe pour afficher son parcours le plus probable",
     penalties: 'p.s.',
+    filterAll: 'Toutes',
+    filterActiveTeams: 'Actives',
+    filterEliminatedTeams: 'Éliminées',
+    noTeamsForFilters: 'Aucune équipe ne correspond aux filtres sélectionnés.',
+    eliminated: 'Éliminée',
   },
   teams: {
     mex: 'Mexique',

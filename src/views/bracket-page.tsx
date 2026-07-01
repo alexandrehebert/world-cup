@@ -245,7 +245,7 @@ export const BracketPage = () => {
             <button
               type="button"
               onClick={() => setViewMode('detailed')}
-              className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center px-0 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 sm:h-8 sm:w-auto sm:px-3 ${
+              className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center px-0 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 sm:h-8 sm:w-auto sm:gap-1 sm:px-3 ${
                 viewMode === 'detailed'
                   ? 'border border-[var(--tab-active-border)] bg-[var(--tab-active-bg)] text-[var(--tab-active-text)]'
                   : 'border border-transparent text-[var(--text-muted)] hover:bg-[var(--tab-idle-hover-bg)] hover:text-[var(--text)]'
@@ -253,13 +253,13 @@ export const BracketPage = () => {
               aria-pressed={viewMode === 'detailed'}
               aria-label={t.labels.bracketViewDetailed}
             >
-              <Icon name="view_column" className="text-[14px] sm:mr-1" />
+              <Icon name="view_column" className="text-[14px]" />
               <span className="hidden sm:inline">{t.labels.bracketViewDetailed}</span>
             </button>
             <button
               type="button"
               onClick={() => setViewMode('condensed')}
-              className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center px-0 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 sm:h-8 sm:w-auto sm:px-3 ${
+              className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center px-0 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 sm:h-8 sm:w-auto sm:gap-1 sm:px-3 ${
                 viewMode === 'condensed'
                   ? 'border border-[var(--tab-active-border)] bg-[var(--tab-active-bg)] text-[var(--tab-active-text)]'
                   : 'border border-transparent text-[var(--text-muted)] hover:bg-[var(--tab-idle-hover-bg)] hover:text-[var(--text)]'
@@ -267,7 +267,7 @@ export const BracketPage = () => {
               aria-pressed={viewMode === 'condensed'}
               aria-label={t.labels.bracketViewCondensed}
             >
-              <Icon name="account_tree" className="text-[14px] sm:mr-1" />
+              <Icon name="account_tree" className="text-[14px]" />
               <span className="hidden sm:inline">{t.labels.bracketViewCondensed}</span>
             </button>
           </div>

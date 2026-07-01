@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
@@ -31,12 +31,13 @@ const stageLabel = (
 }
 
 export const CountryModal = () => {
-  const { selectedTeamId, setSelectedTeamId, setSelectedMatchId, isFavoriteTeam, toggleFavoriteTeam } =
+  const { selectedTeamId, setSelectedTeamId, setSelectedMatchId, getTeamSharePath, isFavoriteTeam, toggleFavoriteTeam } =
     useDashboard()
   const { locale, t } = useLocale()
   const { teamsById, groupsById, matches } = useTournament()
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
+  const [isCopied, setIsCopied] = useState(false)
 
   const team = selectedTeamId ? teamsById[selectedTeamId] : undefined
 
@@ -69,6 +70,19 @@ export const CountryModal = () => {
 
   const openMatch = (matchId: string) => {
     setSelectedMatchId(matchId)
+  }
+
+  const copyShareLink = async () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const shareUrl = new URL(getTeamSharePath(team.id), window.location.origin).href
+    await window.navigator.clipboard.writeText(shareUrl)
+    setIsCopied(true)
+    window.setTimeout(() => {
+      setIsCopied(false)
+    }, 1400)
   }
 
   const renderMatchRow = (match: MatchRecord) => {
@@ -160,6 +174,17 @@ export const CountryModal = () => {
       titleId="country-modal-title"
       title={teamLabel}
       onClose={closeModal}
+      headerActions={(
+        <button
+          type="button"
+          onClick={() => void copyShareLink()}
+          className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
+          aria-label={t.labels.share}
+          title={isCopied ? t.labels.copied : t.labels.share}
+        >
+          <Icon name={isCopied ? 'check' : 'share'} className={`text-[20px] ${isCopied ? 'text-[var(--accent-text)]' : ''}`.trim()} />
+        </button>
+      )}
     >
       {/* Team hero */}
       <div className="flex items-center gap-4">

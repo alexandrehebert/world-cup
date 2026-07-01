@@ -15,6 +15,7 @@ const HEADER_COMPACT_SETTLE_MS = 120
 const tabs = [
   { to: '/overview', labelKey: 'overview', icon: 'calendar_month', iconClassName: '' },
   { to: '/groups', labelKey: 'groups', icon: 'groups', iconClassName: '' },
+  { to: '/teams', labelKey: 'teams', icon: 'flag', iconClassName: '' },
   { to: '/matches', labelKey: 'matches', icon: 'sports_soccer', iconClassName: '' },
   { to: '/bracket', labelKey: 'bracket', icon: 'account_tree', iconClassName: '-scale-x-100' },
   { to: '/predictions', labelKey: 'predictions', icon: 'edit_note', iconClassName: '' },

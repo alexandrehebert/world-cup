@@ -74,7 +74,7 @@ const getUtcOffsetLabel = (kickoff: string, timeZone: string) => {
 }
 
 export const MatchModal = () => {
-  const { getMatchSharePath, isFavoriteTeam, selectedMatchId, setSelectedMatchId } = useDashboard()
+  const { getMatchSharePath, isFavoriteTeam, selectedMatchId, setSelectedMatchId, setSelectedTeamId } = useDashboard()
   const { user, openAuthModal } = useAuth()
   const { locale, t } = useLocale()
   const { predictionsByMatch, savePrediction, savingMatchId } = usePredictions()
@@ -313,7 +313,17 @@ export const MatchModal = () => {
               {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
             </div>
             <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-              <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeamLabel}</span>
+              {homeTeam ? (
+                <button
+                  type="button"
+                  onClick={() => setSelectedTeamId(homeTeam.id)}
+                  className={`truncate cursor-pointer hover:underline ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}
+                >
+                  {homeTeamLabel}
+                </button>
+              ) : (
+                <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeamLabel}</span>
+              )}
               {homeIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
             </p>
             <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? t.labels.tbd}</p>
@@ -347,7 +357,17 @@ export const MatchModal = () => {
               {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-[var(--border)]" aria-hidden="true" />}
             </div>
             <p className="flex items-center justify-center gap-1.5 text-base font-semibold text-[var(--text-strong)] sm:text-lg">
-              <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeamLabel}</span>
+              {awayTeam ? (
+                <button
+                  type="button"
+                  onClick={() => setSelectedTeamId(awayTeam.id)}
+                  className={`truncate cursor-pointer hover:underline ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}
+                >
+                  {awayTeamLabel}
+                </button>
+              ) : (
+                <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeamLabel}</span>
+              )}
               {awayIsFavorite ? <Icon name="star" className="text-[14px] text-[var(--accent-text)]" /> : null}
             </p>
             <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? t.labels.tbd}</p>

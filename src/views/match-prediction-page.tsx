@@ -9,6 +9,7 @@ import { useBootstrapData } from '../contexts/bootstrap-context'
 import { useLocale } from '../contexts/locale-context'
 import { useNow, useTimeZone } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
+import { useDashboard } from '../contexts/dashboard-context'
 import { formatMatchDate } from '../lib/format'
 import { Icon } from '../lib/icons'
 import { inferOutcomeFromScores } from '../lib/predictions'
@@ -51,6 +52,7 @@ export const MatchPredictionPage = () => {
   const { locale, t } = useLocale()
   const nowMs = useNow()
   const timeZone = useTimeZone()
+  const { getTeamSharePath } = useDashboard()
   const { matchesById, teamsById } = useTournament()
   const bootstrapPublicPrediction = bootstrapData?.initialPublicMatchPrediction
   const [predictionsByMatchId, setPredictionsByMatchId] = useState<Record<string, PublicPredictionResponse>>(() =>
@@ -347,12 +349,32 @@ export const MatchPredictionPage = () => {
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-[var(--border)] pb-4">
           <div className="text-center">
             {homeTeam ? <FlagAvatar team={homeTeam} className="mx-auto h-12 w-12" /> : null}
-            <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{homeLabel}</p>
+            {homeTeam ? (
+              <button
+                type="button"
+                onClick={() => navigate(getTeamSharePath(homeTeam.id))}
+                className="mt-2 cursor-pointer text-base font-semibold text-[var(--text-strong)] transition hover:text-[var(--accent-text)] hover:underline"
+              >
+                {homeLabel}
+              </button>
+            ) : (
+              <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{homeLabel}</p>
+            )}
           </div>
           <p className="text-xl font-black text-[var(--text-strong)]">{t.labels.vs}</p>
           <div className="text-center">
             {awayTeam ? <FlagAvatar team={awayTeam} className="mx-auto h-12 w-12" /> : null}
-            <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{awayLabel}</p>
+            {awayTeam ? (
+              <button
+                type="button"
+                onClick={() => navigate(getTeamSharePath(awayTeam.id))}
+                className="mt-2 cursor-pointer text-base font-semibold text-[var(--text-strong)] transition hover:text-[var(--accent-text)] hover:underline"
+              >
+                {awayLabel}
+              </button>
+            ) : (
+              <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{awayLabel}</p>
+            )}
           </div>
         </div>
         <h3 className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">

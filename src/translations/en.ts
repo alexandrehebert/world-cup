@@ -6,6 +6,7 @@ export const en: TranslationSet = {
   sections: {
     overview: 'Overview',
     groups: 'Groups',
+    teams: 'Teams',
     matches: 'Matches',
     bracket: 'Bracket',
     predictions: 'Predictions',
@@ -15,6 +16,7 @@ export const en: TranslationSet = {
     groups: 'Groups',
     upcomingMatches: 'Schedule',
     matches: 'Matches',
+    teams: 'Teams',
     bracket: 'Knockout bracket',
     predictions: 'Predictions',
     leaderboard: 'Players ranking',
@@ -177,6 +179,11 @@ export const en: TranslationSet = {
     bracketViewCondensed: 'Condensed split bracket',
     bracketPathSearchPlaceholder: 'Search a team to show its most probable path',
     penalties: 'pen.',
+    filterAll: 'All',
+    filterActiveTeams: 'Active',
+    filterEliminatedTeams: 'Eliminated',
+    noTeamsForFilters: 'No teams match the selected filters.',
+    eliminated: 'Eliminated',
   },
   teams: {
     mex: 'Mexico',

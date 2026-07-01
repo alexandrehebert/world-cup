@@ -91,6 +91,13 @@ const menuMetaBySegment: Record<string, MenuPageMeta> = {
     imageAlt: 'World Cup group standings',
     canonical: '/groups',
   },
+  teams: {
+    title: 'Teams | FIFA World Cup 2026',
+    description: 'Explore all qualified teams and open each team details modal.',
+    imagePath: '/menu/teams/opengraph-image',
+    imageAlt: 'World Cup teams directory',
+    canonical: '/teams',
+  },
   matches: {
     title: 'Matches | FIFA World Cup 2026',
     description: 'Follow live and upcoming World Cup matches with scores, status, and fixture details.',
