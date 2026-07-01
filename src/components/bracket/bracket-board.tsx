@@ -408,7 +408,9 @@ export const BracketBoard = ({
         ? getProjectedTeamIdFromParticipant(match.away, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
         : undefined
     )
-    const isLive = getDisplayMatchStatus(match, nowMs) === 'live'
+    const displayStatus = getDisplayMatchStatus(match, nowMs)
+    const isLive = displayStatus === 'live'
+    const isFinished = displayStatus === 'finished'
     const cardWinner = getBracketCardWinner(match)
     const homeEliminated = cardWinner === 'away'
     const awayEliminated = cardWinner === 'home'
@@ -447,7 +449,9 @@ export const BracketBoard = ({
         className={`relative cursor-pointer rounded-[var(--radius-sm)] border border-[var(--border)] p-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
           isLive
             ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
-            : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
+            : isFinished
+              ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50 hover:opacity-90'
+              : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
         } ${isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : ''}`}
         style={{ height: `${CONDENSED_NODE_HEIGHT}px` }}
         onClick={() => setSelectedMatchId(match.id)}
@@ -975,7 +979,9 @@ export const BracketBoard = ({
                         const awayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
                         const homeWonBracket = cardWinner === 'home'
                         const awayWonBracket = cardWinner === 'away'
-                        const isLive = getDisplayMatchStatus(match, nowMs) === 'live'
+                        const displayStatus = getDisplayMatchStatus(match, nowMs)
+                        const isLive = displayStatus === 'live'
+                        const isFinished = displayStatus === 'finished'
 
                         return (
                           <div key={match.id} className="relative">
@@ -1036,7 +1042,9 @@ export const BracketBoard = ({
                               className={`relative z-10 cursor-pointer overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                               isLive
                                 ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
-                                : hasFavorite
+                                : isFinished
+                                  ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50 hover:opacity-90'
+                                  : hasFavorite
                                   ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
                                   : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
                               } ${isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : ''}`}
@@ -1168,7 +1176,9 @@ export const BracketBoard = ({
                         const tpAwayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
                         const tpHomeWon = tpCardWinner === 'home'
                         const tpAwayWon = tpCardWinner === 'away'
-                        const isLive = getDisplayMatchStatus(match, nowMs) === 'live'
+                        const displayStatus = getDisplayMatchStatus(match, nowMs)
+                        const isLive = displayStatus === 'live'
+                        const isFinished = displayStatus === 'finished'
 
                         return (
                           <div
@@ -1184,7 +1194,9 @@ export const BracketBoard = ({
                            className={`relative cursor-pointer rounded-[var(--radius-sm)] border border-[var(--border)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                            isLive
                              ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
-                             : hasFavorite
+                             : isFinished
+                               ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50 hover:opacity-90'
+                               : hasFavorite
                                ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
                                : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
                           }`}

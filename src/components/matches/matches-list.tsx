@@ -197,7 +197,7 @@ export const MatchesList = ({
                   }}
                   className={`relative w-full cursor-pointer overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border)] px-5 py-4 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                     isFinished
-                      ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50'
+                      ? 'past-match-stripes bg-[var(--surface-soft)] opacity-60 saturate-50 hover:opacity-90'
                       : hasFavorite
                         ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)]'
                         : isLive
