@@ -1,5 +1,5 @@
 import { Header } from './components/layout/header'
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { DashboardLayout } from './components/layout/dashboard-layout'
 import { OverviewPage } from './views/overview-page'
 import { GroupsPage } from './views/groups-page'
@@ -10,6 +10,7 @@ import { PredictionsPage } from './views/predictions-page'
 import { LeaderboardPage } from './views/leaderboard-page'
 import { ProfilePage } from './views/profile-page'
 import { MatchPredictionPage } from './views/match-prediction-page'
+import { isPredictionsFeatureEnabled } from './lib/features'
 
 function App() {
   return (
@@ -24,10 +25,23 @@ function App() {
         <Route path="/match" element={<MatchesPage />} />
         <Route path="/match/:homeCode/vs/:awayCode" element={<MatchesPage />} />
         <Route path="/bracket" element={<BracketPage />} />
-        <Route path="/predictions" element={<PredictionsPage />} />
-        <Route path="/predict/:homeCode/vs/:awayCode" element={<MatchPredictionPage />} />
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
-        <Route path="/profile/:username" element={<ProfilePage />} />
+        <Route path="/bracket/:homeCode/vs/:awayCode" element={<BracketPage />} />
+        <Route
+          path="/predictions"
+          element={isPredictionsFeatureEnabled ? <PredictionsPage /> : <Navigate to="/overview" replace />}
+        />
+        <Route
+          path="/predict/:homeCode/vs/:awayCode"
+          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/overview" replace />}
+        />
+        <Route
+          path="/leaderboard"
+          element={isPredictionsFeatureEnabled ? <LeaderboardPage /> : <Navigate to="/overview" replace />}
+        />
+        <Route
+          path="/profile/:username"
+          element={isPredictionsFeatureEnabled ? <ProfilePage /> : <Navigate to="/overview" replace />}
+        />
       </Route>
     </Routes>
   )

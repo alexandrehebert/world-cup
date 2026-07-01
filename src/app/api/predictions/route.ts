@@ -8,6 +8,7 @@ import {
 } from '../../../server/kv-store'
 import { loadTournamentData } from '../../../server/tournament-data'
 import type { MatchOutcome, PredictionType } from '../../../types/predictions'
+import { isPredictionsFeatureEnabled } from '../../../lib/features'
 
 type UpsertPredictionBody = {
   matchId?: string
@@ -65,6 +66,10 @@ const resolveRequesterUserId = (request: NextRequest) => {
 }
 
 export async function GET(request: NextRequest) {
+  if (!isPredictionsFeatureEnabled) {
+    return NextResponse.json({ error: 'Predictions feature is disabled' }, { status: 404 })
+  }
+
   const requesterUserId = resolveRequesterUserId(request)
 
   try {
@@ -84,6 +89,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!isPredictionsFeatureEnabled) {
+    return NextResponse.json({ error: 'Predictions feature is disabled' }, { status: 404 })
+  }
+
   const session = getSessionUser(request)
 
   if (!session) {

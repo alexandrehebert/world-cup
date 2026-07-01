@@ -10,6 +10,7 @@ import {
 } from '../../../../server/kv-store'
 import { loadTournamentData } from '../../../../server/tournament-data'
 import type { MatchOutcome, PredictionType } from '../../../../types/predictions'
+import { isPredictionsFeatureEnabled } from '../../../../lib/features'
 
 type PublicPredictionBody = {
   matchId?: string
@@ -133,6 +134,10 @@ const toIpHash = (ip: string) => {
 }
 
 export async function GET(request: NextRequest) {
+  if (!isPredictionsFeatureEnabled) {
+    return NextResponse.json({ error: 'Predictions feature is disabled' }, { status: 404 })
+  }
+
   const matchId = request.nextUrl.searchParams.get('matchId')?.trim() ?? ''
 
   if (!matchId) {
@@ -156,6 +161,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!isPredictionsFeatureEnabled) {
+    return NextResponse.json({ error: 'Predictions feature is disabled' }, { status: 404 })
+  }
+
   try {
     const body = (await request.json()) as PublicPredictionBody
     const matchId = String(body.matchId ?? '').trim()

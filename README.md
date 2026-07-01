@@ -92,6 +92,7 @@ This project now supports a Vercel cron that runs every 5 minutes and updates ma
 - `MONGODB_URI`: MongoDB connection string (MongoDB Atlas free tier works well on Vercel).
 - `MONGODB_DB` (optional): database name used by the app (default: `world-cup`).
 - `SESSION_SECRET`: secret used to sign auth session cookies.
+- `NEXT_PUBLIC_ENABLE_PREDICTIONS` (optional): enables predictions/pronostics features when set to a truthy value (`true`, `1`, `yes`, `on`). Default is disabled.
 
 Vercel scheduled cron calls are identified via the `x-vercel-cron` header and do not automatically include your custom `Authorization` header.
 

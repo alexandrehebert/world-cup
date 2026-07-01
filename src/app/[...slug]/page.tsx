@@ -5,6 +5,7 @@ import ClientApp from '../client-app'
 import { loadClientBootstrapData } from '../../server/client-bootstrap'
 import { loadTournamentData } from '../../server/tournament-data'
 import { getDisplayMatchStatus, formatMatchDate } from '../../lib/format'
+import { isPredictionsFeatureEnabled } from '../../lib/features'
 import type { TournamentData } from '../../types/tournament'
 
 export const dynamic = 'force-dynamic'
@@ -112,20 +113,24 @@ const menuMetaBySegment: Record<string, MenuPageMeta> = {
     imageAlt: 'World Cup knockout bracket',
     canonical: '/bracket',
   },
-  predictions: {
-    title: 'World Cup Predictions | FIFA World Cup 2026',
-    description: 'Join me on the predictions page and make your picks for upcoming World Cup matches.',
-    imagePath: '/predictions/opengraph-image',
-    imageAlt: 'World Cup predictions invite',
-    canonical: '/predictions',
-  },
-  leaderboard: {
-    title: 'Predictions Leaderboard | FIFA World Cup 2026',
-    description: 'Compare player rankings and see who leads the World Cup prediction challenge.',
-    imagePath: '/menu/leaderboard/opengraph-image',
-    imageAlt: 'World Cup predictions leaderboard',
-    canonical: '/leaderboard',
-  },
+  ...(isPredictionsFeatureEnabled
+    ? {
+        predictions: {
+          title: 'World Cup Predictions | FIFA World Cup 2026',
+          description: 'Join me on the predictions page and make your picks for upcoming World Cup matches.',
+          imagePath: '/predictions/opengraph-image',
+          imageAlt: 'World Cup predictions invite',
+          canonical: '/predictions',
+        },
+        leaderboard: {
+          title: 'Predictions Leaderboard | FIFA World Cup 2026',
+          description: 'Compare player rankings and see who leads the World Cup prediction challenge.',
+          imagePath: '/menu/leaderboard/opengraph-image',
+          imageAlt: 'World Cup predictions leaderboard',
+          canonical: '/leaderboard',
+        },
+      }
+    : {}),
 }
 
 const buildMenuMetadata = (meta: MenuPageMeta, metadataBase: URL): Metadata => ({
@@ -164,7 +169,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return buildMenuMetadata(menuMeta, metadataBase)
   }
 
-  if (firstSegment === 'profile' && slug?.length === 2) {
+  if (isPredictionsFeatureEnabled && firstSegment === 'profile' && slug?.length === 2) {
     const username = slug[1]?.trim()
 
     if (!username) {
@@ -201,7 +206,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const [first, homeCode, third, awayCode] = slug
   const isMatchRoute = first?.toLowerCase() === 'match' && third?.toLowerCase() === 'vs'
-  const isPredictRoute = first?.toLowerCase() === 'predict' && third?.toLowerCase() === 'vs'
+  const isPredictRoute = isPredictionsFeatureEnabled && first?.toLowerCase() === 'predict' && third?.toLowerCase() === 'vs'
 
   if (!isMatchRoute && !isPredictRoute) {
     return defaultMeta
@@ -274,7 +279,7 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
   const initialPath = `/${slug.map((segment) => encodeURIComponent(segment)).join('/')}`
   const tournamentData = await loadTournamentData()
   const first = slug?.[0]?.toLowerCase()
-  const isPredictRoute = first === 'predict' && slug?.[2]?.toLowerCase() === 'vs'
+  const isPredictRoute = isPredictionsFeatureEnabled && first === 'predict' && slug?.[2]?.toLowerCase() === 'vs'
   const homeCode = slug?.[1]
   const awayCode = slug?.[3]
   const teamsById = Object.fromEntries(tournamentData.teams.map((team: TeamRecord) => [team.id, team]))
@@ -282,7 +287,7 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
     ? findMatchByCodes(tournamentData, teamsById, homeCode, awayCode)
     : null
   const bootstrapData = await loadClientBootstrapData({
-    publicMatchId: match?.id,
+    publicMatchId: isPredictionsFeatureEnabled ? match?.id : undefined,
   })
 
   return <ClientApp initialData={tournamentData} bootstrapData={bootstrapData} initialPath={initialPath} />

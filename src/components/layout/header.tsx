@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/auth-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTimeZone } from '../../contexts/time-context'
 import { Icon } from '../../lib/icons'
+import { isPredictionsFeatureEnabled } from '../../lib/features'
 import { LocaleSwitcher } from './locale-switcher'
 import { ThemeToggle } from './theme-toggle'
 import { FavoriteTeamsPicker } from './favorite-teams-picker'
@@ -163,13 +164,15 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                         </span>
                         <p className="truncate text-sm font-semibold text-[var(--text-strong)]">{user.username}</p>
                       </div>
-                      <Link
-                        to={`/profile/${encodeURIComponent(user.username)}`}
-                        onClick={() => setIsMobileAccountMenuOpen(false)}
-                        className="block w-full border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-left text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
-                      >
-                        {t.labels.myProfile}
-                      </Link>
+                      {isPredictionsFeatureEnabled ? (
+                        <Link
+                          to={`/profile/${encodeURIComponent(user.username)}`}
+                          onClick={() => setIsMobileAccountMenuOpen(false)}
+                          className="block w-full border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-left text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+                        >
+                          {t.labels.myProfile}
+                        </Link>
+                      ) : null}
                       <button
                         type="button"
                         onClick={() => {
@@ -287,13 +290,15 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                           </p>
                         </div>
                       </div>
-                      <Link
-                        to={`/profile/${encodeURIComponent(user.username)}`}
-                        onClick={() => setIsAccountMenuOpen(false)}
-                        className="block w-full border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
-                      >
-                        {t.labels.myProfile}
-                      </Link>
+                      {isPredictionsFeatureEnabled ? (
+                        <Link
+                          to={`/profile/${encodeURIComponent(user.username)}`}
+                          onClick={() => setIsAccountMenuOpen(false)}
+                          className="block w-full border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+                        >
+                          {t.labels.myProfile}
+                        </Link>
+                      ) : null}
                       <button
                         type="button"
                         onClick={() => {

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
 import { Icon } from '../../lib/icons'
+import { isPredictionsFeatureEnabled } from '../../lib/features'
 import { AuthModal } from '../auth/auth-modal'
 import { MatchModal } from '../matches/match-modal'
 import { CountryModal } from '../teams/country-modal'
@@ -23,6 +24,7 @@ const tabs = [
 
 export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   const { t } = useLocale()
+  const navigationTabs = isPredictionsFeatureEnabled ? tabs : tabs.filter((tab) => tab.to !== '/predictions')
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const headerScrollTimeoutRef = useRef<number | null>(null)
 
@@ -80,7 +82,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
             className="flex flex-wrap justify-center border-b border-[var(--border)] sm:justify-start"
             aria-label="Primary"
           >
-            {tabs.map((tab) => (
+            {navigationTabs.map((tab) => (
               <NavLink
                 key={tab.to}
                 to={tab.to}

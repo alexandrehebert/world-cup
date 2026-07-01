@@ -7,6 +7,7 @@ import { usePredictions } from '../../contexts/predictions-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
+import { isPredictionsFeatureEnabled } from '../../lib/features'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -375,108 +376,110 @@ export const MatchModal = () => {
         </div>
       </div>
 
-      <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-        <div className="flex items-start justify-between gap-3">
-          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-            {t.labels.prediction}
-          </p>
-          <div className="flex items-center gap-2">
-            {user && isPredictionOpen && hasPredictionChanges ? (
-              <div className="flex items-center gap-2">
-              <button
-                type="button"
-                disabled={isSavingPrediction}
-                onClick={() => {
-                  setPredictionError(null)
-                  setSelectedOutcome(persistedOutcome ?? null)
-                  setScoreInput({ home: persistedHomeScore, away: persistedAwayScore })
-                  setDraftMatchId(match.id)
-                  setIsDraftDirty(false)
-                }}
-                className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {t.labels.cancel}
-              </button>
-              <button
-                type="button"
-                disabled={isSavingPrediction}
-                onClick={() => {
-                  void submitPrediction()
-                }}
-                className="cursor-pointer bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent-text)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {t.labels.save}
-              </button>
-              </div>
-            ) : null}
-          </div>
-        </div>
-
-        {isPredictionOpen ? (
-          !user ? (
-            <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-2">
-                {quickOptions.map((option) => (
+      {isPredictionsFeatureEnabled ? (
+        <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
+              {t.labels.prediction}
+            </p>
+            <div className="flex items-center gap-2">
+              {user && isPredictionOpen && hasPredictionChanges ? (
+                <div className="flex items-center gap-2">
                   <button
-                    key={option.value}
                     type="button"
-                    onClick={() => openAuthModal('login')}
-                    className="cursor-pointer bg-[var(--surface-soft)] px-2 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] sm:text-sm"
+                    disabled={isSavingPrediction}
+                    onClick={() => {
+                      setPredictionError(null)
+                      setSelectedOutcome(persistedOutcome ?? null)
+                      setScoreInput({ home: persistedHomeScore, away: persistedAwayScore })
+                      setDraftMatchId(match.id)
+                      setIsDraftDirty(false)
+                    }}
+                    className="cursor-pointer border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {option.label}
+                    {t.labels.cancel}
                   </button>
-                ))}
-              </div>
-              <p className="text-sm text-[var(--text-muted)]">
-                {t.labels.signInToSavePrediction}
-              </p>
+                  <button
+                    type="button"
+                    disabled={isSavingPrediction}
+                    onClick={() => {
+                      void submitPrediction()
+                    }}
+                    className="cursor-pointer bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent-text)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {t.labels.save}
+                  </button>
+                </div>
+              ) : null}
             </div>
+          </div>
+
+          {isPredictionOpen ? (
+            !user ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-2">
+                  {quickOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => openAuthModal('login')}
+                      className="cursor-pointer bg-[var(--surface-soft)] px-2 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)] sm:text-sm"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-sm text-[var(--text-muted)]">
+                  {t.labels.signInToSavePrediction}
+                </p>
+              </div>
+            ) : (
+              <PredictionForm
+                homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
+                awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
+                selectedOutcome={draftOutcome}
+                scoreInput={draftScoreInput}
+                onOutcomeChange={(outcome) => {
+                  setPredictionError(null)
+                  if (draftOutcome === outcome) return
+                  setDraftMatchId(match.id)
+                  setSelectedOutcome(outcome)
+                  setScoreInput({ home: '', away: '' })
+                  setIsDraftDirty(true)
+                }}
+                onScoreChange={(next) => {
+                  setPredictionError(null)
+                  const inferredOutcome = inferOutcomeFromScores(next.home, next.away)
+                  setDraftMatchId(match.id)
+                  setIsDraftDirty(true)
+                  setScoreInput(next)
+                  if (inferredOutcome) setSelectedOutcome(inferredOutcome)
+                }}
+                isOutcomeInvalid={isOutcomeInvalid}
+                isHomeScoreInvalid={isHomeScoreInvalid}
+                isAwayScoreInvalid={isAwayScoreInvalid}
+                isSaving={isSavingPrediction}
+              />
+            )
           ) : (
-            <PredictionForm
-              homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
-              awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
-              selectedOutcome={draftOutcome}
-              scoreInput={draftScoreInput}
-              onOutcomeChange={(outcome) => {
-                setPredictionError(null)
-                if (draftOutcome === outcome) return
-                setDraftMatchId(match.id)
-                setSelectedOutcome(outcome)
-                setScoreInput({ home: '', away: '' })
-                setIsDraftDirty(true)
-              }}
-              onScoreChange={(next) => {
-                setPredictionError(null)
-                const inferredOutcome = inferOutcomeFromScores(next.home, next.away)
-                setDraftMatchId(match.id)
-                setIsDraftDirty(true)
-                setScoreInput(next)
-                if (inferredOutcome) setSelectedOutcome(inferredOutcome)
-              }}
-              isOutcomeInvalid={isOutcomeInvalid}
-              isHomeScoreInvalid={isHomeScoreInvalid}
-              isAwayScoreInvalid={isAwayScoreInvalid}
-              isSaving={isSavingPrediction}
-            />
-          )
-        ) : (
-          existingPrediction ? (
-            <PredictionForm
-              readOnly
-              homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
-              awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
-              selectedOutcome={persistedOutcome ?? null}
-              scoreInput={{ home: persistedHomeScore, away: persistedAwayScore }}
-              actualOutcome={actualOutcome}
-              isLive={isMatchLive}
-              isScored={isPredictionScored}
-              isCorrect={isPredictionCorrect}
-            />
-          ) : (
-            <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionForMatch}</p>
-          )
-        )}
-      </div>
+            existingPrediction ? (
+              <PredictionForm
+                readOnly
+                homeLabel={homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.home}
+                awayLabel={awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : t.labels.away}
+                selectedOutcome={persistedOutcome ?? null}
+                scoreInput={{ home: persistedHomeScore, away: persistedAwayScore }}
+                actualOutcome={actualOutcome}
+                isLive={isMatchLive}
+                isScored={isPredictionScored}
+                isCorrect={isPredictionCorrect}
+              />
+            ) : (
+              <p className="text-sm text-[var(--text-muted)]">{t.labels.noPredictionForMatch}</p>
+            )
+          )}
+        </div>
+      ) : null}
 
       <div className="flex items-end justify-between gap-4">
         <div>

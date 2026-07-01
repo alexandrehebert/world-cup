@@ -4,6 +4,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { MatchOutcome, PredictionDistribution, PredictionRecord } from '../types/predictions'
+import { isPredictionsFeatureEnabled } from '../lib/features'
 
 type PredictionsResponse = {
   predictions: PredictionRecord[]
@@ -60,6 +61,13 @@ export const PredictionsProvider = ({
   const [savingMatchId, setSavingMatchId] = useState<string | null>(null)
 
   const refreshPredictions = useCallback(async (options?: { showLoading?: boolean }) => {
+    if (!isPredictionsFeatureEnabled) {
+      setPredictionsByMatch({})
+      setPredictionDistributionsByMatch({})
+      setIsLoading(false)
+      return
+    }
+
     const showLoading = options?.showLoading ?? true
     if (showLoading) {
       setIsLoading(true)
@@ -89,6 +97,10 @@ export const PredictionsProvider = ({
   }, [])
 
   useEffect(() => {
+    if (!isPredictionsFeatureEnabled) {
+      return
+    }
+
     if (hasInitialBootstrapData) {
       return
     }
@@ -97,6 +109,10 @@ export const PredictionsProvider = ({
   }, [hasInitialBootstrapData, refreshPredictions])
 
   const savePrediction = useCallback(async ({ matchId, outcome, homeScore, awayScore }: SavePredictionInput) => {
+    if (!isPredictionsFeatureEnabled) {
+      throw new Error('Predictions are disabled')
+    }
+
     const hasHomeScore = homeScore !== undefined && String(homeScore).trim().length > 0
     const hasAwayScore = awayScore !== undefined && String(awayScore).trim().length > 0
 

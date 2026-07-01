@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server'
 import { getUserByUsername, listLeaderboard, listPredictionsByUser } from '../../../../server/kv-store'
+import { isPredictionsFeatureEnabled } from '../../../../lib/features'
 
 type RouteContext = {
   params: Promise<{ username: string }>
 }
 
 export async function GET(_: Request, context: RouteContext) {
+  if (!isPredictionsFeatureEnabled) {
+    return NextResponse.json({ error: 'Predictions feature is disabled' }, { status: 404 })
+  }
+
   try {
     const { username } = await context.params
     const requestedUsername = username?.trim() ?? ''
