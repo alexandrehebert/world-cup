@@ -64,6 +64,8 @@ export interface TranslationSet {
     halfTime: string
     finished: string
     fullTime: string
+    afterExtraTime: string
+    afterPenalties: string
     share: string
     noMatchSelected: string
     localeHint: string

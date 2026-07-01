@@ -66,6 +66,8 @@ export const fr: TranslationSet = {
     halfTime: 'Mi-temps',
     finished: 'Terminé',
     fullTime: 'Temps réglementaire',
+    afterExtraTime: 'Après prolongations',
+    afterPenalties: 'Après tirs au but',
     share: 'Partager',
     noMatchSelected: 'Sélectionnez un match pour voir ses détails.',
     localeHint: 'Changez la langue du tableau instantanément.',

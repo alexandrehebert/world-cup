@@ -3,7 +3,7 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
+import { getDisplayMatchStatus, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
@@ -45,10 +45,31 @@ const statusBadgeClass: Record<MatchRecord['status'], string> = {
 
 const scoreLabel = (match: MatchRecord, nowMs: number) => {
   if (hasDisplayScore(match, nowMs)) {
-    return `${match.home.score}-${match.away.score}`
+    const homeScore = typeof match.home.score === 'number' ? match.home.score : null
+    const awayScore = typeof match.away.score === 'number' ? match.away.score : null
+
+    if (homeScore === null || awayScore === null) {
+      return 'vs'
+    }
+
+    return `${homeScore}-${awayScore}`
   }
 
   return 'vs'
+}
+
+const penaltyScoreLabel = (match: MatchRecord, nowMs: number, penaltiesLabel: string) => {
+  if (!hasDisplayScore(match, nowMs)) {
+    return null
+  }
+
+  const homePenaltyScore = typeof match.home.penaltyScore === 'number' ? match.home.penaltyScore : null
+  const awayPenaltyScore = typeof match.away.penaltyScore === 'number' ? match.away.penaltyScore : null
+  if (homePenaltyScore === null || awayPenaltyScore === null) {
+    return null
+  }
+
+  return `(${homePenaltyScore}) ${penaltiesLabel} (${awayPenaltyScore})`
 }
 
 type CalendarDayCell = { day: number; matches: MatchRecord[] }
@@ -294,12 +315,11 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                   {cell.matches.map((match) => {
                     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                     const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-                    const homeScore = typeof match.home.score === 'number' ? match.home.score : null
-                    const awayScore = typeof match.away.score === 'number' ? match.away.score : null
                     const displayStatus = getDisplayMatchStatus(match, nowMs)
                     const isFinished = displayStatus === 'finished'
-                    const homeWon = isFinished && homeScore !== null && awayScore !== null && homeScore > awayScore
-                    const awayWon = isFinished && homeScore !== null && awayScore !== null && awayScore > homeScore
+                    const winnerSide = getMatchWinner(match, nowMs)
+                    const homeWon = winnerSide === 'home'
+                    const awayWon = winnerSide === 'away'
                     const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
                     const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
                     const hasFavorite = homeIsFavorite || awayIsFavorite
@@ -325,7 +345,14 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                             {homeTeam ? <FlagAvatar team={homeTeam} className="h-4 w-4" /> : <span className="h-4 w-4 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                             <span className={homeWon ? 'text-[var(--accent-text)]' : ''}>{homeTeam ? homeTeam.code : 'TBD'}</span>
                           </span>
-                          <span className="font-semibold text-[var(--text-strong)]">{scoreLabel(match, nowMs)}</span>
+                          <span className="flex flex-col items-center leading-tight">
+                            <span className="font-semibold text-[var(--text-strong)]">{scoreLabel(match, nowMs)}</span>
+                            {penaltyScoreLabel(match, nowMs, t.labels.penalties) ? (
+                              <span className="text-[10px] text-[var(--text-soft)]">
+                                {penaltyScoreLabel(match, nowMs, t.labels.penalties)}
+                              </span>
+                            ) : null}
+                          </span>
                           <span className="inline-flex min-w-0 items-center gap-1 font-semibold text-[var(--text-strong)]">
                             <span className={awayWon ? 'text-[var(--accent-text)]' : ''}>{awayTeam ? awayTeam.code : 'TBD'}</span>
                             {awayTeam ? <FlagAvatar team={awayTeam} className="h-4 w-4" /> : <span className="h-4 w-4 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
@@ -385,12 +412,11 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                 {item.matches.map((match) => {
                   const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                   const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
-                  const homeScore = typeof match.home.score === 'number' ? match.home.score : null
-                  const awayScore = typeof match.away.score === 'number' ? match.away.score : null
                   const displayStatus = getDisplayMatchStatus(match, nowMs)
                   const isFinished = displayStatus === 'finished'
-                  const homeWon = isFinished && homeScore !== null && awayScore !== null && homeScore > awayScore
-                  const awayWon = isFinished && homeScore !== null && awayScore !== null && awayScore > homeScore
+                  const winnerSide = getMatchWinner(match, nowMs)
+                  const homeWon = winnerSide === 'home'
+                  const awayWon = winnerSide === 'away'
                   const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
                   const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
                   const hasFavorite = homeIsFavorite || awayIsFavorite
@@ -432,7 +458,14 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                           {homeTeam ? <FlagAvatar team={homeTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}
                           <span className={`truncate ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : 'TBD'}</span>
                         </span>
-                        <span>{scoreLabel(match, nowMs)}</span>
+                        <span className="flex flex-col items-center leading-tight">
+                          <span>{scoreLabel(match, nowMs)}</span>
+                          {penaltyScoreLabel(match, nowMs, t.labels.penalties) ? (
+                            <span className="text-[10px] text-[var(--text-soft)]">
+                              {penaltyScoreLabel(match, nowMs, t.labels.penalties)}
+                            </span>
+                          ) : null}
+                        </span>
                         <span className="inline-flex min-w-0 items-center gap-1.5">
                           <span className={`truncate ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}>{awayTeam ? t.teams[awayTeam.id] ?? awayTeam.name : 'TBD'}</span>
                           {awayTeam ? <FlagAvatar team={awayTeam} className="h-5 w-5" /> : <span className="h-5 w-5 shrink-0 rounded-full border border-[var(--border)]" aria-hidden="true" />}

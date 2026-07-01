@@ -66,6 +66,8 @@ export const en: TranslationSet = {
     halfTime: 'Half-time',
     finished: 'Finished',
     fullTime: 'Full-time',
+    afterExtraTime: 'After extra time',
+    afterPenalties: 'After penalties',
     share: 'Share',
     noMatchSelected: 'Select a match to see its details.',
     localeHint: 'Instantly switch the dashboard language.',

@@ -194,6 +194,15 @@ const getFinishedStatusDetail = (espnDetail: string | null, labels: TranslationS
 
   const trimmed = espnDetail.trim()
 
+  // Expand ESPN shorthand tokens used at full-time.
+  if (/^F\.?T\.?[-\s]?P(?:EN|ENS)\.?$/i.test(trimmed) || /^pen(?:alty|alties)$/i.test(trimmed)) {
+    return labels.afterPenalties
+  }
+
+  if (/^(?:F\.?T\.?[-\s]?)?A\.?E\.?T\.?$/i.test(trimmed) || /^after extra(?:[\s-]?time)?$/i.test(trimmed)) {
+    return labels.afterExtraTime
+  }
+
   // ESPN often sends a raw FT token; expand it to the localized full-time label.
   if (/^F\.?T\.?$/i.test(trimmed) || /^full[\s-]?time$/i.test(trimmed)) {
     return labels.fullTime
