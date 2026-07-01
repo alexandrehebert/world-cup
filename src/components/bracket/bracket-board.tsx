@@ -8,6 +8,7 @@ import { getPotentialTeamsFromPlaceholder, getTopTeamFromPlaceholder } from '../
 import { alignSideRoundsByNextRound, getWinnerSourceMatchId } from '../../lib/bracket-layout'
 import { Icon } from '../../lib/icons'
 import { compareStandings } from '../../lib/standings'
+import { LivePulse } from '../ui/live-pulse'
 import type { GroupRecord, MatchRecord, ParticipantRef, StandingRecord } from '../../types/tournament'
 
 const MIN_NODE_HEIGHT = 216
@@ -420,7 +421,7 @@ export const BracketBoard = ({
             setSelectedMatchId(match.id)
           }
         }}
-        className={`cursor-pointer rounded-[var(--radius-sm)] border border-[var(--border)] p-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
+        className={`relative cursor-pointer rounded-[var(--radius-sm)] border border-[var(--border)] p-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
           isLive
             ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
             : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
@@ -428,6 +429,11 @@ export const BracketBoard = ({
         style={{ height: `${CONDENSED_NODE_HEIGHT}px` }}
         onClick={() => setSelectedMatchId(match.id)}
       >
+        {isLive ? (
+          <span className="pointer-events-none absolute right-0 top-0 z-20 translate-x-1/2 -translate-y-1/2">
+            <LivePulse className="h-2.5 w-2.5" />
+          </span>
+        ) : null}
         <div className="flex h-full items-center justify-between gap-2 px-1">
           {renderFlag(homeTeamId)}
           <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{t.labels.vs}</span>
@@ -989,6 +995,11 @@ export const BracketBoard = ({
                               />
                             ) : null}
 
+                            {isLive ? (
+                              <span className="pointer-events-none absolute right-0 top-0 z-20 translate-x-1/2 -translate-y-1/2">
+                                <LivePulse className="h-2.5 w-2.5" />
+                              </span>
+                            ) : null}
                             <div
                               role="button"
                               tabIndex={0}
@@ -998,12 +1009,12 @@ export const BracketBoard = ({
                                   setSelectedMatchId(match.id)
                                 }
                               }}
-                              className={`relative z-10 cursor-pointer overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
+                              className={`relative z-10 cursor-pointer overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                               isLive
                                 ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
                                 : hasFavorite
                                   ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
-                                  : 'hover:bg-[var(--surface-soft)]'
+                                  : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
                               } ${isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : ''}`}
                               data-bracket-main-card="true"
                               style={{ minHeight: `${nodeHeight}px` }}
@@ -1146,14 +1157,19 @@ export const BracketBoard = ({
                                setSelectedMatchId(match.id)
                              }
                            }}
-                           className={`relative cursor-pointer rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
+                           className={`relative cursor-pointer rounded-[var(--radius-sm)] border border-[var(--border)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
                            isLive
                              ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
                              : hasFavorite
                                ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
-                               : 'hover:bg-[var(--surface-soft)]'
+                               : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
                           }`}
                           onClick={() => setSelectedMatchId(match.id)}>
+                           {isLive ? (
+                             <span className="pointer-events-none absolute right-0 top-0 z-20 translate-x-1/2 -translate-y-1/2">
+                               <LivePulse className="h-2.5 w-2.5" />
+                             </span>
+                           ) : null}
                            <div className="space-y-2">
                               <div className="flex min-w-0 items-center gap-2.5 border-b border-[var(--border)] pb-2">
                                 {homeTeam ? (

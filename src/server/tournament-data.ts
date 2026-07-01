@@ -18,6 +18,43 @@ export const writeLocalTournamentData = async (data: TournamentData) => {
   await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8')
 }
 
+export const applyCanonicalVenueData = (data: TournamentData, canonical: TournamentData): TournamentData => {
+  const venueByMatchId = new Map(canonical.matches.map((match) => [match.id, match.venue]))
+  let hasVenueChanges = false
+
+  const nextMatches = data.matches.map((match) => {
+    const canonicalVenue = venueByMatchId.get(match.id)
+    if (!canonicalVenue) {
+      return match
+    }
+
+    const isSameVenue =
+      match.venue.stadium === canonicalVenue.stadium
+      && match.venue.city === canonicalVenue.city
+      && match.venue.country === canonicalVenue.country
+      && match.venue.timeZone === canonicalVenue.timeZone
+
+    if (isSameVenue) {
+      return match
+    }
+
+    hasVenueChanges = true
+    return {
+      ...match,
+      venue: canonicalVenue,
+    }
+  })
+
+  if (!hasVenueChanges) {
+    return data
+  }
+
+  return {
+    ...data,
+    matches: nextMatches,
+  }
+}
+
 export const loadTournamentData = async (): Promise<TournamentData> => {
   const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN
 
@@ -39,7 +76,11 @@ export const loadTournamentData = async (): Promise<TournamentData> => {
       throw new Error(`Failed to fetch blob data (${response.status})`)
     }
 
-    return (await response.json()) as TournamentData
+    const [blobData, localData] = await Promise.all([
+      response.json() as Promise<TournamentData>,
+      readLocalTournamentData(),
+    ])
+    return applyCanonicalVenueData(blobData, localData)
   } catch {
     return readLocalTournamentData()
   }
