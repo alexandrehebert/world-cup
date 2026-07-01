@@ -655,13 +655,13 @@ export const BracketBoard = ({
     : null
   const forcedWinnerByMatchId = forecastPath?.forcedWinnerByMatchId
   const shouldResolveUnknownTeams = Boolean(forecastTeamId)
-  const preFinalRounds = useMemo(
-    () => mainRounds.filter((round) => round.id !== 'final'),
-    [mainRounds],
-  )
   const orderedMainRounds = useMemo(
     () => alignSideRoundsByNextRound(mainRounds, matchesById, mainRoundMatchIdsById),
     [mainRounds, matchesById, mainRoundMatchIdsById],
+  )
+  const preFinalRounds = useMemo(
+    () => orderedMainRounds.filter((round) => round.id !== 'final'),
+    [orderedMainRounds],
   )
   const leftSplitBaseRounds = useMemo(
     () =>
