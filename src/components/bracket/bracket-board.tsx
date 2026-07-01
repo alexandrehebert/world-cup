@@ -1,8 +1,9 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useLocale } from '../../contexts/locale-context'
 import { useDashboard } from '../../contexts/dashboard-context'
+import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, formatPlaceholder, getMatchWinner } from '../../lib/format'
+import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchWinner } from '../../lib/format'
 import { getPotentialTeamsFromPlaceholder, getTopTeamFromPlaceholder } from '../../lib/bracket'
 import { alignSideRoundsByNextRound, getWinnerSourceMatchId } from '../../lib/bracket-layout'
 import { Icon } from '../../lib/icons'
@@ -268,6 +269,7 @@ export const BracketBoard = ({
 }) => {
   const { locale, t } = useLocale()
   const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
+  const nowMs = useNow()
   const { matchesById, teamsById, groupsById } = useTournament()
   const groupsByIdMap = useMemo(() => new Map(Object.entries(groupsById || {})), [groupsById])
   const boardRef = useRef<HTMLDivElement | null>(null)
@@ -385,7 +387,7 @@ export const BracketBoard = ({
         ? getProjectedTeamIdFromParticipant(match.away, placeholderResolutionContext, new Set(), forcedWinnerByMatchId)
         : undefined
     )
-    const isLive = match.status === 'live'
+    const isLive = getDisplayMatchStatus(match, nowMs) === 'live'
 
     const renderFlag = (teamId: string | undefined) => {
       const team = teamId ? teamsById[teamId] : undefined
@@ -943,7 +945,7 @@ export const BracketBoard = ({
                         const awayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
                         const homeWonBracket = cardWinner === 'home'
                         const awayWonBracket = cardWinner === 'away'
-                        const isLive = match.status === 'live'
+                        const isLive = getDisplayMatchStatus(match, nowMs) === 'live'
 
                         return (
                           <div key={match.id} className="relative">
@@ -997,10 +999,10 @@ export const BracketBoard = ({
                                 }
                               }}
                               className={`relative z-10 cursor-pointer overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
-                              hasFavorite
-                                ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
-                                : isLive
-                                  ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
+                              isLive
+                                ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
+                                : hasFavorite
+                                  ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
                                   : 'hover:bg-[var(--surface-soft)]'
                               } ${isForecastPathMatch ? 'ring-2 ring-[var(--accent-border)] ring-inset' : ''}`}
                               data-bracket-main-card="true"
@@ -1131,7 +1133,7 @@ export const BracketBoard = ({
                         const tpAwayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
                         const tpHomeWon = tpCardWinner === 'home'
                         const tpAwayWon = tpCardWinner === 'away'
-                        const isLive = match.status === 'live'
+                        const isLive = getDisplayMatchStatus(match, nowMs) === 'live'
 
                         return (
                           <div
@@ -1145,10 +1147,10 @@ export const BracketBoard = ({
                              }
                            }}
                            className={`relative cursor-pointer rounded-[var(--radius-sm)] bg-[var(--surface)] p-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
-                           hasFavorite
-                             ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
-                             : isLive
-                               ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
+                           isLive
+                             ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
+                             : hasFavorite
+                               ? 'bg-[var(--accent-muted)] hover:bg-[var(--accent-muted)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[var(--accent)]'
                                : 'hover:bg-[var(--surface-soft)]'
                           }`}
                           onClick={() => setSelectedMatchId(match.id)}>
