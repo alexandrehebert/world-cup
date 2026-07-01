@@ -112,10 +112,13 @@ This repository includes a local Docker Compose setup with:
 - `mongo`: local MongoDB database for users/predictions/leaderboard
 - `cron`: local cron runner calling `/api/cron/sync-matches` every minute (more frequent than Vercel)
 - source code mounted into `app` for live reload while developing
+- MongoDB is also published on `localhost:${MONGODB_PORT:-27018}` for host-side tooling
 
 ### Start locally
 
 1. Copy `.env.docker.example` to `.env` and adjust secrets (`APP_PORT=3001` avoids conflicts with local port 3000).
+   - `MONGODB_URI` is set to `mongodb://127.0.0.1:27018/world-cup` so host-side `next dev`, scripts, and one-off sync commands can use the MongoDB container.
+   - Inside Docker Compose, the `app` service still uses the internal service hostname `mongo`.
 2. Start the stack:
 
 ```bash

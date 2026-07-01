@@ -3,7 +3,7 @@
     "edition": "FIFA World Cup 2026",
     "season": "2026",
     "host": "Canada, Mexico, United States",
-    "updatedAt": "2026-06-17T13:17:01.631Z",
+    "updatedAt": "2026-07-01T11:57:16.078Z",
     "venueCountry": "Canada, Mexico, United States"
   },
   "teams": [
@@ -309,42 +309,42 @@
       "standings": [
         {
           "teamId": "mex",
-          "played": 1,
-          "won": 1,
+          "played": 2,
+          "won": 2,
           "drawn": 0,
           "lost": 0,
-          "goalsFor": 2,
+          "goalsFor": 5,
           "goalsAgainst": 0,
-          "points": 3
+          "points": 6
         },
         {
           "teamId": "kor",
-          "played": 1,
+          "played": 2,
           "won": 1,
           "drawn": 0,
-          "lost": 0,
+          "lost": 1,
           "goalsFor": 2,
-          "goalsAgainst": 1,
+          "goalsAgainst": 2,
           "points": 3
         },
         {
-          "teamId": "cze",
-          "played": 1,
-          "won": 0,
+          "teamId": "zaf",
+          "played": 2,
+          "won": 1,
           "drawn": 0,
           "lost": 1,
           "goalsFor": 1,
           "goalsAgainst": 2,
-          "points": 0
+          "points": 3
         },
         {
-          "teamId": "zaf",
-          "played": 1,
+          "teamId": "cze",
+          "played": 2,
           "won": 0,
           "drawn": 0,
-          "lost": 1,
-          "goalsFor": 0,
-          "goalsAgainst": 2,
+          "lost": 2,
+          "goalsFor": 1,
+          "goalsAgainst": 5,
           "points": 0
         }
       ],
@@ -368,43 +368,43 @@
       ],
       "standings": [
         {
-          "teamId": "sui",
-          "played": 1,
-          "won": 0,
+          "teamId": "bih",
+          "played": 2,
+          "won": 1,
           "drawn": 1,
           "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 1,
-          "points": 1
+          "goalsFor": 4,
+          "goalsAgainst": 2,
+          "points": 4
+        },
+        {
+          "teamId": "sui",
+          "played": 2,
+          "won": 1,
+          "drawn": 1,
+          "lost": 0,
+          "goalsFor": 3,
+          "goalsAgainst": 2,
+          "points": 4
         },
         {
           "teamId": "can",
-          "played": 1,
+          "played": 2,
           "won": 0,
           "drawn": 1,
-          "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 1,
+          "lost": 1,
+          "goalsFor": 2,
+          "goalsAgainst": 3,
           "points": 1
         },
         {
           "teamId": "qat",
-          "played": 1,
+          "played": 2,
           "won": 0,
           "drawn": 1,
-          "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 1,
-          "points": 1
-        },
-        {
-          "teamId": "bih",
-          "played": 1,
-          "won": 0,
-          "drawn": 1,
-          "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 1,
+          "lost": 1,
+          "goalsFor": 2,
+          "goalsAgainst": 4,
           "points": 1
         }
       ],
@@ -428,43 +428,43 @@
       ],
       "standings": [
         {
-          "teamId": "sco",
-          "played": 1,
-          "won": 1,
-          "drawn": 0,
-          "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 0,
-          "points": 3
-        },
-        {
           "teamId": "bra",
-          "played": 1,
-          "won": 0,
+          "played": 2,
+          "won": 1,
           "drawn": 1,
           "lost": 0,
-          "goalsFor": 1,
+          "goalsFor": 4,
           "goalsAgainst": 1,
-          "points": 1
+          "points": 4
         },
         {
           "teamId": "mar",
-          "played": 1,
-          "won": 0,
+          "played": 2,
+          "won": 1,
           "drawn": 1,
           "lost": 0,
+          "goalsFor": 5,
+          "goalsAgainst": 3,
+          "points": 4
+        },
+        {
+          "teamId": "sco",
+          "played": 2,
+          "won": 1,
+          "drawn": 0,
+          "lost": 1,
           "goalsFor": 1,
-          "goalsAgainst": 1,
-          "points": 1
+          "goalsAgainst": 3,
+          "points": 3
         },
         {
           "teamId": "hti",
-          "played": 1,
+          "played": 2,
           "won": 0,
           "drawn": 0,
-          "lost": 1,
-          "goalsFor": 0,
-          "goalsAgainst": 1,
+          "lost": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 5,
           "points": 0
         }
       ],
@@ -488,44 +488,44 @@
       ],
       "standings": [
         {
-          "teamId": "usa",
-          "played": 1,
-          "won": 1,
-          "drawn": 0,
-          "lost": 0,
-          "goalsFor": 4,
-          "goalsAgainst": 1,
-          "points": 3
-        },
-        {
           "teamId": "aus",
-          "played": 1,
+          "played": 2,
           "won": 1,
-          "drawn": 0,
+          "drawn": 1,
           "lost": 0,
           "goalsFor": 2,
           "goalsAgainst": 0,
+          "points": 4
+        },
+        {
+          "teamId": "usa",
+          "played": 2,
+          "won": 1,
+          "drawn": 0,
+          "lost": 1,
+          "goalsFor": 6,
+          "goalsAgainst": 4,
           "points": 3
         },
         {
           "teamId": "tur",
-          "played": 1,
-          "won": 0,
+          "played": 2,
+          "won": 1,
           "drawn": 0,
           "lost": 1,
-          "goalsFor": 0,
-          "goalsAgainst": 2,
-          "points": 0
+          "goalsFor": 3,
+          "goalsAgainst": 4,
+          "points": 3
         },
         {
           "teamId": "par",
-          "played": 1,
+          "played": 2,
           "won": 0,
-          "drawn": 0,
+          "drawn": 1,
           "lost": 1,
           "goalsFor": 1,
           "goalsAgainst": 4,
-          "points": 0
+          "points": 1
         }
       ],
       "matchIds": [
@@ -548,43 +548,43 @@
       ],
       "standings": [
         {
-          "teamId": "ger",
-          "played": 1,
-          "won": 1,
+          "teamId": "civ",
+          "played": 2,
+          "won": 2,
           "drawn": 0,
           "lost": 0,
-          "goalsFor": 7,
-          "goalsAgainst": 1,
-          "points": 3
+          "goalsFor": 3,
+          "goalsAgainst": 0,
+          "points": 6
         },
         {
-          "teamId": "civ",
-          "played": 1,
+          "teamId": "ger",
+          "played": 2,
           "won": 1,
           "drawn": 0,
-          "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 0,
+          "lost": 1,
+          "goalsFor": 8,
+          "goalsAgainst": 3,
           "points": 3
         },
         {
           "teamId": "ecu",
-          "played": 1,
-          "won": 0,
+          "played": 2,
+          "won": 1,
           "drawn": 0,
           "lost": 1,
-          "goalsFor": 0,
-          "goalsAgainst": 1,
-          "points": 0
+          "goalsFor": 2,
+          "goalsAgainst": 2,
+          "points": 3
         },
         {
           "teamId": "cuw",
-          "played": 1,
+          "played": 2,
           "won": 0,
           "drawn": 0,
-          "lost": 1,
+          "lost": 2,
           "goalsFor": 1,
-          "goalsAgainst": 7,
+          "goalsAgainst": 9,
           "points": 0
         }
       ],
@@ -609,42 +609,42 @@
       "standings": [
         {
           "teamId": "swe",
-          "played": 1,
+          "played": 2,
           "won": 1,
-          "drawn": 0,
+          "drawn": 1,
           "lost": 0,
-          "goalsFor": 5,
-          "goalsAgainst": 1,
-          "points": 3
+          "goalsFor": 6,
+          "goalsAgainst": 2,
+          "points": 4
         },
         {
           "teamId": "ned",
-          "played": 1,
-          "won": 0,
+          "played": 2,
+          "won": 1,
           "drawn": 1,
           "lost": 0,
-          "goalsFor": 2,
-          "goalsAgainst": 2,
-          "points": 1
+          "goalsFor": 5,
+          "goalsAgainst": 3,
+          "points": 4
         },
         {
           "teamId": "jpn",
-          "played": 1,
+          "played": 2,
           "won": 0,
-          "drawn": 1,
+          "drawn": 2,
           "lost": 0,
-          "goalsFor": 2,
-          "goalsAgainst": 2,
-          "points": 1
+          "goalsFor": 3,
+          "goalsAgainst": 3,
+          "points": 2
         },
         {
           "teamId": "tun",
-          "played": 1,
+          "played": 2,
           "won": 0,
           "drawn": 0,
-          "lost": 1,
-          "goalsFor": 1,
-          "goalsAgainst": 5,
+          "lost": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 8,
           "points": 0
         }
       ],
@@ -668,43 +668,43 @@
       ],
       "standings": [
         {
-          "teamId": "irn",
-          "played": 1,
-          "won": 0,
-          "drawn": 1,
-          "lost": 0,
-          "goalsFor": 2,
-          "goalsAgainst": 2,
-          "points": 1
-        },
-        {
-          "teamId": "nzl",
-          "played": 1,
-          "won": 0,
-          "drawn": 1,
-          "lost": 0,
-          "goalsFor": 2,
-          "goalsAgainst": 2,
-          "points": 1
-        },
-        {
           "teamId": "bel",
-          "played": 1,
-          "won": 0,
+          "played": 2,
+          "won": 1,
           "drawn": 1,
           "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 1,
-          "points": 1
+          "goalsFor": 6,
+          "goalsAgainst": 2,
+          "points": 4
+        },
+        {
+          "teamId": "irn",
+          "played": 2,
+          "won": 0,
+          "drawn": 2,
+          "lost": 0,
+          "goalsFor": 3,
+          "goalsAgainst": 3,
+          "points": 2
         },
         {
           "teamId": "egy",
-          "played": 1,
+          "played": 2,
+          "won": 0,
+          "drawn": 2,
+          "lost": 0,
+          "goalsFor": 2,
+          "goalsAgainst": 2,
+          "points": 2
+        },
+        {
+          "teamId": "nzl",
+          "played": 2,
           "won": 0,
           "drawn": 1,
-          "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 1,
+          "lost": 1,
+          "goalsFor": 3,
+          "goalsAgainst": 7,
           "points": 1
         }
       ],
@@ -728,43 +728,43 @@
       ],
       "standings": [
         {
-          "teamId": "sau",
-          "played": 1,
-          "won": 0,
-          "drawn": 1,
-          "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 1,
-          "points": 1
-        },
-        {
-          "teamId": "uru",
-          "played": 1,
-          "won": 0,
-          "drawn": 1,
-          "lost": 0,
-          "goalsFor": 1,
-          "goalsAgainst": 1,
-          "points": 1
-        },
-        {
           "teamId": "esp",
-          "played": 1,
-          "won": 0,
+          "played": 2,
+          "won": 1,
           "drawn": 1,
           "lost": 0,
-          "goalsFor": 0,
+          "goalsFor": 1,
           "goalsAgainst": 0,
-          "points": 1
+          "points": 4
+        },
+        {
+          "teamId": "sau",
+          "played": 2,
+          "won": 0,
+          "drawn": 2,
+          "lost": 0,
+          "goalsFor": 1,
+          "goalsAgainst": 1,
+          "points": 2
         },
         {
           "teamId": "cpv",
-          "played": 1,
+          "played": 2,
           "won": 0,
-          "drawn": 1,
+          "drawn": 2,
           "lost": 0,
           "goalsFor": 0,
           "goalsAgainst": 0,
+          "points": 2
+        },
+        {
+          "teamId": "uru",
+          "played": 2,
+          "won": 0,
+          "drawn": 1,
+          "lost": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 2,
           "points": 1
         }
       ],
@@ -788,43 +788,43 @@
       ],
       "standings": [
         {
-          "teamId": "nor",
-          "played": 1,
-          "won": 1,
-          "drawn": 0,
-          "lost": 0,
-          "goalsFor": 4,
-          "goalsAgainst": 1,
-          "points": 3
-        },
-        {
           "teamId": "fra",
-          "played": 1,
-          "won": 1,
+          "played": 2,
+          "won": 2,
           "drawn": 0,
           "lost": 0,
-          "goalsFor": 3,
-          "goalsAgainst": 1,
-          "points": 3
+          "goalsFor": 7,
+          "goalsAgainst": 2,
+          "points": 6
         },
         {
           "teamId": "sen",
-          "played": 1,
-          "won": 0,
+          "played": 2,
+          "won": 1,
           "drawn": 0,
           "lost": 1,
-          "goalsFor": 1,
+          "goalsFor": 6,
           "goalsAgainst": 3,
-          "points": 0
+          "points": 3
+        },
+        {
+          "teamId": "nor",
+          "played": 2,
+          "won": 1,
+          "drawn": 0,
+          "lost": 1,
+          "goalsFor": 5,
+          "goalsAgainst": 5,
+          "points": 3
         },
         {
           "teamId": "irq",
-          "played": 1,
+          "played": 2,
           "won": 0,
           "drawn": 0,
-          "lost": 1,
+          "lost": 2,
           "goalsFor": 1,
-          "goalsAgainst": 4,
+          "goalsAgainst": 9,
           "points": 0
         }
       ],
@@ -849,42 +849,42 @@
       "standings": [
         {
           "teamId": "arg",
-          "played": 1,
-          "won": 1,
+          "played": 2,
+          "won": 2,
           "drawn": 0,
           "lost": 0,
-          "goalsFor": 3,
-          "goalsAgainst": 0,
-          "points": 3
+          "goalsFor": 6,
+          "goalsAgainst": 1,
+          "points": 6
         },
         {
           "teamId": "aut",
-          "played": 1,
+          "played": 2,
           "won": 1,
-          "drawn": 0,
+          "drawn": 1,
           "lost": 0,
-          "goalsFor": 3,
-          "goalsAgainst": 1,
-          "points": 3
-        },
-        {
-          "teamId": "jor",
-          "played": 1,
-          "won": 0,
-          "drawn": 0,
-          "lost": 1,
-          "goalsFor": 1,
-          "goalsAgainst": 3,
-          "points": 0
+          "goalsFor": 6,
+          "goalsAgainst": 4,
+          "points": 4
         },
         {
           "teamId": "dza",
-          "played": 1,
+          "played": 2,
+          "won": 0,
+          "drawn": 1,
+          "lost": 1,
+          "goalsFor": 3,
+          "goalsAgainst": 6,
+          "points": 1
+        },
+        {
+          "teamId": "jor",
+          "played": 2,
           "won": 0,
           "drawn": 0,
-          "lost": 1,
-          "goalsFor": 0,
-          "goalsAgainst": 3,
+          "lost": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 6,
           "points": 0
         }
       ],
@@ -909,42 +909,42 @@
       "standings": [
         {
           "teamId": "por",
-          "played": 0,
-          "won": 0,
-          "drawn": 0,
+          "played": 2,
+          "won": 1,
+          "drawn": 1,
           "lost": 0,
-          "goalsFor": 0,
+          "goalsFor": 5,
           "goalsAgainst": 0,
-          "points": 0
-        },
-        {
-          "teamId": "cod",
-          "played": 0,
-          "won": 0,
-          "drawn": 0,
-          "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
-          "points": 0
-        },
-        {
-          "teamId": "uzb",
-          "played": 0,
-          "won": 0,
-          "drawn": 0,
-          "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
-          "points": 0
+          "points": 4
         },
         {
           "teamId": "col",
-          "played": 0,
+          "played": 2,
+          "won": 1,
+          "drawn": 1,
+          "lost": 0,
+          "goalsFor": 1,
+          "goalsAgainst": 0,
+          "points": 4
+        },
+        {
+          "teamId": "cod",
+          "played": 2,
+          "won": 1,
+          "drawn": 0,
+          "lost": 1,
+          "goalsFor": 3,
+          "goalsAgainst": 2,
+          "points": 3
+        },
+        {
+          "teamId": "uzb",
+          "played": 2,
           "won": 0,
           "drawn": 0,
-          "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
+          "lost": 2,
+          "goalsFor": 1,
+          "goalsAgainst": 8,
           "points": 0
         }
       ],
@@ -968,43 +968,43 @@
       ],
       "standings": [
         {
-          "teamId": "eng",
-          "played": 0,
-          "won": 0,
+          "teamId": "cro",
+          "played": 2,
+          "won": 2,
           "drawn": 0,
           "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
-          "points": 0
+          "goalsFor": 3,
+          "goalsAgainst": 1,
+          "points": 6
         },
         {
-          "teamId": "cro",
-          "played": 0,
-          "won": 0,
-          "drawn": 0,
+          "teamId": "eng",
+          "played": 2,
+          "won": 1,
+          "drawn": 1,
           "lost": 0,
-          "goalsFor": 0,
+          "goalsFor": 2,
           "goalsAgainst": 0,
-          "points": 0
+          "points": 4
         },
         {
           "teamId": "gha",
-          "played": 0,
+          "played": 2,
           "won": 0,
-          "drawn": 0,
-          "lost": 0,
-          "goalsFor": 0,
-          "goalsAgainst": 0,
-          "points": 0
+          "drawn": 1,
+          "lost": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 2,
+          "points": 1
         },
         {
           "teamId": "pan",
-          "played": 0,
+          "played": 2,
           "won": 0,
           "drawn": 0,
-          "lost": 0,
+          "lost": 2,
           "goalsFor": 0,
-          "goalsAgainst": 0,
+          "goalsAgainst": 3,
           "points": 0
         }
       ],
@@ -2200,10 +2200,12 @@
       "stage": "group",
       "groupId": "L",
       "home": {
-        "teamId": "eng"
+        "teamId": "eng",
+        "score": 0
       },
       "away": {
-        "teamId": "gha"
+        "teamId": "gha",
+        "score": 0
       },
       "kickoff": "2026-06-23T20:00:00Z",
       "venue": {
@@ -2212,17 +2214,30 @@
         "country": "Canada",
         "timeZone": "America/Toronto"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-23T20:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m46",
       "stage": "group",
       "groupId": "L",
       "home": {
-        "teamId": "pan"
+        "teamId": "pan",
+        "score": 0
       },
       "away": {
-        "teamId": "cro"
+        "teamId": "cro",
+        "score": 1
       },
       "kickoff": "2026-06-23T23:00:00Z",
       "venue": {
@@ -2231,17 +2246,30 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+5'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-23T23:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m47",
       "stage": "group",
       "groupId": "K",
       "home": {
-        "teamId": "por"
+        "teamId": "por",
+        "score": 5
       },
       "away": {
-        "teamId": "uzb"
+        "teamId": "uzb",
+        "score": 0
       },
       "kickoff": "2026-06-23T17:00:00Z",
       "venue": {
@@ -2250,17 +2278,30 @@
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-23T17:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m48",
       "stage": "group",
       "groupId": "K",
       "home": {
-        "teamId": "col"
+        "teamId": "col",
+        "score": 1
       },
       "away": {
-        "teamId": "cod"
+        "teamId": "cod",
+        "score": 0
       },
       "kickoff": "2026-06-24T02:00:00Z",
       "venue": {
@@ -2269,17 +2310,30 @@
         "country": "United States",
         "timeZone": "America/Chicago"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+7'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-24T02:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m49",
       "stage": "group",
       "groupId": "C",
       "home": {
-        "teamId": "sco"
+        "teamId": "sco",
+        "score": 0
       },
       "away": {
-        "teamId": "bra"
+        "teamId": "bra",
+        "score": 3
       },
       "kickoff": "2026-06-24T22:00:00Z",
       "venue": {
@@ -2288,17 +2342,30 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-24T22:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m50",
       "stage": "group",
       "groupId": "C",
       "home": {
-        "teamId": "mar"
+        "teamId": "mar",
+        "score": 4
       },
       "away": {
-        "teamId": "hti"
+        "teamId": "hti",
+        "score": 2
       },
       "kickoff": "2026-06-24T22:00:00Z",
       "venue": {
@@ -2307,17 +2374,30 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+9'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-24T22:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m51",
       "stage": "group",
       "groupId": "B",
       "home": {
-        "teamId": "sui"
+        "teamId": "sui",
+        "score": 2
       },
       "away": {
-        "teamId": "can"
+        "teamId": "can",
+        "score": 1
       },
       "kickoff": "2026-06-24T19:00:00Z",
       "venue": {
@@ -2326,17 +2406,30 @@
         "country": "Canada",
         "timeZone": "America/Vancouver"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+7'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-24T19:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m52",
       "stage": "group",
       "groupId": "B",
       "home": {
-        "teamId": "bih"
+        "teamId": "bih",
+        "score": 3
       },
       "away": {
-        "teamId": "qat"
+        "teamId": "qat",
+        "score": 1
       },
       "kickoff": "2026-06-24T19:00:00Z",
       "venue": {
@@ -2345,17 +2438,30 @@
         "country": "Canada",
         "timeZone": "America/Vancouver"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-24T19:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m53",
       "stage": "group",
       "groupId": "A",
       "home": {
-        "teamId": "cze"
+        "teamId": "cze",
+        "score": 0
       },
       "away": {
-        "teamId": "mex"
+        "teamId": "mex",
+        "score": 3
       },
       "kickoff": "2026-06-25T01:00:00Z",
       "venue": {
@@ -2364,17 +2470,30 @@
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-25T01:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m54",
       "stage": "group",
       "groupId": "A",
       "home": {
-        "teamId": "zaf"
+        "teamId": "zaf",
+        "score": 1
       },
       "away": {
-        "teamId": "kor"
+        "teamId": "kor",
+        "score": 0
       },
       "kickoff": "2026-06-25T01:00:00Z",
       "venue": {
@@ -2383,17 +2502,30 @@
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-25T01:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m55",
       "stage": "group",
       "groupId": "E",
       "home": {
-        "teamId": "cuw"
+        "teamId": "cuw",
+        "score": 0
       },
       "away": {
-        "teamId": "civ"
+        "teamId": "civ",
+        "score": 2
       },
       "kickoff": "2026-06-25T20:00:00Z",
       "venue": {
@@ -2402,17 +2534,30 @@
         "country": "United States",
         "timeZone": "America/Chicago"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-25T20:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m56",
       "stage": "group",
       "groupId": "E",
       "home": {
-        "teamId": "ecu"
+        "teamId": "ecu",
+        "score": 2
       },
       "away": {
-        "teamId": "ger"
+        "teamId": "ger",
+        "score": 1
       },
       "kickoff": "2026-06-25T20:00:00Z",
       "venue": {
@@ -2421,17 +2566,30 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+7'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-25T20:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m57",
       "stage": "group",
       "groupId": "F",
       "home": {
-        "teamId": "jpn"
+        "teamId": "jpn",
+        "score": 1
       },
       "away": {
-        "teamId": "swe"
+        "teamId": "swe",
+        "score": 1
       },
       "kickoff": "2026-06-25T23:00:00Z",
       "venue": {
@@ -2440,17 +2598,30 @@
         "country": "Mexico",
         "timeZone": "America/Monterrey"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+7'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-25T23:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m58",
       "stage": "group",
       "groupId": "F",
       "home": {
-        "teamId": "tun"
+        "teamId": "tun",
+        "score": 1
       },
       "away": {
-        "teamId": "ned"
+        "teamId": "ned",
+        "score": 3
       },
       "kickoff": "2026-06-25T23:00:00Z",
       "venue": {
@@ -2459,17 +2630,30 @@
         "country": "United States",
         "timeZone": "America/Chicago"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+5'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-25T23:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m59",
       "stage": "group",
       "groupId": "D",
       "home": {
-        "teamId": "tur"
+        "teamId": "tur",
+        "score": 3
       },
       "away": {
-        "teamId": "usa"
+        "teamId": "usa",
+        "score": 2
       },
       "kickoff": "2026-06-26T02:00:00Z",
       "venue": {
@@ -2478,17 +2662,30 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+9'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-26T02:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m60",
       "stage": "group",
       "groupId": "D",
       "home": {
-        "teamId": "par"
+        "teamId": "par",
+        "score": 0
       },
       "away": {
-        "teamId": "aus"
+        "teamId": "aus",
+        "score": 0
       },
       "kickoff": "2026-06-26T02:00:00Z",
       "venue": {
@@ -2497,17 +2694,30 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+5'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-26T02:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m61",
       "stage": "group",
       "groupId": "I",
       "home": {
-        "teamId": "nor"
+        "teamId": "nor",
+        "score": 1
       },
       "away": {
-        "teamId": "fra"
+        "teamId": "fra",
+        "score": 4
       },
       "kickoff": "2026-06-26T19:00:00Z",
       "venue": {
@@ -2516,17 +2726,30 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+5'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-26T19:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m62",
       "stage": "group",
       "groupId": "I",
       "home": {
-        "teamId": "sen"
+        "teamId": "sen",
+        "score": 5
       },
       "away": {
-        "teamId": "irq"
+        "teamId": "irq",
+        "score": 0
       },
       "kickoff": "2026-06-26T19:00:00Z",
       "venue": {
@@ -2535,17 +2758,30 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-26T19:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m63",
       "stage": "group",
       "groupId": "G",
       "home": {
-        "teamId": "egy"
+        "teamId": "egy",
+        "score": 1
       },
       "away": {
-        "teamId": "irn"
+        "teamId": "irn",
+        "score": 1
       },
       "kickoff": "2026-06-27T03:00:00Z",
       "venue": {
@@ -2554,17 +2790,30 @@
         "country": "Canada",
         "timeZone": "America/Vancouver"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+9'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-27T03:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m64",
       "stage": "group",
       "groupId": "G",
       "home": {
-        "teamId": "nzl"
+        "teamId": "nzl",
+        "score": 1
       },
       "away": {
-        "teamId": "bel"
+        "teamId": "bel",
+        "score": 5
       },
       "kickoff": "2026-06-27T03:00:00Z",
       "venue": {
@@ -2573,17 +2822,30 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-27T03:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m65",
       "stage": "group",
       "groupId": "H",
       "home": {
-        "teamId": "cpv"
+        "teamId": "cpv",
+        "score": 0
       },
       "away": {
-        "teamId": "sau"
+        "teamId": "sau",
+        "score": 0
       },
       "kickoff": "2026-06-27T00:00:00Z",
       "venue": {
@@ -2592,17 +2854,30 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+5'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-27T00:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m66",
       "stage": "group",
       "groupId": "H",
       "home": {
-        "teamId": "uru"
+        "teamId": "uru",
+        "score": 0
       },
       "away": {
-        "teamId": "esp"
+        "teamId": "esp",
+        "score": 1
       },
       "kickoff": "2026-06-27T00:00:00Z",
       "venue": {
@@ -2611,17 +2886,30 @@
         "country": "United States",
         "timeZone": "America/Chicago"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-27T00:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m67",
       "stage": "group",
       "groupId": "L",
       "home": {
-        "teamId": "pan"
+        "teamId": "pan",
+        "score": 0
       },
       "away": {
-        "teamId": "eng"
+        "teamId": "eng",
+        "score": 2
       },
       "kickoff": "2026-06-27T21:00:00Z",
       "venue": {
@@ -2630,17 +2918,30 @@
         "country": "Canada",
         "timeZone": "America/Toronto"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-27T21:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m68",
       "stage": "group",
       "groupId": "L",
       "home": {
-        "teamId": "cro"
+        "teamId": "cro",
+        "score": 2
       },
       "away": {
-        "teamId": "gha"
+        "teamId": "gha",
+        "score": 1
       },
       "kickoff": "2026-06-27T21:00:00Z",
       "venue": {
@@ -2649,17 +2950,30 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+8'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-27T21:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m69",
       "stage": "group",
       "groupId": "J",
       "home": {
-        "teamId": "dza"
+        "teamId": "dza",
+        "score": 3
       },
       "away": {
-        "teamId": "aut"
+        "teamId": "aut",
+        "score": 3
       },
       "kickoff": "2026-06-28T02:00:00Z",
       "venue": {
@@ -2668,17 +2982,30 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+7'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-28T02:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m70",
       "stage": "group",
       "groupId": "J",
       "home": {
-        "teamId": "jor"
+        "teamId": "jor",
+        "score": 1
       },
       "away": {
-        "teamId": "arg"
+        "teamId": "arg",
+        "score": 3
       },
       "kickoff": "2026-06-28T02:00:00Z",
       "venue": {
@@ -2687,17 +3014,30 @@
         "country": "United States",
         "timeZone": "America/Chicago"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-28T02:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m71",
       "stage": "group",
       "groupId": "K",
       "home": {
-        "teamId": "col"
+        "teamId": "col",
+        "score": 0
       },
       "away": {
-        "teamId": "por"
+        "teamId": "por",
+        "score": 0
       },
       "kickoff": "2026-06-27T23:30:00Z",
       "venue": {
@@ -2706,17 +3046,30 @@
         "country": "Mexico",
         "timeZone": "America/Mexico_City"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-27T23:30Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m72",
       "stage": "group",
       "groupId": "K",
       "home": {
-        "teamId": "cod"
+        "teamId": "cod",
+        "score": 3
       },
       "away": {
-        "teamId": "uzb"
+        "teamId": "uzb",
+        "score": 1
       },
       "kickoff": "2026-06-27T23:30:00Z",
       "venue": {
@@ -2725,17 +3078,32 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+8'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-27T23:30Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m73",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G2:A"
+        "placeholder": "G2:A",
+        "score": 0,
+        "teamId": "zaf"
       },
       "away": {
-        "placeholder": "G2:B"
+        "placeholder": "G2:B",
+        "score": 1,
+        "teamId": "can"
       },
       "kickoff": "2026-06-28T19:00:00Z",
       "venue": {
@@ -2744,17 +3112,34 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+6'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-28T19:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m74",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G1:E"
+        "placeholder": "G1:E",
+        "score": 1,
+        "penaltyScore": 3,
+        "teamId": "ger"
       },
       "away": {
-        "placeholder": "G3:ABCDF"
+        "placeholder": "G3:ABCDF",
+        "score": 1,
+        "penaltyScore": 4,
+        "teamId": "par"
       },
       "kickoff": "2026-06-29T20:30:00Z",
       "venue": {
@@ -2763,17 +3148,34 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 5,
+        "clock": 7200,
+        "displayClock": "120'",
+        "detail": "FT-Pens",
+        "shortDetail": "FT-Pens",
+        "completed": true,
+        "startDate": "2026-06-29T20:30Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m75",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G1:F"
+        "placeholder": "G1:F",
+        "score": 1,
+        "penaltyScore": 2,
+        "teamId": "ned"
       },
       "away": {
-        "placeholder": "G2:C"
+        "placeholder": "G2:C",
+        "score": 1,
+        "penaltyScore": 3,
+        "teamId": "mar"
       },
       "kickoff": "2026-06-30T01:00:00Z",
       "venue": {
@@ -2782,17 +3184,32 @@
         "country": "Mexico",
         "timeZone": "America/Monterrey"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 5,
+        "clock": 7200,
+        "displayClock": "120'",
+        "detail": "FT-Pens",
+        "shortDetail": "FT-Pens",
+        "completed": true,
+        "startDate": "2026-06-30T01:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m76",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G1:C"
+        "placeholder": "G1:C",
+        "score": 2,
+        "teamId": "bra"
       },
       "away": {
-        "placeholder": "G2:F"
+        "placeholder": "G2:F",
+        "score": 1,
+        "teamId": "jpn"
       },
       "kickoff": "2026-06-29T17:00:00Z",
       "venue": {
@@ -2801,17 +3218,32 @@
         "country": "United States",
         "timeZone": "America/Chicago"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+11'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-29T17:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m77",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G1:I"
+        "placeholder": "G1:I",
+        "score": 3,
+        "teamId": "fra"
       },
       "away": {
-        "placeholder": "G3:CDFGH"
+        "placeholder": "G3:CDFGH",
+        "score": 0,
+        "teamId": "swe"
       },
       "kickoff": "2026-06-30T21:00:00Z",
       "venue": {
@@ -2820,17 +3252,32 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+4'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-30T21:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m78",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G2:E"
+        "placeholder": "G2:E",
+        "score": 1,
+        "teamId": "civ"
       },
       "away": {
-        "placeholder": "G2:I"
+        "placeholder": "G2:I",
+        "score": 2,
+        "teamId": "nor"
       },
       "kickoff": "2026-06-30T17:00:00Z",
       "venue": {
@@ -2839,7 +3286,18 @@
         "country": "United States",
         "timeZone": "America/Chicago"
       },
-      "status": "scheduled"
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 5400,
+        "displayClock": "90'+8'",
+        "detail": "FT",
+        "shortDetail": "FT",
+        "completed": true,
+        "startDate": "2026-06-30T17:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m79",
@@ -2865,10 +3323,12 @@
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G1:L"
+        "placeholder": "G1:L",
+        "teamId": "eng"
       },
       "away": {
-        "placeholder": "G3:EHIJK"
+        "placeholder": "G3:EHIJK",
+        "teamId": "cod"
       },
       "kickoff": "2026-07-01T16:00:00Z",
       "venue": {
@@ -2877,17 +3337,29 @@
         "country": "United States",
         "timeZone": "America/New_York"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Wed, July 1st at 12:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-07-01T16:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m81",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G1:D"
+        "placeholder": "G1:D",
+        "teamId": "usa"
       },
       "away": {
-        "placeholder": "G3:BEFIJ"
+        "placeholder": "G3:BEFIJ",
+        "teamId": "bih"
       },
       "kickoff": "2026-07-02T00:00:00Z",
       "venue": {
@@ -2896,17 +3368,29 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Wed, July 1st at 8:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-07-02T00:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m82",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G1:G"
+        "placeholder": "G1:G",
+        "teamId": "bel"
       },
       "away": {
-        "placeholder": "G3:AEHIJ"
+        "placeholder": "G3:AEHIJ",
+        "teamId": "sen"
       },
       "kickoff": "2026-07-01T20:00:00Z",
       "venue": {
@@ -2915,17 +3399,29 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Wed, July 1st at 4:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-07-01T20:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m83",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G2:K"
+        "placeholder": "G2:K",
+        "teamId": "por"
       },
       "away": {
-        "placeholder": "G2:L"
+        "placeholder": "G2:L",
+        "teamId": "cro"
       },
       "kickoff": "2026-07-02T23:00:00Z",
       "venue": {
@@ -2934,17 +3430,29 @@
         "country": "Canada",
         "timeZone": "America/Toronto"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Thu, July 2nd at 7:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-07-02T23:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m84",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G1:H"
+        "placeholder": "G1:H",
+        "teamId": "esp"
       },
       "away": {
-        "placeholder": "G2:J"
+        "placeholder": "G2:J",
+        "teamId": "aut"
       },
       "kickoff": "2026-07-02T19:00:00Z",
       "venue": {
@@ -2953,17 +3461,29 @@
         "country": "United States",
         "timeZone": "America/Los_Angeles"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Thu, July 2nd at 3:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-07-02T19:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m85",
       "stage": "roundOf32",
       "roundId": "roundOf32",
       "home": {
-        "placeholder": "G1:B"
+        "placeholder": "G1:B",
+        "teamId": "sui"
       },
       "away": {
-        "placeholder": "G3:EFGIJ"
+        "placeholder": "G3:EFGIJ",
+        "teamId": "dza"
       },
       "kickoff": "2026-07-03T03:00:00Z",
       "venue": {
@@ -2972,7 +3492,17 @@
         "country": "Canada",
         "timeZone": "America/Vancouver"
       },
-      "status": "scheduled"
+      "status": "scheduled",
+      "live": {
+        "state": "pre",
+        "clock": 0,
+        "displayClock": "0'",
+        "detail": "Thu, July 2nd at 11:00 PM EDT",
+        "shortDetail": "Scheduled",
+        "completed": false,
+        "startDate": "2026-07-03T03:00Z",
+        "syncedAt": "2026-07-01T11:57:16.076Z"
+      }
     },
     {
       "id": "m86",

@@ -32,7 +32,7 @@ export const buildTournamentModel = (data: TournamentData): TournamentModel => {
     }
   })
   const groupsById = Object.fromEntries(groups.map((group) => [group.id, group]))
-  const matches = resolveGroupBracketTeams(data.matches, groups)
+  const matches = resolveGroupBracketTeams(data.matches, groups, data.bracketRounds)
   const matchesById = Object.fromEntries(matches.map((match) => [match.id, match]))
   const roundsById = Object.fromEntries(data.bracketRounds.map((round) => [round.id, round]))
   const upcomingMatches = [...matches].sort((first, second) => first.kickoff.localeCompare(second.kickoff))

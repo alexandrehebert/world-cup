@@ -30,6 +30,8 @@ services:
 
   mongo:
     image: mongo:7
+    ports:
+      - '${MONGODB_PORT:-27017}:27017'
     healthcheck:
       test: ['CMD', 'mongosh', '--eval', 'db.adminCommand("ping").ok']
       interval: 5s

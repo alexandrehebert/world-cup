@@ -1,6 +1,14 @@
 import type { MatchLiveRecord, MatchRecord, TournamentData } from '../types/tournament'
 import { resolveGroupBracketTeams } from '../lib/bracket'
 import { sortGroupStandings } from '../lib/standings'
+import {
+  extractPenaltyScore,
+  isPenaltyShootoutCompetition,
+  mergeEspnSummaryShootoutScores,
+  type EspnEvent,
+  type EspnPayload,
+  type EspnSummary,
+} from './espn-sync'
 import { loadTournamentData, saveTournamentData } from './tournament-data'
 import { scoreFinishedMatches } from './predictions-scoring'
 
@@ -94,6 +102,57 @@ const mergeEspnPayloads = (payloads: EspnPayload[]): EspnPayload => {
   }
 }
 
+const buildEspnSummaryUrl = (scoreboardUrl: URL, eventId: string) => {
+  const summaryUrl = new URL(scoreboardUrl.toString())
+  summaryUrl.pathname = summaryUrl.pathname.replace(/\/scoreboard$/, '/summary')
+  summaryUrl.search = ''
+  summaryUrl.searchParams.set('event', eventId)
+  return summaryUrl.toString()
+}
+
+const fetchEspnSummary = async (scoreboardUrl: URL, eventId: string) => {
+  const response = await fetch(buildEspnSummaryUrl(scoreboardUrl, eventId), { cache: 'no-store' })
+  if (!response.ok) {
+    console.error(`Failed to fetch ESPN summary for event ${eventId} (${response.status})`)
+    return undefined
+  }
+
+  return (await response.json()) as EspnSummary
+}
+
+const enrichEspnPayloadWithShootoutScores = async (payload: EspnPayload, scoreboardUrl: URL) => {
+  const events = payload.events ?? []
+  if (events.length === 0) {
+    return payload
+  }
+
+  const nextEvents = await Promise.all(
+    events.map(async (event) => {
+      const primaryCompetition = Array.isArray(event.competitions) ? event.competitions[0] : undefined
+      const competitors = primaryCompetition?.competitors
+      const eventId = typeof event.id === 'string' ? event.id : undefined
+
+      if (
+        !eventId ||
+        !isPenaltyShootoutCompetition(primaryCompetition) ||
+        !Array.isArray(competitors) ||
+        competitors.length === 0 ||
+        competitors.every((competitor) => extractPenaltyScore(competitor) !== undefined)
+      ) {
+        return event
+      }
+
+      const summary = await fetchEspnSummary(scoreboardUrl, eventId)
+      return summary ? mergeEspnSummaryShootoutScores(event, summary) : event
+    }),
+  )
+
+  return {
+    ...payload,
+    events: nextEvents,
+  }
+}
+
 const fetchMatchResultsPayload = async (resultsUrl: string, data: TournamentData) => {
   if (!isEspnScoreboardUrl(resultsUrl)) {
     const response = await fetch(resultsUrl, { cache: 'no-store' })
@@ -124,51 +183,7 @@ const fetchMatchResultsPayload = async (resultsUrl: string, data: TournamentData
     payloads.push((await response.json()) as EspnPayload)
   }
 
-  return mergeEspnPayloads(payloads)
-}
-
-interface EspnLinescore {
-  points?: number
-  period?: {
-    type?: {
-      name?: string
-    }
-  }
-}
-
-interface EspnCompetitor {
-  homeAway?: string
-  score?: string | number
-  linescores?: EspnLinescore[]
-  team?: {
-    abbreviation?: string
-  }
-}
-
-interface EspnCompetition {
-  startDate?: string
-  status?: {
-    period?: number
-    clock?: number
-    displayClock?: string
-    type?: {
-      state?: string
-      completed?: boolean
-      detail?: string
-      shortDetail?: string
-    }
-  }
-  competitors?: EspnCompetitor[]
-}
-
-interface EspnEvent {
-  date?: string
-  competitions?: EspnCompetition[]
-}
-
-interface EspnPayload {
-  updatedAt?: string
-  events?: EspnEvent[]
+  return await enrichEspnPayloadWithShootoutScores(mergeEspnPayloads(payloads), baseUrl)
 }
 
 type UpstreamMatchUpdate = {
@@ -261,22 +276,6 @@ const buildMatchIndexes = (data: TournamentData) => {
   }
 
   return { byExact, byPair, byKickoff, teamIdByCode }
-}
-
-const extractPenaltyScore = (competitor: EspnCompetitor): number | undefined => {
-  const linescores = competitor.linescores
-  if (!Array.isArray(linescores)) return undefined
-
-  const penaltyLinescore = linescores.find((ls) => {
-    const name = ls?.period?.type?.name?.toLowerCase() ?? ''
-    return name === 'penalty' || name === 'shootout' || name === 'penalty shootout' || name === 'penaltyshootout'
-  })
-
-  if (penaltyLinescore && typeof penaltyLinescore.points === 'number' && Number.isFinite(penaltyLinescore.points)) {
-    return penaltyLinescore.points
-  }
-
-  return undefined
 }
 
 const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): UpstreamMatchUpdate[] => {
@@ -623,7 +622,7 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
     const payloadUpdatedAt = payload && typeof payload === 'object' ? (payload as { updatedAt?: string }).updatedAt : undefined
 
     const recomputedGroups = recomputeGroups(currentData.groups, nextMatches)
-    const resolvedMatches = resolveGroupBracketTeams(nextMatches, recomputedGroups)
+    const resolvedMatches = resolveGroupBracketTeams(nextMatches, recomputedGroups, currentData.bracketRounds)
 
     const nextData: TournamentData = {
       ...currentData,

@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useLocale } from '../../contexts/locale-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, formatPlaceholder } from '../../lib/format'
+import { formatMatchDate, formatPlaceholder, getMatchWinner } from '../../lib/format'
 import { getPotentialTeamsFromPlaceholder, getTopTeamFromPlaceholder } from '../../lib/bracket'
 import { Icon } from '../../lib/icons'
 import { compareStandings } from '../../lib/standings'
@@ -53,19 +53,7 @@ const getRoundSlotKey = (roundId: string, slotIndex: number) => `${roundId}:${sl
 const hasNumericScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
 
 const getBracketCardWinner = (match: MatchRecord): 'home' | 'away' | null => {
-  if (match.status !== 'finished') return null
-  const home = match.home.score
-  const away = match.away.score
-  if (!hasNumericScore(home) || !hasNumericScore(away)) return null
-  if (home > away) return 'home'
-  if (away > home) return 'away'
-  const hp = match.home.penaltyScore
-  const ap = match.away.penaltyScore
-  if (hasNumericScore(hp) && hasNumericScore(ap)) {
-    if (hp > ap) return 'home'
-    if (ap > hp) return 'away'
-  }
-  return null
+  return getMatchWinner(match)
 }
 
 const getWinnerSourceMatchId = (
@@ -161,20 +149,12 @@ const pickMostProbableWinner = (
   if (awayTeamId && !homeTeamId) return awayTeamId
   if (!homeTeamId || !awayTeamId) return undefined
 
-  if (
-    match.status === 'finished' &&
-    hasNumericScore(match.home.score) &&
-    hasNumericScore(match.away.score)
-  ) {
-    if (match.home.score !== match.away.score) {
-      return match.home.score > match.away.score ? homeTeamId : awayTeamId
-    }
-    // Tied after regulation/AET — check penalty scores
-    if (hasNumericScore(match.home.penaltyScore) && hasNumericScore(match.away.penaltyScore)) {
-      if (match.home.penaltyScore !== match.away.penaltyScore) {
-        return match.home.penaltyScore > match.away.penaltyScore ? homeTeamId : awayTeamId
-      }
-    }
+  const winnerSide = getMatchWinner(match)
+  if (winnerSide === 'home') {
+    return homeTeamId
+  }
+  if (winnerSide === 'away') {
+    return awayTeamId
   }
 
   const homeStanding = context.standingsByTeamId.get(homeTeamId)

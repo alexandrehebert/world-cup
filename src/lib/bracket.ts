@@ -1,4 +1,5 @@
-import type { GroupRecord, MatchRecord } from '../types/tournament'
+import type { BracketRoundRecord, GroupRecord, MatchRecord, ParticipantRef } from '../types/tournament'
+import { getMatchWinner } from './format'
 import { compareStandings } from './standings'
 
 const isGroupComplete = (group: GroupRecord, matches: MatchRecord[]): boolean => {
@@ -89,15 +90,127 @@ export const getTopTeamFromPlaceholder = (
   return group.standings[positionIndex]?.teamId
 }
 
+const getBracketRoundSlotKey = (roundId: string, slotIndex: number) => `${roundId}:${slotIndex}`
+
+const getBracketMatchIdByRoundAndSlot = (
+  matches: MatchRecord[],
+  bracketRounds?: BracketRoundRecord[],
+) => {
+  const matchIdByRoundAndSlot = new Map<string, string>()
+
+  if (bracketRounds?.length) {
+    bracketRounds.forEach((round) => {
+      round.matchIds.forEach((matchId, slotIndex) => {
+        matchIdByRoundAndSlot.set(getBracketRoundSlotKey(round.id, slotIndex), matchId)
+      })
+    })
+
+    return matchIdByRoundAndSlot
+  }
+
+  const matchIdsByRoundId = new Map<string, string[]>()
+  matches.forEach((match) => {
+    if (match.stage === 'group') return
+
+    const roundId = match.roundId ?? match.stage
+    const matchIds = matchIdsByRoundId.get(roundId) ?? []
+    matchIds.push(match.id)
+    matchIdsByRoundId.set(roundId, matchIds)
+  })
+
+  matchIdsByRoundId.forEach((matchIds, roundId) => {
+    matchIds.forEach((matchId, slotIndex) => {
+      matchIdByRoundAndSlot.set(getBracketRoundSlotKey(roundId, slotIndex), matchId)
+    })
+  })
+
+  return matchIdByRoundAndSlot
+}
+
+const resolveKnockoutPlaceholder = (
+  participant: ParticipantRef | undefined,
+  groupsById: Map<string, GroupRecord>,
+  matches: MatchRecord[],
+  matchesById: Map<string, MatchRecord>,
+  matchIdByRoundAndSlot: Map<string, string>,
+  visitedPlaceholders: Set<string> = new Set(),
+): string | undefined => {
+  if (!participant) return undefined
+  if (participant.teamId) return participant.teamId
+  if (!participant.placeholder) return undefined
+
+  const placeholder = participant.placeholder
+  if (visitedPlaceholders.has(placeholder)) return undefined
+
+  const nextVisitedPlaceholders = new Set(visitedPlaceholders)
+  nextVisitedPlaceholders.add(placeholder)
+
+  const [type, roundId, rawSlotIndex] = placeholder.split(':')
+
+  if (type === 'G1' || type === 'G2') {
+    return resolveG1G2Placeholder(placeholder, groupsById, matches)
+  }
+
+  if (type !== 'W' && type !== 'L') {
+    return undefined
+  }
+
+  const parsedSlotIndex = Number.parseInt(rawSlotIndex ?? '', 10)
+  if (!roundId || !Number.isInteger(parsedSlotIndex) || parsedSlotIndex <= 0) {
+    return undefined
+  }
+
+  const sourceMatchId = matchIdByRoundAndSlot.get(getBracketRoundSlotKey(roundId, parsedSlotIndex - 1))
+  if (!sourceMatchId) return undefined
+
+  const sourceMatch = matchesById.get(sourceMatchId)
+  if (!sourceMatch) return undefined
+
+  const winnerSide = getMatchWinner(sourceMatch)
+  if (!winnerSide) return undefined
+
+  const homeTeamId = resolveKnockoutPlaceholder(
+    sourceMatch.home,
+    groupsById,
+    matches,
+    matchesById,
+    matchIdByRoundAndSlot,
+    nextVisitedPlaceholders,
+  )
+  const awayTeamId = resolveKnockoutPlaceholder(
+    sourceMatch.away,
+    groupsById,
+    matches,
+    matchesById,
+    matchIdByRoundAndSlot,
+    nextVisitedPlaceholders,
+  )
+
+  if (!homeTeamId || !awayTeamId) return undefined
+
+  if (type === 'W') {
+    return winnerSide === 'home' ? homeTeamId : awayTeamId
+  }
+
+  return winnerSide === 'home' ? awayTeamId : homeTeamId
+}
+
 /**
  * Iterates over all bracket matches and fills in known team IDs from completed group standings.
- * Only resolves G1/G2 placeholders (1st/2nd place of a specific group).
- * G3 (best 3rd-place) placeholders are left for ESPN or manual resolution.
+ * Resolves deterministic bracket participants:
+ * - G1/G2 placeholders when their group is complete
+ * - W/L placeholders when the source knockout match is finished
+ *
+ * G3 (best 3rd-place) placeholders are left for ESPN or manual resolution until
+ * a concrete team is known from upstream data.
  */
-export const resolveGroupBracketTeams = (matches: MatchRecord[], groups: GroupRecord[]): MatchRecord[] => {
+export const resolveGroupBracketTeams = (
+  matches: MatchRecord[],
+  groups: GroupRecord[],
+  bracketRounds?: BracketRoundRecord[],
+): MatchRecord[] => {
   const groupsById = new Map(groups.map((g) => [g.id, g]))
-
-  return matches.map((match) => {
+  const matchesWithGroupTeams = matches.map((match) => {
     if (match.stage === 'group') return match
 
     const resolvedHomeTeamId =
@@ -109,6 +222,28 @@ export const resolveGroupBracketTeams = (matches: MatchRecord[], groups: GroupRe
       match.away && !match.away.teamId && match.away.placeholder
         ? resolveG1G2Placeholder(match.away.placeholder, groupsById, matches)
         : undefined
+
+    if (!resolvedHomeTeamId && !resolvedAwayTeamId) return match
+
+    return {
+      ...match,
+      home: resolvedHomeTeamId ? { ...match.home, teamId: resolvedHomeTeamId } : match.home,
+      away: resolvedAwayTeamId ? { ...match.away, teamId: resolvedAwayTeamId } : match.away,
+    }
+  })
+
+  const matchesById = new Map(matchesWithGroupTeams.map((match) => [match.id, match]))
+  const matchIdByRoundAndSlot = getBracketMatchIdByRoundAndSlot(matchesWithGroupTeams, bracketRounds)
+
+  return matchesWithGroupTeams.map((match) => {
+    if (match.stage === 'group') return match
+
+    const resolvedHomeTeamId = !match.home.teamId
+      ? resolveKnockoutPlaceholder(match.home, groupsById, matchesWithGroupTeams, matchesById, matchIdByRoundAndSlot)
+      : undefined
+    const resolvedAwayTeamId = !match.away.teamId
+      ? resolveKnockoutPlaceholder(match.away, groupsById, matchesWithGroupTeams, matchesById, matchIdByRoundAndSlot)
+      : undefined
 
     if (!resolvedHomeTeamId && !resolvedAwayTeamId) return match
 

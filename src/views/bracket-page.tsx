@@ -86,7 +86,7 @@ export const BracketPage = () => {
       </div>
       <div className="space-y-3 lg:space-y-0">
         <div className="flex items-center gap-2">
-          <div ref={teamFilterRef} className="relative z-40 min-w-0 flex-1">
+          <div ref={teamFilterRef} className="relative z-20 min-w-0 flex-1">
             <div
               className="flex min-h-10 w-full flex-wrap items-center gap-2 border border-[var(--border)] bg-[var(--surface)] pl-3 pr-10 transition focus-within:border-[var(--accent-border)]"
               role="combobox"
