@@ -171,7 +171,7 @@ export const BracketPage = () => {
         <div className="flex items-center gap-2">
           <div ref={teamFilterRef} className="relative z-20 min-w-0 flex-1">
             <div
-              className="flex min-h-10 w-full flex-wrap items-center gap-2 border border-[var(--border)] bg-[var(--surface)] pl-3 pr-10 transition focus-within:border-[var(--accent-border)]"
+              className="flex min-h-10 w-full items-center gap-2 border border-[var(--border)] bg-[var(--surface)] pl-3 pr-10 transition focus-within:border-[var(--accent-border)]"
               role="combobox"
               aria-expanded={isTeamMenuOpen}
               aria-label={t.labels.bracketPathTeam}
@@ -183,22 +183,15 @@ export const BracketPage = () => {
               <Icon name="search" className="text-[18px] leading-none text-[var(--text-soft)]" />
 
               {selectedTeam ? (
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    setForecastTeamId('')
-                    teamInputRef.current?.focus()
-                  }}
-                  className="inline-flex items-center gap-1.5 border border-[var(--accent-border)] bg-[var(--accent-muted)] px-1.5 py-0.5 text-xs text-[var(--accent-text)]"
+                <span
+                  className="inline-flex max-w-full items-center gap-2 text-sm text-[var(--text-strong)]"
                   title={t.teams[selectedTeam.id] ?? selectedTeam.name}
                 >
                   <span className="inline-flex h-4 w-6 shrink-0 overflow-hidden rounded-[3px] border border-[var(--border)]" aria-hidden="true">
                     <span className={`fi fi-${selectedTeam.flagCode} flag-avatar-fill block h-full w-full`} />
                   </span>
-                  <span>{t.teams[selectedTeam.id] ?? selectedTeam.name}</span>
-                  <Icon name="close" className="block text-[14px] leading-none text-[var(--text-muted)]" />
-                </button>
+                  <span className="truncate">{t.teams[selectedTeam.id] ?? selectedTeam.name}</span>
+                </span>
               ) : null}
 
               <input
