@@ -336,11 +336,14 @@ export const MatchModal = () => {
           <button
             type="button"
             onClick={() => void copyShareLink()}
-            className="cursor-pointer rounded-full p-1.5 text-[var(--text)] transition hover:text-[var(--text-strong)]"
+            className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[var(--text)] transition hover:text-[var(--text-strong)]"
             aria-label={t.labels.share}
             title={isCopied ? t.labels.copied : t.labels.share}
           >
-            <Icon name={isCopied ? 'check' : 'share'} className={`text-[20px] ${isCopied ? 'text-[var(--accent-text)]' : ''}`.trim()} />
+            <Icon
+              name={isCopied ? 'check' : 'share'}
+              className={`text-[20px] leading-none ${isCopied ? 'text-[var(--accent-text)]' : ''}`.trim()}
+            />
           </button>
         </div>
       }
