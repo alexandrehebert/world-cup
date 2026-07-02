@@ -1,7 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ImageResponse } from 'next/og'
-import { loadTournamentData } from '../../../../../server/tournament-data'
-import type { TournamentData } from '../../../../../types/tournament'
+import { loadTournamentData } from '../../../server/tournament-data'
+import { parseMatchSlugSegments } from '../../../lib/match-path'
+import type { TournamentData } from '../../../types/tournament'
 
 export const dynamic = 'force-dynamic'
 export const contentType = 'image/png'
@@ -14,22 +15,36 @@ type TeamRecord = TournamentData['teams'][number]
 const normalizeCode = (value: string | undefined) => String(value ?? '').trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
 type TeamsById = Record<string, TeamRecord>
 
-const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: string, awayCode: string) => {
+const findMatchByCodes = (
+  data: TournamentData,
+  teamsById: TeamsById,
+  homeCode: string,
+  awayCode: string,
+  stage: MatchRecord['stage'] | null,
+) => {
   const normalizedHome = normalizeCode(homeCode)
   const normalizedAway = normalizeCode(awayCode)
 
   return data.matches.find((match: MatchRecord) => {
+    if (stage && match.stage !== stage) {
+      return false
+    }
+
     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
     const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
     return normalizeCode(homeTeam?.code) === normalizedHome && normalizeCode(awayTeam?.code) === normalizedAway
   })
 }
 
-export default async function Image({ params }: { params: Promise<{ homeCode: string; awayCode: string }> }) {
-  const { homeCode, awayCode } = await params
+export default async function Image({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params
+  const parsed = parseMatchSlugSegments(['predict', ...(slug ?? [])])
+  const homeCode = parsed?.homeCode ?? 'HOME'
+  const awayCode = parsed?.awayCode ?? 'AWAY'
+  const stage = parsed?.stage ?? null
   const tournamentData = await loadTournamentData()
   const teamsById = Object.fromEntries(tournamentData.teams.map((team: TeamRecord) => [team.id, team]))
-  const match = findMatchByCodes(tournamentData, teamsById, homeCode, awayCode)
+  const match = findMatchByCodes(tournamentData, teamsById, homeCode, awayCode, stage)
   const homeTeam = match?.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined
   const homeLabel = homeTeam?.name ?? homeTeam?.code ?? homeCode

@@ -1,9 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ImageResponse } from 'next/og'
-import { loadTournamentData } from '../../../../../server/tournament-data'
-import { getDisplayMatchStatus, getMatchDisplayTime, formatMatchDate } from '../../../../../lib/format'
-import { en } from '../../../../../translations/en'
-import type { TournamentData } from '../../../../../types/tournament'
+import { loadTournamentData } from '../../../server/tournament-data'
+import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime } from '../../../lib/format'
+import { parseMatchSlugSegments } from '../../../lib/match-path'
+import { en } from '../../../translations/en'
+import type { TournamentData } from '../../../types/tournament'
 
 export const dynamic = 'force-dynamic'
 export const contentType = 'image/png'
@@ -17,11 +18,21 @@ const normalizeCode = (value: string | undefined) => String(value ?? '').trim().
 
 type TeamsById = Record<string, TeamRecord>
 
-const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: string, awayCode: string) => {
+const findMatchByCodes = (
+  data: TournamentData,
+  teamsById: TeamsById,
+  homeCode: string,
+  awayCode: string,
+  stage: MatchRecord['stage'] | null,
+) => {
   const normalizedHome = normalizeCode(homeCode)
   const normalizedAway = normalizeCode(awayCode)
 
   return data.matches.find((match: MatchRecord) => {
+    if (stage && match.stage !== stage) {
+      return false
+    }
+
     const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
     const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
 
@@ -29,11 +40,15 @@ const findMatchByCodes = (data: TournamentData, teamsById: TeamsById, homeCode: 
   })
 }
 
-export default async function Image({ params }: { params: Promise<{ homeCode: string; awayCode: string }> }) {
-  const { homeCode, awayCode } = await params
+export default async function Image({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params
+  const parsed = parseMatchSlugSegments(['match', ...(slug ?? [])])
+  const homeCode = parsed?.homeCode ?? 'HOME'
+  const awayCode = parsed?.awayCode ?? 'AWAY'
+  const stage = parsed?.stage ?? null
   const tournamentData = await loadTournamentData()
   const teamsById = Object.fromEntries(tournamentData.teams.map((team: TeamRecord) => [team.id, team]))
-  const match = findMatchByCodes(tournamentData, teamsById, homeCode, awayCode)
+  const match = findMatchByCodes(tournamentData, teamsById, homeCode, awayCode, stage)
 
   const homeTeam = match?.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined
@@ -49,7 +64,6 @@ export default async function Image({ params }: { params: Promise<{ homeCode: st
   const scheduledKickoff = displayStatus === 'scheduled' ? match?.kickoff : undefined
   const stadiumDates = scheduledKickoff ? formatMatchDate(scheduledKickoff, 'en', match?.venue?.timeZone ?? 'UTC') : null
   const utcDates = scheduledKickoff ? formatMatchDate(scheduledKickoff, 'en', 'UTC') : null
-  // localTime with timeZone:'UTC' already includes the time-zone abbreviation.
   const stadiumLocalTime = stadiumDates?.localTime ?? null
   const utcDateTime = utcDates?.localTime ?? null
 
