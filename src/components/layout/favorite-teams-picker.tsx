@@ -101,7 +101,9 @@ export const FavoriteTeamsPicker = () => {
                     }`}
                   >
                     <span className="flex items-center gap-2">
-                      <span className={`fi fi-${team.flagCode} inline-block h-6 w-6 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
+                      <span className="inline-flex h-5 w-7 shrink-0 overflow-hidden rounded-[4px] border border-[var(--border)]" aria-hidden="true">
+                        <span className={`fi fi-${team.flagCode} flag-avatar-fill block h-full w-full`} />
+                      </span>
                       <span>{t.teams[team.id] ?? team.name}</span>
                     </span>
                     <span className="inline-flex items-center gap-1 text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">

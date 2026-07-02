@@ -193,7 +193,9 @@ export const BracketPage = () => {
                   className="inline-flex items-center gap-1.5 border border-[var(--accent-border)] bg-[var(--accent-muted)] px-1.5 py-0.5 text-xs text-[var(--accent-text)]"
                   title={t.teams[selectedTeam.id] ?? selectedTeam.name}
                 >
-                  <span className={`fi fi-${selectedTeam.flagCode} inline-block h-4 w-4 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
+                  <span className="inline-flex h-4 w-6 shrink-0 overflow-hidden rounded-[3px] border border-[var(--border)]" aria-hidden="true">
+                    <span className={`fi fi-${selectedTeam.flagCode} flag-avatar-fill block h-full w-full`} />
+                  </span>
                   <span>{t.teams[selectedTeam.id] ?? selectedTeam.name}</span>
                   <Icon name="close" className="block text-[14px] leading-none text-[var(--text-muted)]" />
                 </button>
@@ -276,7 +278,9 @@ export const BracketPage = () => {
                           }`}
                         >
                           <span className="flex items-center gap-2">
-                            <span className={`fi fi-${team.flagCode} inline-block h-6 w-6 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
+                            <span className="inline-flex h-5 w-7 shrink-0 overflow-hidden rounded-[4px] border border-[var(--border)]" aria-hidden="true">
+                              <span className={`fi fi-${team.flagCode} flag-avatar-fill block h-full w-full`} />
+                            </span>
                             <span>{t.teams[team.id] ?? team.name}</span>
                             {isEliminated ? (
                               <span className="border border-[var(--border)] bg-[var(--surface)] px-1 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">

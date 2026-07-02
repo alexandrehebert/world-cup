@@ -245,7 +245,9 @@ export const MatchesPage = () => {
                     className="inline-flex items-center gap-1.5 border border-[var(--accent-border)] bg-[var(--accent-muted)] px-1.5 py-0.5 text-xs text-[var(--accent-text)]"
                     title={getTeamLabel(team)}
                   >
-                    <span className={`fi fi-${team.flagCode} inline-block h-4 w-4 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
+                    <span className="inline-flex h-4 w-6 shrink-0 overflow-hidden rounded-[3px] border border-[var(--border)]" aria-hidden="true">
+                      <span className={`fi fi-${team.flagCode} flag-avatar-fill block h-full w-full`} />
+                    </span>
                     <span>{getTeamLabel(team)}</span>
                     <Icon name="close" className="text-[14px] leading-none text-[var(--text-muted)]" />
                   </button>
@@ -321,7 +323,9 @@ export const MatchesPage = () => {
                           }`}
                         >
                           <span className="flex items-center gap-2">
-                            <span className={`fi fi-${team.flagCode} inline-block h-6 w-6 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
+                            <span className="inline-flex h-5 w-7 shrink-0 overflow-hidden rounded-[4px] border border-[var(--border)]" aria-hidden="true">
+                              <span className={`fi fi-${team.flagCode} flag-avatar-fill block h-full w-full`} />
+                            </span>
                             <span>{getTeamLabel(team)}</span>
                           </span>
                           <span className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">{team.code}</span>
