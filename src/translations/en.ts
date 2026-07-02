@@ -178,7 +178,7 @@ export const en: TranslationSet = {
     clearBracketPath: 'Clear path',
     bracketViewMode: 'View',
     bracketViewDetailed: 'Detailed bracket',
-    bracketViewCondensed: 'Condensed split bracket',
+    bracketViewCondensed: 'Condensed bracket',
     bracketPathSearchPlaceholder: 'Search a team to show its most probable path',
     penalties: 'pen.',
     filterAll: 'All',

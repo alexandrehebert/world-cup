@@ -178,7 +178,7 @@ export const fr: TranslationSet = {
     clearBracketPath: 'Effacer le parcours',
     bracketViewMode: 'Affichage',
     bracketViewDetailed: 'Arbre détaillé',
-    bracketViewCondensed: 'Arbre condensé séparé',
+    bracketViewCondensed: 'Arbre condensé',
     bracketPathSearchPlaceholder: "Rechercher une équipe pour afficher son parcours le plus probable",
     penalties: 'p.s.',
     filterAll: 'Toutes',
