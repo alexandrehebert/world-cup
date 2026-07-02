@@ -411,6 +411,14 @@ export const BracketBoard = ({
     const displayStatus = getDisplayMatchStatus(match, nowMs)
     const isLive = displayStatus === 'live'
     const isFinished = displayStatus === 'finished'
+    const homeScore = hasNumericScore(match.home.score) ? match.home.score : null
+    const awayScore = hasNumericScore(match.away.score) ? match.away.score : null
+    const homePenaltyScore = hasNumericScore(match.home.penaltyScore) ? match.home.penaltyScore : null
+    const awayPenaltyScore = hasNumericScore(match.away.penaltyScore) ? match.away.penaltyScore : null
+    const shouldShowScoreline = (isLive || isFinished) && homeScore !== null && awayScore !== null
+    const hasPenaltyScoreline = shouldShowScoreline && homePenaltyScore !== null && awayPenaltyScore !== null
+    const centerScoreLabel = shouldShowScoreline ? `${homeScore}-${awayScore}` : t.labels.vs
+    const centerPenaltyLabel = hasPenaltyScoreline ? `${t.labels.penalties} ${homePenaltyScore}-${awayPenaltyScore}` : null
     const cardWinner = getBracketCardWinner(match)
     const homeEliminated = cardWinner === 'away'
     const awayEliminated = cardWinner === 'home'
@@ -463,7 +471,16 @@ export const BracketBoard = ({
         ) : null}
         <div className="flex h-full items-center justify-between gap-2 px-1">
           {renderFlag(homeTeamId, homeEliminated)}
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{t.labels.vs}</span>
+          {shouldShowScoreline ? (
+            <span className="inline-flex flex-col items-center text-[10px] text-[var(--text-soft)]">
+              <span className="font-semibold tabular-nums">{centerScoreLabel}</span>
+              {centerPenaltyLabel ? (
+                <span className="text-[9px] tabular-nums">{centerPenaltyLabel}</span>
+              ) : null}
+            </span>
+          ) : (
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{centerScoreLabel}</span>
+          )}
           {renderFlag(awayTeamId, awayEliminated)}
         </div>
       </div>
