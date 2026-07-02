@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useLocale } from '../contexts/locale-context'
+import { useNow } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
 import { BracketBoard } from '../components/bracket/bracket-board'
 import { Icon } from '../lib/icons'
-import { getTopTeamFromPlaceholder } from '../lib/bracket'
+import { isTeamEliminated } from '../lib/team-status'
 
 type BracketViewMode = 'detailed' | 'condensed'
 const FORECAST_TEAM_FILTER_PARAM = 'team'
@@ -12,7 +13,8 @@ const VIEW_MODE_FILTER_PARAM = 'view'
 
 export const BracketPage = () => {
   const { t } = useLocale()
-  const { bracketRounds, teams, matchesById, groupsById } = useTournament()
+  const nowMs = useNow()
+  const { bracketRounds, teams, matches } = useTournament()
   const [kalshiProbabilitiesByPairKey, setKalshiProbabilitiesByPairKey] = useState<Record<string, Record<string, number>>>({})
   const [hasLoadedKalshiPredictions, setHasLoadedKalshiPredictions] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
@@ -45,8 +47,24 @@ export const BracketPage = () => {
   }, [teams])
   const serializedTeamCode = searchParams.get(FORECAST_TEAM_FILTER_PARAM)?.trim().toUpperCase() ?? ''
   const forecastTeamId = serializedTeamCode ? (codeToTeamId[serializedTeamCode] ?? '') : ''
+  const eliminatedTeamIds = useMemo(
+    () =>
+      new Set(
+        teams
+          .filter((team) => isTeamEliminated({ teamId: team.id, matches, nowMs }))
+          .map((team) => team.id),
+      ),
+    [matches, nowMs, teams],
+  )
+  const effectiveForecastTeamId = forecastTeamId && !eliminatedTeamIds.has(forecastTeamId)
+    ? forecastTeamId
+    : ''
   const viewMode = searchParams.get(VIEW_MODE_FILTER_PARAM) === 'condensed' ? 'condensed' : 'detailed'
   const setForecastTeamId = (nextTeamId: string) => {
+    if (nextTeamId && eliminatedTeamIds.has(nextTeamId)) {
+      return
+    }
+
     const nextParams = new URLSearchParams(searchParams)
     const nextTeamCode = nextTeamId ? teamIdToCode[nextTeamId] : undefined
 
@@ -69,37 +87,12 @@ export const BracketPage = () => {
 
     setSearchParams(nextParams, { replace: true })
   }
-  const knockoutAutocompleteTeams = useMemo(() => {
-    const roundOf32 = bracketRounds.find((round) => round.id === 'roundOf32')
-    const groupsByIdMap = new Map(Object.entries(groupsById))
-    const teamIds = new Set<string>()
-
-    for (const matchId of roundOf32?.matchIds ?? []) {
-      const match = matchesById[matchId]
-      if (!match) continue
-
-      const homeProjectedId = match.home.teamId
-        ?? (match.home.placeholder ? getTopTeamFromPlaceholder(match.home.placeholder, groupsByIdMap) : undefined)
-      const awayProjectedId = match.away.teamId
-        ?? (match.away.placeholder ? getTopTeamFromPlaceholder(match.away.placeholder, groupsByIdMap) : undefined)
-
-      if (homeProjectedId) teamIds.add(homeProjectedId)
-      if (awayProjectedId) teamIds.add(awayProjectedId)
-    }
-
-    const filteredTeams = teams.filter((team) => teamIds.has(team.id))
-    if (filteredTeams.length > 0) {
-      return filteredTeams
-    }
-
-    return teams
-  }, [bracketRounds, teams, matchesById, groupsById])
   const sortedTeams = useMemo(
     () =>
-      [...knockoutAutocompleteTeams].sort((first, second) =>
+      [...teams].sort((first, second) =>
         (t.teams[first.id] ?? first.name).localeCompare(t.teams[second.id] ?? second.name),
       ),
-    [t, knockoutAutocompleteTeams],
+    [t, teams],
   )
   const selectedTeam = useMemo(
     () => teams.find((team) => team.id === forecastTeamId),
@@ -133,7 +126,7 @@ export const BracketPage = () => {
   }, [])
 
   useEffect(() => {
-    if (!forecastTeamId || hasLoadedKalshiPredictions) {
+    if (!effectiveForecastTeamId || hasLoadedKalshiPredictions) {
       return
     }
 
@@ -167,7 +160,7 @@ export const BracketPage = () => {
     return () => {
       isCancelled = true
     }
-  }, [forecastTeamId, hasLoadedKalshiPredictions])
+  }, [effectiveForecastTeamId, hasLoadedKalshiPredictions])
 
   return (
     <section className="space-y-4 pb-4" suppressHydrationWarning>
@@ -223,10 +216,13 @@ export const BracketPage = () => {
 
                   if (event.key === 'Enter' && teamSearchResults.length > 0) {
                     event.preventDefault()
-                    const firstResult = teamSearchResults[0]
-                    setForecastTeamId(firstResult.id)
-                    setTeamQuery('')
-                    setIsTeamMenuOpen(false)
+                    const firstSelectableResult = teamSearchResults.find((team) => !eliminatedTeamIds.has(team.id))
+
+                    if (firstSelectableResult) {
+                      setForecastTeamId(firstSelectableResult.id)
+                      setTeamQuery('')
+                      setIsTeamMenuOpen(false)
+                    }
                   }
 
                   if (event.key === 'Backspace' && !teamQuery && selectedTeam) {
@@ -258,28 +254,40 @@ export const BracketPage = () => {
               <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-[70] max-h-64 overflow-y-auto border border-[var(--border)] bg-[var(--surface-strong)] p-2">
                 {teamSearchResults.length > 0 ? (
                   <div className="grid gap-1">
-                    {teamSearchResults.map((team) => (
-                      <button
-                        key={team.id}
-                        type="button"
-                        onClick={() => {
-                          setForecastTeamId(team.id)
-                          setTeamQuery('')
-                          setIsTeamMenuOpen(false)
-                        }}
-                        className={`flex w-full items-center justify-between px-2 py-2 text-left text-sm transition ${
-                          forecastTeamId === team.id
-                            ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
-                            : 'text-[var(--text)] hover:bg-[var(--surface-soft)]'
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          <span className={`fi fi-${team.flagCode} inline-block h-6 w-6 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
-                          <span>{t.teams[team.id] ?? team.name}</span>
-                        </span>
-                        <span className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">{team.code}</span>
-                      </button>
-                    ))}
+                    {teamSearchResults.map((team) => {
+                      const isEliminated = eliminatedTeamIds.has(team.id)
+
+                      return (
+                        <button
+                          key={team.id}
+                          type="button"
+                          disabled={isEliminated}
+                          onClick={() => {
+                            setForecastTeamId(team.id)
+                            setTeamQuery('')
+                            setIsTeamMenuOpen(false)
+                          }}
+                          className={`flex w-full items-center justify-between px-2 py-2 text-left text-sm transition ${
+                            isEliminated
+                              ? 'cursor-not-allowed text-[var(--text-muted)] opacity-60'
+                              : forecastTeamId === team.id
+                                ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
+                                : 'text-[var(--text)] hover:bg-[var(--surface-soft)]'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className={`fi fi-${team.flagCode} inline-block h-6 w-6 shrink-0 rounded-full bg-center bg-cover`} aria-hidden="true" />
+                            <span>{t.teams[team.id] ?? team.name}</span>
+                            {isEliminated ? (
+                              <span className="border border-[var(--border)] bg-[var(--surface)] px-1 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
+                                {t.labels.eliminated}
+                              </span>
+                            ) : null}
+                          </span>
+                          <span className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">{team.code}</span>
+                        </button>
+                      )
+                    })}
                   </div>
                 ) : (
                   <p className="px-2 py-2 text-sm text-[var(--text-muted)]">{t.labels.noFavoriteSearchResults}</p>
@@ -326,7 +334,7 @@ export const BracketPage = () => {
       </div>
       <BracketBoard
         rounds={bracketRounds}
-        forecastTeamId={forecastTeamId || undefined}
+        forecastTeamId={effectiveForecastTeamId || undefined}
         viewMode={viewMode}
         kalshiProbabilitiesByPairKey={kalshiProbabilitiesByPairKey}
       />

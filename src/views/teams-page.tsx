@@ -5,8 +5,9 @@ import { useDashboard } from '../contexts/dashboard-context'
 import { useLocale } from '../contexts/locale-context'
 import { useNow, useTimeZone } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getLocalizedText, getMatchWinner } from '../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getLocalizedText } from '../lib/format'
 import { Icon } from '../lib/icons'
+import { isTeamEliminated } from '../lib/team-status'
 import type { MatchRecord } from '../types/tournament'
 
 type TeamStatusFilter = 'all' | 'active' | 'eliminated'
@@ -97,12 +98,7 @@ export const TeamsPage = () => {
           .sort((first, second) => first.kickoff.localeCompare(second.kickoff))
         const nextMatch = teamMatches.find((match) => getDisplayMatchStatus(match, nowMs) !== 'finished')
         const latestMatch = teamMatches.length > 0 ? teamMatches[teamMatches.length - 1] : null
-        const latestStatus = latestMatch ? getDisplayMatchStatus(latestMatch, nowMs) : null
-        const latestWinner = latestMatch ? getMatchWinner(latestMatch, nowMs) : null
-        const isLatestHome = latestMatch?.home.teamId === team.id
-        const isLatestWinner = latestWinner ? (isLatestHome ? latestWinner === 'home' : latestWinner === 'away') : false
-        const isChampion = Boolean(latestMatch && latestMatch.stage === 'final' && latestStatus === 'finished' && isLatestWinner)
-        const eliminated = !nextMatch && Boolean(latestMatch) && latestStatus === 'finished' && !isChampion
+        const eliminated = isTeamEliminated({ teamId: team.id, matches, nowMs })
         const groupInfo = groupByTeamId[team.id]
         const latestOpponentId = latestMatch
           ? (latestMatch.home.teamId === team.id ? latestMatch.away.teamId : latestMatch.home.teamId)
