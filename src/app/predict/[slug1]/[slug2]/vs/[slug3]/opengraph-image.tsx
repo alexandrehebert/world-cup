@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ImageResponse } from 'next/og'
-import { loadTournamentData } from '../../../server/tournament-data'
-import { parseMatchSlugSegments } from '../../../lib/match-path'
-import type { TournamentData } from '../../../types/tournament'
+import { loadTournamentData } from '../../../../../../server/tournament-data'
+import { getMatchStageFromSlug } from '../../../../../../lib/match-path'
+import type { TournamentData } from '../../../../../../types/tournament'
 
 export const dynamic = 'force-dynamic'
 export const contentType = 'image/png'
@@ -36,15 +36,14 @@ const findMatchByCodes = (
   })
 }
 
-export default async function Image({ params }: { params: Promise<{ slug: string[] }> }) {
-  const { slug } = await params
-  const parsed = parseMatchSlugSegments(['predict', ...(slug ?? [])])
-  const homeCode = parsed?.homeCode ?? 'HOME'
-  const awayCode = parsed?.awayCode ?? 'AWAY'
-  const stage = parsed?.stage ?? null
+export default async function Image({ params }: { params: Promise<{ slug1: string; slug2: string; slug3: string }> }) {
+  const { slug1, slug2, slug3 } = await params
+  const stage = slug1
+  const homeCode = slug2
+  const awayCode = slug3
   const tournamentData = await loadTournamentData()
   const teamsById = Object.fromEntries(tournamentData.teams.map((team: TeamRecord) => [team.id, team]))
-  const match = findMatchByCodes(tournamentData, teamsById, homeCode, awayCode, stage)
+  const match = findMatchByCodes(tournamentData, teamsById, homeCode, awayCode, getMatchStageFromSlug(stage))
   const homeTeam = match?.home.teamId ? teamsById[match.home.teamId] : undefined
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined
   const homeLabel = homeTeam?.name ?? homeTeam?.code ?? homeCode
