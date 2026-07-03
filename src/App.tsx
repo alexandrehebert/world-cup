@@ -10,6 +10,7 @@ import { PredictionsPage } from './views/predictions-page'
 import { LeaderboardPage } from './views/leaderboard-page'
 import { ProfilePage } from './views/profile-page'
 import { MatchPredictionPage } from './views/match-prediction-page'
+import { NotFoundPage } from './views/not-found-page'
 import { isPredictionsFeatureEnabled } from './lib/features'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
     <Routes>
       <Route element={<DashboardLayout header={<Header />} />}>
         <Route index element={<OverviewPage />} />
+        <Route path="/dashboard" element={<Navigate to="/overview" replace />} />
         <Route path="/overview" element={<OverviewPage />} />
         <Route path="/groups" element={<GroupsPage />} />
         <Route path="/teams" element={<TeamsPage />} />
@@ -58,6 +60,7 @@ function App() {
           path="/profile/:username"
           element={isPredictionsFeatureEnabled ? <ProfilePage /> : <Navigate to="/overview" replace />}
         />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   )

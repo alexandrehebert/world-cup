@@ -5,7 +5,16 @@ import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getDisplayMatchStatus, getLocalizedText, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
+import {
+  formatMatchDate,
+  getDisplayMatchStatus,
+  getLocalizedText,
+  getMatchDayKey,
+  getMatchDisplayTime,
+  getMatchWinner,
+  getTodayMatchDayKey,
+  hasDisplayScore,
+} from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -14,18 +23,6 @@ import type { MatchRecord } from '../../types/tournament'
 import type { MatchOutcome } from '../../types/predictions'
 
 const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : 'en-GB')
-
-const getMatchDayKey = (kickoff: string, timeZone?: string) => {
-  const date = new Date(kickoff)
-  const resolvedTimeZone = timeZone ?? 'UTC'
-
-  return new Intl.DateTimeFormat('en-CA', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    timeZone: resolvedTimeZone,
-  }).format(date)
-}
 
 const statusLabel = (status: MatchRecord['status'], labels: ReturnType<typeof useLocale>['t']['labels']) => {
   if (status === 'live') {
@@ -90,12 +87,12 @@ export const MatchesList = ({
   const groupedMatches = useMemo(() => {
     const dateLocale = getDateLocale(locale)
     const groups = new Map<string, { dayKey: string; dayLabel: string; matches: MatchRecord[] }>()
-    const todayKey = getMatchDayKey(new Date(nowMs).toISOString())
+    const todayKey = getTodayMatchDayKey(nowMs, localTimeZone)
 
     for (const match of matches) {
       const date = new Date(match.kickoff)
       const resolvedTimeZone = match.venue.timeZone ?? localTimeZone
-      const dayKey = getMatchDayKey(match.kickoff, match.venue.timeZone)
+      const dayKey = getMatchDayKey(match.kickoff, match.venue.timeZone ?? 'UTC')
       const existingGroup = groups.get(dayKey)
 
       if (existingGroup) {

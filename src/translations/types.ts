@@ -161,6 +161,9 @@ export interface TranslationSet {
     myProfile: string
     loadingProfile: string
     profileNotFound: string
+    pageNotFoundTitle: string
+    pageNotFoundMessage: string
+    goToOverview: string
     noProfilePredictions: string
     doYourPrediction: string
     shareOnWhatsApp: string

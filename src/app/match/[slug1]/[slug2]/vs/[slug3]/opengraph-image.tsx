@@ -10,6 +10,12 @@ export const dynamic = 'force-dynamic'
 export const contentType = 'image/png'
 export const size = { width: 1200, height: 630 }
 export const alt = 'FIFA World Cup 2026 match preview'
+const imageResponseOptions = {
+  ...size,
+  headers: {
+    'Cache-Control': 'no-store, max-age=0',
+  },
+} as const
 
 type MatchRecord = TournamentData['matches'][number]
 type TeamRecord = TournamentData['teams'][number]
@@ -105,6 +111,6 @@ export default async function Image({ params }: { params: Promise<{ slug1: strin
         </div>
       </div>
     ),
-    size,
+    imageResponseOptions,
   )
 }

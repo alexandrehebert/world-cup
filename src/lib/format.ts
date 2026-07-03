@@ -4,11 +4,17 @@ import type { TranslationSet } from '../translations/types'
 const LIVE_INFERENCE_WINDOW_MS = 3 * 60 * 60 * 1000
 const HALF_TIME_DETAIL_PATTERN = /(^h\.?t\.?$|half[\s-]?time|mi-temps)/i
 
+export const getMatchDayKey = (kickoff: string, timeZone: string) =>
+  new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date(kickoff))
+
+export const getTodayMatchDayKey = (nowMs: number, timeZone: string) =>
+  getMatchDayKey(new Date(nowMs).toISOString(), timeZone)
+
 const getTodayKey = (timeZone: string) =>
-  new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date())
+  getTodayMatchDayKey(Date.now(), timeZone)
 
 const getDateKey = (kickoff: string, timeZone: string) =>
-  new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date(kickoff))
+  getMatchDayKey(kickoff, timeZone)
 
 export const formatUtcOffsetLabel = (kickoff: string, timeZone: string) => {
   const parts = new Intl.DateTimeFormat('en-US', {
