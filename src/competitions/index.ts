@@ -1,12 +1,14 @@
 import type { CompetitionId, CompetitionProfile } from './types'
 import { worldCup2026Competition } from './football-world-cup-2026'
 import { nationsChampionship2026Competition } from './rugby-nations-championship-2026'
+import { sixNationsChampionship2025Competition } from './rugby-six-nations-championship-2025'
 
 const DEFAULT_COMPETITION_ID: CompetitionId = 'world-cup-2026'
 
 const competitionById: Record<CompetitionId, CompetitionProfile> = {
   'world-cup-2026': worldCup2026Competition,
   'nations-championship-2026': nationsChampionship2026Competition,
+  'six-nations-championship-2025': sixNationsChampionship2025Competition,
 }
 const allCompetitions = Object.values(competitionById)
 
@@ -17,7 +19,7 @@ const normalizeCompetitionId = (value: string | undefined): CompetitionId | unde
 
   const normalized = value.trim().toLowerCase()
 
-  if (normalized === 'world-cup-2026' || normalized === 'nations-championship-2026') {
+  if (normalized === 'world-cup-2026' || normalized === 'nations-championship-2026' || normalized === 'six-nations-championship-2025') {
     return normalized
   }
 

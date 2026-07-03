@@ -1,4 +1,4 @@
-export type CompetitionId = 'world-cup-2026' | 'nations-championship-2026'
+export type CompetitionId = 'world-cup-2026' | 'nations-championship-2026' | 'six-nations-championship-2025'
 
 export type CompetitionProfile = {
   id: CompetitionId

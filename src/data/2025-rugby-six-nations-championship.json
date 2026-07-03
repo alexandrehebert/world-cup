@@ -1,0 +1,624 @@
+{
+  "meta": {
+    "competitionId": "six-nations-championship-2025",
+    "edition": "2025 Six Nations",
+    "season": "2025",
+    "host": "Europe",
+    "updatedAt": "2026-07-03T15:59:24.592Z",
+    "venueCountry": "England, France, Ireland, Italy, Scotland, Wales"
+  },
+  "teams": [
+    {
+      "id": "eng",
+      "code": "ENG",
+      "name": "England",
+      "flagCode": "gb-eng"
+    },
+    {
+      "id": "fra",
+      "code": "FRA",
+      "name": "France",
+      "flagCode": "fr"
+    },
+    {
+      "id": "ire",
+      "code": "IRE",
+      "name": "Ireland",
+      "flagCode": "ie"
+    },
+    {
+      "id": "ita",
+      "code": "ITA",
+      "name": "Italy",
+      "flagCode": "it"
+    },
+    {
+      "id": "sco",
+      "code": "SCO",
+      "name": "Scotland",
+      "flagCode": "gb-sct"
+    },
+    {
+      "id": "wal",
+      "code": "WAL",
+      "name": "Wales",
+      "flagCode": "gb-wls"
+    }
+  ],
+  "groups": [
+    {
+      "id": "pool-1",
+      "label": "Pool",
+      "teamIds": [
+        "fra",
+        "eng",
+        "ire",
+        "sco",
+        "ita",
+        "wal"
+      ],
+      "standings": [
+        {
+          "teamId": "fra",
+          "played": 5,
+          "won": 4,
+          "drawn": 0,
+          "lost": 1,
+          "goalsFor": 218,
+          "goalsAgainst": 93,
+          "points": 21
+        },
+        {
+          "teamId": "eng",
+          "played": 5,
+          "won": 4,
+          "drawn": 0,
+          "lost": 1,
+          "goalsFor": 179,
+          "goalsAgainst": 105,
+          "points": 20
+        },
+        {
+          "teamId": "ire",
+          "played": 5,
+          "won": 4,
+          "drawn": 0,
+          "lost": 1,
+          "goalsFor": 135,
+          "goalsAgainst": 117,
+          "points": 19
+        },
+        {
+          "teamId": "sco",
+          "played": 5,
+          "won": 2,
+          "drawn": 0,
+          "lost": 3,
+          "goalsFor": 115,
+          "goalsAgainst": 131,
+          "points": 11
+        },
+        {
+          "teamId": "ita",
+          "played": 5,
+          "won": 1,
+          "drawn": 0,
+          "lost": 4,
+          "goalsFor": 106,
+          "goalsAgainst": 188,
+          "points": 5
+        },
+        {
+          "teamId": "wal",
+          "played": 5,
+          "won": 0,
+          "drawn": 0,
+          "lost": 5,
+          "goalsFor": 76,
+          "goalsAgainst": 195,
+          "points": 3
+        }
+      ],
+      "matchIds": [
+        "e708be62-87c4-4725-b750-52e6d5b29378",
+        "52d0b20e-61f9-4946-a9f3-d36b2e89e530",
+        "bc247f11-5aaf-483d-8b0f-1b7af644ce33",
+        "80c5c30e-4706-4f41-85ef-66cc5427a0a9",
+        "12738a82-a6da-4912-92d6-760b47b2f312",
+        "c795a5c3-58bf-4f9b-8e38-6507c0d2798c",
+        "57a82407-72d8-4fab-8905-f963d116c3ef",
+        "8f26e055-bf73-4e59-92d3-da688fda4a87",
+        "c25762bc-451b-46d2-9c3f-04db15b6d73b",
+        "54271c21-9fed-472d-ac7d-eefdea250e8d",
+        "8516f1ed-09df-485e-ab17-4a8df65240c4",
+        "96c31f03-3868-4bf1-bd92-d9edf1b1ed33",
+        "b15fe628-35cb-4afd-b191-7d7f657d6a69",
+        "08bd5f43-cbde-48d9-b7b0-ab076c1bc391",
+        "a8eecba9-e813-4e8a-ae2a-a207d74b8608"
+      ]
+    }
+  ],
+  "matches": [
+    {
+      "id": "e708be62-87c4-4725-b750-52e6d5b29378",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "fra",
+        "score": 43
+      },
+      "away": {
+        "teamId": "wal",
+        "score": 0
+      },
+      "kickoff": "2025-01-31T20:15:00.000Z",
+      "venue": {
+        "stadium": "Stade de France",
+        "city": "Saint-Denis",
+        "country": "France",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-01-31T20:15:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.591Z"
+      }
+    },
+    {
+      "id": "52d0b20e-61f9-4946-a9f3-d36b2e89e530",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "sco",
+        "score": 31
+      },
+      "away": {
+        "teamId": "ita",
+        "score": 19
+      },
+      "kickoff": "2025-02-01T14:15:00.000Z",
+      "venue": {
+        "stadium": "Murrayfield",
+        "city": "Edinburgh",
+        "country": "Scotland",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-02-01T14:15:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.591Z"
+      }
+    },
+    {
+      "id": "bc247f11-5aaf-483d-8b0f-1b7af644ce33",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "ire",
+        "score": 27
+      },
+      "away": {
+        "teamId": "eng",
+        "score": 22
+      },
+      "kickoff": "2025-02-01T16:45:00.000Z",
+      "venue": {
+        "stadium": "Aviva Stadium",
+        "city": "Dublin",
+        "country": "Ireland",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-02-01T16:45:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.591Z"
+      }
+    },
+    {
+      "id": "80c5c30e-4706-4f41-85ef-66cc5427a0a9",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "ita",
+        "score": 22
+      },
+      "away": {
+        "teamId": "wal",
+        "score": 15
+      },
+      "kickoff": "2025-02-08T14:15:00.000Z",
+      "venue": {
+        "stadium": "Stadio Olimpico",
+        "city": "Roma",
+        "country": "Italy",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-02-08T14:15:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.591Z"
+      }
+    },
+    {
+      "id": "12738a82-a6da-4912-92d6-760b47b2f312",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "eng",
+        "score": 26
+      },
+      "away": {
+        "teamId": "fra",
+        "score": 25
+      },
+      "kickoff": "2025-02-08T16:45:00.000Z",
+      "venue": {
+        "stadium": "Allianz Stadium",
+        "city": "London",
+        "country": "England",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-02-08T16:45:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.591Z"
+      }
+    },
+    {
+      "id": "c795a5c3-58bf-4f9b-8e38-6507c0d2798c",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "sco",
+        "score": 18
+      },
+      "away": {
+        "teamId": "ire",
+        "score": 32
+      },
+      "kickoff": "2025-02-09T15:00:00.000Z",
+      "venue": {
+        "stadium": "Murrayfield",
+        "city": "Edinburgh",
+        "country": "Scotland",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-02-09T15:00:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.591Z"
+      }
+    },
+    {
+      "id": "57a82407-72d8-4fab-8905-f963d116c3ef",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "wal",
+        "score": 18
+      },
+      "away": {
+        "teamId": "ire",
+        "score": 27
+      },
+      "kickoff": "2025-02-22T14:15:00.000Z",
+      "venue": {
+        "stadium": "Principality Stadium",
+        "city": "Cardiff",
+        "country": "Wales",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-02-22T14:15:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.591Z"
+      }
+    },
+    {
+      "id": "8f26e055-bf73-4e59-92d3-da688fda4a87",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "eng",
+        "score": 16
+      },
+      "away": {
+        "teamId": "sco",
+        "score": 15
+      },
+      "kickoff": "2025-02-22T16:45:00.000Z",
+      "venue": {
+        "stadium": "Allianz Stadium",
+        "city": "London",
+        "country": "England",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-02-22T16:45:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.591Z"
+      }
+    },
+    {
+      "id": "c25762bc-451b-46d2-9c3f-04db15b6d73b",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "ita",
+        "score": 24
+      },
+      "away": {
+        "teamId": "fra",
+        "score": 73
+      },
+      "kickoff": "2025-02-23T15:00:00.000Z",
+      "venue": {
+        "stadium": "Stadio Olimpico",
+        "city": "Roma",
+        "country": "Italy",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-02-23T15:00:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.591Z"
+      }
+    },
+    {
+      "id": "54271c21-9fed-472d-ac7d-eefdea250e8d",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "ire",
+        "score": 27
+      },
+      "away": {
+        "teamId": "fra",
+        "score": 42
+      },
+      "kickoff": "2025-03-08T14:15:00.000Z",
+      "venue": {
+        "stadium": "Aviva Stadium",
+        "city": "Dublin",
+        "country": "Ireland",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-03-08T14:15:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.592Z"
+      }
+    },
+    {
+      "id": "8516f1ed-09df-485e-ab17-4a8df65240c4",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "sco",
+        "score": 35
+      },
+      "away": {
+        "teamId": "wal",
+        "score": 29
+      },
+      "kickoff": "2025-03-08T16:45:00.000Z",
+      "venue": {
+        "stadium": "Murrayfield",
+        "city": "Edinburgh",
+        "country": "Scotland",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-03-08T16:45:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.592Z"
+      }
+    },
+    {
+      "id": "96c31f03-3868-4bf1-bd92-d9edf1b1ed33",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "eng",
+        "score": 47
+      },
+      "away": {
+        "teamId": "ita",
+        "score": 24
+      },
+      "kickoff": "2025-03-09T15:00:00.000Z",
+      "venue": {
+        "stadium": "Allianz Stadium",
+        "city": "London",
+        "country": "England",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-03-09T15:00:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.592Z"
+      }
+    },
+    {
+      "id": "b15fe628-35cb-4afd-b191-7d7f657d6a69",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "ita",
+        "score": 17
+      },
+      "away": {
+        "teamId": "ire",
+        "score": 22
+      },
+      "kickoff": "2025-03-15T14:15:00.000Z",
+      "venue": {
+        "stadium": "Stadio Olimpico",
+        "city": "Roma",
+        "country": "Italy",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-03-15T14:15:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.592Z"
+      }
+    },
+    {
+      "id": "08bd5f43-cbde-48d9-b7b0-ab076c1bc391",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "wal",
+        "score": 14
+      },
+      "away": {
+        "teamId": "eng",
+        "score": 68
+      },
+      "kickoff": "2025-03-15T16:45:00.000Z",
+      "venue": {
+        "stadium": "Principality Stadium",
+        "city": "Cardiff",
+        "country": "Wales",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-03-15T16:45:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.592Z"
+      }
+    },
+    {
+      "id": "a8eecba9-e813-4e8a-ae2a-a207d74b8608",
+      "stage": "group",
+      "groupId": "pool-1",
+      "home": {
+        "teamId": "fra",
+        "score": 35
+      },
+      "away": {
+        "teamId": "sco",
+        "score": 16
+      },
+      "kickoff": "2025-03-15T20:00:00.000Z",
+      "venue": {
+        "stadium": "Stade de France",
+        "city": "Saint-Denis",
+        "country": "France",
+        "timeZone": "UTC"
+      },
+      "status": "finished",
+      "live": {
+        "state": "post",
+        "period": 2,
+        "clock": 0,
+        "displayClock": "00:00",
+        "detail": "C",
+        "shortDetail": "C",
+        "completed": true,
+        "startDate": "2025-03-15T20:00:00.000Z",
+        "syncedAt": "2026-07-03T15:59:24.592Z"
+      }
+    }
+  ],
+  "bracketRounds": []
+}

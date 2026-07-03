@@ -12,6 +12,7 @@ test('resolveCompetitionId falls back to world cup when the value is not recogni
 
 test('resolveCompetitionId supports the nations championship profile', () => {
   assert.equal(resolveCompetitionId('nations-championship-2026'), 'nations-championship-2026')
+  assert.equal(resolveCompetitionId('six-nations-championship-2025'), 'six-nations-championship-2025')
 })
 
 test('nations championship profile uses dedicated storage defaults', () => {
@@ -29,8 +30,19 @@ test('nations championship profile defines a default world rugby schedule endpoi
   )
 })
 
+test('six nations championship profile defines a default world rugby schedule endpoint', () => {
+  const profile = getCompetitionProfile('six-nations-championship-2025')
+  assert.equal(profile.localDataFile, '2025-rugby-six-nations-championship.json')
+  assert.equal(profile.blobDataFile, 'six-nations-championship-2025/tournament.json')
+  assert.equal(
+    profile.defaultMatchResultsUrl,
+    'https://api.wr-rims-prod.pulselive.com/rugby/v3/event/62bf5a1b-f6a7-452f-ae17-5a378e77917e/schedule',
+  )
+})
+
 test('rugby competition uses rugby matches icon', () => {
   assert.equal(getCompetitionBallIconNameById('nations-championship-2026'), 'sports_rugby')
+  assert.equal(getCompetitionBallIconNameById('six-nations-championship-2025'), 'sports_rugby')
   assert.equal(getCompetitionBallIconNameById('world-cup-2026'), 'sports_soccer')
 })
 

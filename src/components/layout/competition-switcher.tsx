@@ -2,16 +2,17 @@ import { useMemo } from 'react'
 import { listCompetitionProfiles } from '../../competitions'
 import type { CompetitionId } from '../../competitions/types'
 import { useLocale } from '../../contexts/locale-context'
-import { Icon } from '../../lib/icons'
 
 const LOCAL_SWITCH_URL_BY_ID: Record<CompetitionId, string> = {
   'world-cup-2026': 'http://localhost:3001',
   'nations-championship-2026': 'http://localhost:3002',
+  'six-nations-championship-2025': 'http://localhost:3003',
 }
 
 const configuredSiteUrlById: Partial<Record<CompetitionId, string | undefined>> = {
   'world-cup-2026': process.env.NEXT_PUBLIC_WORLD_CUP_SITE_URL,
   'nations-championship-2026': process.env.NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL,
+  'six-nations-championship-2025': process.env.NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL,
 }
 
 const toBaseUrl = (value: string | undefined) => {
@@ -79,7 +80,6 @@ export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetition
       string,
       {
         sportLabel: string
-        iconName: 'sports_soccer' | 'sports_rugby'
         options: { id: CompetitionId; label: string; href: string | null }[]
       }
     >()
@@ -90,7 +90,6 @@ export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetition
       }
 
       const sportKey = competition.sportLabel
-      const iconName = competition.ballIcon === 'rugby' ? 'sports_rugby' : 'sports_soccer'
       const existingGroup = groupedBySport.get(sportKey)
       const option = {
         id: competition.id,
@@ -103,7 +102,6 @@ export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetition
       } else {
         groupedBySport.set(sportKey, {
           sportLabel: competition.sportLabel,
-          iconName,
           options: [option],
         })
       }
@@ -129,31 +127,51 @@ export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetition
     return sportLabel.charAt(0).toUpperCase() + sportLabel.slice(1)
   }
 
+  const getSportBackgroundIcon = (sportLabel: string) => {
+    return sportLabel === 'rugby' ? '/icon-rugby.svg' : '/icon.svg'
+  }
+
   return (
     <div className="grid gap-1">
       {groupedOptions.map((group) => (
-        <div key={group.sportLabel} className="space-y-1.5">
-          <p className="inline-flex items-center gap-1 px-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
-            <Icon
-              name={group.iconName}
-              className="text-[10px] opacity-55 [font-variation-settings:'FILL'_0,'wght'_300,'GRAD'_0,'opsz'_20]"
-            />
-            <span>{getSportLabel(group.sportLabel)}</span>
-          </p>
-          <div className="grid gap-1">
+        <div
+          key={group.sportLabel}
+          className="relative space-y-2 overflow-hidden border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-2"
+        >
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-16 -top-16 z-0 h-32 w-32 bg-[var(--text-soft)] opacity-[0.08]"
+            style={{
+              maskImage: `url(${getSportBackgroundIcon(group.sportLabel)})`,
+              WebkitMaskImage: `url(${getSportBackgroundIcon(group.sportLabel)})`,
+              maskRepeat: 'no-repeat',
+              WebkitMaskRepeat: 'no-repeat',
+              maskSize: 'contain',
+              WebkitMaskSize: 'contain',
+              maskPosition: 'center',
+              WebkitMaskPosition: 'center',
+            }}
+          />
+          <div className="relative z-10 flex items-center gap-2 pl-6">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+              {getSportLabel(group.sportLabel)}
+            </span>
+            <span className="h-px flex-1 bg-[var(--border)]" />
+          </div>
+          <div className="relative z-10 grid gap-1">
             {group.options.map((option) => (
               option.href ? (
                 <a
                   key={option.id}
                   href={option.href}
-                  className="block border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface)]"
+                  className="block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)]"
                 >
                   {option.label}
                 </a>
               ) : (
                 <span
                   key={option.id}
-                  className="block border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] opacity-70"
+                  className="block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] opacity-70"
                   aria-disabled="true"
                   title={t.labels.competition}
                 >

@@ -35,13 +35,14 @@ App runs on `http://localhost:3000` by default.
 
 ### Core
 
-- `COMPETITION_ID` - active competition profile (`world-cup-2026` default, `nations-championship-2026` supported)
+- `COMPETITION_ID` - active competition profile (`world-cup-2026` default, `nations-championship-2026` and `six-nations-championship-2025` supported)
 - `SESSION_SECRET` - signs auth session cookies
 - `MONGODB_URI` - MongoDB connection string
 - `MONGODB_DB` (optional) - DB name (defaults to active competition profile DB)
 - `NEXT_PUBLIC_ENABLE_PREDICTIONS` (optional) - enables predictions when truthy (`true`, `1`, `yes`, `on`)
 - `NEXT_PUBLIC_WORLD_CUP_SITE_URL` (optional) - site URL used by the competition switcher for World Cup
 - `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL` (optional) - site URL used by the competition switcher for Nations Championship
+- `NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL` (optional) - site URL used by the competition switcher for Six Nations Championship
 
 ### Match sync / data pipeline
 
@@ -58,6 +59,10 @@ Default `MATCH_RESULTS_URL` for `world-cup-2026`:
 Default `MATCH_RESULTS_URL` for `nations-championship-2026`:
 
 `https://api.wr-rims-prod.pulselive.com/rugby/v3/event/46294cf5-dee3-4234-957a-dbe1f08049f2/schedule`
+
+Default `MATCH_RESULTS_URL` for `six-nations-championship-2025`:
+
+`https://api.wr-rims-prod.pulselive.com/rugby/v3/event/62bf5a1b-f6a7-452f-ae17-5a378e77917e/schedule`
 
 For rugby profile sync, teams and standings are also fetched from the same event base:
 
@@ -78,10 +83,11 @@ Bundled profiles:
 
 - `world-cup-2026` -> `src/data/2026-football-world-cup.json`
 - `nations-championship-2026` -> `src/data/2026-rugby-nations-championship.json`
+- `six-nations-championship-2025` -> `src/data/2025-rugby-six-nations-championship.json`
 
-## Deploying two Vercel projects from one repo
+## Deploying multiple Vercel projects from one repo
 
-Create two Vercel projects that point to the same repository and branch, and set different env values:
+Create separate Vercel projects that point to the same repository and branch, and set different env values:
 
 ### Project A (Football World Cup)
 
@@ -91,6 +97,7 @@ Create two Vercel projects that point to the same repository and branch, and set
 - `MATCH_RESULTS_URL` optional (profile default already set)
 - `NEXT_PUBLIC_WORLD_CUP_SITE_URL=https://<world-cup-project-domain>`
 - `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL=https://<nations-project-domain>`
+- `NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL=https://<six-nations-project-domain>`
 
 ### Project B (Rugby Nations Championship)
 
@@ -100,8 +107,19 @@ Create two Vercel projects that point to the same repository and branch, and set
 - `MATCH_RESULTS_URL=<your rugby results feed endpoint>`
 - `NEXT_PUBLIC_WORLD_CUP_SITE_URL=https://<world-cup-project-domain>`
 - `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL=https://<nations-project-domain>`
+- `NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL=https://<six-nations-project-domain>`
 
-Both projects can reuse the same codebase while keeping data and persistence separated by profile.
+### Project C (Rugby Six Nations Championship 2025)
+
+- `COMPETITION_ID=six-nations-championship-2025`
+- `NEXT_PUBLIC_COMPETITION_ID=six-nations-championship-2025`
+- `MONGODB_DB=six-nations-championship-2025` (or omit to use profile default)
+- `MATCH_RESULTS_URL` optional (profile default already set)
+- `NEXT_PUBLIC_WORLD_CUP_SITE_URL=https://<world-cup-project-domain>`
+- `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL=https://<nations-project-domain>`
+- `NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL=https://<six-nations-project-domain>`
+
+All projects can reuse the same codebase while keeping data and persistence separated by profile.
 
 ### Local competition switcher
 
@@ -110,9 +128,11 @@ The switcher appears in Settings and can jump between sites locally too.
 - Default local targets are:
   - `world-cup-2026` -> `http://localhost:3001/overview`
   - `nations-championship-2026` -> `http://localhost:3002/overview`
+  - `six-nations-championship-2025` -> `http://localhost:3003/overview`
 - You can override them with:
   - `NEXT_PUBLIC_WORLD_CUP_SITE_URL`
   - `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL`
+  - `NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL`
 
 ## Match sync cron
 
