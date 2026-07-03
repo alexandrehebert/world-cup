@@ -111,10 +111,18 @@ export const StartupLoader = ({ loaderIconAsset }: { loaderIconAsset: string }) 
       className={`startup-loader fixed inset-0 z-[9999] flex items-center justify-center ${
         isVisible ? 'startup-loader--visible' : 'startup-loader--hidden'
       }`}
-      style={{ background: 'var(--page-bg)', color: 'var(--accent-text)' }}
+      style={{ background: 'var(--page-bg)', color: 'var(--logo-accent)' }}
     >
       <div className="loader-icon-motion">
-        <img src={loaderIconAsset} alt="" aria-hidden="true" className="h-[120px] w-[120px] animate-spin" />
+        <span
+          aria-hidden="true"
+          className="loader-brand-icon block h-[120px] w-[120px] animate-spin"
+          style={{
+            backgroundColor: 'var(--logo-accent)',
+            WebkitMaskImage: `url(${loaderIconAsset})`,
+            maskImage: `url(${loaderIconAsset})`,
+          }}
+        />
       </div>
     </div>
   )

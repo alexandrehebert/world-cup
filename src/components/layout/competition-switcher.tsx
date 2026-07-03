@@ -136,42 +136,42 @@ export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetition
       {groupedOptions.map((group) => (
         <div
           key={group.sportLabel}
-          className="relative space-y-2 overflow-hidden border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-2"
+          className="relative space-y-1 overflow-hidden"
         >
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-16 -top-16 z-0 h-32 w-32 bg-[var(--text-soft)] opacity-[0.08]"
-            style={{
-              maskImage: `url(${getSportBackgroundIcon(group.sportLabel)})`,
-              WebkitMaskImage: `url(${getSportBackgroundIcon(group.sportLabel)})`,
-              maskRepeat: 'no-repeat',
-              WebkitMaskRepeat: 'no-repeat',
-              maskSize: 'contain',
-              WebkitMaskSize: 'contain',
-              maskPosition: 'center',
-              WebkitMaskPosition: 'center',
-            }}
-          />
-          <div className="relative z-10 flex items-center gap-2 pl-6">
+          <div className="relative z-10 flex items-center gap-2 px-2 pt-1.5">
+            <span className="h-px flex-1 bg-[var(--border)]" />
             <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
               {getSportLabel(group.sportLabel)}
             </span>
-            <span className="h-px flex-1 bg-[var(--border)]" />
           </div>
-          <div className="relative z-10 grid gap-1">
+          <div className="relative grid gap-1 px-2 pt-1 pb-2">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute right-0 top-0 z-0 h-24 w-24 translate-x-1/2 -translate-y-1/2 bg-[var(--text-soft)] opacity-[0.08]"
+              style={{
+                maskImage: `url(${getSportBackgroundIcon(group.sportLabel)})`,
+                WebkitMaskImage: `url(${getSportBackgroundIcon(group.sportLabel)})`,
+                maskRepeat: 'no-repeat',
+                WebkitMaskRepeat: 'no-repeat',
+                maskSize: 'contain',
+                WebkitMaskSize: 'contain',
+                maskPosition: 'center',
+                WebkitMaskPosition: 'center',
+              }}
+            />
             {group.options.map((option) => (
               option.href ? (
                 <a
                   key={option.id}
                   href={option.href}
-                  className="block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)]"
+                  className="relative z-10 block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)]"
                 >
                   {option.label}
                 </a>
               ) : (
                 <span
                   key={option.id}
-                  className="block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] opacity-70"
+                  className="relative z-10 block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] opacity-70"
                   aria-disabled="true"
                   title={t.labels.competition}
                 >

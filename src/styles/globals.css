@@ -15,6 +15,7 @@
   --accent: #00d98f;
   --accent-muted: rgba(0, 217, 143, 0.16);
   --accent-text: #62ffc5;
+  --logo-accent: var(--accent-text);
   --accent-border: rgba(0, 217, 143, 0.44);
   /* Interactive states */
   --tab-active-bg: var(--accent-muted);
@@ -49,6 +50,7 @@
     --accent: #007b4f;
     --accent-muted: rgba(0, 123, 79, 0.18);
     --accent-text: #005c3a;
+    --logo-accent: var(--accent);
     --accent-border: rgba(0, 123, 79, 0.42);
     --tab-active-bg: var(--accent-muted);
     --tab-active-text: var(--accent-text);
@@ -80,6 +82,7 @@
   --accent: #00d98f;
   --accent-muted: rgba(0, 217, 143, 0.16);
   --accent-text: #62ffc5;
+  --logo-accent: var(--accent-text);
   --accent-border: rgba(0, 217, 143, 0.44);
   --tab-active-bg: var(--accent-muted);
   --tab-active-text: var(--accent-text);
@@ -110,6 +113,7 @@
   --accent: #007b4f;
   --accent-muted: rgba(0, 123, 79, 0.18);
   --accent-text: #005c3a;
+  --logo-accent: var(--accent);
   --accent-border: rgba(0, 123, 79, 0.42);
   --tab-active-bg: var(--accent-muted);
   --tab-active-text: var(--accent-text);
@@ -141,6 +145,7 @@
   --accent: #ffb000;
   --accent-muted: rgba(255, 176, 0, 0.2);
   --accent-text: #ffd886;
+  --logo-accent: var(--accent-text);
   --accent-border: rgba(255, 176, 0, 0.52);
   --tab-active-bg: var(--accent-muted);
   --tab-active-text: var(--accent-text);
@@ -259,6 +264,15 @@ button:disabled {
   animation: loader-icon-enter 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.loader-brand-icon {
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
 .startup-loader {
   transition: opacity 320ms ease;
 }
@@ -319,17 +333,17 @@ button:disabled {
 }
 
 [data-theme='dark'] .logo-soccer {
-  color: var(--accent-text);
+  color: var(--logo-accent);
 }
 
 [data-theme='light'] .logo-soccer {
-  color: var(--accent);
+  color: var(--logo-accent);
 }
 
 .logo-soccer {
   font-size: 42px !important;
   line-height: 1;
-  color: var(--accent-text);
+  color: var(--logo-accent);
 }
 
 @media (min-width: 640px) {
