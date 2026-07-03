@@ -96,10 +96,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   return (
     <div className="relative min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <div className="mx-auto flex w-full max-w-[1600px] flex-col px-4 sm:px-6 lg:px-8 xl:px-10">
-        <div
-          className="sticky top-0 z-30 bg-[color:color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur"
-          style={{ overflowAnchor: 'none' }}
-        >
+        <div className="sticky top-0 z-30 bg-[var(--bg)]" style={{ overflowAnchor: 'none' }}>
           {renderedHeader}
 
           <nav

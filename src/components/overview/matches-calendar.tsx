@@ -270,7 +270,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
         </button>
       </div>
 
-      <div className="hidden xl:grid xl:grid-cols-7">
+      <div className="hidden overflow-hidden xl:grid xl:grid-cols-7">
         {weekdays.map((weekday) => (
           <div
             key={weekday}
