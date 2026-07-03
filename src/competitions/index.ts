@@ -37,8 +37,12 @@ const normalizeCompetitionId = (value: string | undefined): CompetitionId | unde
   return undefined
 }
 
+export const parseCompetitionId = (value: string | undefined): CompetitionId | undefined => {
+  return normalizeCompetitionId(value)
+}
+
 export const resolveCompetitionId = (value: string | undefined): CompetitionId => {
-  return normalizeCompetitionId(value) ?? DEFAULT_COMPETITION_ID
+  return parseCompetitionId(value) ?? DEFAULT_COMPETITION_ID
 }
 
 export const getCompetitionProfile = (competitionId: CompetitionId): CompetitionProfile => {

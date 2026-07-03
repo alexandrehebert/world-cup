@@ -1,11 +1,26 @@
 import { NextResponse } from 'next/server'
+import { parseCompetitionId } from '../../../competitions'
 import { loadTournamentData } from '../../../server/tournament-data'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const data = await loadTournamentData()
+    const requestUrl = new URL(request.url)
+    const competitionIdParam = requestUrl.searchParams.get('competitionId') ?? undefined
+    const competitionId = parseCompetitionId(competitionIdParam)
+
+    if (competitionIdParam && !competitionId) {
+      return NextResponse.json(
+        {
+          error: 'Invalid competitionId query parameter',
+          details: 'competitionId must match a known competition profile id',
+        },
+        { status: 400 },
+      )
+    }
+
+    const data = await loadTournamentData(competitionId)
     return NextResponse.json(data, {
       status: 200,
       headers: {

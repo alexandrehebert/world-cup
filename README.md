@@ -130,11 +130,15 @@ The switcher appears in Settings and can jump between sites locally too.
   - `world-cup-2026` -> `http://localhost:3001/overview`
   - `nations-championship-2026` -> `http://localhost:3002/overview`
   - `six-nations-championship-2026` -> `http://localhost:3003/overview`
-  - `six-nations-championship-2025` -> `http://localhost:3003/overview`
+  - `six-nations-championship-2025` -> `http://localhost:3003/overview#2025`
 - You can override them with:
   - `NEXT_PUBLIC_WORLD_CUP_SITE_URL`
   - `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL`
   - `NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL`
+- Competitions that share the same championship now expose a dedicated year selector.
+  - The most recent year is the default target.
+  - Past years are encoded in the URL fragment using the year only (for example `#2025`).
+  - On the Six Nations site, changing the year keeps you on the same host and loads the selected season dataset.
 
 ## Match sync cron
 

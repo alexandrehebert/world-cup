@@ -4,7 +4,7 @@
     "edition": "FIFA World Cup 2026",
     "season": "2026",
     "host": "Canada, Mexico, United States",
-    "updatedAt": "2026-07-03T18:00:01.570Z",
+    "updatedAt": "2026-07-03T18:12:02.229Z",
     "venueCountry": "Canada, Mexico, United States"
   },
   "teams": [
@@ -3700,7 +3700,7 @@
         "shortDetail": "FT",
         "completed": true,
         "startDate": "2026-07-02T23:00Z",
-        "syncedAt": "2026-07-03T18:00:01.567Z"
+        "syncedAt": "2026-07-03T18:12:02.226Z"
       }
     },
     {
@@ -3734,7 +3734,7 @@
         "shortDetail": "FT",
         "completed": true,
         "startDate": "2026-07-02T19:00Z",
-        "syncedAt": "2026-07-03T18:00:01.567Z"
+        "syncedAt": "2026-07-03T18:12:02.226Z"
       }
     },
     {
@@ -3768,7 +3768,7 @@
         "shortDetail": "FT",
         "completed": true,
         "startDate": "2026-07-03T03:00Z",
-        "syncedAt": "2026-07-03T18:00:01.567Z"
+        "syncedAt": "2026-07-03T18:12:02.226Z"
       }
     },
     {
@@ -3799,7 +3799,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-03T22:00Z",
-        "syncedAt": "2026-07-03T18:00:01.567Z"
+        "syncedAt": "2026-07-03T18:12:02.226Z"
       }
     },
     {
@@ -3830,7 +3830,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-04T01:30Z",
-        "syncedAt": "2026-07-03T18:00:01.567Z"
+        "syncedAt": "2026-07-03T18:12:02.226Z"
       }
     },
     {
@@ -3839,11 +3839,13 @@
       "roundId": "roundOf32",
       "home": {
         "placeholder": "G2:D",
-        "teamId": "aus"
+        "teamId": "aus",
+        "score": 0
       },
       "away": {
         "placeholder": "G2:G",
-        "teamId": "egy"
+        "teamId": "egy",
+        "score": 0
       },
       "kickoff": "2026-07-03T18:00:00Z",
       "venue": {
@@ -3852,16 +3854,18 @@
         "country": "United States",
         "timeZone": "America/Chicago"
       },
-      "status": "scheduled",
+      "status": "live",
       "live": {
-        "state": "pre",
-        "clock": 0,
-        "displayClock": "0'",
-        "detail": "Fri, July 3rd at 2:00 PM EDT",
-        "shortDetail": "Scheduled",
+        "state": "in",
+        "period": 1,
+        "clock": 660,
+        "displayClock": "11'",
+        "detail": "11'",
+        "shortDetail": "11'",
         "completed": false,
         "startDate": "2026-07-03T18:00Z",
-        "syncedAt": "2026-07-03T18:00:01.567Z"
+        "firstSeenLiveAt": "2026-07-03T18:01:01.711Z",
+        "syncedAt": "2026-07-03T18:12:02.226Z"
       }
     },
     {
@@ -3892,7 +3896,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-04T21:00Z",
-        "syncedAt": "2026-07-03T18:00:01.567Z"
+        "syncedAt": "2026-07-03T18:12:02.226Z"
       }
     },
     {
@@ -3923,7 +3927,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-04T17:00Z",
-        "syncedAt": "2026-07-03T18:00:01.567Z"
+        "syncedAt": "2026-07-03T18:12:02.226Z"
       }
     },
     {

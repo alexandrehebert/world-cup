@@ -1,17 +1,18 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { head, put } from '@vercel/blob'
-import { getActiveCompetitionProfile } from '../competitions'
+import { getActiveCompetitionProfile, getCompetitionProfile } from '../competitions'
+import type { CompetitionId } from '../competitions/types'
 import type { TournamentData } from '../types/tournament'
 
-const resolveLocalDataPath = () => {
-  const competition = getActiveCompetitionProfile()
+const resolveLocalDataPath = (competitionId?: CompetitionId) => {
+  const competition = competitionId ? getCompetitionProfile(competitionId) : getActiveCompetitionProfile()
   return path.join(process.cwd(), 'src', 'data', competition.localDataFile)
 }
 
-export const readLocalTournamentData = async (): Promise<TournamentData> => {
-  const competition = getActiveCompetitionProfile()
-  const filePath = resolveLocalDataPath()
+export const readLocalTournamentData = async (competitionId?: CompetitionId): Promise<TournamentData> => {
+  const competition = competitionId ? getCompetitionProfile(competitionId) : getActiveCompetitionProfile()
+  const filePath = resolveLocalDataPath(competition.id)
   const raw = await fs.readFile(filePath, 'utf8')
   const parsed = JSON.parse(raw) as TournamentData
   return {
@@ -76,12 +77,12 @@ export const applyCanonicalVenueData = (data: TournamentData, canonical: Tournam
   }
 }
 
-export const loadTournamentData = async (): Promise<TournamentData> => {
-  const competition = getActiveCompetitionProfile()
+export const loadTournamentData = async (competitionId?: CompetitionId): Promise<TournamentData> => {
+  const competition = competitionId ? getCompetitionProfile(competitionId) : getActiveCompetitionProfile()
   const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN
 
   if (!blobReadWriteToken) {
-    return readLocalTournamentData()
+    return readLocalTournamentData(competition.id)
   }
 
   try {
@@ -100,7 +101,7 @@ export const loadTournamentData = async (): Promise<TournamentData> => {
 
     const [blobData, localData] = await Promise.all([
       response.json() as Promise<TournamentData>,
-      readLocalTournamentData(),
+      readLocalTournamentData(competition.id),
     ])
     const merged = applyCanonicalVenueData(blobData, localData)
     return {
@@ -111,7 +112,7 @@ export const loadTournamentData = async (): Promise<TournamentData> => {
       },
     }
   } catch {
-    return readLocalTournamentData()
+    return readLocalTournamentData(competition.id)
   }
 }
 
