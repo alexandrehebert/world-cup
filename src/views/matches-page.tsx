@@ -6,6 +6,7 @@ import { useTournament } from '../contexts/tournament-context'
 import { MatchesList } from '../components/matches/matches-list'
 import { Icon } from '../lib/icons'
 import { getLocalizedText } from '../lib/format'
+import { isSearchMatch } from '../lib/search'
 
 const FAVORITES_FILTER_PARAM = 'favorites'
 const TEAM_CODES_FILTER_PARAM = 'teams'
@@ -164,16 +165,11 @@ export const MatchesPage = () => {
   }, [selectedTeamIds, teamsById])
 
   const countrySearchResults = useMemo(() => {
-    const query = countryQuery.trim().toLowerCase()
-
-    if (!query) {
+    if (!countryQuery.trim()) {
       return countriesInUpcoming
     }
 
-    return countriesInUpcoming.filter((team) => {
-      const teamName = getTeamLabel(team).toLowerCase()
-      return teamName.includes(query) || team.code.toLowerCase().includes(query)
-    })
+    return countriesInUpcoming.filter((team) => isSearchMatch(countryQuery, [getTeamLabel(team), team.code]))
   }, [countriesInUpcoming, countryQuery, getTeamLabel])
 
   const toggleTeamFilter = (teamId: string) => {

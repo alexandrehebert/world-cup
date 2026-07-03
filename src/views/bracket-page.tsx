@@ -5,6 +5,7 @@ import { useNow } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
 import { BracketBoard } from '../components/bracket/bracket-board'
 import { Icon } from '../lib/icons'
+import { isSearchMatch } from '../lib/search'
 import { isTeamEliminated } from '../lib/team-status'
 
 type BracketViewMode = 'detailed' | 'condensed'
@@ -99,16 +100,11 @@ export const BracketPage = () => {
     [teams, forecastTeamId],
   )
   const teamSearchResults = useMemo(() => {
-    const trimmedQuery = teamQuery.trim().toLowerCase()
-
-    if (!trimmedQuery) {
+    if (!teamQuery.trim()) {
       return sortedTeams
     }
 
-    return sortedTeams.filter((team) => {
-      const teamLabel = (t.teams[team.id] ?? team.name).toLowerCase()
-      return teamLabel.includes(trimmedQuery) || team.code.toLowerCase().includes(trimmedQuery)
-    })
+    return sortedTeams.filter((team) => isSearchMatch(teamQuery, [t.teams[team.id] ?? team.name, team.code]))
   }, [sortedTeams, t, teamQuery])
 
   useEffect(() => {
