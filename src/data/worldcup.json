@@ -3,7 +3,7 @@
     "edition": "FIFA World Cup 2026",
     "season": "2026",
     "host": "Canada, Mexico, United States",
-    "updatedAt": "2026-07-03T14:48:01.419Z",
+    "updatedAt": "2026-07-03T14:49:01.727Z",
     "venueCountry": "Canada, Mexico, United States"
   },
   "teams": [
@@ -3699,7 +3699,7 @@
         "shortDetail": "FT",
         "completed": true,
         "startDate": "2026-07-02T23:00Z",
-        "syncedAt": "2026-07-03T14:48:01.418Z"
+        "syncedAt": "2026-07-03T14:49:01.722Z"
       }
     },
     {
@@ -3733,7 +3733,7 @@
         "shortDetail": "FT",
         "completed": true,
         "startDate": "2026-07-02T19:00Z",
-        "syncedAt": "2026-07-03T14:48:01.418Z"
+        "syncedAt": "2026-07-03T14:49:01.722Z"
       }
     },
     {
@@ -3767,7 +3767,7 @@
         "shortDetail": "FT",
         "completed": true,
         "startDate": "2026-07-03T03:00Z",
-        "syncedAt": "2026-07-03T14:48:01.418Z"
+        "syncedAt": "2026-07-03T14:49:01.722Z"
       }
     },
     {
@@ -3798,7 +3798,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-03T22:00Z",
-        "syncedAt": "2026-07-03T14:48:01.418Z"
+        "syncedAt": "2026-07-03T14:49:01.722Z"
       }
     },
     {
@@ -3829,7 +3829,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-04T01:30Z",
-        "syncedAt": "2026-07-03T14:48:01.418Z"
+        "syncedAt": "2026-07-03T14:49:01.722Z"
       }
     },
     {
@@ -3860,7 +3860,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-03T18:00Z",
-        "syncedAt": "2026-07-03T14:48:01.418Z"
+        "syncedAt": "2026-07-03T14:49:01.722Z"
       }
     },
     {
@@ -3891,7 +3891,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-04T21:00Z",
-        "syncedAt": "2026-07-03T14:48:01.418Z"
+        "syncedAt": "2026-07-03T14:49:01.722Z"
       }
     },
     {
@@ -3922,7 +3922,7 @@
         "shortDetail": "Scheduled",
         "completed": false,
         "startDate": "2026-07-04T17:00Z",
-        "syncedAt": "2026-07-03T14:48:01.418Z"
+        "syncedAt": "2026-07-03T14:49:01.722Z"
       }
     },
     {
