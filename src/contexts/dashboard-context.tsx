@@ -259,9 +259,13 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     return []
   })
   const isApplyingUserFavoritesRef = useRef(false)
+  const suppressMatchUrlHydrationRef = useRef(false)
 
   const setSelectedMatchId = useCallback((matchId: string | null) => {
     setSelectedMatchIdState(matchId)
+    if (matchId === null) {
+      suppressMatchUrlHydrationRef.current = true
+    }
     if (matchId !== null) {
       setSelectedTeamIdState(null)
     }
@@ -270,6 +274,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const setSelectedTeamId = useCallback((teamId: string | null) => {
     setSelectedTeamIdState(teamId)
     if (teamId !== null) {
+      suppressMatchUrlHydrationRef.current = true
       setSelectedMatchIdState(null)
     }
   }, [])
@@ -379,14 +384,24 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   }, [favoriteTeamIds, updateUserPreferences, user, user?.preferences?.favoriteTeamIds])
 
   useEffect(() => {
-    const matchIdFromUrl = getMatchIdFromSearch(location.pathname, location.search, pathToMatchId, slugToMatchId, matchesById)
+    const currentPathname = typeof window !== 'undefined' ? window.location.pathname : location.pathname
+    const currentSearch = typeof window !== 'undefined' ? window.location.search : location.search
+    const matchIdFromUrl = getMatchIdFromSearch(currentPathname, currentSearch, pathToMatchId, slugToMatchId, matchesById)
+
+    if (suppressMatchUrlHydrationRef.current) {
+      if (matchIdFromUrl !== null) {
+        return
+      }
+      suppressMatchUrlHydrationRef.current = false
+    }
 
     setSelectedMatchIdState((current) => (current === matchIdFromUrl ? current : matchIdFromUrl))
   }, [location.pathname, location.search, matchesById, pathToMatchId, slugToMatchId])
 
   useEffect(() => {
-    const teamIdFromUrl = getTeamIdFromPath(location.pathname, codeToTeamId)
-    const isTeamsRoute = location.pathname === '/teams' || location.pathname === '/team' || location.pathname.startsWith('/team/')
+    const currentPathname = typeof window !== 'undefined' ? window.location.pathname : location.pathname
+    const teamIdFromUrl = getTeamIdFromPath(currentPathname, codeToTeamId)
+    const isTeamsRoute = currentPathname === '/teams' || currentPathname === '/team' || currentPathname.startsWith('/team/')
 
     setSelectedTeamIdState((current) => {
       if (teamIdFromUrl !== null) {
@@ -407,34 +422,45 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       return
     }
 
+    const currentPathname = window.location.pathname
+    const currentSearch = window.location.search
     const selectedTeamCode = selectedTeamId ? (teamIdToCode[selectedTeamId] ?? null) : null
     const selectedMatchPath = selectedMatchId ? matchIdToPath[selectedMatchId] : null
     const matchContextBasePath =
-      location.pathname === '/bracket' || location.pathname.startsWith('/bracket/')
+      currentPathname === '/bracket' || currentPathname.startsWith('/bracket/')
         ? '/bracket'
-        : location.pathname === '/predict' || location.pathname.startsWith('/predict/')
+        : currentPathname === '/predict' || currentPathname.startsWith('/predict/')
           ? '/predict'
           : '/match'
     const basePathname =
-      location.pathname === '/match' || location.pathname.startsWith('/match/')
+      currentPathname === '/match' || currentPathname.startsWith('/match/')
         ? '/matches'
-        : location.pathname === '/team' || location.pathname.startsWith('/team/')
+        : currentPathname === '/team' || currentPathname.startsWith('/team/')
           ? '/teams'
-          : location.pathname
+          : currentPathname === '/bracket' || currentPathname.startsWith('/bracket/')
+            ? '/bracket'
+            : currentPathname === '/predict' || currentPathname.startsWith('/predict/')
+              ? '/predict'
+              : currentPathname
     const targetUrl = selectedTeamCode
       ? `/team/${selectedTeamCode}`
       : selectedMatchPath
         ? selectedMatchPath.startsWith('?')
           ? `${matchContextBasePath}${selectedMatchPath}`
           : `${matchContextBasePath}/${selectedMatchPath}`
-        : `${basePathname}${location.search}`
-    const currentUrl = `${window.location.pathname}${window.location.search}`
+        : `${basePathname}${currentSearch}`
+    const currentUrl = `${currentPathname}${currentSearch}`
 
     if (targetUrl === currentUrl) {
       return
     }
 
     window.history.replaceState(window.history.state, '', targetUrl)
+
+    // Keep React Router's location in sync with history.replaceState changes for non-team modal URLs.
+    if (!selectedTeamCode) {
+      window.dispatchEvent(new PopStateEvent('popstate', { state: window.history.state }))
+    }
   }, [location.pathname, location.search, matchIdToPath, selectedMatchId, selectedTeamId, teamIdToCode])
 
   const value = useMemo(
