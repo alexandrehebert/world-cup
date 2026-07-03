@@ -30,7 +30,7 @@ const finishedSixNationsMatches: TournamentData['matches'] = [
   },
 ]
 
-test('six nations marks only the winner as not eliminated after all matches are finished', () => {
+test('six nations does not mark teams as eliminated because it has no bracket phase', () => {
   const nowMs = Date.parse('2025-03-16T12:00:00.000Z')
 
   assert.equal(
@@ -52,7 +52,7 @@ test('six nations marks only the winner as not eliminated after all matches are 
       competitionId: 'six-nations-championship-2025',
       groups: sixNationsGroups,
     }),
-    true,
+    false,
   )
 })
 
@@ -78,6 +78,31 @@ test('six nations does not force elimination before the competition is finished'
       matches: ongoingMatches,
       nowMs,
       competitionId: 'six-nations-championship-2025',
+      groups: sixNationsGroups,
+    }),
+    false,
+  )
+})
+
+test('nations championship does not mark teams as eliminated because it has no bracket phase', () => {
+  const nowMs = Date.parse('2026-08-01T12:00:00.000Z')
+
+  assert.equal(
+    isTeamEliminated({
+      teamId: 'fra',
+      matches: finishedSixNationsMatches,
+      nowMs,
+      competitionId: 'nations-championship-2026',
+      groups: sixNationsGroups,
+    }),
+    false,
+  )
+  assert.equal(
+    isTeamEliminated({
+      teamId: 'eng',
+      matches: finishedSixNationsMatches,
+      nowMs,
+      competitionId: 'nations-championship-2026',
       groups: sixNationsGroups,
     }),
     false,

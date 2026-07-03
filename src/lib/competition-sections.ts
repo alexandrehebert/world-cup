@@ -1,6 +1,7 @@
 import type { CompetitionId } from '../competitions/types'
 
 const STANDINGS_SECTION_COMPETITION_IDS: CompetitionId[] = [
+  'nations-championship-2026',
   'six-nations-championship-2025',
   'six-nations-championship-2026',
 ]
@@ -19,4 +20,8 @@ export const getStandingsSectionSlug = (competitionId: CompetitionId) => {
 
 export const hidesGroupStageLabel = (competitionId: CompetitionId) => {
   return usesStandingsSectionPath(competitionId)
+}
+
+export const supportsTeamEliminationFilter = (competitionId: CompetitionId) => {
+  return !usesStandingsSectionPath(competitionId)
 }

@@ -3,7 +3,13 @@ import test from 'node:test'
 
 import { getCompetitionProfile, resolveCompetitionId } from '../src/competitions'
 import { getCompetitionBallIconNameById } from '../src/lib/competition-branding'
-import { getStandingsSectionPath, getStandingsSectionSlug, hidesGroupStageLabel, usesStandingsSectionPath } from '../src/lib/competition-sections'
+import {
+  getStandingsSectionPath,
+  getStandingsSectionSlug,
+  hidesGroupStageLabel,
+  supportsTeamEliminationFilter,
+  usesStandingsSectionPath,
+} from '../src/lib/competition-sections'
 import { hasBracketSection, hasGroupsSection } from '../src/lib/tournament-sections'
 
 test('resolveCompetitionId falls back to world cup when the value is not recognized', () => {
@@ -103,23 +109,27 @@ test('sections visibility depends on available data', () => {
 })
 
 test('six nations competition uses standings section path', () => {
+  assert.equal(usesStandingsSectionPath('nations-championship-2026'), true)
+  assert.equal(getStandingsSectionPath('nations-championship-2026'), '/standings')
+  assert.equal(getStandingsSectionSlug('nations-championship-2026'), 'standings')
+  assert.equal(hidesGroupStageLabel('nations-championship-2026'), true)
+  assert.equal(supportsTeamEliminationFilter('nations-championship-2026'), false)
   assert.equal(usesStandingsSectionPath('six-nations-championship-2025'), true)
   assert.equal(getStandingsSectionPath('six-nations-championship-2025'), '/standings')
   assert.equal(getStandingsSectionSlug('six-nations-championship-2025'), 'standings')
   assert.equal(hidesGroupStageLabel('six-nations-championship-2025'), true)
+  assert.equal(supportsTeamEliminationFilter('six-nations-championship-2025'), false)
   assert.equal(usesStandingsSectionPath('six-nations-championship-2026'), true)
   assert.equal(getStandingsSectionPath('six-nations-championship-2026'), '/standings')
   assert.equal(getStandingsSectionSlug('six-nations-championship-2026'), 'standings')
   assert.equal(hidesGroupStageLabel('six-nations-championship-2026'), true)
+  assert.equal(supportsTeamEliminationFilter('six-nations-championship-2026'), false)
 })
 
-test('world cup and nations championship keep groups section path', () => {
+test('world cup keeps groups section path', () => {
   assert.equal(usesStandingsSectionPath('world-cup-2026'), false)
   assert.equal(getStandingsSectionPath('world-cup-2026'), '/groups')
   assert.equal(getStandingsSectionSlug('world-cup-2026'), 'groups')
   assert.equal(hidesGroupStageLabel('world-cup-2026'), false)
-  assert.equal(usesStandingsSectionPath('nations-championship-2026'), false)
-  assert.equal(getStandingsSectionPath('nations-championship-2026'), '/groups')
-  assert.equal(getStandingsSectionSlug('nations-championship-2026'), 'groups')
-  assert.equal(hidesGroupStageLabel('nations-championship-2026'), false)
+  assert.equal(supportsTeamEliminationFilter('world-cup-2026'), true)
 })

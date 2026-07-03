@@ -6,7 +6,7 @@ import { useLocale } from '../contexts/locale-context'
 import { useNow, useTimeZone } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
 import { resolveCompetitionId } from '../competitions'
-import { hidesGroupStageLabel, usesStandingsSectionPath } from '../lib/competition-sections'
+import { hidesGroupStageLabel, supportsTeamEliminationFilter, usesStandingsSectionPath } from '../lib/competition-sections'
 import { formatMatchDate, getDisplayMatchStatus, getLocalizedText } from '../lib/format'
 import { Icon } from '../lib/icons'
 import { isTeamEliminated } from '../lib/team-status'
@@ -37,12 +37,14 @@ export const TeamsPage = () => {
   const competitionId = resolveCompetitionId(meta.competitionId)
   const hideGroupStage = hidesGroupStageLabel(competitionId)
   const useStandingsHeader = usesStandingsSectionPath(competitionId)
+  const showTeamStatusFilter = supportsTeamEliminationFilter(competitionId)
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
   const [searchParams, setSearchParams] = useSearchParams()
   const favoritesOnly = searchParams.get(FAVORITES_FILTER_PARAM) === '1'
   const statusFilterParam = searchParams.get(STATUS_FILTER_PARAM)
   const statusFilter: TeamStatusFilter = statusFilterParam === 'active' || statusFilterParam === 'eliminated' ? statusFilterParam : 'all'
+  const effectiveStatusFilter: TeamStatusFilter = showTeamStatusFilter ? statusFilter : 'all'
   const query = searchParams.get(QUERY_FILTER_PARAM) ?? ''
   const setFavoritesOnly = (nextValue: boolean) => {
     const nextParams = new URLSearchParams(searchParams)
@@ -144,11 +146,11 @@ export const TeamsPage = () => {
         return false
       }
 
-      if (statusFilter === 'active' && entry.eliminated) {
+      if (effectiveStatusFilter === 'active' && entry.eliminated) {
         return false
       }
 
-      if (statusFilter === 'eliminated' && !entry.eliminated) {
+      if (effectiveStatusFilter === 'eliminated' && !entry.eliminated) {
         return false
       }
 
@@ -158,7 +160,7 @@ export const TeamsPage = () => {
 
       return entry.label.toLowerCase().includes(normalizedQuery) || entry.team.code.toLowerCase().includes(normalizedQuery)
     })
-  }, [favoriteTeamIds, favoritesOnly, query, statusFilter, teams])
+  }, [effectiveStatusFilter, favoriteTeamIds, favoritesOnly, query, teams])
 
   return (
     <section className="space-y-4">
@@ -193,33 +195,35 @@ export const TeamsPage = () => {
             <span>{t.labels.filterByFavorites}</span>
           </button>
 
-          <div
-            className="inline-flex h-10 shrink-0 items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-soft)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
-            role="group"
-            aria-label={t.headings.teams}
-          >
-            {([
-              { value: 'all' as const, label: t.labels.filterAll, icon: 'apps' },
-              { value: 'active' as const, label: t.labels.filterActiveTeams, icon: 'sports_soccer' },
-              { value: 'eliminated' as const, label: t.labels.filterEliminatedTeams, icon: 'block' },
-            ] as const).map((item) => (
-              <button
-                key={item.value}
-                type="button"
-                onClick={() => setStatusFilter(item.value)}
-                className={`inline-flex h-8 w-8 items-center justify-center px-0 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 sm:w-auto sm:gap-1 sm:px-3 ${
-                  statusFilter === item.value
-                    ? 'border border-[var(--tab-active-border)] bg-[var(--tab-active-bg)] text-[var(--tab-active-text)]'
-                    : 'border border-transparent text-[var(--text-muted)] hover:bg-[var(--tab-idle-hover-bg)] hover:text-[var(--text)]'
-                }`}
-                aria-pressed={statusFilter === item.value}
-                aria-label={item.label}
-              >
-                <Icon name={item.icon} className="text-[14px] sm:hidden" />
-                <span className="hidden sm:inline">{item.label}</span>
-              </button>
-            ))}
-          </div>
+          {showTeamStatusFilter ? (
+            <div
+              className="inline-flex h-10 shrink-0 items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-soft)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+              role="group"
+              aria-label={t.headings.teams}
+            >
+              {([
+                { value: 'all' as const, label: t.labels.filterAll, icon: 'apps' },
+                { value: 'active' as const, label: t.labels.filterActiveTeams, icon: 'sports_soccer' },
+                { value: 'eliminated' as const, label: t.labels.filterEliminatedTeams, icon: 'block' },
+              ] as const).map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => setStatusFilter(item.value)}
+                  className={`inline-flex h-8 w-8 items-center justify-center px-0 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 sm:w-auto sm:gap-1 sm:px-3 ${
+                    effectiveStatusFilter === item.value
+                      ? 'border border-[var(--tab-active-border)] bg-[var(--tab-active-bg)] text-[var(--tab-active-text)]'
+                      : 'border border-transparent text-[var(--text-muted)] hover:bg-[var(--tab-idle-hover-bg)] hover:text-[var(--text)]'
+                  }`}
+                  aria-pressed={effectiveStatusFilter === item.value}
+                  aria-label={item.label}
+                >
+                  <Icon name={item.icon} className="text-[14px] sm:hidden" />
+                  <span className="hidden sm:inline">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
 

@@ -18,12 +18,10 @@ export const isTeamEliminated = ({
 }) => {
   const resolvedCompetitionId = resolveCompetitionId(competitionId)
   const isStandingsCompetition = usesStandingsSectionPath(resolvedCompetitionId)
-  const hasPendingMatch = matches.some((match) => getDisplayMatchStatus(match, nowMs) !== 'finished')
-  const primaryGroup = groups[0]
-  const championTeamId = primaryGroup?.standings[0]?.teamId
+  void groups
 
-  if (isStandingsCompetition && !hasPendingMatch && championTeamId) {
-    return teamId !== championTeamId
+  if (isStandingsCompetition) {
+    return false
   }
 
   const teamMatches = matches
