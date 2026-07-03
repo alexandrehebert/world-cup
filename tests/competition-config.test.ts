@@ -13,9 +13,16 @@ test('resolveCompetitionId falls back to world cup when the value is not recogni
 
 test('resolveCompetitionId supports the nations championship profile', () => {
   assert.equal(resolveCompetitionId('nations-championship-2026'), 'nations-championship-2026')
+  assert.equal(resolveCompetitionId('rugby-nations-championship'), 'nations-championship-2026')
+  assert.equal(resolveCompetitionId('rugby-nations-championship-2026'), 'nations-championship-2026')
+  assert.equal(resolveCompetitionId('football-world-cup'), 'world-cup-2026')
+  assert.equal(resolveCompetitionId('football-world-cup-2026'), 'world-cup-2026')
   assert.equal(resolveCompetitionId('six-nations-championship-2025'), 'six-nations-championship-2025')
   assert.equal(resolveCompetitionId('six-nations-championship-2026'), 'six-nations-championship-2026')
   assert.equal(resolveCompetitionId('six-nations-championship'), 'six-nations-championship-2026')
+  assert.equal(resolveCompetitionId('rugby-six-nations-championship'), 'six-nations-championship-2026')
+  assert.equal(resolveCompetitionId('rugby-six-nations-championship-2025'), 'six-nations-championship-2025')
+  assert.equal(resolveCompetitionId('rugby-six-nations-championship-2026'), 'six-nations-championship-2026')
 })
 
 test('nations championship profile uses dedicated storage defaults', () => {

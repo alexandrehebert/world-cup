@@ -30,7 +30,23 @@ const normalizeCompetitionId = (value: string | undefined): CompetitionId | unde
     return normalized
   }
 
-  if (normalized === 'six-nations-championship') {
+  if (normalized === 'football-world-cup' || normalized === 'football-world-cup-2026') {
+    return 'world-cup-2026'
+  }
+
+  if (normalized === 'rugby-nations-championship' || normalized === 'rugby-nations-championship-2026') {
+    return 'nations-championship-2026'
+  }
+
+  if (normalized === 'rugby-six-nations-championship' || normalized === 'six-nations-championship') {
+    return 'six-nations-championship-2026'
+  }
+
+  if (normalized === 'rugby-six-nations-championship-2025') {
+    return 'six-nations-championship-2025'
+  }
+
+  if (normalized === 'rugby-six-nations-championship-2026') {
     return 'six-nations-championship-2026'
   }
 

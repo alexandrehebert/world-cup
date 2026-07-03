@@ -35,7 +35,7 @@ App runs on `http://localhost:3000` by default.
 
 ### Core
 
-- `COMPETITION_ID` - active competition profile (`world-cup-2026` default, `nations-championship-2026`, `six-nations-championship-2026`, and `six-nations-championship-2025` supported; `six-nations-championship` aliases to 2026)
+- `COMPETITION_ID` - active competition profile (`world-cup-2026` default, `nations-championship-2026`, `six-nations-championship-2026`, and `six-nations-championship-2025` supported). Sport-prefixed aliases are supported too (`football-world-cup`, `rugby-nations-championship`, `rugby-six-nations-championship`), as well as the season aliases with sport prefix (for example `rugby-six-nations-championship-2025`).
 - `SESSION_SECRET` - signs auth session cookies
 - `MONGODB_URI` - MongoDB connection string
 - `MONGODB_DB` (optional) - DB name (defaults to active competition profile DB)
