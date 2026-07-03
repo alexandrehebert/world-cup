@@ -1,4 +1,5 @@
 import type { MatchLiveRecord, MatchRecord, TournamentData } from '../types/tournament'
+import { getActiveCompetitionProfile } from '../competitions'
 import { resolveGroupBracketTeams } from '../lib/bracket'
 import { sortGroupStandings } from '../lib/standings'
 import {
@@ -12,7 +13,6 @@ import {
 import { loadTournamentData, saveTournamentData } from './tournament-data'
 import { scoreFinishedMatches } from './predictions-scoring'
 
-const DEFAULT_MATCH_RESULTS_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard'
 const DEFAULT_ESPN_LOOKBACK_DAYS = 7
 const KICKOFF_FALLBACK_WINDOW_MINUTES = 180
 
@@ -90,6 +90,138 @@ const isEspnScoreboardUrl = (rawUrl: string) => {
   } catch {
     return false
   }
+}
+
+type WorldRugbyTeam = {
+  id?: string
+  altId?: string
+  name?: string
+  abbreviation?: string
+}
+
+type WorldRugbyMatch = {
+  matchId?: string
+  matchAltId?: string
+  status?: string
+  clock?: { secs?: number; label?: string }
+  scores?: Array<number | string | null>
+  teams?: [WorldRugbyTeam?, WorldRugbyTeam?] | WorldRugbyTeam[]
+  time?: { millis?: number }
+  venue?: {
+    name?: string
+    city?: string
+    country?: string
+  }
+}
+
+type WorldRugbySchedulePayload = {
+  event?: { id?: string; label?: string }
+  matches?: WorldRugbyMatch[]
+}
+
+type WorldRugbyStandingsRow = {
+  team?: { abbreviation?: string }
+  abbreviation?: string
+  code?: string
+  played?: number | string
+  won?: number | string
+  drawn?: number | string
+  lost?: number | string
+  pointsFor?: number | string
+  pointsAgainst?: number | string
+  points?: number | string
+  p?: number | string
+  w?: number | string
+  d?: number | string
+  l?: number | string
+  pf?: number | string
+  pa?: number | string
+  pts?: number | string
+}
+
+type WorldRugbyStandingsTable = {
+  id?: string
+  label?: string
+  name?: string
+  entries?: WorldRugbyStandingsRow[]
+  rows?: WorldRugbyStandingsRow[]
+  teams?: WorldRugbyStandingsRow[]
+}
+
+type WorldRugbyStandingsPayload = {
+  tables?: WorldRugbyStandingsTable[]
+}
+
+type WorldRugbyTeamsPayload = {
+  teams?: WorldRugbyTeam[]
+}
+
+type WorldRugbySyncPayload = {
+  provider: 'world-rugby'
+  schedule: WorldRugbySchedulePayload
+  teams: WorldRugbyTeamsPayload
+  standings: WorldRugbyStandingsPayload
+}
+
+const isWorldRugbyScheduleUrl = (rawUrl: string) => {
+  try {
+    const parsed = new URL(rawUrl)
+    return parsed.hostname === 'api.wr-rims-prod.pulselive.com' && /\/rugby\/v3\/event\/[^/]+\/schedule\/?$/.test(parsed.pathname)
+  } catch {
+    return false
+  }
+}
+
+const isWorldRugbySchedulePayload = (value: unknown): value is WorldRugbySchedulePayload => {
+  return !!value && typeof value === 'object' && Array.isArray((value as { matches?: unknown[] }).matches)
+}
+
+const isWorldRugbySyncPayload = (value: unknown): value is WorldRugbySyncPayload => {
+  return !!value && typeof value === 'object' && (value as { provider?: unknown }).provider === 'world-rugby'
+}
+
+export const normalizeWorldRugbyStatus = (status: string | undefined, clockSeconds: number | undefined): MatchRecord['status'] => {
+  const normalized = (status ?? '').trim().toUpperCase()
+  if (normalized === 'U' || normalized === 'PRE' || normalized === 'S') {
+    return 'scheduled'
+  }
+
+  if (normalized === 'C' || normalized === 'FT' || normalized === 'AET' || normalized === 'F' || normalized === 'PEN' || normalized === 'POST') {
+    return 'finished'
+  }
+
+  if (normalized === 'L' || normalized === 'LIVE' || normalized === '1H' || normalized === '2H' || normalized === 'HT' || normalized === 'ET') {
+    return 'live'
+  }
+
+  return typeof clockSeconds === 'number' && clockSeconds > 0 ? 'live' : 'scheduled'
+}
+
+const WORLD_RUGBY_FLAG_BY_CODE: Record<string, string> = {
+  ARG: 'ar',
+  AUS: 'au',
+  ENG: 'gb-eng',
+  FRA: 'fr',
+  IRL: 'ie',
+  ITA: 'it',
+  JPN: 'jp',
+  NZL: 'nz',
+  RSA: 'za',
+  SCO: 'gb-sct',
+  WAL: 'gb-wls',
+  FJI: 'fj',
+}
+
+const toWorldRugbyTeamCode = (team: WorldRugbyTeam) => (team.abbreviation ?? '').trim().toUpperCase()
+
+const toWorldRugbyTeamId = (team: WorldRugbyTeam) => {
+  const code = toWorldRugbyTeamCode(team)
+  return code ? code.toLowerCase() : `team-${String(team.id ?? team.altId ?? '').trim().toLowerCase()}`
+}
+
+const toNumberOrZero = (value: unknown) => {
+  const parsed = normalizeScore(value)
+  return parsed ?? 0
 }
 
 const mergeEspnPayloads = (payloads: EspnPayload[]): EspnPayload => {
@@ -175,6 +307,39 @@ const enrichEspnPayloadWithShootoutScores = async (payload: EspnPayload, scorebo
 }
 
 const fetchMatchResultsPayload = async (resultsUrl: string, data: TournamentData) => {
+  if (isWorldRugbyScheduleUrl(resultsUrl)) {
+    const scheduleResponse = await fetch(resultsUrl, { cache: 'no-store' })
+
+    if (!scheduleResponse.ok) {
+      throw new Error(`Failed to fetch match results (${scheduleResponse.status})`)
+    }
+
+    const schedulePayload = (await scheduleResponse.json()) as WorldRugbySchedulePayload
+    const scheduleUrl = new URL(resultsUrl)
+    const eventBasePath = scheduleUrl.pathname.replace(/\/schedule\/?$/, '')
+    const teamsUrl = `${scheduleUrl.origin}${eventBasePath}/teams`
+    const standingsUrl = `${scheduleUrl.origin}${eventBasePath}/standings`
+    const [teamsResponse, standingsResponse] = await Promise.all([
+      fetch(teamsUrl, { cache: 'no-store' }),
+      fetch(standingsUrl, { cache: 'no-store' }),
+    ])
+
+    if (!teamsResponse.ok) {
+      throw new Error(`Failed to fetch event teams (${teamsResponse.status})`)
+    }
+
+    if (!standingsResponse.ok) {
+      throw new Error(`Failed to fetch event standings (${standingsResponse.status})`)
+    }
+
+    return {
+      provider: 'world-rugby' as const,
+      schedule: schedulePayload,
+      teams: (await teamsResponse.json()) as WorldRugbyTeamsPayload,
+      standings: (await standingsResponse.json()) as WorldRugbyStandingsPayload,
+    }
+  }
+
   if (!isEspnScoreboardUrl(resultsUrl)) {
     const response = await fetch(resultsUrl, { cache: 'no-store' })
 
@@ -439,9 +604,201 @@ const toEspnMatchUpdates = (payload: EspnPayload, data: TournamentData): Upstrea
   return updates
 }
 
+const buildWorldRugbyCatalog = (data: TournamentData, payload: WorldRugbySyncPayload): TournamentData => {
+  const scheduleMatches = payload.schedule.matches ?? []
+  const upstreamTeamsSource = payload.teams.teams && payload.teams.teams.length > 0
+    ? payload.teams.teams
+    : scheduleMatches.flatMap((match) => (Array.isArray(match.teams) ? match.teams : []))
+  const upstreamTeams: WorldRugbyTeam[] = upstreamTeamsSource.filter((team): team is WorldRugbyTeam => !!team)
+  const teamsByCode = new Map<string, TournamentData['teams'][number]>()
+  const mergedTeams = [...data.teams]
+
+  for (const team of mergedTeams) {
+    teamsByCode.set(team.code.toUpperCase(), team)
+  }
+
+  for (const team of upstreamTeams) {
+    const code = toWorldRugbyTeamCode(team)
+    if (!code) {
+      continue
+    }
+
+    const existing = teamsByCode.get(code)
+    const flagCode = WORLD_RUGBY_FLAG_BY_CODE[code] ?? code.slice(0, 2).toLowerCase()
+
+    if (existing) {
+      existing.name = team.name ?? existing.name
+      existing.flagCode = existing.flagCode || flagCode
+      continue
+    }
+
+    const nextTeam = {
+      id: toWorldRugbyTeamId(team),
+      code,
+      name: team.name ?? code,
+      flagCode,
+    }
+    mergedTeams.push(nextTeam)
+    teamsByCode.set(code, nextTeam)
+  }
+
+  const existingMatchesById = new Map(data.matches.map((match) => [match.id, match]))
+  const mergedMatches = [...data.matches]
+
+  for (const upstreamMatch of scheduleMatches) {
+    const matchId = String(upstreamMatch.matchAltId ?? upstreamMatch.matchId ?? '').trim()
+    if (!matchId || existingMatchesById.has(matchId)) {
+      continue
+    }
+
+    const homeTeam = Array.isArray(upstreamMatch.teams) ? upstreamMatch.teams[0] : undefined
+    const awayTeam = Array.isArray(upstreamMatch.teams) ? upstreamMatch.teams[1] : undefined
+    const homeCode = homeTeam ? toWorldRugbyTeamCode(homeTeam) : ''
+    const awayCode = awayTeam ? toWorldRugbyTeamCode(awayTeam) : ''
+    const kickoffMillis = upstreamMatch.time?.millis
+    const kickoff = typeof kickoffMillis === 'number' && Number.isFinite(kickoffMillis)
+      ? new Date(kickoffMillis).toISOString()
+      : new Date().toISOString()
+    const status = normalizeWorldRugbyStatus(upstreamMatch.status, upstreamMatch.clock?.secs)
+    const scores = Array.isArray(upstreamMatch.scores) ? upstreamMatch.scores : []
+    const homeScore = normalizeScore(scores[0])
+    const awayScore = normalizeScore(scores[1])
+
+    const nextMatch: MatchRecord = {
+      id: matchId,
+      stage: 'group',
+      home: {
+        teamId: homeCode ? teamsByCode.get(homeCode)?.id : undefined,
+        ...(homeScore !== undefined ? { score: homeScore } : {}),
+      },
+      away: {
+        teamId: awayCode ? teamsByCode.get(awayCode)?.id : undefined,
+        ...(awayScore !== undefined ? { score: awayScore } : {}),
+      },
+      kickoff,
+      venue: {
+        stadium: upstreamMatch.venue?.name ?? '',
+        city: upstreamMatch.venue?.city ?? '',
+        country: upstreamMatch.venue?.country ?? '',
+        timeZone: 'UTC',
+      },
+      status,
+      live: status !== 'scheduled'
+        ? {
+            detail: upstreamMatch.status,
+            displayClock: upstreamMatch.clock?.label,
+          }
+        : undefined,
+    }
+
+    mergedMatches.push(nextMatch)
+    existingMatchesById.set(nextMatch.id, nextMatch)
+  }
+
+  const standingsTables = payload.standings.tables ?? []
+  const mergedGroups = standingsTables.map((table, index) => {
+    const rows = table.entries ?? table.rows ?? table.teams ?? []
+    const teamIds = rows
+      .map((row) => (row.team?.abbreviation ?? row.abbreviation ?? row.code ?? '').trim().toUpperCase())
+      .map((code) => teamsByCode.get(code)?.id)
+      .filter((teamId): teamId is string => typeof teamId === 'string')
+    const teamIdSet = new Set(teamIds)
+    const groupId = String(table.id ?? `group-${index + 1}`)
+    const standings = rows
+      .map((row) => {
+        const code = (row.team?.abbreviation ?? row.abbreviation ?? row.code ?? '').trim().toUpperCase()
+        const teamId = teamsByCode.get(code)?.id
+        if (!teamId) {
+          return null
+        }
+
+        return {
+          teamId,
+          played: toNumberOrZero(row.played ?? row.p),
+          won: toNumberOrZero(row.won ?? row.w),
+          drawn: toNumberOrZero(row.drawn ?? row.d),
+          lost: toNumberOrZero(row.lost ?? row.l),
+          goalsFor: toNumberOrZero(row.pointsFor ?? row.pf),
+          goalsAgainst: toNumberOrZero(row.pointsAgainst ?? row.pa),
+          points: toNumberOrZero(row.points ?? row.pts),
+        }
+      })
+      .filter((standing): standing is TournamentData['groups'][number]['standings'][number] => standing !== null)
+
+    return {
+      id: groupId,
+      label: table.label ?? table.name ?? `Group ${index + 1}`,
+      teamIds,
+      standings,
+      matchIds: mergedMatches
+        .filter((match) => match.stage === 'group' && teamIdSet.has(match.home.teamId ?? '') && teamIdSet.has(match.away.teamId ?? ''))
+        .map((match) => match.id),
+    }
+  })
+
+  return {
+    ...data,
+    meta: {
+      ...data.meta,
+      edition: payload.schedule.event?.label ?? data.meta.edition,
+    },
+    teams: mergedTeams,
+    groups: mergedGroups.length > 0 ? mergedGroups : data.groups,
+    matches: mergedMatches,
+  }
+}
+
+const toWorldRugbyMatchUpdates = (payload: WorldRugbySchedulePayload, data: TournamentData): UpstreamMatchUpdate[] => {
+  const teamIdByCode = new Map(data.teams.map((team) => [team.code.toUpperCase(), team.id]))
+  const updates: UpstreamMatchUpdate[] = []
+  const syncedAt = new Date().toISOString()
+
+  for (const match of payload.matches ?? []) {
+    const matchId = String(match.matchAltId ?? match.matchId ?? '').trim()
+    if (!matchId) {
+      continue
+    }
+
+    const teams = Array.isArray(match.teams) ? match.teams : []
+    const homeTeam = teams[0]
+    const awayTeam = teams[1]
+    const homeCode = homeTeam ? toWorldRugbyTeamCode(homeTeam) : ''
+    const awayCode = awayTeam ? toWorldRugbyTeamCode(awayTeam) : ''
+    const status = normalizeWorldRugbyStatus(match.status, match.clock?.secs)
+    const scores = Array.isArray(match.scores) ? match.scores : []
+
+    updates.push({
+      id: matchId,
+      status,
+      homeScore: status === 'live' || status === 'finished' ? normalizeScore(scores[0]) : undefined,
+      awayScore: status === 'live' || status === 'finished' ? normalizeScore(scores[1]) : undefined,
+      homeTeamId: homeCode ? teamIdByCode.get(homeCode) ?? homeCode.toLowerCase() : undefined,
+      awayTeamId: awayCode ? teamIdByCode.get(awayCode) ?? awayCode.toLowerCase() : undefined,
+      live: status !== 'scheduled'
+        ? {
+            detail: match.status,
+            displayClock: match.clock?.label,
+            clock: match.clock?.secs,
+            syncedAt,
+          }
+        : undefined,
+    })
+  }
+
+  return updates
+}
+
 const toMatchUpdates = (payload: unknown, data: TournamentData): UpstreamMatchUpdate[] => {
+  if (isWorldRugbySyncPayload(payload)) {
+    return toWorldRugbyMatchUpdates(payload.schedule, data)
+  }
+
   if (payload && typeof payload === 'object' && Array.isArray((payload as EspnPayload).events)) {
     return toEspnMatchUpdates(payload as EspnPayload, data)
+  }
+
+  if (isWorldRugbySchedulePayload(payload)) {
+    return toWorldRugbyMatchUpdates(payload, data)
   }
 
   if (Array.isArray(payload)) {
@@ -628,12 +985,24 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
     }
   }
 
-  const resultsUrl = process.env.MATCH_RESULTS_URL ?? DEFAULT_MATCH_RESULTS_URL
+  const competition = getActiveCompetitionProfile()
+  const resultsUrl = process.env.MATCH_RESULTS_URL ?? competition.defaultMatchResultsUrl
+
+  if (!resultsUrl) {
+    return {
+      status: 500,
+      body: {
+        error: 'MATCH_RESULTS_URL is not configured',
+        details: `Set MATCH_RESULTS_URL for ${competition.id} before running sync.`,
+      },
+    }
+  }
 
   try {
     const currentData = await loadTournamentData()
     const payload = await fetchMatchResultsPayload(resultsUrl, currentData)
-    const updates = toMatchUpdates(payload, currentData)
+    const syncedData = isWorldRugbySyncPayload(payload) ? buildWorldRugbyCatalog(currentData, payload) : currentData
+    const updates = toMatchUpdates(payload, syncedData)
     const updateMap = new Map(
       updates
         .filter((entry) => entry && typeof entry.id === 'string')
@@ -645,7 +1014,7 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
 
     let updatedCount = 0
 
-    const nextMatches = currentData.matches.map((match) => {
+    const nextMatches = syncedData.matches.map((match) => {
       const update = updateMap.get(match.id)
 
       if (!update) {
@@ -703,13 +1072,13 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
 
     const payloadUpdatedAt = payload && typeof payload === 'object' ? (payload as { updatedAt?: string }).updatedAt : undefined
 
-    const recomputedGroups = recomputeGroups(currentData.groups, nextMatches)
-    const resolvedMatches = resolveGroupBracketTeams(nextMatches, recomputedGroups, currentData.bracketRounds)
+    const recomputedGroups = recomputeGroups(syncedData.groups, nextMatches)
+    const resolvedMatches = resolveGroupBracketTeams(nextMatches, recomputedGroups, syncedData.bracketRounds)
 
     const nextData: TournamentData = {
-      ...currentData,
+      ...syncedData,
       meta: {
-        ...currentData.meta,
+        ...syncedData.meta,
         updatedAt: typeof payloadUpdatedAt === 'string' ? payloadUpdatedAt : new Date().toISOString(),
       },
       matches: resolvedMatches,

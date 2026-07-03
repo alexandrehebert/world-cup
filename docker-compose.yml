@@ -1,17 +1,51 @@
 services:
-  app:
+  app-world-cup:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '${APP_PORT:-3001}:3000'
+      - '${WORLD_CUP_APP_PORT:-3001}:3000'
     environment:
+      COMPETITION_ID: world-cup-2026
+      NEXT_PUBLIC_COMPETITION_ID: world-cup-2026
       MONGODB_URI: mongodb://mongo:27017/world-cup
       MONGODB_DB: world-cup
-      SESSION_SECRET: ${SESSION_SECRET:-local-session-secret}
-      CRON_SECRET: ${CRON_SECRET:-local-cron-secret}
-      MATCH_RESULTS_URL: ${MATCH_RESULTS_URL:-https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard}
+      SESSION_SECRET: ${WORLD_CUP_SESSION_SECRET:-local-session-secret}
+      CRON_SECRET: ${WORLD_CUP_CRON_SECRET:-local-cron-secret}
+      MATCH_RESULTS_URL: ${WORLD_CUP_MATCH_RESULTS_URL:-https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard}
+      ESPN_LOOKBACK_DAYS: ${ESPN_LOOKBACK_DAYS:-7}
       NEXT_PUBLIC_ENABLE_PREDICTIONS: ${NEXT_PUBLIC_ENABLE_PREDICTIONS:-false}
+      NEXT_PUBLIC_WORLD_CUP_SITE_URL: ${NEXT_PUBLIC_WORLD_CUP_SITE_URL:-http://localhost:3001}
+      NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL: ${NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL:-http://localhost:3002}
+      WATCHPACK_POLLING: 'true'
+      CHOKIDAR_USEPOLLING: 'true'
+    command: ['npm', 'run', 'dev', '--', '--hostname', '0.0.0.0', '--port', '3000']
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  app-nations-championship:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '${NATIONS_CHAMPIONSHIP_APP_PORT:-3002}:3000'
+    environment:
+      COMPETITION_ID: nations-championship-2026
+      NEXT_PUBLIC_COMPETITION_ID: nations-championship-2026
+      MONGODB_URI: mongodb://mongo:27017/nations-championship-2026
+      MONGODB_DB: nations-championship-2026
+      SESSION_SECRET: ${NATIONS_CHAMPIONSHIP_SESSION_SECRET:-local-session-secret}
+      CRON_SECRET: ${NATIONS_CHAMPIONSHIP_CRON_SECRET:-local-cron-secret}
+      MATCH_RESULTS_URL: ${NATIONS_CHAMPIONSHIP_MATCH_RESULTS_URL:-https://api.wr-rims-prod.pulselive.com/rugby/v3/event/46294cf5-dee3-4234-957a-dbe1f08049f2/schedule}
+      ESPN_LOOKBACK_DAYS: ${ESPN_LOOKBACK_DAYS:-7}
+      NEXT_PUBLIC_ENABLE_PREDICTIONS: ${NEXT_PUBLIC_ENABLE_PREDICTIONS:-false}
+      NEXT_PUBLIC_WORLD_CUP_SITE_URL: ${NEXT_PUBLIC_WORLD_CUP_SITE_URL:-http://localhost:3001}
+      NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL: ${NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL:-http://localhost:3002}
       WATCHPACK_POLLING: 'true'
       CHOKIDAR_USEPOLLING: 'true'
     command: ['npm', 'run', 'dev', '--', '--hostname', '0.0.0.0', '--port', '3000']
@@ -33,7 +67,7 @@ services:
       timeout: 3s
       retries: 10
 
-  cron:
+  cron-world-cup:
     image: alpine:3.22
     command: >
       sh -c "
@@ -41,8 +75,26 @@ services:
       sh /app/docker/cron/start-cron.sh
       "
     environment:
-      CRON_SECRET: ${CRON_SECRET:-local-cron-secret}
+      CRON_SECRET: ${WORLD_CUP_CRON_SECRET:-local-cron-secret}
+      APP_SERVICE_NAME: app-world-cup
+      APP_PORT: 3000
     depends_on:
-      - app
+      - app-world-cup
+    volumes:
+      - ./:/app:ro
+
+  cron-nations-championship:
+    image: alpine:3.22
+    command: >
+      sh -c "
+      apk add --no-cache curl &&
+      sh /app/docker/cron/start-cron.sh
+      "
+    environment:
+      CRON_SECRET: ${NATIONS_CHAMPIONSHIP_CRON_SECRET:-local-cron-secret}
+      APP_SERVICE_NAME: app-nations-championship
+      APP_PORT: 3000
+    depends_on:
+      - app-nations-championship
     volumes:
       - ./:/app:ro

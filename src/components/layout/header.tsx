@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/auth-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTimeZone } from '../../contexts/time-context'
+import { useTournament } from '../../contexts/tournament-context'
 import { Icon } from '../../lib/icons'
 import { isPredictionsFeatureEnabled } from '../../lib/features'
+import { CompetitionSwitcher } from './competition-switcher'
 import { LocaleSwitcher } from './locale-switcher'
 import { ThemeToggle } from './theme-toggle'
 import { FavoriteTeamsPicker } from './favorite-teams-picker'
@@ -14,16 +16,19 @@ const getUserInitial = (username: string) => username.trim().charAt(0).toUpperCa
 
 export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isCompact?: boolean }) => {
   const { locale, t } = useLocale()
+  const tournament = useTournament()
+  const effectiveMeta = meta ?? tournament.meta
   const timeZone = useTimeZone()
   const { user, logout, openAuthModal } = useAuth()
+  const logoIconName = effectiveMeta?.competitionId === 'nations-championship-2026' ? 'sports_rugby' : 'sports_soccer'
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false)
-  const [isMobileSettingsMenuOpen, setIsMobileSettingsMenuOpen] = useState(false)
+  const [isMobileCompetitionMenuOpen, setIsMobileCompetitionMenuOpen] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
-  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false)
+  const [isCompetitionMenuOpen, setIsCompetitionMenuOpen] = useState(false)
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null)
-  const mobileSettingsMenuRef = useRef<HTMLDivElement>(null)
+  const mobileCompetitionMenuRef = useRef<HTMLDivElement>(null)
   const accountMenuRef = useRef<HTMLDivElement>(null)
-  const settingsMenuRef = useRef<HTMLDivElement>(null)
+  const competitionMenuRef = useRef<HTMLDivElement>(null)
   const desktopMenuTriggerClassName = 'inline-flex h-10 cursor-pointer items-center border border-[var(--border)] bg-[var(--surface-soft)] text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]'
 
   useEffect(() => {
@@ -32,25 +37,25 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
         setIsMobileAccountMenuOpen(false)
       }
 
-      if (!mobileSettingsMenuRef.current?.contains(event.target as Node)) {
-        setIsMobileSettingsMenuOpen(false)
+      if (!mobileCompetitionMenuRef.current?.contains(event.target as Node)) {
+        setIsMobileCompetitionMenuOpen(false)
       }
 
       if (!accountMenuRef.current?.contains(event.target as Node)) {
         setIsAccountMenuOpen(false)
       }
 
-      if (!settingsMenuRef.current?.contains(event.target as Node)) {
-        setIsSettingsMenuOpen(false)
+      if (!competitionMenuRef.current?.contains(event.target as Node)) {
+        setIsCompetitionMenuOpen(false)
       }
     }
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsMobileAccountMenuOpen(false)
-        setIsMobileSettingsMenuOpen(false)
+        setIsMobileCompetitionMenuOpen(false)
         setIsAccountMenuOpen(false)
-        setIsSettingsMenuOpen(false)
+        setIsCompetitionMenuOpen(false)
       }
     }
 
@@ -78,20 +83,20 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
               <span aria-hidden="true" className={`logo-soccer-wrap inline-flex shrink-0 items-center justify-center transition-all duration-200 ${
                 isCompact ? 'h-9 w-9 sm:h-10 sm:w-10' : 'h-12 w-12 sm:h-14 sm:w-14'
               }`}>
-                <Icon name="sports_soccer" className="logo-soccer" />
+                <Icon name={logoIconName} className="logo-soccer" />
               </span>
-              <span>{t.appName}</span>
+              <span>{effectiveMeta?.edition || t.appName}</span>
             </Link>
           </h1>
           <p className={`max-w-3xl overflow-hidden text-[var(--text-muted)] transition-all duration-200 ${
             isCompact ? 'max-h-0 opacity-0' : 'max-h-16 text-sm leading-6 opacity-100 sm:text-base'
           }`}>
-            {meta
-              ? `${meta.host} · ${meta.season} · ${new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+            {effectiveMeta
+              ? `${effectiveMeta.host} · ${effectiveMeta.season} · ${new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', {
                   dateStyle: 'medium',
                   timeStyle: 'short',
                   timeZone,
-                }).format(new Date(meta.updatedAt))}`
+                }).format(new Date(effectiveMeta.updatedAt))}`
               : ''}
           </p>
         </div>
@@ -102,30 +107,27 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
-            <div ref={mobileSettingsMenuRef} className="relative">
+            <div ref={mobileCompetitionMenuRef} className="relative">
               <button
                 type="button"
                 onClick={() => {
-                  setIsMobileSettingsMenuOpen((current) => !current)
+                  setIsMobileCompetitionMenuOpen((current) => !current)
                   setIsMobileAccountMenuOpen(false)
                 }}
                 className="inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
-                aria-label={locale === 'fr' ? 'Paramètres' : 'Settings'}
-                aria-expanded={isMobileSettingsMenuOpen}
-                aria-controls="mobile-settings-menu"
+                aria-label={t.labels.competition}
+                aria-expanded={isMobileCompetitionMenuOpen}
+                aria-controls="mobile-competition-menu"
               >
-                <Icon name={isMobileSettingsMenuOpen ? 'close' : 'settings'} className="text-[20px]" />
+                <Icon name={isMobileCompetitionMenuOpen ? 'close' : 'emoji_events'} className="text-[20px]" />
               </button>
 
-              {isMobileSettingsMenuOpen ? (
+              {isMobileCompetitionMenuOpen ? (
                 <div
-                  id="mobile-settings-menu"
+                  id="mobile-competition-menu"
                   className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-72 space-y-2 rounded-md border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-xl"
                 >
-                  <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.theme}</p>
-                  <ThemeToggle />
-                  <p className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.language}</p>
-                  <LocaleSwitcher />
+                  <CompetitionSwitcher activeCompetitionId={effectiveMeta?.competitionId} />
                 </div>
               ) : null}
             </div>
@@ -135,7 +137,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 type="button"
                 onClick={() => {
                   setIsMobileAccountMenuOpen((current) => !current)
-                  setIsMobileSettingsMenuOpen(false)
+                  setIsMobileCompetitionMenuOpen(false)
                 }}
                 className="inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
                 aria-label={user ? (locale === 'fr' ? 'Compte' : 'Account') : (locale === 'fr' ? 'Connexion' : 'Sign in')}
@@ -156,6 +158,13 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                   id="mobile-account-menu"
                   className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-72 space-y-2 rounded-md border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-xl"
                 >
+                  <div className="space-y-2">
+                    <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.theme}</p>
+                    <ThemeToggle />
+                    <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.language}</p>
+                    <LocaleSwitcher />
+                  </div>
+                  <div className="h-px bg-[var(--border)]" />
                   {user ? (
                     <div className="space-y-2">
                       <div className="flex min-w-0 items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
@@ -185,15 +194,16 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                       </button>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid gap-2">
                       <button
                         type="button"
                         onClick={() => {
                           setIsMobileAccountMenuOpen(false)
                           openAuthModal('login')
                         }}
-                        className="bg-[var(--accent-muted)] px-2 py-2 text-xs font-semibold text-[var(--accent-text)]"
+                        className="inline-flex w-full items-center gap-2 bg-[var(--accent-muted)] px-3 py-2 text-left text-xs font-semibold text-[var(--accent-text)]"
                       >
+                        <Icon name="login" className="text-[16px]" />
                         {t.labels.signIn}
                       </button>
                       <button
@@ -202,8 +212,9 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                           setIsMobileAccountMenuOpen(false)
                           openAuthModal('register')
                         }}
-                        className="bg-[var(--surface-soft)] px-2 py-2 text-xs font-semibold text-[var(--text)]"
+                        className="inline-flex w-full items-center gap-2 bg-[var(--surface-soft)] px-3 py-2 text-left text-xs font-semibold text-[var(--text)]"
                       >
+                        <Icon name="person_add" className="text-[16px]" />
                         {t.labels.createAccount}
                       </button>
                     </div>
@@ -214,31 +225,28 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
           </div>
 
           <div className="hidden lg:inline-flex lg:items-center lg:gap-3">
-            <div ref={settingsMenuRef} className="relative">
+            <div ref={competitionMenuRef} className="relative">
               <button
                 type="button"
                 onClick={() => {
-                  setIsSettingsMenuOpen((current) => !current)
+                  setIsCompetitionMenuOpen((current) => !current)
                   setIsAccountMenuOpen(false)
                 }}
-                aria-expanded={isSettingsMenuOpen}
-                aria-controls="desktop-settings-menu"
+                aria-expanded={isCompetitionMenuOpen}
+                aria-controls="desktop-competition-menu"
                 className={`${desktopMenuTriggerClassName} gap-2 px-3`}
               >
-                <Icon name="settings" className="text-[18px]" />
-                <span>{locale === 'fr' ? 'Paramètres' : 'Settings'}</span>
-                <Icon name={isSettingsMenuOpen ? 'expand_less' : 'expand_more'} className="text-[18px] text-[var(--text-soft)]" />
+                <Icon name="emoji_events" className="text-[18px]" />
+                <span>{t.labels.competition}</span>
+                <Icon name={isCompetitionMenuOpen ? 'expand_less' : 'expand_more'} className="text-[18px] text-[var(--text-soft)]" />
               </button>
 
-              {isSettingsMenuOpen ? (
+              {isCompetitionMenuOpen ? (
                 <div
-                  id="desktop-settings-menu"
+                  id="desktop-competition-menu"
                   className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-64 space-y-2 border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-xl"
                 >
-                  <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.theme}</p>
-                  <ThemeToggle />
-                  <p className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.language}</p>
-                  <LocaleSwitcher />
+                  <CompetitionSwitcher activeCompetitionId={effectiveMeta?.competitionId} />
                 </div>
               ) : null}
             </div>
@@ -248,7 +256,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 type="button"
                 onClick={() => {
                   setIsAccountMenuOpen((current) => !current)
-                  setIsSettingsMenuOpen(false)
+                  setIsCompetitionMenuOpen(false)
                 }}
                 aria-expanded={isAccountMenuOpen}
                 aria-controls="desktop-account-menu"
@@ -277,6 +285,13 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                   id="desktop-account-menu"
                   className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-64 space-y-3 border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-xl"
                 >
+                  <div className="space-y-2">
+                    <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.theme}</p>
+                    <ThemeToggle />
+                    <p className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.language}</p>
+                    <LocaleSwitcher />
+                  </div>
+                  <div className="h-px bg-[var(--border)]" />
                   {user ? (
                     <>
                       <div className="flex items-center gap-3 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
@@ -311,15 +326,16 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                       </button>
                     </>
                   ) : (
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid gap-2">
                       <button
                         type="button"
                         onClick={() => {
                           setIsAccountMenuOpen(false)
                           openAuthModal('login')
                         }}
-                        className="bg-[var(--accent-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-text)]"
+                        className="inline-flex w-full items-center gap-2 bg-[var(--accent-muted)] px-3 py-2 text-sm font-semibold text-[var(--accent-text)]"
                       >
+                        <Icon name="login" className="text-[18px]" />
                         {t.labels.signIn}
                       </button>
                       <button
@@ -328,8 +344,9 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                           setIsAccountMenuOpen(false)
                           openAuthModal('register')
                         }}
-                        className="bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)]"
+                        className="inline-flex w-full items-center gap-2 bg-[var(--surface-soft)] px-3 py-2 text-sm font-semibold text-[var(--text)]"
                       >
+                        <Icon name="person_add" className="text-[18px]" />
                         {t.labels.createAccount}
                       </button>
                     </div>

@@ -45,6 +45,7 @@ export interface TranslationSet {
   }
   labels: {
     language: string
+    competition: string
     theme: string
     lightTheme: string
     darkTheme: string

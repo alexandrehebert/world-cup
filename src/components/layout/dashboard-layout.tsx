@@ -2,8 +2,11 @@ import { cloneElement, isValidElement, useEffect, useRef, useState } from 'react
 import type { ReactNode } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
+import { useTournament } from '../../contexts/tournament-context'
+import { getCompetitionBallIconNameById } from '../../lib/competition-branding'
 import { Icon } from '../../lib/icons'
 import { isPredictionsFeatureEnabled } from '../../lib/features'
+import { hasBracketSection, hasGroupsSection } from '../../lib/tournament-sections'
 import { AuthModal } from '../auth/auth-modal'
 import { MatchModal } from '../matches/match-modal'
 import { CountryModal } from '../teams/country-modal'
@@ -13,7 +16,7 @@ const HEADER_COMPACT_ENTER_SCROLL = 56
 const HEADER_COMPACT_EXIT_SCROLL = 24
 const HEADER_COMPACT_SETTLE_MS = 120
 
-const tabs = [
+const baseTabs = [
   { to: '/overview', labelKey: 'overview', icon: 'calendar_month', iconClassName: '' },
   { to: '/groups', labelKey: 'groups', icon: 'groups', iconClassName: '' },
   { to: '/teams', labelKey: 'teams', icon: 'flag', iconClassName: '' },
@@ -24,7 +27,13 @@ const tabs = [
 
 export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   const { t } = useLocale()
-  const navigationTabs = isPredictionsFeatureEnabled ? tabs : tabs.filter((tab) => tab.to !== '/predictions')
+  const { meta, groups, bracketRounds } = useTournament()
+  const hasGroups = hasGroupsSection(groups)
+  const hasBracket = hasBracketSection(bracketRounds)
+  const matchesIconName = getCompetitionBallIconNameById(meta.competitionId)
+  const tabs = baseTabs.map((tab) => (tab.to === '/matches' ? { ...tab, icon: matchesIconName } : tab))
+  const navigationTabs = (isPredictionsFeatureEnabled ? tabs : tabs.filter((tab) => tab.to !== '/predictions'))
+    .filter((tab) => (tab.to === '/groups' ? hasGroups : tab.to === '/bracket' ? hasBracket : true))
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const headerScrollTimeoutRef = useRef<number | null>(null)
 

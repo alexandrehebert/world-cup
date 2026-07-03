@@ -1,12 +1,23 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react-hooks/set-state-in-effect */
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
-import rawTournamentData from '../data/worldcup.json'
 import { buildTournamentModel, type TournamentModel } from '../lib/tournament'
 import { getTournamentApiRequestUrl } from '../lib/tournament-api'
 import type { TournamentData } from '../types/tournament'
 
-const localTournamentData = rawTournamentData as TournamentData
+const localTournamentData: TournamentData = {
+  meta: {
+    edition: '',
+    season: '',
+    host: '',
+    updatedAt: new Date(0).toISOString(),
+    venueCountry: '',
+  },
+  teams: [],
+  groups: [],
+  matches: [],
+  bracketRounds: [],
+}
 const localTournamentModel = buildTournamentModel(localTournamentData)
 
 const getUpdatedAtMs = (value: string | undefined) => {

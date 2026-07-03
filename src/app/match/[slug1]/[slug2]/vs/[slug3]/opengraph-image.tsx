@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ImageResponse } from 'next/og'
+import { getActiveCompetitionProfile } from '../../../../../../competitions'
 import { loadTournamentData } from '../../../../../../server/tournament-data'
 import { getDisplayMatchStatus, getMatchDisplayTime, formatMatchDate } from '../../../../../../lib/format'
 import { getMatchStageFromSlug } from '../../../../../../lib/match-path'
@@ -9,7 +10,7 @@ import type { TournamentData } from '../../../../../../types/tournament'
 export const dynamic = 'force-dynamic'
 export const contentType = 'image/png'
 export const size = { width: 1200, height: 630 }
-export const alt = 'FIFA World Cup 2026 match preview'
+export const alt = `${getActiveCompetitionProfile().displayName} match preview`
 const imageResponseOptions = {
   ...size,
   headers: {
@@ -47,6 +48,7 @@ const findMatchByCodes = (
 }
 
 export default async function Image({ params }: { params: Promise<{ slug1: string; slug2: string; slug3: string }> }) {
+  const competition = getActiveCompetitionProfile()
   const { slug1, slug2, slug3 } = await params
   const stage = slug1
   const homeCode = slug2
@@ -64,7 +66,7 @@ export default async function Image({ params }: { params: Promise<{ slug1: strin
   const hasScore = typeof match?.home.score === 'number' && typeof match?.away.score === 'number'
   const scoreLine = hasScore ? `${match?.home.score}-${match?.away.score}` : 'VS'
   const status = displayStatus === 'live' ? 'LIVE' : displayStatus === 'finished' ? 'FINISHED' : displayStatus === 'scheduled' ? 'SCHEDULED' : 'MATCH'
-  const venue = match ? [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ') : 'FIFA World Cup 2026'
+  const venue = match ? [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ') : competition.displayName
 
   const scheduledKickoff = displayStatus === 'scheduled' ? match?.kickoff : undefined
   const stadiumDates = scheduledKickoff ? formatMatchDate(scheduledKickoff, 'en', match?.venue?.timeZone ?? 'UTC') : null
@@ -88,7 +90,7 @@ export default async function Image({ params }: { params: Promise<{ slug1: strin
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: 2 }}>FIFA WORLD CUP 2026</div>
+          <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: 2 }}>{competition.displayName.toUpperCase()}</div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
             <div style={{ fontSize: 36, fontWeight: 800, color: '#f4c542' }}>{status}</div>
             {liveClock ? <div style={{ fontSize: 28, fontWeight: 800, color: '#7fe5c5' }}>{liveClock}</div> : null}
@@ -107,7 +109,7 @@ export default async function Image({ params }: { params: Promise<{ slug1: strin
             <div style={{ fontSize: 28, opacity: 0.86 }}>{venue}</div>
             {utcDateTime ? <div style={{ fontSize: 22, fontWeight: 500, color: '#f4c542', opacity: 0.9 }}>{utcDateTime}</div> : null}
           </div>
-          <div style={{ fontSize: 26, opacity: 0.76 }}>world-cup.hebert.app</div>
+          <div style={{ fontSize: 26, opacity: 0.76 }}>{competition.siteDisplayHost ?? competition.id}</div>
         </div>
       </div>
     ),

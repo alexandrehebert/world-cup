@@ -47,6 +47,7 @@ export const en: TranslationSet = {
   },
   labels: {
     language: 'Language',
+    competition: 'Competitions',
     theme: 'Theme',
     lightTheme: 'Light theme',
     darkTheme: 'Dark theme',

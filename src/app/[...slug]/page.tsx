@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
+import { getActiveCompetitionProfile } from '../../competitions'
 import ClientApp from '../client-app'
 import { loadClientBootstrapData } from '../../server/client-bootstrap'
 import { loadTournamentData } from '../../server/tournament-data'
@@ -59,7 +60,13 @@ const findMatchByCodes = (
   })
 }
 
-const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string, stage?: TournamentData['matches'][number]['stage'] | null) => {
+const getMatchMeta = (
+  data: TournamentData,
+  homeCode: string,
+  awayCode: string,
+  competitionDisplayName: string,
+  stage?: TournamentData['matches'][number]['stage'] | null,
+) => {
   const teamsById = Object.fromEntries(data.teams.map((team: TeamRecord) => [team.id, team]))
   const match = findMatchByCodes(data, teamsById, homeCode, awayCode, stage)
 
@@ -73,7 +80,7 @@ const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string, 
   const awayLabel = awayTeam?.name ?? awayTeam?.code ?? awayCode
   const hasScore = typeof match.home.score === 'number' && typeof match.away.score === 'number'
   const scoreLine = hasScore ? `${match.home.score}-${match.away.score}` : 'vs'
-  const title = `${homeLabel} ${scoreLine} ${awayLabel} | FIFA World Cup 2026`
+  const title = `${homeLabel} ${scoreLine} ${awayLabel} | ${competitionDisplayName}`
   const venue = [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ')
   const displayStatus = getDisplayMatchStatus(match)
   const status = displayStatus === 'live' ? 'Live' : displayStatus === 'finished' ? 'Finished' : 'Scheduled'
@@ -88,61 +95,65 @@ const getMatchMeta = (data: TournamentData, homeCode: string, awayCode: string, 
   return { title, description, match }
 }
 
-const menuMetaBySegment: Record<string, MenuPageMeta> = {
+const getMenuMetaBySegment = (
+  competitionDisplayName: string,
+  competitionShortName: string,
+  sportLabel: string,
+): Record<string, MenuPageMeta> => ({
   overview: {
-    title: 'World Cup Schedule | FIFA World Cup 2026',
+    title: `${competitionShortName} Schedule | ${competitionDisplayName}`,
     description: 'Explore upcoming fixtures, venues, and kickoff times across the full tournament schedule.',
     imagePath: '/menu/overview/opengraph-image',
-    imageAlt: 'World Cup schedule overview',
+    imageAlt: 'Tournament schedule overview',
     canonical: '/overview',
   },
   groups: {
-    title: 'Group Standings | FIFA World Cup 2026',
+    title: `Group Standings | ${competitionDisplayName}`,
     description: 'Track every group table with points, goal difference, and qualification race updates.',
     imagePath: '/menu/groups/opengraph-image',
-    imageAlt: 'World Cup group standings',
+    imageAlt: 'Tournament group standings',
     canonical: '/groups',
   },
   teams: {
-    title: 'Teams | FIFA World Cup 2026',
+    title: `Teams | ${competitionDisplayName}`,
     description: 'Explore all qualified teams and open each team details modal.',
     imagePath: '/menu/teams/opengraph-image',
-    imageAlt: 'World Cup teams directory',
+    imageAlt: 'Tournament teams directory',
     canonical: '/teams',
   },
   matches: {
-    title: 'Matches | FIFA World Cup 2026',
-    description: 'Follow live and upcoming World Cup matches with scores, status, and fixture details.',
+    title: `Matches | ${competitionDisplayName}`,
+    description: `Follow live and upcoming ${sportLabel} matches with scores, status, and fixture details.`,
     imagePath: '/menu/matches/opengraph-image',
-    imageAlt: 'World Cup matches center',
+    imageAlt: 'Tournament matches center',
     canonical: '/matches',
   },
   bracket: {
-    title: 'Knockout Bracket | FIFA World Cup 2026',
-    description: 'See the complete knockout path from Round of 32 to the World Cup final.',
+    title: `Knockout Bracket | ${competitionDisplayName}`,
+    description: `See the complete knockout path from opening elimination rounds to the ${competitionShortName} final.`,
     imagePath: '/menu/bracket/opengraph-image',
-    imageAlt: 'World Cup knockout bracket',
+    imageAlt: 'Tournament knockout bracket',
     canonical: '/bracket',
   },
   ...(isPredictionsFeatureEnabled
     ? {
         predictions: {
-          title: 'World Cup Predictions | FIFA World Cup 2026',
-          description: 'Join me on the predictions page and make your picks for upcoming World Cup matches.',
+          title: `${competitionShortName} Predictions | ${competitionDisplayName}`,
+          description: `Join me on the predictions page and make your picks for upcoming ${sportLabel} matches.`,
           imagePath: '/predictions/opengraph-image',
-          imageAlt: 'World Cup predictions invite',
+          imageAlt: 'Tournament predictions invite',
           canonical: '/predictions',
         },
         leaderboard: {
-          title: 'Predictions Leaderboard | FIFA World Cup 2026',
-          description: 'Compare player rankings and see who leads the World Cup prediction challenge.',
+          title: `Predictions Leaderboard | ${competitionDisplayName}`,
+          description: `Compare player rankings and see who leads the ${competitionShortName} prediction challenge.`,
           imagePath: '/menu/leaderboard/opengraph-image',
-          imageAlt: 'World Cup predictions leaderboard',
+          imageAlt: 'Tournament predictions leaderboard',
           canonical: '/leaderboard',
         },
       }
     : {}),
-}
+})
 
 const buildMenuMetadata = (meta: MenuPageMeta, metadataBase: URL): Metadata => ({
   metadataBase,
@@ -168,10 +179,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const matchPath = slug ? parseMatchSlugSegments(slug) : null
   const metadataBase = await resolveMetadataBase()
+  const competition = getActiveCompetitionProfile()
+  const competitionDisplayName = competition.displayName
+  const competitionShortName = competition.shortName
+  const menuMetaBySegment = getMenuMetaBySegment(competitionDisplayName, competitionShortName, competition.sportLabel)
   const defaultMeta = {
     metadataBase,
-    title: 'FIFA World Cup 2026',
-    description: 'World Cup dashboard with live results, fixtures, groups, and bracket.',
+    title: competitionDisplayName,
+    description: `${competitionShortName} dashboard with live results, fixtures, groups, and bracket.`,
   }
 
   const firstSegment = slug?.[0]?.toLowerCase()
@@ -189,8 +204,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
 
     const decodedUsername = decodeURIComponent(username)
-    const title = `${decodedUsername} Predictions Profile | FIFA World Cup 2026`
-    const description = `See ${decodedUsername}'s detailed World Cup predictions, ranking, and points on the public profile page.`
+    const title = `${decodedUsername} Predictions Profile | ${competitionDisplayName}`
+    const description = `See ${decodedUsername}'s detailed ${competitionShortName} predictions, ranking, and points on the public profile page.`
     const canonical = `/profile/${encodeURIComponent(decodedUsername)}`
 
     return {
@@ -224,12 +239,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   const tournamentData = await loadTournamentData()
-  const meta = getMatchMeta(tournamentData, matchPath.homeCode, matchPath.awayCode, matchPath.stage)
+  const meta = getMatchMeta(tournamentData, matchPath.homeCode, matchPath.awayCode, competitionDisplayName, matchPath.stage)
 
   if (!meta) {
     return {
       metadataBase,
-      title: 'Match not found | FIFA World Cup 2026',
+      title: `Match not found | ${competitionDisplayName}`,
       description: 'The shared match link does not match a known fixture.',
     }
   }

@@ -1,0 +1,808 @@
+{
+  "meta": {
+    "competitionId": "nations-championship-2026",
+    "edition": "Nations Championship 2026",
+    "season": "2026",
+    "host": "TBD",
+    "updatedAt": "2026-07-03T15:43:01.309Z",
+    "venueCountry": "TBD"
+  },
+  "teams": [
+    {
+      "id": "nzl",
+      "code": "NZL",
+      "name": "New Zealand",
+      "flagCode": "nz"
+    },
+    {
+      "id": "fra",
+      "code": "FRA",
+      "name": "France",
+      "flagCode": "fr"
+    },
+    {
+      "id": "aus",
+      "code": "AUS",
+      "name": "Australia",
+      "flagCode": "au"
+    },
+    {
+      "id": "ire",
+      "code": "IRE",
+      "name": "Ireland",
+      "flagCode": "ir"
+    },
+    {
+      "id": "jpn",
+      "code": "JPN",
+      "name": "Japan",
+      "flagCode": "jp"
+    },
+    {
+      "id": "ita",
+      "code": "ITA",
+      "name": "Italy",
+      "flagCode": "it"
+    },
+    {
+      "id": "fij",
+      "code": "FIJ",
+      "name": "Fiji",
+      "flagCode": "fi"
+    },
+    {
+      "id": "wal",
+      "code": "WAL",
+      "name": "Wales",
+      "flagCode": "gb-wls"
+    },
+    {
+      "id": "rsa",
+      "code": "RSA",
+      "name": "South Africa",
+      "flagCode": "za"
+    },
+    {
+      "id": "eng",
+      "code": "ENG",
+      "name": "England",
+      "flagCode": "gb-eng"
+    },
+    {
+      "id": "arg",
+      "code": "ARG",
+      "name": "Argentina",
+      "flagCode": "ar"
+    },
+    {
+      "id": "sco",
+      "code": "SCO",
+      "name": "Scotland",
+      "flagCode": "gb-sct"
+    }
+  ],
+  "groups": [],
+  "matches": [
+    {
+      "id": "f2841b7f-1e16-45bd-97b0-85c179bb28ca",
+      "stage": "group",
+      "home": {
+        "teamId": "nzl",
+        "score": 0
+      },
+      "away": {
+        "teamId": "fra",
+        "score": 0
+      },
+      "kickoff": "2026-07-04T07:10:00.000Z",
+      "venue": {
+        "stadium": "One New Zealand Stadium",
+        "city": "Christchurch",
+        "country": "New Zealand",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "1a9101ea-fbd4-4846-ac1c-fd2c9c208f41",
+      "stage": "group",
+      "home": {
+        "teamId": "jpn",
+        "score": 0
+      },
+      "away": {
+        "teamId": "ita",
+        "score": 0
+      },
+      "kickoff": "2026-07-04T08:40:00.000Z",
+      "venue": {
+        "stadium": "Prince Chichibu Memorial Stadium",
+        "city": "Tokyo",
+        "country": "Japan",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "bb26ee04-38a6-41ae-9247-eca420a8dda1",
+      "stage": "group",
+      "home": {
+        "teamId": "aus",
+        "score": 0
+      },
+      "away": {
+        "teamId": "ire",
+        "score": 0
+      },
+      "kickoff": "2026-07-04T10:10:00.000Z",
+      "venue": {
+        "stadium": "Sydney Football Stadium",
+        "city": "Sydney | Gadigal",
+        "country": "Australia",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "78344c13-ccae-4d09-8d3c-4525954084bd",
+      "stage": "group",
+      "home": {
+        "teamId": "fij",
+        "score": 0
+      },
+      "away": {
+        "teamId": "wal",
+        "score": 0
+      },
+      "kickoff": "2026-07-04T13:10:00.000Z",
+      "venue": {
+        "stadium": "Cardiff City Stadium",
+        "city": "Cardiff",
+        "country": "Wales",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "572577b5-5e95-4ad5-8fce-25da14ed11e4",
+      "stage": "group",
+      "home": {
+        "teamId": "rsa",
+        "score": 0
+      },
+      "away": {
+        "teamId": "eng",
+        "score": 0
+      },
+      "kickoff": "2026-07-04T15:40:00.000Z",
+      "venue": {
+        "stadium": "Emirates Airline Park",
+        "city": "Johannesburg",
+        "country": "South Africa",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "7d69a2e2-f8d4-46a2-9d98-39694493e482",
+      "stage": "group",
+      "home": {
+        "teamId": "arg",
+        "score": 0
+      },
+      "away": {
+        "teamId": "sco",
+        "score": 0
+      },
+      "kickoff": "2026-07-04T19:10:00.000Z",
+      "venue": {
+        "stadium": "Estadio Mario Alberto Kempes",
+        "city": "Cordoba",
+        "country": "Argentina",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "988c93b4-cd83-4438-a0c9-9ebfcf8c7c92",
+      "stage": "group",
+      "home": {
+        "teamId": "nzl",
+        "score": 0
+      },
+      "away": {
+        "teamId": "ita",
+        "score": 0
+      },
+      "kickoff": "2026-07-11T05:10:00.000Z",
+      "venue": {
+        "stadium": "Sky Stadium",
+        "city": "Wellington",
+        "country": "New Zealand",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "9a049f13-d461-4b58-9d4a-deb5cf9d2dd0",
+      "stage": "group",
+      "home": {
+        "teamId": "aus",
+        "score": 0
+      },
+      "away": {
+        "teamId": "fra",
+        "score": 0
+      },
+      "kickoff": "2026-07-11T07:40:00.000Z",
+      "venue": {
+        "stadium": "Brisbane Stadium",
+        "city": "Brisbane | Meeanjin",
+        "country": "Australia",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "5a03f594-7c72-4134-a199-3fea4980e686",
+      "stage": "group",
+      "home": {
+        "teamId": "jpn",
+        "score": 0
+      },
+      "away": {
+        "teamId": "ire",
+        "score": 0
+      },
+      "kickoff": "2026-07-11T10:10:00.000Z",
+      "venue": {
+        "stadium": "Newcastle Stadium",
+        "city": "Newcastle | Awabakal-Worimi",
+        "country": "Australia",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "3c4ba697-6a37-4081-800c-92205d5be4ee",
+      "stage": "group",
+      "home": {
+        "teamId": "fij",
+        "score": 0
+      },
+      "away": {
+        "teamId": "eng",
+        "score": 0
+      },
+      "kickoff": "2026-07-11T13:10:00.000Z",
+      "venue": {
+        "stadium": "Hill Dickinson Stadium",
+        "city": "Liverpool",
+        "country": "England",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "8d7befd5-96a5-4e4d-88b6-804e54d1a76c",
+      "stage": "group",
+      "home": {
+        "teamId": "rsa",
+        "score": 0
+      },
+      "away": {
+        "teamId": "sco",
+        "score": 0
+      },
+      "kickoff": "2026-07-11T15:40:00.000Z",
+      "venue": {
+        "stadium": "Loftus Versfeld",
+        "city": "Pretoria",
+        "country": "South Africa",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "555a7156-e0c3-4146-86ed-9495cb555fe7",
+      "stage": "group",
+      "home": {
+        "teamId": "arg",
+        "score": 0
+      },
+      "away": {
+        "teamId": "wal",
+        "score": 0
+      },
+      "kickoff": "2026-07-11T19:10:00.000Z",
+      "venue": {
+        "stadium": "Estadio del Bicentenario",
+        "city": "San Juan",
+        "country": "Argentina",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "fadabdf7-e221-4120-93b0-afbd2fe42a69",
+      "stage": "group",
+      "home": {
+        "teamId": "nzl",
+        "score": 0
+      },
+      "away": {
+        "teamId": "ire",
+        "score": 0
+      },
+      "kickoff": "2026-07-18T07:10:00.000Z",
+      "venue": {
+        "stadium": "Eden Park",
+        "city": "Auckland",
+        "country": "New Zealand",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "aeec861e-3369-4278-bc7e-147a2555b7a6",
+      "stage": "group",
+      "home": {
+        "teamId": "jpn",
+        "score": 0
+      },
+      "away": {
+        "teamId": "fra",
+        "score": 0
+      },
+      "kickoff": "2026-07-18T08:40:00.000Z",
+      "venue": {
+        "stadium": "National Olympic Stadium",
+        "city": "Tokyo",
+        "country": "Japan",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "5a688ab0-0ca5-4c4e-9335-9259b5c7fd99",
+      "stage": "group",
+      "home": {
+        "teamId": "aus",
+        "score": 0
+      },
+      "away": {
+        "teamId": "ita",
+        "score": 0
+      },
+      "kickoff": "2026-07-18T10:10:00.000Z",
+      "venue": {
+        "stadium": "HBF Park",
+        "city": "Perth | Boorloo",
+        "country": "Australia",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "4ac82cbc-8a85-4aac-90c8-dfb7e1ec5879",
+      "stage": "group",
+      "home": {
+        "teamId": "fij",
+        "score": 0
+      },
+      "away": {
+        "teamId": "sco",
+        "score": 0
+      },
+      "kickoff": "2026-07-18T13:10:00.000Z",
+      "venue": {
+        "stadium": "Murrayfield",
+        "city": "Edinburgh",
+        "country": "Scotland",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "21090174-8fd4-4e2f-ae32-f43ad912b0f8",
+      "stage": "group",
+      "home": {
+        "teamId": "rsa",
+        "score": 0
+      },
+      "away": {
+        "teamId": "wal",
+        "score": 0
+      },
+      "kickoff": "2026-07-18T15:40:00.000Z",
+      "venue": {
+        "stadium": "Hollywoodbets Kings Park",
+        "city": "Durban",
+        "country": "South Africa",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "87dd888e-aa41-4817-9cd3-58b51052db3b",
+      "stage": "group",
+      "home": {
+        "teamId": "arg",
+        "score": 0
+      },
+      "away": {
+        "teamId": "eng",
+        "score": 0
+      },
+      "kickoff": "2026-07-18T19:10:00.000Z",
+      "venue": {
+        "stadium": "Estadio Único Madre de Ciudades",
+        "city": "Santiago del Estero",
+        "country": "Argentina",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "1e74b48e-25fe-4ebe-beea-abb6cea010a0",
+      "stage": "group",
+      "home": {
+        "teamId": "ire",
+        "score": 0
+      },
+      "away": {
+        "teamId": "arg",
+        "score": 0
+      },
+      "kickoff": "2026-11-06T20:10:00.000Z",
+      "venue": {
+        "stadium": "Aviva Stadium",
+        "city": "Dublin",
+        "country": "Ireland",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "54780758-13bb-414b-94d6-2095f217459c",
+      "stage": "group",
+      "home": {
+        "teamId": "ita",
+        "score": 0
+      },
+      "away": {
+        "teamId": "rsa",
+        "score": 0
+      },
+      "kickoff": "2026-11-07T11:40:00.000Z",
+      "venue": {
+        "stadium": "Allianz Stadium",
+        "city": "Turin",
+        "country": "Italy",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "db7d80ff-3fa4-4b76-8b84-f615725dd62b",
+      "stage": "group",
+      "home": {
+        "teamId": "sco",
+        "score": 0
+      },
+      "away": {
+        "teamId": "nzl",
+        "score": 0
+      },
+      "kickoff": "2026-11-07T14:10:00.000Z",
+      "venue": {
+        "stadium": "Murrayfield",
+        "city": "Edinburgh",
+        "country": "Scotland",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "20078fb5-fab3-4d28-ad54-d550b01b472d",
+      "stage": "group",
+      "home": {
+        "teamId": "wal",
+        "score": 0
+      },
+      "away": {
+        "teamId": "jpn",
+        "score": 0
+      },
+      "kickoff": "2026-11-07T16:40:00.000Z",
+      "venue": {
+        "stadium": "Principality Stadium",
+        "city": "Cardiff",
+        "country": "Wales",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "267608f1-90cc-4c93-ac68-b0f0fa3bbf9e",
+      "stage": "group",
+      "home": {
+        "teamId": "fra",
+        "score": 0
+      },
+      "away": {
+        "teamId": "fij",
+        "score": 0
+      },
+      "kickoff": "2026-11-07T20:10:00.000Z",
+      "venue": {
+        "stadium": "Groupama Stadium",
+        "city": "Lyon",
+        "country": "France",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "d21f7bed-f2f9-45bd-be33-3a0fc9beec42",
+      "stage": "group",
+      "home": {
+        "teamId": "eng",
+        "score": 0
+      },
+      "away": {
+        "teamId": "aus",
+        "score": 0
+      },
+      "kickoff": "2026-11-08T15:10:00.000Z",
+      "venue": {
+        "stadium": "Allianz Stadium",
+        "city": "London",
+        "country": "England",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "5dd5bcc0-29dc-4855-bf16-744cc913c569",
+      "stage": "group",
+      "home": {
+        "teamId": "fra",
+        "score": 0
+      },
+      "away": {
+        "teamId": "rsa",
+        "score": 0
+      },
+      "kickoff": "2026-11-13T20:10:00.000Z",
+      "venue": {
+        "stadium": "Stade de France",
+        "city": "Saint-Denis",
+        "country": "France",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "52060a17-7403-444e-b18a-2fad9dcb64e8",
+      "stage": "group",
+      "home": {
+        "teamId": "ita",
+        "score": 0
+      },
+      "away": {
+        "teamId": "arg",
+        "score": 0
+      },
+      "kickoff": "2026-11-14T11:40:00.000Z",
+      "venue": {
+        "stadium": "Stadio Luigi Ferraris",
+        "city": "Genova",
+        "country": "Italy",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "6eb7ffc2-8084-49af-960e-c75efebbf975",
+      "stage": "group",
+      "home": {
+        "teamId": "wal",
+        "score": 0
+      },
+      "away": {
+        "teamId": "nzl",
+        "score": 0
+      },
+      "kickoff": "2026-11-14T14:10:00.000Z",
+      "venue": {
+        "stadium": "Principality Stadium",
+        "city": "Cardiff",
+        "country": "Wales",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "4515ad9f-bbe1-4019-b824-a35265b7bcc8",
+      "stage": "group",
+      "home": {
+        "teamId": "eng",
+        "score": 0
+      },
+      "away": {
+        "teamId": "jpn",
+        "score": 0
+      },
+      "kickoff": "2026-11-14T16:40:00.000Z",
+      "venue": {
+        "stadium": "Allianz Stadium",
+        "city": "London",
+        "country": "England",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "fe091325-020d-4e1a-ae3c-5cc6ea911da8",
+      "stage": "group",
+      "home": {
+        "teamId": "ire",
+        "score": 0
+      },
+      "away": {
+        "teamId": "fij",
+        "score": 0
+      },
+      "kickoff": "2026-11-14T20:10:00.000Z",
+      "venue": {
+        "stadium": "Aviva Stadium",
+        "city": "Dublin",
+        "country": "Ireland",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "8eb3dfab-2f48-45ce-9ad4-9d5d0edb92cc",
+      "stage": "group",
+      "home": {
+        "teamId": "sco",
+        "score": 0
+      },
+      "away": {
+        "teamId": "aus",
+        "score": 0
+      },
+      "kickoff": "2026-11-15T15:10:00.000Z",
+      "venue": {
+        "stadium": "Murrayfield",
+        "city": "Edinburgh",
+        "country": "Scotland",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "3642431c-f6c3-421d-8fba-8171e12e05e0",
+      "stage": "group",
+      "home": {
+        "teamId": "eng",
+        "score": 0
+      },
+      "away": {
+        "teamId": "nzl",
+        "score": 0
+      },
+      "kickoff": "2026-11-21T14:10:00.000Z",
+      "venue": {
+        "stadium": "Allianz Stadium",
+        "city": "London",
+        "country": "England",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "14c0eb4c-be38-4d23-a25e-cc897a440bff",
+      "stage": "group",
+      "home": {
+        "teamId": "sco",
+        "score": 0
+      },
+      "away": {
+        "teamId": "jpn",
+        "score": 0
+      },
+      "kickoff": "2026-11-21T14:10:00.000Z",
+      "venue": {
+        "stadium": "Murrayfield",
+        "city": "Edinburgh",
+        "country": "Scotland",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "ad54e7f4-c786-4ff1-abb9-97233e4e9423",
+      "stage": "group",
+      "home": {
+        "teamId": "ire",
+        "score": 0
+      },
+      "away": {
+        "teamId": "rsa",
+        "score": 0
+      },
+      "kickoff": "2026-11-21T16:40:00.000Z",
+      "venue": {
+        "stadium": "Aviva Stadium",
+        "city": "Dublin",
+        "country": "Ireland",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "02df3cf8-3d55-418f-a141-29fec4e3d5c8",
+      "stage": "group",
+      "home": {
+        "teamId": "ita",
+        "score": 0
+      },
+      "away": {
+        "teamId": "fij",
+        "score": 0
+      },
+      "kickoff": "2026-11-21T16:40:00.000Z",
+      "venue": {
+        "stadium": "Bluenergy Stadium",
+        "city": "Udine",
+        "country": "Italy",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "b6d35e4d-f3cf-48bf-8b94-35171a37e3da",
+      "stage": "group",
+      "home": {
+        "teamId": "fra",
+        "score": 0
+      },
+      "away": {
+        "teamId": "arg",
+        "score": 0
+      },
+      "kickoff": "2026-11-21T20:10:00.000Z",
+      "venue": {
+        "stadium": "Stade de France",
+        "city": "Saint-Denis",
+        "country": "France",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": "e7552a9b-439f-4141-8a47-14bb57279e46",
+      "stage": "group",
+      "home": {
+        "teamId": "wal",
+        "score": 0
+      },
+      "away": {
+        "teamId": "aus",
+        "score": 0
+      },
+      "kickoff": "2026-11-21T20:10:00.000Z",
+      "venue": {
+        "stadium": "Principality Stadium",
+        "city": "Cardiff",
+        "country": "Wales",
+        "timeZone": "UTC"
+      },
+      "status": "scheduled"
+    }
+  ],
+  "bracketRounds": []
+}

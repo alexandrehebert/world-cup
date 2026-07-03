@@ -1,6 +1,6 @@
-# Football World Cup
+# Tournament Dashboard (Multi-competition)
 
-Interactive World Cup app built with **Next.js + TypeScript**.  
+Interactive tournament app built with **Next.js + TypeScript**.  
 It serves tournament data, supports user auth and predictions, and syncs match status updates from ESPN/Vercel cron.
 
 ## Tech stack
@@ -35,22 +35,84 @@ App runs on `http://localhost:3000` by default.
 
 ### Core
 
+- `COMPETITION_ID` - active competition profile (`world-cup-2026` default, `nations-championship-2026` supported)
 - `SESSION_SECRET` - signs auth session cookies
 - `MONGODB_URI` - MongoDB connection string
-- `MONGODB_DB` (optional) - DB name (default: `world-cup`)
+- `MONGODB_DB` (optional) - DB name (defaults to active competition profile DB)
 - `NEXT_PUBLIC_ENABLE_PREDICTIONS` (optional) - enables predictions when truthy (`true`, `1`, `yes`, `on`)
+- `NEXT_PUBLIC_WORLD_CUP_SITE_URL` (optional) - site URL used by the competition switcher for World Cup
+- `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL` (optional) - site URL used by the competition switcher for Nations Championship
 
 ### Match sync / data pipeline
 
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob token
 - `BLOB_OBJECT_ACCESS` (optional) - `private` (default) or `public`
-- `MATCH_RESULTS_URL` (optional) - custom scoreboard endpoint
+- `MATCH_RESULTS_URL` (optional) - custom scoreboard endpoint (required for profiles without a built-in default feed URL)
 - `ESPN_LOOKBACK_DAYS` (optional) - lookback window for late score updates (default: `7`)
 - `CRON_SECRET` (optional) - manual/external cron authorization secret
 
-Default `MATCH_RESULTS_URL`:
+Default `MATCH_RESULTS_URL` for `world-cup-2026`:
 
 `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard`
+
+Default `MATCH_RESULTS_URL` for `nations-championship-2026`:
+
+`https://api.wr-rims-prod.pulselive.com/rugby/v3/event/46294cf5-dee3-4234-957a-dbe1f08049f2/schedule`
+
+For rugby profile sync, teams and standings are also fetched from the same event base:
+
+- `/teams`
+- `/standings`
+
+## Competition profiles
+
+Profiles are defined under `src/competitions/` and centralize:
+
+- branding and names
+- local tournament data file
+- blob storage path
+- default Mongo DB name
+- default match feed URL (optional)
+
+Bundled profiles:
+
+- `world-cup-2026` -> `src/data/worldcup.json`
+- `nations-championship-2026` -> `src/data/nations-championship-2026.json`
+
+## Deploying two Vercel projects from one repo
+
+Create two Vercel projects that point to the same repository and branch, and set different env values:
+
+### Project A (Football World Cup)
+
+- `COMPETITION_ID=world-cup-2026`
+- `NEXT_PUBLIC_COMPETITION_ID=world-cup-2026`
+- `MONGODB_DB=world-cup` (or omit to use profile default)
+- `MATCH_RESULTS_URL` optional (profile default already set)
+- `NEXT_PUBLIC_WORLD_CUP_SITE_URL=https://<world-cup-project-domain>`
+- `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL=https://<nations-project-domain>`
+
+### Project B (Rugby Nations Championship)
+
+- `COMPETITION_ID=nations-championship-2026`
+- `NEXT_PUBLIC_COMPETITION_ID=nations-championship-2026`
+- `MONGODB_DB=nations-championship-2026` (or omit to use profile default)
+- `MATCH_RESULTS_URL=<your rugby results feed endpoint>`
+- `NEXT_PUBLIC_WORLD_CUP_SITE_URL=https://<world-cup-project-domain>`
+- `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL=https://<nations-project-domain>`
+
+Both projects can reuse the same codebase while keeping data and persistence separated by profile.
+
+### Local competition switcher
+
+The switcher appears in Settings and can jump between sites locally too.
+
+- Default local targets are:
+  - `world-cup-2026` -> `http://localhost:3001/overview`
+  - `nations-championship-2026` -> `http://localhost:3002/overview`
+- You can override them with:
+  - `NEXT_PUBLIC_WORLD_CUP_SITE_URL`
+  - `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL`
 
 ## Match sync cron
 
@@ -83,7 +145,13 @@ Supported statuses: `scheduled`, `live`, `finished`.
 
 ## Local Docker stack
 
-The repository includes `app + mongo + cron` via `docker-compose.yml`.
+The repository includes both competition apps at once via `docker-compose.yml`:
+
+- `app-world-cup` on `http://localhost:3001`
+- `app-nations-championship` on `http://localhost:3002`
+- shared `mongo`
+- `cron-world-cup` (local sync runner)
+- `cron-nations-championship` (local sync runner)
 
 1. Copy `.env.docker.example` to `.env` and adjust values.
 2. Start:
@@ -93,9 +161,11 @@ docker compose up --build
 ```
 
 Notes:
-- App runs on `http://localhost:${APP_PORT:-3001}`
+- World Cup app runs on `http://localhost:${WORLD_CUP_APP_PORT:-3001}`
+- Nations Championship app runs on `http://localhost:${NATIONS_CHAMPIONSHIP_APP_PORT:-3002}`
 - Mongo is exposed at `localhost:${MONGODB_PORT:-27018}`
 - Source is bind-mounted for live reload (polling enabled for Docker Desktop reliability)
+- Both competition cron services are enabled by default.
 
 ## AI instruction files
 

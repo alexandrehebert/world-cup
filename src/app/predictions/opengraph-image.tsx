@@ -1,12 +1,16 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ImageResponse } from 'next/og'
+import { getActiveCompetitionProfile } from '../../competitions'
 
 export const dynamic = 'force-static'
 export const contentType = 'image/png'
 export const size = { width: 1200, height: 630 }
-export const alt = 'World Cup predictions invite'
+export const alt = `${getActiveCompetitionProfile().shortName} predictions invite`
 
 export default function Image() {
+  const competition = getActiveCompetitionProfile()
+  const picksHeading = `Make your ${competition.shortName} picks`
+
   return new ImageResponse(
     (
       <div
@@ -23,12 +27,12 @@ export default function Image() {
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: 2 }}>FIFA WORLD CUP 2026</div>
+          <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: 2 }}>{competition.displayName.toUpperCase()}</div>
           <div style={{ fontSize: 24, fontWeight: 600, color: '#c5d5f5' }}>Prediction challenge</div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 920 }}>
-          <div style={{ fontSize: 74, fontWeight: 900, lineHeight: 1.05 }}>Make your World Cup picks</div>
+          <div style={{ fontSize: 74, fontWeight: 900, lineHeight: 1.05 }}>{picksHeading}</div>
           <div style={{ fontSize: 34, fontWeight: 600, color: '#f4c542', lineHeight: 1.2 }}>
             Join the predictions page and compete with friends.
           </div>
@@ -36,7 +40,7 @@ export default function Image() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontSize: 30, fontWeight: 700, color: '#7fe5c5' }}>Pick winners and exact scores</div>
-          <div style={{ fontSize: 26, opacity: 0.76 }}>world-cup.hebert.app</div>
+          <div style={{ fontSize: 26, opacity: 0.76 }}>{competition.siteDisplayHost ?? competition.id}</div>
         </div>
       </div>
     ),

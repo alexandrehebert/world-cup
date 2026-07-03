@@ -3,6 +3,7 @@ export type LocaleCode = 'en' | 'fr'
 export type SectionKey = 'overview' | 'groups' | 'teams' | 'matches' | 'bracket' | 'predictions' | 'leaderboard'
 
 export interface TournamentMeta {
+  competitionId?: string
   edition: string
   season: string
   host: string

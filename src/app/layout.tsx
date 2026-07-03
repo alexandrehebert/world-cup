@@ -2,7 +2,10 @@
 import type { Metadata } from 'next'
 import { cookies, headers } from 'next/headers'
 import Script from 'next/script'
+import { getActiveCompetitionProfile } from '../competitions'
 import { materialSymbolsRounded } from './fonts'
+import { getActiveCompetitionAppIcons, getActiveCompetitionLoaderIconAsset } from '../lib/competition-branding'
+import { loadTournamentData } from '../server/tournament-data'
 import { StartupLoader } from './startup-loader'
 import {
   LOCALE_COOKIE_NAME,
@@ -14,16 +17,25 @@ import {
 import './globals.css'
 import 'flag-icons/css/flag-icons.min.css'
 
-export const metadata: Metadata = {
-  title: 'FIFA World Cup 2026',
-  description: 'World Cup dashboard with live results, fixtures, groups, and bracket.',
-  icons: {
-    icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-    ],
-    shortcut: ['/icon.svg'],
-  },
+const appIcons = getActiveCompetitionAppIcons()
+const activeCompetition = getActiveCompetitionProfile()
+const startupLoaderIconAsset = getActiveCompetitionLoaderIconAsset()
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  const tournament = await loadTournamentData()
+  const title = tournament.meta.edition || activeCompetition.displayName
+
+  return {
+    title,
+    description: `${activeCompetition.shortName} dashboard with live results, fixtures, groups, and bracket.`,
+    icons: {
+      icon: [
+        { url: appIcons.icon, type: 'image/svg+xml' },
+        { url: appIcons.favicon, type: 'image/svg+xml' },
+      ],
+      shortcut: [appIcons.icon],
+    },
+  }
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -37,7 +49,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const initialLocale = isLocaleCode(cookieLocale) ? cookieLocale : (acceptLanguageHeader.toLowerCase().startsWith('fr') ? 'fr' : 'en')
 
   return (
-    <html lang={initialLocale} suppressHydrationWarning data-theme={initialTheme} style={initialColorScheme ? { colorScheme: initialColorScheme } : undefined}>
+    <html
+      lang={initialLocale}
+      suppressHydrationWarning
+      data-theme={initialTheme}
+      data-competition-id={activeCompetition.id}
+      style={initialColorScheme ? { colorScheme: initialColorScheme } : undefined}
+    >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -74,7 +92,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             }
           })();`}
         </Script>
-        <StartupLoader />
+        <StartupLoader loaderIconAsset={startupLoaderIconAsset} />
         {children}
       </body>
     </html>

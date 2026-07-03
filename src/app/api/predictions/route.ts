@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getActiveCompetitionProfile } from '../../../competitions'
 import { parseSessionToken, sessionCookieName } from '../../../server/auth'
 import {
   getPrediction,
@@ -18,7 +19,6 @@ type UpsertPredictionBody = {
   awayScore?: number
 }
 
-const GUEST_PREDICTOR_COOKIE_NAME = 'wc_guest_predictor'
 const GUEST_PREDICTOR_ID_REGEX = /^[a-z0-9_-]{16,64}$/
 
 const normalizeScore = (value: unknown) => {
@@ -55,13 +55,14 @@ const getSessionUser = (request: NextRequest) => {
 }
 
 const resolveRequesterUserId = (request: NextRequest) => {
+  const guestPredictorCookieName = getActiveCompetitionProfile().guestPredictorCookieName
   const session = getSessionUser(request)
 
   if (session) {
     return session.id
   }
 
-  const guestPredictorId = request.cookies.get(GUEST_PREDICTOR_COOKIE_NAME)?.value?.trim() ?? ''
+  const guestPredictorId = request.cookies.get(guestPredictorCookieName)?.value?.trim() ?? ''
   return GUEST_PREDICTOR_ID_REGEX.test(guestPredictorId) ? `guest:${guestPredictorId}` : null
 }
 

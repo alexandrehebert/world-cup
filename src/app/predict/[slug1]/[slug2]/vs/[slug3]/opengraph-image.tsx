@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ImageResponse } from 'next/og'
+import { getActiveCompetitionProfile } from '../../../../../../competitions'
 import { loadTournamentData } from '../../../../../../server/tournament-data'
 import { getMatchStageFromSlug } from '../../../../../../lib/match-path'
 import type { TournamentData } from '../../../../../../types/tournament'
@@ -7,7 +8,7 @@ import type { TournamentData } from '../../../../../../types/tournament'
 export const dynamic = 'force-dynamic'
 export const contentType = 'image/png'
 export const size = { width: 1200, height: 630 }
-export const alt = 'Do your World Cup prediction'
+export const alt = `Do your ${getActiveCompetitionProfile().shortName} prediction`
 
 type MatchRecord = TournamentData['matches'][number]
 type TeamRecord = TournamentData['teams'][number]
@@ -37,6 +38,7 @@ const findMatchByCodes = (
 }
 
 export default async function Image({ params }: { params: Promise<{ slug1: string; slug2: string; slug3: string }> }) {
+  const competition = getActiveCompetitionProfile()
   const { slug1, slug2, slug3 } = await params
   const stage = slug1
   const homeCode = slug2
@@ -48,7 +50,7 @@ export default async function Image({ params }: { params: Promise<{ slug1: strin
   const awayTeam = match?.away.teamId ? teamsById[match.away.teamId] : undefined
   const homeLabel = homeTeam?.name ?? homeTeam?.code ?? homeCode
   const awayLabel = awayTeam?.name ?? awayTeam?.code ?? awayCode
-  const venue = match ? [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ') : 'FIFA World Cup 2026'
+  const venue = match ? [match.venue?.stadium, match.venue?.city, match.venue?.country].filter(Boolean).join(' · ') : competition.displayName
 
   return new ImageResponse(
     (
@@ -66,7 +68,7 @@ export default async function Image({ params }: { params: Promise<{ slug1: strin
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: 1.5 }}>FIFA WORLD CUP 2026</div>
+          <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: 1.5 }}>{competition.displayName.toUpperCase()}</div>
           <div style={{ fontSize: 24, color: '#7dd3fc', fontWeight: 700 }}>Quick prediction invite</div>
         </div>
 
@@ -81,7 +83,7 @@ export default async function Image({ params }: { params: Promise<{ slug1: strin
             <div style={{ fontSize: 30, fontWeight: 700, color: '#86efac' }}>Do your prediction now</div>
             <div style={{ fontSize: 24, opacity: 0.86 }}>{venue}</div>
           </div>
-          <div style={{ fontSize: 26, opacity: 0.76 }}>world-cup.hebert.app</div>
+          <div style={{ fontSize: 26, opacity: 0.76 }}>{competition.siteDisplayHost ?? competition.id}</div>
         </div>
       </div>
     ),

@@ -1,4 +1,8 @@
-export const LIVE_TOURNAMENT_ENDPOINT = 'https://world-cup.hebert.app/api/tournament'
+import { getActiveCompetitionProfile } from '../competitions'
+
+const competition = getActiveCompetitionProfile()
+
+export const LIVE_TOURNAMENT_ENDPOINT = competition.siteDisplayHost ? `https://${competition.siteDisplayHost}/api/tournament` : '/api/tournament'
 
 export const getTournamentApiBaseUrl = () => {
   return '/api/tournament'

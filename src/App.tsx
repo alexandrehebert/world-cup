@@ -12,15 +12,21 @@ import { ProfilePage } from './views/profile-page'
 import { MatchPredictionPage } from './views/match-prediction-page'
 import { NotFoundPage } from './views/not-found-page'
 import { isPredictionsFeatureEnabled } from './lib/features'
+import { useTournament } from './contexts/tournament-context'
+import { hasBracketSection, hasGroupsSection } from './lib/tournament-sections'
 
 function App() {
+  const { groups, bracketRounds } = useTournament()
+  const hasGroups = hasGroupsSection(groups)
+  const hasBracket = hasBracketSection(bracketRounds)
+
   return (
     <Routes>
       <Route element={<DashboardLayout header={<Header />} />}>
         <Route index element={<OverviewPage />} />
         <Route path="/dashboard" element={<Navigate to="/overview" replace />} />
         <Route path="/overview" element={<OverviewPage />} />
-        <Route path="/groups" element={<GroupsPage />} />
+        <Route path="/groups" element={hasGroups ? <GroupsPage /> : <Navigate to="/overview" replace />} />
         <Route path="/teams" element={<TeamsPage />} />
         <Route path="/team/:teamCode" element={<TeamsPage />} />
         <Route path="/matches" element={<MatchesPage />} />
@@ -28,10 +34,10 @@ function App() {
         <Route path="/match/tbd/:round/:slot" element={<MatchesPage />} />
         <Route path="/match/:stage/:homeCode/vs/:awayCode" element={<MatchesPage />} />
         <Route path="/match/:homeCode/vs/:awayCode" element={<MatchesPage />} />
-        <Route path="/bracket" element={<BracketPage />} />
-        <Route path="/bracket/tbd/:round/:slot" element={<BracketPage />} />
-        <Route path="/bracket/:stage/:homeCode/vs/:awayCode" element={<BracketPage />} />
-        <Route path="/bracket/:homeCode/vs/:awayCode" element={<BracketPage />} />
+        <Route path="/bracket" element={hasBracket ? <BracketPage /> : <Navigate to="/overview" replace />} />
+        <Route path="/bracket/tbd/:round/:slot" element={hasBracket ? <BracketPage /> : <Navigate to="/overview" replace />} />
+        <Route path="/bracket/:stage/:homeCode/vs/:awayCode" element={hasBracket ? <BracketPage /> : <Navigate to="/overview" replace />} />
+        <Route path="/bracket/:homeCode/vs/:awayCode" element={hasBracket ? <BracketPage /> : <Navigate to="/overview" replace />} />
         <Route
           path="/predictions"
           element={isPredictionsFeatureEnabled ? <PredictionsPage /> : <Navigate to="/overview" replace />}

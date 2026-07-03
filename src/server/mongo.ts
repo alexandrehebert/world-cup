@@ -1,4 +1,5 @@
 import { Db, MongoClient } from 'mongodb'
+import { getActiveCompetitionProfile } from '../competitions'
 import type { PredictionRecord, StoredUser } from '../types/predictions'
 
 interface StoredUserDocument extends StoredUser {
@@ -10,7 +11,7 @@ interface PredictionDocument extends PredictionRecord {
 }
 
 const databaseUri = process.env.MONGODB_URI
-const databaseName = process.env.MONGODB_DB ?? 'world-cup'
+const databaseName = process.env.MONGODB_DB ?? getActiveCompetitionProfile().defaultMongoDbName
 
 let clientPromise: Promise<MongoClient> | null = null
 let dbPromise: Promise<Db> | null = null

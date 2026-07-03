@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { getActiveCompetitionProfile } from '../../../../competitions'
 import { parseSessionToken, sessionCookieName } from '../../../../server/auth'
 import {
   getPrediction,
@@ -21,7 +22,6 @@ type PublicPredictionBody = {
   guestName?: string
 }
 
-const GUEST_PREDICTOR_COOKIE_NAME = 'wc_guest_predictor'
 const GUEST_PREDICTOR_COOKIE_TTL_SECONDS = 60 * 60 * 24 * 365
 const GUEST_PREDICTOR_ID_REGEX = /^[a-z0-9_-]{16,64}$/
 
@@ -79,7 +79,8 @@ const buildDistributionFromPredictions = (
 }
 
 const resolveGuestPredictorId = (request: NextRequest) => {
-  const existingCookieValue = request.cookies.get(GUEST_PREDICTOR_COOKIE_NAME)?.value?.trim() ?? ''
+  const guestPredictorCookieName = getActiveCompetitionProfile().guestPredictorCookieName
+  const existingCookieValue = request.cookies.get(guestPredictorCookieName)?.value?.trim() ?? ''
 
   if (GUEST_PREDICTOR_ID_REGEX.test(existingCookieValue)) {
     return { predictorId: existingCookieValue }
@@ -91,12 +92,13 @@ const resolveGuestPredictorId = (request: NextRequest) => {
 }
 
 const resolveRequesterUserId = (request: NextRequest) => {
+  const guestPredictorCookieName = getActiveCompetitionProfile().guestPredictorCookieName
   const session = parseSessionToken(request.cookies.get(sessionCookieName)?.value)
   if (session) {
     return session.id
   }
 
-  const guestPredictorId = request.cookies.get(GUEST_PREDICTOR_COOKIE_NAME)?.value?.trim() ?? ''
+  const guestPredictorId = request.cookies.get(guestPredictorCookieName)?.value?.trim() ?? ''
   return GUEST_PREDICTOR_ID_REGEX.test(guestPredictorId) ? `guest:${guestPredictorId}` : null
 }
 
@@ -261,8 +263,9 @@ export async function POST(request: NextRequest) {
     }, { status: 200 })
 
     if (!session && guestPredictor) {
+      const guestPredictorCookieName = getActiveCompetitionProfile().guestPredictorCookieName
       response.cookies.set({
-        name: GUEST_PREDICTOR_COOKIE_NAME,
+        name: guestPredictorCookieName,
         value: guestPredictor.predictorId,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',

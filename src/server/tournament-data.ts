@@ -1,16 +1,26 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { head, put } from '@vercel/blob'
+import { getActiveCompetitionProfile } from '../competitions'
 import type { TournamentData } from '../types/tournament'
 
-const TOURNAMENT_BLOB_PATH = 'worldcup/worldcup.json'
-
-const resolveLocalDataPath = () => path.join(process.cwd(), 'src', 'data', 'worldcup.json')
+const resolveLocalDataPath = () => {
+  const competition = getActiveCompetitionProfile()
+  return path.join(process.cwd(), 'src', 'data', competition.localDataFile)
+}
 
 export const readLocalTournamentData = async (): Promise<TournamentData> => {
+  const competition = getActiveCompetitionProfile()
   const filePath = resolveLocalDataPath()
   const raw = await fs.readFile(filePath, 'utf8')
-  return JSON.parse(raw) as TournamentData
+  const parsed = JSON.parse(raw) as TournamentData
+  return {
+    ...parsed,
+    meta: {
+      ...parsed.meta,
+      competitionId: competition.id,
+    },
+  }
 }
 
 export const writeLocalTournamentData = async (data: TournamentData) => {
@@ -67,6 +77,7 @@ export const applyCanonicalVenueData = (data: TournamentData, canonical: Tournam
 }
 
 export const loadTournamentData = async (): Promise<TournamentData> => {
+  const competition = getActiveCompetitionProfile()
   const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN
 
   if (!blobReadWriteToken) {
@@ -74,7 +85,7 @@ export const loadTournamentData = async (): Promise<TournamentData> => {
   }
 
   try {
-    const blob = await head(TOURNAMENT_BLOB_PATH)
+    const blob = await head(competition.blobDataFile)
     const response = await fetch(blob.url, {
       cache: 'no-store',
       headers: {
@@ -91,27 +102,42 @@ export const loadTournamentData = async (): Promise<TournamentData> => {
       response.json() as Promise<TournamentData>,
       readLocalTournamentData(),
     ])
-    return applyCanonicalVenueData(blobData, localData)
+    const merged = applyCanonicalVenueData(blobData, localData)
+    return {
+      ...merged,
+      meta: {
+        ...merged.meta,
+        competitionId: competition.id,
+      },
+    }
   } catch {
     return readLocalTournamentData()
   }
 }
 
 export const saveTournamentData = async (data: TournamentData) => {
+  const competition = getActiveCompetitionProfile()
+  const normalizedData: TournamentData = {
+    ...data,
+    meta: {
+      ...data.meta,
+      competitionId: competition.id,
+    },
+  }
   const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN
 
   if (!blobReadWriteToken) {
-    await writeLocalTournamentData(data)
+    await writeLocalTournamentData(normalizedData)
     return
   }
 
   const configuredAccess = (process.env.BLOB_OBJECT_ACCESS ?? '').toLowerCase()
   const primaryAccess: 'public' | 'private' = configuredAccess === 'public' ? 'public' : 'private'
   const fallbackAccess: 'public' | 'private' = primaryAccess === 'public' ? 'private' : 'public'
-  const body = JSON.stringify(data, null, 2)
+  const body = JSON.stringify(normalizedData, null, 2)
 
   try {
-    await put(TOURNAMENT_BLOB_PATH, body, {
+    await put(competition.blobDataFile, body, {
       access: primaryAccess,
       contentType: 'application/json',
       addRandomSuffix: false,
@@ -119,7 +145,7 @@ export const saveTournamentData = async (data: TournamentData) => {
     })
   } catch (primaryError) {
     try {
-      await put(TOURNAMENT_BLOB_PATH, body, {
+      await put(competition.blobDataFile, body, {
         access: fallbackAccess,
         contentType: 'application/json',
         addRandomSuffix: false,

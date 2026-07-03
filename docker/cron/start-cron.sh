@@ -6,9 +6,12 @@ if [ -z "${CRON_SECRET:-}" ]; then
   exit 1
 fi
 
+APP_SERVICE_NAME="${APP_SERVICE_NAME:-app}"
+APP_PORT="${APP_PORT:-3000}"
+
 cat <<EOF >/etc/crontabs/root
-* * * * * curl -fsS -X POST -H "Authorization: Bearer ${CRON_SECRET}" http://app:3000/api/cron/sync-matches >/proc/1/fd/1 2>/proc/1/fd/2
+* * * * * curl -fsS -X POST -H "Authorization: Bearer ${CRON_SECRET}" http://${APP_SERVICE_NAME}:${APP_PORT}/api/cron/sync-matches >/proc/1/fd/1 2>/proc/1/fd/2
 EOF
 
-echo "Local cron enabled: calling /api/cron/sync-matches every minute."
+echo "Local cron enabled: calling http://${APP_SERVICE_NAME}:${APP_PORT}/api/cron/sync-matches every minute."
 exec crond -f -l 8

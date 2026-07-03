@@ -1,16 +1,17 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ImageResponse } from 'next/og'
+import { getActiveCompetitionProfile } from '../../../competitions'
 
 export const dynamic = 'force-static'
 export const contentType = 'image/png'
 export const size = { width: 1200, height: 630 }
-export const alt = 'FIFA World Cup 2026 menu preview'
+export const alt = `${getActiveCompetitionProfile().displayName} menu preview`
 
 type MenuImageCopy = { heading: string; subheading: string; accent: string }
 
 const copyBySection: Record<string, MenuImageCopy> = {
   overview: {
-    heading: 'World Cup Schedule',
+    heading: 'Tournament Schedule',
     subheading: 'Track every upcoming fixture and kickoff.',
     accent: '#7fe5c5',
   },
@@ -20,7 +21,7 @@ const copyBySection: Record<string, MenuImageCopy> = {
     accent: '#8ec5ff',
   },
   teams: {
-    heading: 'World Cup Teams',
+    heading: 'Tournament Teams',
     subheading: 'Open team details, fixtures, and group context.',
     accent: '#7fe5c5',
   },
@@ -42,10 +43,11 @@ const copyBySection: Record<string, MenuImageCopy> = {
 }
 
 export default async function Image({ params }: { params: Promise<{ section: string }> }) {
+  const competition = getActiveCompetitionProfile()
   const { section } = await params
   const key = String(section ?? '').trim().toLowerCase()
   const copy = copyBySection[key] ?? {
-    heading: 'FIFA World Cup 2026',
+    heading: competition.displayName,
     subheading: 'Live results, fixtures, groups, and bracket.',
     accent: '#7fe5c5',
   }
@@ -66,7 +68,7 @@ export default async function Image({ params }: { params: Promise<{ section: str
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: 2 }}>FIFA WORLD CUP 2026</div>
+          <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: 2 }}>{competition.displayName.toUpperCase()}</div>
           <div style={{ fontSize: 24, fontWeight: 600, color: '#c5d5f5' }}>Dashboard</div>
         </div>
 
@@ -76,7 +78,7 @@ export default async function Image({ params }: { params: Promise<{ section: str
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: 30, fontWeight: 700, color: '#7fe5c5' }}>world-cup.hebert.app</div>
+          <div style={{ fontSize: 30, fontWeight: 700, color: '#7fe5c5' }}>{competition.siteDisplayHost ?? competition.id}</div>
           <div style={{ fontSize: 26, opacity: 0.76 }}>Share this page</div>
         </div>
       </div>

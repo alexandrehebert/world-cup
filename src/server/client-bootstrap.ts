@@ -1,4 +1,5 @@
 import { cookies, headers } from 'next/headers'
+import { getActiveCompetitionProfile } from '../competitions'
 import { parseSessionToken, sessionCookieName } from './auth'
 import {
   getUserById,
@@ -22,7 +23,6 @@ import type { ClientBootstrapData } from '../types/bootstrap'
 import type { MatchOutcome, PredictionDistribution } from '../types/predictions'
 
 const DEFAULT_LEADERBOARD_LIMIT = 100
-const GUEST_PREDICTOR_COOKIE_NAME = 'wc_guest_predictor'
 const GUEST_PREDICTOR_ID_REGEX = /^[a-z0-9_-]{16,64}$/
 
 const buildDistributionFromPredictions = (
@@ -110,7 +110,7 @@ export const loadClientBootstrapData = async (options?: { publicMatchId?: string
   const currentPredictorId = session
     ? session.id
     : (() => {
-        const guestPredictorId = cookieStore.get(GUEST_PREDICTOR_COOKIE_NAME)?.value?.trim() ?? ''
+        const guestPredictorId = cookieStore.get(guestPredictorCookieName)?.value?.trim() ?? ''
         return GUEST_PREDICTOR_ID_REGEX.test(guestPredictorId) ? `guest:${guestPredictorId}` : null
       })()
   const initialPublicMatchPrediction = isPredictionsFeatureEnabled && publicMatchId
@@ -153,3 +153,4 @@ export const loadClientBootstrapData = async (options?: { publicMatchId?: string
     initialPublicMatchPrediction,
   }
 }
+  const guestPredictorCookieName = getActiveCompetitionProfile().guestPredictorCookieName

@@ -19,6 +19,32 @@ const MATCH_QUERY_PARAM = 'match'
 const TBD_MATCH_PATH_REGEX = /^\/(match|bracket|predict)\/tbd\/([^/]+)\/(\d+)\/?$/i
 const TEAM_PATH_REGEX = /^\/team\/([^/]+)\/?$/i
 
+const isSectionPath = (pathname: string, sectionPath: string) => pathname === sectionPath || pathname.startsWith(`${sectionPath}/`)
+const isMatchPath = (pathname: string) => isSectionPath(pathname, '/match')
+const isTeamPath = (pathname: string) => isSectionPath(pathname, '/team')
+const isBracketPath = (pathname: string) => isSectionPath(pathname, '/bracket')
+const isPredictPath = (pathname: string) => isSectionPath(pathname, '/predict')
+
+export const getDashboardBasePathname = (pathname: string, matchModalReturnPathname: string | null) => {
+  if (isMatchPath(pathname)) {
+    return matchModalReturnPathname ?? '/matches'
+  }
+
+  if (isTeamPath(pathname)) {
+    return matchModalReturnPathname ?? '/teams'
+  }
+
+  if (isBracketPath(pathname)) {
+    return '/bracket'
+  }
+
+  if (isPredictPath(pathname)) {
+    return '/predict'
+  }
+
+  return pathname
+}
+
 const areFavoriteListsEqual = (first: string[], second: string[]) => {
   if (first.length !== second.length) {
     return false
@@ -260,6 +286,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   })
   const isApplyingUserFavoritesRef = useRef(false)
   const suppressMatchUrlHydrationRef = useRef(false)
+  const modalReturnPathnameRef = useRef<string | null>(null)
 
   const setSelectedMatchId = useCallback((matchId: string | null) => {
     setSelectedMatchIdState(matchId)
@@ -426,22 +453,24 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     const currentSearch = window.location.search
     const selectedTeamCode = selectedTeamId ? (teamIdToCode[selectedTeamId] ?? null) : null
     const selectedMatchPath = selectedMatchId ? matchIdToPath[selectedMatchId] : null
+    const isCurrentTeamPath = isTeamPath(currentPathname)
+    const isCurrentMatchPath = isMatchPath(currentPathname)
+    const isCurrentBracketPath = isBracketPath(currentPathname)
+    const isCurrentPredictPath = isPredictPath(currentPathname)
+    const isCurrentModalPath = isCurrentTeamPath || isCurrentMatchPath || isCurrentBracketPath || isCurrentPredictPath
+    const hasActiveModal = selectedTeamCode !== null || selectedMatchPath !== null
+
+    if (hasActiveModal && !isCurrentModalPath) {
+      modalReturnPathnameRef.current = currentPathname
+    }
+
     const matchContextBasePath =
-      currentPathname === '/bracket' || currentPathname.startsWith('/bracket/')
+      isCurrentBracketPath
         ? '/bracket'
-        : currentPathname === '/predict' || currentPathname.startsWith('/predict/')
+        : isCurrentPredictPath
           ? '/predict'
           : '/match'
-    const basePathname =
-      currentPathname === '/match' || currentPathname.startsWith('/match/')
-        ? '/matches'
-        : currentPathname === '/team' || currentPathname.startsWith('/team/')
-          ? '/teams'
-          : currentPathname === '/bracket' || currentPathname.startsWith('/bracket/')
-            ? '/bracket'
-            : currentPathname === '/predict' || currentPathname.startsWith('/predict/')
-              ? '/predict'
-              : currentPathname
+    const basePathname = getDashboardBasePathname(currentPathname, modalReturnPathnameRef.current)
     const targetUrl = selectedTeamCode
       ? `/team/${selectedTeamCode}`
       : selectedMatchPath
@@ -455,10 +484,14 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       return
     }
 
+    if (!hasActiveModal && (isCurrentTeamPath || isCurrentMatchPath)) {
+      modalReturnPathnameRef.current = null
+    }
+
     window.history.replaceState(window.history.state, '', targetUrl)
 
     // Keep React Router's location in sync with history.replaceState changes for non-team modal URLs.
-    if (!selectedTeamCode) {
+    if (modalReturnPathnameRef.current === null && !selectedTeamCode) {
       window.dispatchEvent(new PopStateEvent('popstate', { state: window.history.state }))
     }
   }, [location.pathname, location.search, matchIdToPath, selectedMatchId, selectedTeamId, teamIdToCode])
