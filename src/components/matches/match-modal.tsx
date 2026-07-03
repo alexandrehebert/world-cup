@@ -6,6 +6,8 @@ import { useLocale } from '../../contexts/locale-context'
 import { usePredictions } from '../../contexts/predictions-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
+import { resolveCompetitionId } from '../../competitions'
+import { hidesGroupStageLabel } from '../../lib/competition-sections'
 import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
 import { isPredictionsFeatureEnabled } from '../../lib/features'
 import { Icon } from '../../lib/icons'
@@ -89,7 +91,9 @@ export const MatchModal = () => {
   const [draftMatchId, setDraftMatchId] = useState<string | null>(null)
   const [isDraftDirty, setIsDraftDirty] = useState(false)
   const [predictionError, setPredictionError] = useState<PredictionErrorState | null>(null)
-  const { matchesById, teamsById, bracketRounds } = useTournament()
+  const { meta, matchesById, teamsById, bracketRounds } = useTournament()
+  const competitionId = resolveCompetitionId(meta.competitionId)
+  const hideGroupStage = hidesGroupStageLabel(competitionId)
   const roundMatchIdsById = useMemo(
     () => new Map(bracketRounds.map((round) => [round.id, [...round.matchIds]])),
     [bracketRounds],
@@ -381,7 +385,9 @@ export const MatchModal = () => {
       </div>
 
       <div className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-        <p className="text-center text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
+        {match.stage === 'group' && hideGroupStage ? null : (
+          <p className="text-center text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
+        )}
 
         <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <div className="min-w-0 p-2 text-center">

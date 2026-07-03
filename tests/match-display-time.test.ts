@@ -48,3 +48,8 @@ test('getMatchDisplayTime maps AET to the localized extra-time status', () => {
   const displayTime = getMatchDisplayTime(createFinishedMatch('AET'), en.labels, Date.now(), 'en')
   assert.equal(displayTime, en.labels.afterExtraTime)
 })
+
+test('getMatchDisplayTime maps world rugby C status to localized full-time text', () => {
+  const displayTime = getMatchDisplayTime(createFinishedMatch('C'), en.labels, Date.now(), 'en')
+  assert.equal(displayTime, en.labels.fullTime)
+})

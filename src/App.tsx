@@ -11,14 +11,19 @@ import { LeaderboardPage } from './views/leaderboard-page'
 import { ProfilePage } from './views/profile-page'
 import { MatchPredictionPage } from './views/match-prediction-page'
 import { NotFoundPage } from './views/not-found-page'
+import { resolveCompetitionId } from './competitions'
 import { isPredictionsFeatureEnabled } from './lib/features'
+import { getStandingsSectionPath, usesStandingsSectionPath } from './lib/competition-sections'
 import { useTournament } from './contexts/tournament-context'
 import { hasBracketSection, hasGroupsSection } from './lib/tournament-sections'
 
 function App() {
-  const { groups, bracketRounds } = useTournament()
+  const { meta, groups, bracketRounds } = useTournament()
+  const competitionId = resolveCompetitionId(meta.competitionId)
   const hasGroups = hasGroupsSection(groups)
   const hasBracket = hasBracketSection(bracketRounds)
+  const groupsSectionPath = getStandingsSectionPath(competitionId)
+  const useStandingsPath = usesStandingsSectionPath(competitionId)
 
   return (
     <Routes>
@@ -26,7 +31,14 @@ function App() {
         <Route index element={<OverviewPage />} />
         <Route path="/dashboard" element={<Navigate to="/overview" replace />} />
         <Route path="/overview" element={<OverviewPage />} />
-        <Route path="/groups" element={hasGroups ? <GroupsPage /> : <Navigate to="/overview" replace />} />
+        <Route
+          path="/groups"
+          element={useStandingsPath ? <Navigate to={groupsSectionPath} replace /> : (hasGroups ? <GroupsPage /> : <Navigate to="/overview" replace />)}
+        />
+        <Route
+          path="/standings"
+          element={useStandingsPath ? (hasGroups ? <GroupsPage /> : <Navigate to="/overview" replace />) : <Navigate to="/groups" replace />}
+        />
         <Route path="/teams" element={<TeamsPage />} />
         <Route path="/team/:teamCode" element={<TeamsPage />} />
         <Route path="/matches" element={<MatchesPage />} />

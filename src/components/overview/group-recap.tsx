@@ -1,13 +1,17 @@
 import { useTournament } from '../../contexts/tournament-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
+import { resolveCompetitionId } from '../../competitions'
+import { usesStandingsSectionPath } from '../../lib/competition-sections'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 
 export const GroupRecap = () => {
   const { t } = useLocale()
   const { isFavoriteTeam } = useDashboard()
-  const { groups, teamsById } = useTournament()
+  const { meta, groups, teamsById } = useTournament()
+  const competitionId = resolveCompetitionId(meta.competitionId)
+  const useStandingsHeader = usesStandingsSectionPath(competitionId)
 
   return (
     <div className="grid gap-4 xl:grid-cols-2">
@@ -18,11 +22,13 @@ export const GroupRecap = () => {
           <div key={group.id} className="bg-[var(--surface)]">
             <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-5 py-3">
               <h3 className="text-sm font-semibold text-[var(--text-strong)]">
-                {t.groups[group.id] ?? group.label}
+                {useStandingsHeader ? t.labels.standings : (t.groups[group.id] ?? group.label)}
               </h3>
-              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-text)]">
-                {group.id}
-              </span>
+              {useStandingsHeader ? null : (
+                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-text)]">
+                  {group.id}
+                </span>
+              )}
             </div>
 
             <div className="divide-y divide-[var(--border)]">

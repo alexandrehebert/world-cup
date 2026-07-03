@@ -4,7 +4,7 @@
     "edition": "Nations Championship 2026",
     "season": "2026",
     "host": "TBD",
-    "updatedAt": "2026-07-03T17:18:01.004Z",
+    "updatedAt": "2026-07-03T18:00:01.093Z",
     "venueCountry": "TBD"
   },
   "teams": [
@@ -30,7 +30,7 @@
       "id": "ire",
       "code": "IRE",
       "name": "Ireland",
-      "flagCode": "ir"
+      "flagCode": "ie"
     },
     {
       "id": "jpn",
@@ -81,7 +81,186 @@
       "flagCode": "gb-sct"
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": "group-1",
+      "label": "Pool 1",
+      "teamIds": [
+        "nzl",
+        "fra",
+        "aus",
+        "ire",
+        "jpn",
+        "ita",
+        "fij",
+        "wal",
+        "rsa",
+        "eng",
+        "arg",
+        "sco"
+      ],
+      "standings": [
+        {
+          "teamId": "nzl",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "fra",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "aus",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "ire",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "jpn",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "ita",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "fij",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "wal",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "rsa",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "eng",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "arg",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        },
+        {
+          "teamId": "sco",
+          "played": 0,
+          "won": 0,
+          "drawn": 0,
+          "lost": 0,
+          "goalsFor": 0,
+          "goalsAgainst": 0,
+          "points": 0
+        }
+      ],
+      "matchIds": [
+        "f2841b7f-1e16-45bd-97b0-85c179bb28ca",
+        "1a9101ea-fbd4-4846-ac1c-fd2c9c208f41",
+        "bb26ee04-38a6-41ae-9247-eca420a8dda1",
+        "78344c13-ccae-4d09-8d3c-4525954084bd",
+        "572577b5-5e95-4ad5-8fce-25da14ed11e4",
+        "7d69a2e2-f8d4-46a2-9d98-39694493e482",
+        "988c93b4-cd83-4438-a0c9-9ebfcf8c7c92",
+        "9a049f13-d461-4b58-9d4a-deb5cf9d2dd0",
+        "5a03f594-7c72-4134-a199-3fea4980e686",
+        "3c4ba697-6a37-4081-800c-92205d5be4ee",
+        "8d7befd5-96a5-4e4d-88b6-804e54d1a76c",
+        "555a7156-e0c3-4146-86ed-9495cb555fe7",
+        "fadabdf7-e221-4120-93b0-afbd2fe42a69",
+        "aeec861e-3369-4278-bc7e-147a2555b7a6",
+        "5a688ab0-0ca5-4c4e-9335-9259b5c7fd99",
+        "4ac82cbc-8a85-4aac-90c8-dfb7e1ec5879",
+        "21090174-8fd4-4e2f-ae32-f43ad912b0f8",
+        "87dd888e-aa41-4817-9cd3-58b51052db3b",
+        "1e74b48e-25fe-4ebe-beea-abb6cea010a0",
+        "54780758-13bb-414b-94d6-2095f217459c",
+        "db7d80ff-3fa4-4b76-8b84-f615725dd62b",
+        "20078fb5-fab3-4d28-ad54-d550b01b472d",
+        "267608f1-90cc-4c93-ac68-b0f0fa3bbf9e",
+        "d21f7bed-f2f9-45bd-be33-3a0fc9beec42",
+        "5dd5bcc0-29dc-4855-bf16-744cc913c569",
+        "52060a17-7403-444e-b18a-2fad9dcb64e8",
+        "6eb7ffc2-8084-49af-960e-c75efebbf975",
+        "4515ad9f-bbe1-4019-b824-a35265b7bcc8",
+        "fe091325-020d-4e1a-ae3c-5cc6ea911da8",
+        "8eb3dfab-2f48-45ce-9ad4-9d5d0edb92cc",
+        "3642431c-f6c3-421d-8fba-8171e12e05e0",
+        "14c0eb4c-be38-4d23-a25e-cc897a440bff",
+        "ad54e7f4-c786-4ff1-abb9-97233e4e9423",
+        "02df3cf8-3d55-418f-a141-29fec4e3d5c8",
+        "b6d35e4d-f3cf-48bf-8b94-35171a37e3da",
+        "e7552a9b-439f-4141-8a47-14bb57279e46"
+      ]
+    }
+  ],
   "matches": [
     {
       "id": "f2841b7f-1e16-45bd-97b0-85c179bb28ca",

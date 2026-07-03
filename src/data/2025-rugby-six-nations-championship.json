@@ -4,7 +4,7 @@
     "edition": "2025 Six Nations",
     "season": "2025",
     "host": "Europe",
-    "updatedAt": "2026-07-03T15:59:24.592Z",
+    "updatedAt": "2026-07-03T18:00:01.135Z",
     "venueCountry": "England, France, Ireland, Italy, Scotland, Wales"
   },
   "teams": [
@@ -47,8 +47,8 @@
   ],
   "groups": [
     {
-      "id": "pool-1",
-      "label": "Pool",
+      "id": "group-1",
+      "label": "Pool ",
       "teamIds": [
         "fra",
         "eng",
@@ -160,15 +160,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-01-31T20:15:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.591Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -192,15 +187,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-02-01T14:15:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.591Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -224,15 +214,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-02-01T16:45:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.591Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -256,15 +241,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-02-08T14:15:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.591Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -288,15 +268,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-02-08T16:45:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.591Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -320,15 +295,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-02-09T15:00:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.591Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -352,15 +322,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-02-22T14:15:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.591Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -384,15 +349,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-02-22T16:45:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.591Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -416,15 +376,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-02-23T15:00:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.591Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -448,15 +403,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-03-08T14:15:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.592Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -480,15 +430,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-03-08T16:45:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.592Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -512,15 +457,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-03-09T15:00:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.592Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -544,15 +484,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-03-15T14:15:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.592Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -576,15 +511,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-03-15T16:45:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.592Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     },
     {
@@ -608,15 +538,10 @@
       },
       "status": "finished",
       "live": {
-        "state": "post",
-        "period": 2,
         "clock": 0,
         "displayClock": "00:00",
         "detail": "C",
-        "shortDetail": "C",
-        "completed": true,
-        "startDate": "2025-03-15T20:00:00.000Z",
-        "syncedAt": "2026-07-03T15:59:24.592Z"
+        "syncedAt": "2026-07-03T18:00:01.133Z"
       }
     }
   ],

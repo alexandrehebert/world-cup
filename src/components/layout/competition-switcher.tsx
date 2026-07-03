@@ -7,12 +7,14 @@ const LOCAL_SWITCH_URL_BY_ID: Record<CompetitionId, string> = {
   'world-cup-2026': 'http://localhost:3001',
   'nations-championship-2026': 'http://localhost:3002',
   'six-nations-championship-2025': 'http://localhost:3003',
+  'six-nations-championship-2026': 'http://localhost:3003',
 }
 
 const configuredSiteUrlById: Partial<Record<CompetitionId, string | undefined>> = {
   'world-cup-2026': process.env.NEXT_PUBLIC_WORLD_CUP_SITE_URL,
   'nations-championship-2026': process.env.NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL,
   'six-nations-championship-2025': process.env.NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL,
+  'six-nations-championship-2026': process.env.NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL,
 }
 
 const toBaseUrl = (value: string | undefined) => {

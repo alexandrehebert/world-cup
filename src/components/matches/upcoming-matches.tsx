@@ -3,6 +3,8 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
+import { resolveCompetitionId } from '../../competitions'
+import { hidesGroupStageLabel } from '../../lib/competition-sections'
 import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -66,7 +68,9 @@ const stageLabel = (stage: MatchRecord['stage'], labels: ReturnType<typeof useLo
 export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRecord[]; compact?: boolean }) => {
   const { locale, t } = useLocale()
   const { isFavoriteTeam, favoriteTeamIds, setSelectedTeamId } = useDashboard()
-  const { teamsById } = useTournament()
+  const { meta, teamsById } = useTournament()
+  const competitionId = resolveCompetitionId(meta.competitionId)
+  const hideGroupStage = hidesGroupStageLabel(competitionId)
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
   const anyFavoriteVisible = useMemo(
@@ -132,6 +136,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
               const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
               const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
               const hasFavorite = homeIsFavorite || awayIsFavorite
+              const matchStageLabel = match.stage === 'group' && hideGroupStage ? null : stageLabel(match.stage, t.labels)
 
               return (
                 <div
@@ -151,9 +156,11 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                   <div className="flex w-full flex-col gap-4 text-left">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                          {stageLabel(match.stage, t.labels)}
-                        </p>
+                        {matchStageLabel ? (
+                          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
+                            {matchStageLabel}
+                          </p>
+                        ) : null}
                         <p className={`${compact ? 'mt-1 text-sm' : 'mt-1 text-base'} font-semibold text-[var(--text-strong)]`}>{displayDateTime}</p>
                       </div>
                       <div className="flex items-center gap-1.5">

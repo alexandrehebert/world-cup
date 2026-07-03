@@ -5,6 +5,8 @@ import { useDashboard } from '../contexts/dashboard-context'
 import { useLocale } from '../contexts/locale-context'
 import { useNow, useTimeZone } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
+import { resolveCompetitionId } from '../competitions'
+import { hidesGroupStageLabel, usesStandingsSectionPath } from '../lib/competition-sections'
 import { formatMatchDate, getDisplayMatchStatus, getLocalizedText } from '../lib/format'
 import { Icon } from '../lib/icons'
 import { isTeamEliminated } from '../lib/team-status'
@@ -31,7 +33,10 @@ const stageLabel = (
 export const TeamsPage = () => {
   const { locale, t } = useLocale()
   const { setSelectedTeamId, isFavoriteTeam, toggleFavoriteTeam, favoriteTeamIds } = useDashboard()
-  const { teamsById, groupsById, matches } = useTournament()
+  const { meta, teamsById, groupsById, groups, matches } = useTournament()
+  const competitionId = resolveCompetitionId(meta.competitionId)
+  const hideGroupStage = hidesGroupStageLabel(competitionId)
+  const useStandingsHeader = usesStandingsSectionPath(competitionId)
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -98,7 +103,7 @@ export const TeamsPage = () => {
           .sort((first, second) => first.kickoff.localeCompare(second.kickoff))
         const nextMatch = teamMatches.find((match) => getDisplayMatchStatus(match, nowMs) !== 'finished')
         const latestMatch = teamMatches.length > 0 ? teamMatches[teamMatches.length - 1] : null
-        const eliminated = isTeamEliminated({ teamId: team.id, matches, nowMs })
+        const eliminated = isTeamEliminated({ teamId: team.id, matches, nowMs, competitionId: meta.competitionId, groups })
         const groupInfo = groupByTeamId[team.id]
         const latestOpponentId = latestMatch
           ? (latestMatch.home.teamId === team.id ? latestMatch.away.teamId : latestMatch.home.teamId)
@@ -128,7 +133,7 @@ export const TeamsPage = () => {
         }
       })
       .sort((first, second) => first.label.localeCompare(second.label))
-  }, [groupByTeamId, isFavoriteTeam, locale, localTimeZone, matches, nowMs, t.labels, t.teams, teamsById])
+  }, [groupByTeamId, groups, isFavoriteTeam, locale, localTimeZone, matches, meta.competitionId, nowMs, t.labels, t.teams, teamsById])
 
   const filteredTeams = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -162,6 +167,17 @@ export const TeamsPage = () => {
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="relative min-w-0 flex-1">
+          <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[var(--text-soft)]" />
+          <input
+            type="text"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={t.labels.searchTeamsPlaceholder}
+            className="h-10 w-full border border-[var(--border)] bg-[var(--surface)] pl-10 pr-3 text-sm text-[var(--text-strong)] outline-none transition focus:border-[var(--accent-border)]"
+          />
+        </div>
+
         <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
           <button
             type="button"
@@ -205,17 +221,6 @@ export const TeamsPage = () => {
             ))}
           </div>
         </div>
-
-        <div className="relative min-w-0 flex-1">
-          <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[var(--text-soft)]" />
-          <input
-            type="text"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={t.labels.searchTeamsPlaceholder}
-            className="h-10 w-full border border-[var(--border)] bg-[var(--surface)] pl-10 pr-3 text-sm text-[var(--text-strong)] outline-none transition focus:border-[var(--accent-border)]"
-          />
-        </div>
       </div>
 
       {filteredTeams.length > 0 ? (
@@ -234,7 +239,7 @@ export const TeamsPage = () => {
               latestOpponentScore,
               nextMatchFormatted,
             } = entry
-            const groupLabel = groupInfo ? (t.groups[groupInfo.id] ?? groupInfo.id) : null
+            const groupLabel = groupInfo ? (useStandingsHeader ? t.labels.standings : (t.groups[groupInfo.id] ?? groupInfo.id)) : null
             const standingPosition = groupInfo ? groupInfo.standingIndex + 1 : null
 
             return (
@@ -298,11 +303,13 @@ export const TeamsPage = () => {
 
                   {nextMatch && nextMatchFormatted ? (
                     <p className="mt-2 text-xs text-[var(--text-soft)]">
-                      {stageLabel(nextMatch.stage, t.labels)} · {nextMatchFormatted}
+                      {nextMatch.stage === 'group' && hideGroupStage ? nextMatchFormatted : `${stageLabel(nextMatch.stage, t.labels)} · ${nextMatchFormatted}`}
                     </p>
                   ) : latestMatch && latestTeamScore !== null && latestOpponentScore !== null ? (
                     <p className="mt-2 text-xs text-[var(--text-soft)]">
-                      {stageLabel(latestMatch.stage, t.labels)} · {latestTeamScore}-{latestOpponentScore} {t.labels.vs} {latestOpponentLabel}
+                      {latestMatch.stage === 'group' && hideGroupStage
+                        ? `${latestTeamScore}-${latestOpponentScore} ${t.labels.vs} ${latestOpponentLabel}`
+                        : `${stageLabel(latestMatch.stage, t.labels)} · ${latestTeamScore}-${latestOpponentScore} ${t.labels.vs} ${latestOpponentLabel}`}
                     </p>
                   ) : null}
                 </button>

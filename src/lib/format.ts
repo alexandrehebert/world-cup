@@ -235,8 +235,8 @@ const getFinishedStatusDetail = (espnDetail: string | null, labels: TranslationS
     return labels.afterExtraTime
   }
 
-  // ESPN often sends a raw FT token; expand it to the localized full-time label.
-  if (/^F\.?T\.?$/i.test(trimmed) || /^full[\s-]?time$/i.test(trimmed)) {
+  // ESPN/World Rugby often send raw completion tokens; expand to localized full-time label.
+  if (/^F\.?T\.?$/i.test(trimmed) || /^C$/i.test(trimmed) || /^full[\s-]?time$/i.test(trimmed) || /^completed$/i.test(trimmed)) {
     return labels.fullTime
   }
 

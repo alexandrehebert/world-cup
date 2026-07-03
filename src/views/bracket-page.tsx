@@ -14,7 +14,7 @@ const VIEW_MODE_FILTER_PARAM = 'view'
 export const BracketPage = () => {
   const { t } = useLocale()
   const nowMs = useNow()
-  const { bracketRounds, teams, matches } = useTournament()
+  const { meta, bracketRounds, teams, groups, matches } = useTournament()
   const [kalshiProbabilitiesByPairKey, setKalshiProbabilitiesByPairKey] = useState<Record<string, Record<string, number>>>({})
   const [hasLoadedKalshiPredictions, setHasLoadedKalshiPredictions] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
@@ -51,10 +51,10 @@ export const BracketPage = () => {
     () =>
       new Set(
         teams
-          .filter((team) => isTeamEliminated({ teamId: team.id, matches, nowMs }))
+          .filter((team) => isTeamEliminated({ teamId: team.id, matches, nowMs, competitionId: meta.competitionId, groups }))
           .map((team) => team.id),
       ),
-    [matches, nowMs, teams],
+    [groups, matches, meta.competitionId, nowMs, teams],
   )
   const effectiveForecastTeamId = forecastTeamId && !eliminatedTeamIds.has(forecastTeamId)
     ? forecastTeamId

@@ -3,6 +3,8 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
+import { resolveCompetitionId } from '../../competitions'
+import { hidesGroupStageLabel, usesStandingsSectionPath } from '../../lib/competition-sections'
 import {
   formatMatchDate,
   getDisplayMatchStatus,
@@ -34,7 +36,10 @@ export const CountryModal = () => {
   const { selectedTeamId, setSelectedTeamId, setSelectedMatchId, getTeamSharePath, isFavoriteTeam, toggleFavoriteTeam } =
     useDashboard()
   const { locale, t } = useLocale()
-  const { teamsById, groupsById, matches } = useTournament()
+  const { meta, teamsById, groupsById, matches } = useTournament()
+  const competitionId = resolveCompetitionId(meta.competitionId)
+  const hideGroupStage = hidesGroupStageLabel(competitionId)
+  const useStandingsHeader = usesStandingsSectionPath(competitionId)
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
   const [isCopied, setIsCopied] = useState(false)
@@ -108,6 +113,7 @@ export const CountryModal = () => {
     const { localDateTime } = formatMatchDate(match.kickoff, locale, localTimeZone, t.labels.today)
     const displayTiming = getMatchDisplayTime(match, t.labels, nowMs, locale)
     const displayDateTime = displayTiming ?? localDateTime
+    const matchStageLabel = match.stage === 'group' && hideGroupStage ? null : stageLabel(match.stage, t.labels)
     const venueCity = getLocalizedText(match.venue.city, locale)
     const venueCountry = getLocalizedText(match.venue.country, locale)
     const venueLabel = [venueCity, venueCountry].filter(Boolean).join(', ')
@@ -143,7 +149,7 @@ export const CountryModal = () => {
               </span>
             </p>
             <p className="mt-0.5 text-xs text-[var(--text-soft)]">
-              {stageLabel(match.stage, t.labels)} · {displayDateTime}
+              {matchStageLabel ? `${matchStageLabel} · ${displayDateTime}` : displayDateTime}
             </p>
             {venueLabel ? (
               <p className="text-xs text-[var(--text-soft)]">{venueLabel}</p>
@@ -216,10 +222,10 @@ export const CountryModal = () => {
       {group && standing && standingIndex >= 0 ? (
         <div className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
           <p className="mb-3 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-            {t.groups[group.id] ?? group.label} — {t.labels.groupPosition}
+            {useStandingsHeader ? t.labels.standings : `${t.groups[group.id] ?? group.label} — ${t.labels.groupPosition}`}
           </p>
           <div className="grid grid-cols-[1.8fr_repeat(4,minmax(0,0.35fr))_0.5fr] gap-1 border-b border-[var(--border)] pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-soft)]">
-            <span>{t.labels.standings}</span>
+            <span>{useStandingsHeader ? t.sections.teams : t.labels.standings}</span>
             <span className="text-center">{t.labels.played}</span>
             <span className="text-center">{t.labels.won}</span>
             <span className="text-center">{t.labels.drawn}</span>

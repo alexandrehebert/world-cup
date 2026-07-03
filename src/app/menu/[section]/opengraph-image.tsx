@@ -20,6 +20,11 @@ const copyBySection: Record<string, MenuImageCopy> = {
     subheading: 'Follow points, rankings, and qualification races.',
     accent: '#8ec5ff',
   },
+  standings: {
+    heading: 'Standings',
+    subheading: 'Follow points, rankings, and title race updates.',
+    accent: '#8ec5ff',
+  },
   teams: {
     heading: 'Tournament Teams',
     subheading: 'Open team details, fixtures, and group context.',

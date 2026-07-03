@@ -1,6 +1,7 @@
 import type { MatchLiveRecord, MatchRecord, TournamentData } from '../types/tournament'
 import { getActiveCompetitionProfile } from '../competitions'
 import { resolveGroupBracketTeams } from '../lib/bracket'
+import { usesStandingsSectionPath } from '../lib/competition-sections'
 import { sortGroupStandings } from '../lib/standings'
 import {
   extractPenaltyScore,
@@ -163,6 +164,13 @@ type WorldRugbySyncPayload = {
   standings: WorldRugbyStandingsPayload
 }
 
+export const hasWorldRugbyStandingsRows = (tables: WorldRugbyStandingsTable[] | undefined) => {
+  return (tables ?? []).some((table) => {
+    const rows = table.entries ?? table.rows ?? table.teams ?? []
+    return rows.length > 0
+  })
+}
+
 const isWorldRugbyScheduleUrl = (rawUrl: string) => {
   try {
     const parsed = new URL(rawUrl)
@@ -203,6 +211,7 @@ const WORLD_RUGBY_FLAG_BY_CODE: Record<string, string> = {
   ENG: 'gb-eng',
   FRA: 'fr',
   IRL: 'ie',
+  IRE: 'ie',
   ITA: 'it',
   JPN: 'jp',
   NZL: 'nz',
@@ -628,7 +637,7 @@ const buildWorldRugbyCatalog = (data: TournamentData, payload: WorldRugbySyncPay
 
     if (existing) {
       existing.name = team.name ?? existing.name
-      existing.flagCode = existing.flagCode || flagCode
+      existing.flagCode = WORLD_RUGBY_FLAG_BY_CODE[code] ?? (existing.flagCode || flagCode)
       continue
     }
 
@@ -735,6 +744,27 @@ const buildWorldRugbyCatalog = (data: TournamentData, payload: WorldRugbySyncPay
         .map((match) => match.id),
     }
   })
+  const fallbackTeamIds = mergedTeams.map((team) => team.id)
+  const fallbackGroups = fallbackTeamIds.length > 0
+    ? [{
+        id: 'group-1',
+        label: 'Pool 1',
+        teamIds: fallbackTeamIds,
+        standings: fallbackTeamIds.map((teamId) => ({
+          teamId,
+          played: 0,
+          won: 0,
+          drawn: 0,
+          lost: 0,
+          goalsFor: 0,
+          goalsAgainst: 0,
+          points: 0,
+        })),
+        matchIds: mergedMatches
+          .filter((match) => match.stage === 'group')
+          .map((match) => match.id),
+      }]
+    : []
 
   return {
     ...data,
@@ -743,7 +773,7 @@ const buildWorldRugbyCatalog = (data: TournamentData, payload: WorldRugbySyncPay
       edition: payload.schedule.event?.label ?? data.meta.edition,
     },
     teams: mergedTeams,
-    groups: mergedGroups.length > 0 ? mergedGroups : data.groups,
+    groups: mergedGroups.length > 0 ? mergedGroups : fallbackGroups.length > 0 ? fallbackGroups : data.groups,
     matches: mergedMatches,
   }
 }
@@ -882,7 +912,7 @@ const toNormalizedUpdate = (entry: UpstreamMatchUpdate): NormalizedUpdate => {
 
 const hasNumericScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
 
-const recomputeGroups = (groups: TournamentData['groups'], matches: TournamentData['matches']) => {
+export const recomputeGroups = (groups: TournamentData['groups'], matches: TournamentData['matches']) => {
   return groups.map((group) => {
     const byTeamId = new Map(
       group.teamIds.map((teamId) => [
@@ -900,8 +930,26 @@ const recomputeGroups = (groups: TournamentData['groups'], matches: TournamentDa
       ]),
     )
 
+    const groupTeamIds = new Set(group.teamIds)
+    const isGroupMatch = (match: TournamentData['matches'][number]) => {
+      if (match.stage !== 'group' || match.status !== 'finished') {
+        return false
+      }
+
+      if (match.groupId === group.id) {
+        return true
+      }
+
+      return (
+        typeof match.home?.teamId === 'string' &&
+        typeof match.away?.teamId === 'string' &&
+        groupTeamIds.has(match.home.teamId) &&
+        groupTeamIds.has(match.away.teamId)
+      )
+    }
+
     for (const match of matches) {
-      if (match.stage !== 'group' || match.groupId !== group.id || match.status !== 'finished') {
+      if (!isGroupMatch(match)) {
         continue
       }
 
@@ -951,7 +999,7 @@ const recomputeGroups = (groups: TournamentData['groups'], matches: TournamentDa
     const originalOrder = new Map(group.standings.map((standing, index) => [standing.teamId, index]))
     const standings = sortGroupStandings({
       standings: [...byTeamId.values()],
-      matches: matches.filter((match) => match.stage === 'group' && match.groupId === group.id),
+      matches: matches.filter(isGroupMatch),
       originalOrder,
     })
 
@@ -1072,7 +1120,11 @@ export const runTournamentSync = async ({ headers }: SyncInput): Promise<SyncRes
 
     const payloadUpdatedAt = payload && typeof payload === 'object' ? (payload as { updatedAt?: string }).updatedAt : undefined
 
-    const recomputedGroups = recomputeGroups(syncedData.groups, nextMatches)
+    const shouldPreserveProviderStandings =
+      usesStandingsSectionPath(competition.id)
+      && isWorldRugbySyncPayload(payload)
+      && hasWorldRugbyStandingsRows(payload.standings.tables)
+    const recomputedGroups = shouldPreserveProviderStandings ? syncedData.groups : recomputeGroups(syncedData.groups, nextMatches)
     const resolvedMatches = resolveGroupBracketTeams(nextMatches, recomputedGroups, syncedData.bracketRounds)
 
     const nextData: TournamentData = {

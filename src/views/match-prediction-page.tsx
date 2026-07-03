@@ -9,7 +9,9 @@ import { useBootstrapData } from '../contexts/bootstrap-context'
 import { useLocale } from '../contexts/locale-context'
 import { useNow, useTimeZone } from '../contexts/time-context'
 import { useTournament } from '../contexts/tournament-context'
+import { resolveCompetitionId } from '../competitions'
 import { useDashboard } from '../contexts/dashboard-context'
+import { hidesGroupStageLabel } from '../lib/competition-sections'
 import { getMatchStageFromSlug } from '../lib/match-path'
 import { formatMatchDate } from '../lib/format'
 import { Icon } from '../lib/icons'
@@ -61,7 +63,9 @@ export const MatchPredictionPage = () => {
   const nowMs = useNow()
   const timeZone = useTimeZone()
   const { getTeamSharePath } = useDashboard()
-  const { bracketRounds, matchesById, teamsById } = useTournament()
+  const { meta, bracketRounds, matchesById, teamsById } = useTournament()
+  const competitionId = resolveCompetitionId(meta.competitionId)
+  const hideGroupStage = hidesGroupStageLabel(competitionId)
   const bootstrapPublicPrediction = bootstrapData?.initialPublicMatchPrediction
   const [predictionsByMatchId, setPredictionsByMatchId] = useState<Record<string, PublicPredictionResponse>>(() =>
     bootstrapPublicPrediction ? { [bootstrapPublicPrediction.matchId]: bootstrapPublicPrediction } : {},
@@ -393,7 +397,9 @@ export const MatchPredictionPage = () => {
       >
         <section className="space-y-4">
       <div className={`space-y-4 border bg-[var(--surface)] p-4 ${hasSavedPrediction ? 'border-emerald-400/70' : 'border-[var(--border)]'}`}>
-        <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
+        {match.stage === 'group' && hideGroupStage ? null : (
+          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{stageLabel(match.stage, t.labels)}</p>
+        )}
         <p className="text-sm text-[var(--text-muted)]">{localDateTime}</p>
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-[var(--border)] pb-4">
           <div className="text-center">

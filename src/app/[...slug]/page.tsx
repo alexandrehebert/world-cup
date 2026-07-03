@@ -7,6 +7,7 @@ import { loadClientBootstrapData } from '../../server/client-bootstrap'
 import { loadTournamentData } from '../../server/tournament-data'
 import { getDisplayMatchStatus, formatMatchDate } from '../../lib/format'
 import { isPredictionsFeatureEnabled } from '../../lib/features'
+import { getStandingsSectionSlug } from '../../lib/competition-sections'
 import { getMatchStageSlug, parseMatchSlugSegments } from '../../lib/match-path'
 import type { TournamentData } from '../../types/tournament'
 
@@ -99,7 +100,14 @@ const getMenuMetaBySegment = (
   competitionDisplayName: string,
   competitionShortName: string,
   sportLabel: string,
-): Record<string, MenuPageMeta> => ({
+  standingsSectionSlug: string,
+): Record<string, MenuPageMeta> => {
+  const standingsLabel = standingsSectionSlug === 'standings' ? 'Standings' : 'Group Standings'
+  const standingsDescription = standingsSectionSlug === 'standings'
+    ? 'Track the latest table with points, score difference, and title race updates.'
+    : 'Track every group table with points, goal difference, and qualification race updates.'
+
+  return ({
   overview: {
     title: `${competitionShortName} Schedule | ${competitionDisplayName}`,
     description: 'Explore upcoming fixtures, venues, and kickoff times across the full tournament schedule.',
@@ -107,12 +115,12 @@ const getMenuMetaBySegment = (
     imageAlt: 'Tournament schedule overview',
     canonical: '/overview',
   },
-  groups: {
-    title: `Group Standings | ${competitionDisplayName}`,
-    description: 'Track every group table with points, goal difference, and qualification race updates.',
-    imagePath: '/menu/groups/opengraph-image',
-    imageAlt: 'Tournament group standings',
-    canonical: '/groups',
+  [standingsSectionSlug]: {
+    title: `${standingsLabel} | ${competitionDisplayName}`,
+    description: standingsDescription,
+    imagePath: `/menu/${standingsSectionSlug}/opengraph-image`,
+    imageAlt: `Tournament ${standingsLabel.toLowerCase()}`,
+    canonical: `/${standingsSectionSlug}`,
   },
   teams: {
     title: `Teams | ${competitionDisplayName}`,
@@ -154,6 +162,7 @@ const getMenuMetaBySegment = (
       }
     : {}),
 })
+}
 
 const buildMenuMetadata = (meta: MenuPageMeta, metadataBase: URL): Metadata => ({
   metadataBase,
@@ -182,11 +191,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const competition = getActiveCompetitionProfile()
   const competitionDisplayName = competition.displayName
   const competitionShortName = competition.shortName
-  const menuMetaBySegment = getMenuMetaBySegment(competitionDisplayName, competitionShortName, competition.sportLabel)
+  const standingsSectionSlug = getStandingsSectionSlug(competition.id)
+  const menuMetaBySegment = getMenuMetaBySegment(competitionDisplayName, competitionShortName, competition.sportLabel, standingsSectionSlug)
   const defaultMeta = {
     metadataBase,
     title: competitionDisplayName,
-    description: `${competitionShortName} dashboard with live results, fixtures, groups, and bracket.`,
+    description: `${competitionShortName} dashboard with live results, fixtures, ${
+      standingsSectionSlug === 'standings' ? 'standings' : 'groups'
+    }, and bracket.`,
   }
 
   const firstSegment = slug?.[0]?.toLowerCase()

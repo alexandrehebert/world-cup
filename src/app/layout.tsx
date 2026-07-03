@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { cookies, headers } from 'next/headers'
 import Script from 'next/script'
 import { getActiveCompetitionProfile } from '../competitions'
+import { usesStandingsSectionPath } from '../lib/competition-sections'
 import { materialSymbolsRounded } from './fonts'
 import { getActiveCompetitionAppIcons, getActiveCompetitionLoaderIconAsset } from '../lib/competition-branding'
 import { loadTournamentData } from '../server/tournament-data'
@@ -27,7 +28,9 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
   return {
     title,
-    description: `${activeCompetition.shortName} dashboard with live results, fixtures, groups, and bracket.`,
+    description: `${activeCompetition.shortName} dashboard with live results, fixtures, ${
+      usesStandingsSectionPath(activeCompetition.id) ? 'standings' : 'groups'
+    }, and bracket.`,
     icons: {
       icon: [
         { url: appIcons.icon, type: 'image/svg+xml' },

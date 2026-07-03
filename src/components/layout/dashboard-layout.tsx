@@ -3,7 +3,9 @@ import type { ReactNode } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
+import { resolveCompetitionId } from '../../competitions'
 import { getCompetitionBallIconNameById } from '../../lib/competition-branding'
+import { getStandingsSectionPath, usesStandingsSectionPath } from '../../lib/competition-sections'
 import { Icon } from '../../lib/icons'
 import { isPredictionsFeatureEnabled } from '../../lib/features'
 import { hasBracketSection, hasGroupsSection } from '../../lib/tournament-sections'
@@ -18,7 +20,7 @@ const HEADER_COMPACT_SETTLE_MS = 120
 
 const baseTabs = [
   { to: '/overview', labelKey: 'overview', icon: 'calendar_month', iconClassName: '' },
-  { to: '/groups', labelKey: 'groups', icon: 'groups', iconClassName: '' },
+  { to: '/groups', sectionId: 'groups', labelKey: 'groups', icon: 'groups', iconClassName: '' },
   { to: '/teams', labelKey: 'teams', icon: 'flag', iconClassName: '' },
   { to: '/matches', labelKey: 'matches', icon: 'sports_soccer', iconClassName: '' },
   { to: '/bracket', labelKey: 'bracket', icon: 'account_tree', iconClassName: '-scale-x-100' },
@@ -28,12 +30,25 @@ const baseTabs = [
 export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   const { t } = useLocale()
   const { meta, groups, bracketRounds } = useTournament()
+  const competitionId = resolveCompetitionId(meta.competitionId)
   const hasGroups = hasGroupsSection(groups)
   const hasBracket = hasBracketSection(bracketRounds)
-  const matchesIconName = getCompetitionBallIconNameById(meta.competitionId)
-  const tabs = baseTabs.map((tab) => (tab.to === '/matches' ? { ...tab, icon: matchesIconName } : tab))
+  const groupsSectionPath = getStandingsSectionPath(competitionId)
+  const useStandingsPath = usesStandingsSectionPath(competitionId)
+  const matchesIconName = getCompetitionBallIconNameById(competitionId)
+  const tabs = baseTabs.map((tab) => {
+    if (tab.to === '/matches') {
+      return { ...tab, icon: matchesIconName }
+    }
+
+    if ('sectionId' in tab && tab.sectionId === 'groups') {
+      return { ...tab, to: groupsSectionPath }
+    }
+
+    return tab
+  })
   const navigationTabs = (isPredictionsFeatureEnabled ? tabs : tabs.filter((tab) => tab.to !== '/predictions'))
-    .filter((tab) => (tab.to === '/groups' ? hasGroups : tab.to === '/bracket' ? hasBracket : true))
+    .filter((tab) => ('sectionId' in tab && tab.sectionId === 'groups' ? hasGroups : tab.to === '/bracket' ? hasBracket : true))
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const headerScrollTimeoutRef = useRef<number | null>(null)
 
@@ -95,7 +110,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
               <NavLink
                 key={tab.to}
                 to={tab.to}
-                aria-label={t.sections[tab.labelKey]}
+                aria-label={useStandingsPath && 'sectionId' in tab && tab.sectionId === 'groups' ? t.labels.standings : t.sections[tab.labelKey]}
                 className={({ isActive }) =>
                   `-mb-px inline-flex cursor-pointer items-center justify-center gap-2 border-b-2 px-3 py-4 text-sm font-semibold transition sm:px-5 ${
                     isActive
@@ -109,7 +124,9 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
                     <Icon key={iconName} name={iconName} className={`text-[18px] ${tab.iconClassName ?? ''}`.trim()} />
                   ))}
                 </span>
-                <span className="hidden sm:inline">{t.sections[tab.labelKey]}</span>
+                <span className="hidden sm:inline">
+                  {useStandingsPath && 'sectionId' in tab && tab.sectionId === 'groups' ? t.labels.standings : t.sections[tab.labelKey]}
+                </span>
               </NavLink>
             ))}
           </nav>

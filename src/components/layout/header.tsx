@@ -4,6 +4,8 @@ import { useAuth } from '../../contexts/auth-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
+import { resolveCompetitionId } from '../../competitions'
+import { getCompetitionBallIconNameById } from '../../lib/competition-branding'
 import { Icon } from '../../lib/icons'
 import { isPredictionsFeatureEnabled } from '../../lib/features'
 import { CompetitionSwitcher } from './competition-switcher'
@@ -20,7 +22,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
   const effectiveMeta = meta ?? tournament.meta
   const timeZone = useTimeZone()
   const { user, logout, openAuthModal } = useAuth()
-  const logoIconName = effectiveMeta?.competitionId === 'nations-championship-2026' ? 'sports_rugby' : 'sports_soccer'
+  const logoIconName = getCompetitionBallIconNameById(resolveCompetitionId(effectiveMeta?.competitionId))
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false)
   const [isMobileCompetitionMenuOpen, setIsMobileCompetitionMenuOpen] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)

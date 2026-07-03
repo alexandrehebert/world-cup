@@ -206,20 +206,6 @@ export const MatchesPage = () => {
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
-        <button
-          type="button"
-          onClick={() => setFavoritesOnly(!favoritesOnly)}
-          disabled={favoriteTeamIds.length === 0}
-          className={`inline-flex w-full shrink-0 items-center gap-2 border px-3 py-0 h-10 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto ${
-            favoritesOnly
-              ? 'border-[var(--accent-border)] bg-[var(--accent-muted)] text-[var(--accent-text)]'
-              : 'border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--surface)]'
-          }`}
-        >
-          <Icon name="star" className="text-[16px]" />
-          <span>{t.labels.filterByFavorites}</span>
-        </button>
-
         <div ref={countryFilterRef} className="relative z-40 min-w-0 flex-1">
           <div className="relative z-50">
             <div
@@ -340,6 +326,20 @@ export const MatchesPage = () => {
             )}
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setFavoritesOnly(!favoritesOnly)}
+          disabled={favoriteTeamIds.length === 0}
+          className={`inline-flex w-full shrink-0 items-center gap-2 border px-3 py-0 h-10 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto ${
+            favoritesOnly
+              ? 'border-[var(--accent-border)] bg-[var(--accent-muted)] text-[var(--accent-text)]'
+              : 'border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--surface)]'
+          }`}
+        >
+          <Icon name="star" className="text-[16px]" />
+          <span>{t.labels.filterByFavorites}</span>
+        </button>
       </div>
 
       {filteredMatches.length > 0 ? (

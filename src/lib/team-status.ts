@@ -1,15 +1,31 @@
 import { getDisplayMatchStatus, getMatchWinner } from './format'
-import type { MatchRecord } from '../types/tournament'
+import { resolveCompetitionId } from '../competitions'
+import { usesStandingsSectionPath } from './competition-sections'
+import type { GroupRecord, MatchRecord } from '../types/tournament'
 
 export const isTeamEliminated = ({
   teamId,
   matches,
   nowMs,
+  competitionId,
+  groups = [],
 }: {
   teamId: string
   matches: MatchRecord[]
   nowMs: number
+  competitionId?: string
+  groups?: GroupRecord[]
 }) => {
+  const resolvedCompetitionId = resolveCompetitionId(competitionId)
+  const isStandingsCompetition = usesStandingsSectionPath(resolvedCompetitionId)
+  const hasPendingMatch = matches.some((match) => getDisplayMatchStatus(match, nowMs) !== 'finished')
+  const primaryGroup = groups[0]
+  const championTeamId = primaryGroup?.standings[0]?.teamId
+
+  if (isStandingsCompetition && !hasPendingMatch && championTeamId) {
+    return teamId !== championTeamId
+  }
+
   const teamMatches = matches
     .filter((match) => match.home.teamId === teamId || match.away.teamId === teamId)
     .sort((first, second) => first.kickoff.localeCompare(second.kickoff))

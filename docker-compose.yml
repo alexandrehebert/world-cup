@@ -59,6 +59,36 @@ services:
       mongo:
         condition: service_healthy
 
+  app-six-nations-championship:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '${SIX_NATIONS_CHAMPIONSHIP_APP_PORT:-3003}:3000'
+    environment:
+      COMPETITION_ID: six-nations-championship-2026
+      NEXT_PUBLIC_COMPETITION_ID: six-nations-championship-2026
+      MONGODB_URI: mongodb://mongo:27017/six-nations-championship-2026
+      MONGODB_DB: six-nations-championship-2026
+      SESSION_SECRET: ${SIX_NATIONS_CHAMPIONSHIP_SESSION_SECRET:-local-session-secret}
+      CRON_SECRET: ${SIX_NATIONS_CHAMPIONSHIP_CRON_SECRET:-local-cron-secret}
+      MATCH_RESULTS_URL: ${SIX_NATIONS_CHAMPIONSHIP_MATCH_RESULTS_URL:-https://api.wr-rims-prod.pulselive.com/rugby/v3/event/b6832e99-0c73-4d56-ba57-725935c2f1dd/schedule}
+      ESPN_LOOKBACK_DAYS: ${ESPN_LOOKBACK_DAYS:-7}
+      NEXT_PUBLIC_ENABLE_PREDICTIONS: ${NEXT_PUBLIC_ENABLE_PREDICTIONS:-false}
+      NEXT_PUBLIC_WORLD_CUP_SITE_URL: ${NEXT_PUBLIC_WORLD_CUP_SITE_URL:-http://localhost:3001}
+      NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL: ${NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL:-http://localhost:3002}
+      NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL: ${NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL:-http://localhost:3003}
+      WATCHPACK_POLLING: 'true'
+      CHOKIDAR_USEPOLLING: 'true'
+    command: ['npm', 'run', 'dev', '--', '--hostname', '0.0.0.0', '--port', '3000']
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      mongo:
+        condition: service_healthy
+
   mongo:
     image: mongo:7
     ports:
@@ -98,5 +128,21 @@ services:
       APP_PORT: 3000
     depends_on:
       - app-nations-championship
+    volumes:
+      - ./:/app:ro
+
+  cron-six-nations-championship:
+    image: alpine:3.22
+    command: >
+      sh -c "
+      apk add --no-cache curl &&
+      sh /app/docker/cron/start-cron.sh
+      "
+    environment:
+      CRON_SECRET: ${SIX_NATIONS_CHAMPIONSHIP_CRON_SECRET:-local-cron-secret}
+      APP_SERVICE_NAME: app-six-nations-championship
+      APP_PORT: 3000
+    depends_on:
+      - app-six-nations-championship
     volumes:
       - ./:/app:ro
