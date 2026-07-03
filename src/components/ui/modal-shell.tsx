@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { useLocale } from '../../contexts/locale-context'
 import { Icon } from '../../lib/icons'
 
@@ -22,6 +22,7 @@ export const ModalShell = ({
   maxWidthClass = 'max-w-2xl',
 }: ModalShellProps) => {
   const { t } = useLocale()
+  const shouldCloseOnBackdropClickRef = useRef(false)
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -43,7 +44,18 @@ export const ModalShell = ({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/65 px-4 py-4 backdrop-blur-sm sm:py-6"
       role="presentation"
-      onClick={onClose}
+      onMouseDown={(event) => {
+        shouldCloseOnBackdropClickRef.current = event.target === event.currentTarget
+      }}
+      onClick={(event) => {
+        const isBackdropClick = event.target === event.currentTarget
+        const shouldClose = isBackdropClick && shouldCloseOnBackdropClickRef.current
+        shouldCloseOnBackdropClickRef.current = false
+
+        if (shouldClose) {
+          onClose()
+        }
+      }}
     >
       <div
         role="dialog"

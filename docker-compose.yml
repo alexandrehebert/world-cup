@@ -12,19 +12,13 @@ services:
       CRON_SECRET: ${CRON_SECRET:-local-cron-secret}
       MATCH_RESULTS_URL: ${MATCH_RESULTS_URL:-https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard}
       NEXT_PUBLIC_ENABLE_PREDICTIONS: ${NEXT_PUBLIC_ENABLE_PREDICTIONS:-false}
+      WATCHPACK_POLLING: 'true'
+      CHOKIDAR_USEPOLLING: 'true'
     command: ['npm', 'run', 'dev', '--', '--hostname', '0.0.0.0', '--port', '3000']
-    develop:
-      watch:
-        - action: sync
-          path: ./src
-          target: /app/src
-        - action: sync
-          path: ./public
-          target: /app/public
-        - action: rebuild
-          path: ./package.json
-        - action: rebuild
-          path: ./package-lock.json
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
     depends_on:
       mongo:
         condition: service_healthy

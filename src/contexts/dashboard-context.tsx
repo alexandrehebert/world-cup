@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react-hooks/set-state-in-effect */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useAuth } from './auth-context'
 import { useTournament } from './tournament-context'
 import { isPredictionsFeatureEnabled } from '../lib/features'
@@ -75,13 +75,6 @@ const normalizeSlugPart = (value: string) => {
 
 const normalizeMatchCode = (value: string) => value.trim().toUpperCase()
 const normalizeTeamCode = (value: string) => value.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '')
-const getSearchWithoutLegacyMatchParam = (search: string) => {
-  const params = new URLSearchParams(search)
-  params.delete(MATCH_QUERY_PARAM)
-  const nextSearch = params.toString()
-
-  return nextSearch ? `?${nextSearch}` : ''
-}
 
 const getMatchPathDetails = (pathname: string): { section: MatchPathSection; pathKey: string } | null => {
   const tbdMatch = pathname.match(TBD_MATCH_PATH_REGEX)
@@ -149,9 +142,19 @@ const getMatchIdFromSearch = (
   return null
 }
 
+const getTeamIdFromPath = (
+  pathname: string,
+  codeToTeamId: Record<string, string>,
+) => {
+  const teamCodeFromPath = getTeamPathCode(pathname)
+  if (!teamCodeFromPath) {
+    return null
+  }
+
+  return codeToTeamId[teamCodeFromPath] ?? null
+}
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation()
-  const navigate = useNavigate()
   const { user, updateUserPreferences } = useAuth()
   const { matchesById, teamsById, bracketRounds } = useTournament()
   const { matchIdToPath, pathToMatchId, slugToMatchId } = useMemo(() => {
@@ -246,13 +249,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     return getMatchIdFromSearch(location.pathname, location.search, pathToMatchId, slugToMatchId, matchesById)
   })
   const [selectedTeamId, setSelectedTeamIdState] = useState<string | null>(() => {
-    const teamCodeFromUrl = getTeamPathCode(location.pathname)
-
-    if (!teamCodeFromUrl) {
-      return null
-    }
-
-    return codeToTeamId[teamCodeFromUrl] ?? null
+    return getTeamIdFromPath(location.pathname, codeToTeamId)
   })
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<string[]>(() => {
     if (Array.isArray(user?.preferences?.favoriteTeamIds)) {
@@ -280,20 +277,13 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const getMatchSharePath = useCallback(
     (matchId: string) => {
       const matchPath = matchIdToPath[matchId]
-      const isBracketContext = location.pathname === '/bracket' || location.pathname.startsWith('/bracket/')
-      const isPredictContext = location.pathname === '/predict' || location.pathname.startsWith('/predict/')
-
       if (!matchPath) {
-        if (isBracketContext) return '/bracket'
-        if (isPredictContext) return '/predict'
         return '/match'
       }
 
-      return matchPath.startsWith('?')
-        ? `${isBracketContext ? '/bracket' : isPredictContext ? '/predict' : '/match'}${matchPath}`
-        : `${isBracketContext ? '/bracket' : isPredictContext ? '/predict' : '/match'}/${matchPath}`
+      return matchPath.startsWith('?') ? `/match${matchPath}` : `/match/${matchPath}`
     },
-    [location.pathname, matchIdToPath],
+    [matchIdToPath],
   )
 
   const getMatchPredictionPath = useCallback(
@@ -315,7 +305,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const getTeamSharePath = useCallback(
     (teamId: string) => {
       const teamCode = teamIdToCode[teamId]
-
       return teamCode ? `/team/${teamCode}` : '/teams'
     },
     [teamIdToCode],
@@ -396,107 +385,57 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   }, [location.pathname, location.search, matchesById, pathToMatchId, slugToMatchId])
 
   useEffect(() => {
-    const teamCodeFromUrl = getTeamPathCode(location.pathname)
-    const teamIdFromUrl = teamCodeFromUrl ? (codeToTeamId[teamCodeFromUrl] ?? null) : null
+    const teamIdFromUrl = getTeamIdFromPath(location.pathname, codeToTeamId)
+    const isTeamsRoute = location.pathname === '/teams' || location.pathname === '/team' || location.pathname.startsWith('/team/')
 
-    setSelectedTeamIdState((current) => (current === teamIdFromUrl ? current : teamIdFromUrl))
+    setSelectedTeamIdState((current) => {
+      if (teamIdFromUrl !== null) {
+        return current === teamIdFromUrl ? current : teamIdFromUrl
+      }
+
+      // Keep explicit team selections opened from non-team routes (for example from a match modal).
+      if (!isTeamsRoute) {
+        return current
+      }
+
+      return current === null ? current : null
+    })
   }, [codeToTeamId, location.pathname])
 
   useEffect(() => {
-    const currentMatchDetails = getMatchPathDetails(location.pathname)
-    const currentMatchId = getMatchIdFromSearch(location.pathname, location.search, pathToMatchId, slugToMatchId, matchesById)
-    const currentMatchPath = currentMatchId ? (matchIdToPath[currentMatchId] ?? null) : null
-    const currentMatchSection: MatchPathSection | null = currentMatchDetails?.section ?? (
-      location.pathname === '/bracket'
-        ? 'bracket'
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const selectedTeamCode = selectedTeamId ? (teamIdToCode[selectedTeamId] ?? null) : null
+    const selectedMatchPath = selectedMatchId ? matchIdToPath[selectedMatchId] : null
+    const matchContextBasePath =
+      location.pathname === '/bracket' || location.pathname.startsWith('/bracket/')
+        ? '/bracket'
         : location.pathname === '/predict' || location.pathname.startsWith('/predict/')
-          ? 'predict'
-          : location.pathname === '/matches' || location.pathname === '/match' || location.pathname.startsWith('/match/')
-            ? 'match'
-            : null
-    )
-    const nextMatchPath = selectedMatchId ? (matchIdToPath[selectedMatchId] ?? null) : null
-    const shouldSyncMatchUrl = currentMatchSection !== null || currentMatchPath !== null
+          ? '/predict'
+          : '/match'
+    const basePathname =
+      location.pathname === '/match' || location.pathname.startsWith('/match/')
+        ? '/matches'
+        : location.pathname === '/team' || location.pathname.startsWith('/team/')
+          ? '/teams'
+          : location.pathname
+    const targetUrl = selectedTeamCode
+      ? `/team/${selectedTeamCode}`
+      : selectedMatchPath
+        ? selectedMatchPath.startsWith('?')
+          ? `${matchContextBasePath}${selectedMatchPath}`
+          : `${matchContextBasePath}/${selectedMatchPath}`
+        : `${basePathname}${location.search}`
+    const currentUrl = `${window.location.pathname}${window.location.search}`
 
-    if (!shouldSyncMatchUrl) {
+    if (targetUrl === currentUrl) {
       return
     }
 
-    if (currentMatchPath === nextMatchPath) {
-      return
-    }
-
-    if (nextMatchPath) {
-      const nextPathname = `/${currentMatchSection === 'bracket' ? 'bracket' : currentMatchSection === 'predict' ? 'predict' : 'match'}`
-      const nextSearchParams = new URLSearchParams(getSearchWithoutLegacyMatchParam(location.search))
-
-      if (nextMatchPath.startsWith('?')) {
-        const nextMatchId = new URLSearchParams(nextMatchPath).get(MATCH_QUERY_PARAM)
-        if (nextMatchId) {
-          nextSearchParams.set(MATCH_QUERY_PARAM, nextMatchId)
-        }
-      }
-
-      navigate(
-        {
-          pathname: nextMatchPath.startsWith('?') ? nextPathname : `${nextPathname}/${nextMatchPath}`,
-          search: nextSearchParams.toString() ? `?${nextSearchParams.toString()}` : '',
-        },
-        { replace: false },
-      )
-      return
-    }
-
-    if (currentMatchPath) {
-      navigate(
-        {
-          pathname: currentMatchSection === 'bracket' ? '/bracket' : currentMatchSection === 'predict' ? '/predictions' : '/matches',
-          search: getSearchWithoutLegacyMatchParam(location.search),
-        },
-        { replace: false },
-      )
-    }
-  }, [location.pathname, location.search, matchIdToPath, matchesById, navigate, pathToMatchId, selectedMatchId, slugToMatchId])
-
-  useEffect(() => {
-    if (selectedMatchId !== null) {
-      return
-    }
-
-    const currentTeamCode = getTeamPathCode(location.pathname)
-    const nextTeamCode = selectedTeamId ? (teamIdToCode[selectedTeamId] ?? null) : null
-    const isTeamsRoute = location.pathname === '/teams' || location.pathname === '/team'
-    const shouldSyncTeamUrl = isTeamsRoute || currentTeamCode !== null
-
-    if (!shouldSyncTeamUrl) {
-      return
-    }
-
-    if (currentTeamCode === nextTeamCode) {
-      return
-    }
-
-    if (nextTeamCode) {
-      navigate(
-        {
-          pathname: `/team/${nextTeamCode}`,
-          search: location.search,
-        },
-        { replace: false },
-      )
-      return
-    }
-
-    if (currentTeamCode) {
-      navigate(
-        {
-          pathname: '/teams',
-          search: location.search,
-        },
-        { replace: false },
-      )
-    }
-  }, [location.pathname, location.search, navigate, selectedMatchId, selectedTeamId, teamIdToCode])
+    window.history.replaceState(window.history.state, '', targetUrl)
+  }, [location.pathname, location.search, matchIdToPath, selectedMatchId, selectedTeamId, teamIdToCode])
 
   const value = useMemo(
     () => ({

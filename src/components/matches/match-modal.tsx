@@ -392,7 +392,10 @@ export const MatchModal = () => {
               {homeTeam ? (
                 <button
                   type="button"
-                  onClick={() => setSelectedTeamId(homeTeam.id)}
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    setSelectedTeamId(homeTeam.id)
+                  }}
                   className={`truncate cursor-pointer hover:underline ${homeWon ? 'text-[var(--accent-text)]' : ''}`.trim()}
                 >
                   {homeTeamLabel}
@@ -436,7 +439,10 @@ export const MatchModal = () => {
               {awayTeam ? (
                 <button
                   type="button"
-                  onClick={() => setSelectedTeamId(awayTeam.id)}
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    setSelectedTeamId(awayTeam.id)
+                  }}
                   className={`truncate cursor-pointer hover:underline ${awayWon ? 'text-[var(--accent-text)]' : ''}`.trim()}
                 >
                   {awayTeamLabel}

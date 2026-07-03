@@ -95,7 +95,7 @@ docker compose up --build
 Notes:
 - App runs on `http://localhost:${APP_PORT:-3001}`
 - Mongo is exposed at `localhost:${MONGODB_PORT:-27018}`
-- Source is mounted for live reload
+- Source is bind-mounted for live reload (polling enabled for Docker Desktop reliability)
 
 ## AI instruction files
 
