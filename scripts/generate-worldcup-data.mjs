@@ -313,6 +313,6 @@ const data = {
   ],
 }
 
-const outputPath = path.resolve('src/data/worldcup.json')
+const outputPath = path.resolve('src/data/2026-football-world-cup.json')
 fs.writeFileSync(outputPath, `${JSON.stringify(data, null, 2)}\n`)
 console.log(`Generated ${outputPath} with ${data.teams.length} teams, ${data.groups.length} groups, ${data.matches.length} matches.`)

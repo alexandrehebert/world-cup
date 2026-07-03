@@ -1,6 +1,6 @@
 import type { CompetitionId, CompetitionProfile } from './types'
-import { nationsChampionship2026Competition } from './nations-championship-2026'
-import { worldCup2026Competition } from './world-cup-2026'
+import { worldCup2026Competition } from './football-world-cup-2026'
+import { nationsChampionship2026Competition } from './rugby-nations-championship-2026'
 
 const DEFAULT_COMPETITION_ID: CompetitionId = 'world-cup-2026'
 

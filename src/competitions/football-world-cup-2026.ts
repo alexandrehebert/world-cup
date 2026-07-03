@@ -6,7 +6,7 @@ export const worldCup2026Competition: CompetitionProfile = {
   shortName: 'World Cup 2026',
   sportLabel: 'football',
   ballIcon: 'soccer',
-  localDataFile: 'worldcup.json',
+  localDataFile: '2026-football-world-cup.json',
   blobDataFile: 'worldcup/worldcup.json',
   defaultMongoDbName: 'world-cup',
   defaultMatchResultsUrl: 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard',

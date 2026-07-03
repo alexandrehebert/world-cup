@@ -16,7 +16,7 @@ test('resolveCompetitionId supports the nations championship profile', () => {
 
 test('nations championship profile uses dedicated storage defaults', () => {
   const profile = getCompetitionProfile('nations-championship-2026')
-  assert.equal(profile.localDataFile, 'nations-championship-2026.json')
+  assert.equal(profile.localDataFile, '2026-rugby-nations-championship.json')
   assert.equal(profile.blobDataFile, 'nations-championship-2026/tournament.json')
   assert.equal(profile.defaultMongoDbName, 'nations-championship-2026')
 })

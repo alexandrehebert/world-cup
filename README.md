@@ -76,8 +76,8 @@ Profiles are defined under `src/competitions/` and centralize:
 
 Bundled profiles:
 
-- `world-cup-2026` -> `src/data/worldcup.json`
-- `nations-championship-2026` -> `src/data/nations-championship-2026.json`
+- `world-cup-2026` -> `src/data/2026-football-world-cup.json`
+- `nations-championship-2026` -> `src/data/2026-rugby-nations-championship.json`
 
 ## Deploying two Vercel projects from one repo
 

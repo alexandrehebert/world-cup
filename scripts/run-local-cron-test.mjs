@@ -1,7 +1,7 @@
 import http from 'node:http'
 import fs from 'node:fs/promises'
 
-const dataPath = new URL('../src/data/worldcup.json', import.meta.url)
+const dataPath = new URL('../src/data/2026-football-world-cup.json', import.meta.url)
 const before = JSON.parse(await fs.readFile(dataPath, 'utf8'))
 const beforeM1 = before.matches.find((m) => m.id === 'm1')
 
