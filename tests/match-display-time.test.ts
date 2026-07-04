@@ -97,6 +97,18 @@ test('getLiveStatusDetail maps world rugby L1 and L2 to localized half-time labe
   assert.equal(getLiveStatusDetail('L2', 'en'), '2nd half')
 })
 
+test('getLiveStatusDetail expands HT and FT shorthands into readable localized labels', () => {
+  assert.equal(getLiveStatusDetail('HT', 'en', en.labels), en.labels.halfTime)
+  assert.equal(getLiveStatusDetail('FT', 'en', en.labels), en.labels.fullTime)
+  assert.equal(getLiveStatusDetail('HT', 'fr', fr.labels), fr.labels.halfTime)
+  assert.equal(getLiveStatusDetail('FT', 'fr', fr.labels), fr.labels.fullTime)
+})
+
+test('getMatchDisplayTime avoids raw FT token for live matches when feed status lags', () => {
+  const displayTime = getMatchDisplayTime(createLiveMatch('FT'), en.labels, Date.now(), 'en')
+  assert.equal(displayTime, en.labels.fullTime)
+})
+
 test('getLocalizedText returns the locale-specific country name when available', () => {
   const country = { en: 'Germany', fr: 'Allemagne' }
 

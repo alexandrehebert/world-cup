@@ -276,6 +276,7 @@ const getFinishedStatusDetail = (espnDetail: string | null, labels: TranslationS
 export const getLiveStatusDetail = (
   espnDetail: string | null,
   locale: LocaleCode,
+  labels?: TranslationSet['labels'],
 ) => {
   if (!espnDetail) {
     return null
@@ -290,6 +291,22 @@ export const getLiveStatusDetail = (
 
   if (normalized === 'L2' || normalized === '2H') {
     return locale === 'fr' ? '2e mi-temps' : '2nd half'
+  }
+
+  if (HALF_TIME_DETAIL_PATTERN.test(trimmed) || normalized === 'HT') {
+    return labels?.halfTime ?? (locale === 'fr' ? 'Mi-temps' : 'Half-time')
+  }
+
+  if (/^F\.?T\.?[-\s]?P(?:EN|ENS)\.?$/i.test(trimmed) || /^pen(?:alty|alties)$/i.test(trimmed)) {
+    return labels?.afterPenalties ?? (locale === 'fr' ? 'Après tirs au but' : 'After penalties')
+  }
+
+  if (/^(?:F\.?T\.?[-\s]?)?A\.?E\.?T\.?$/i.test(trimmed) || /^after extra(?:[\s-]?time)?$/i.test(trimmed)) {
+    return labels?.afterExtraTime ?? (locale === 'fr' ? 'Après prolongations' : 'After extra time')
+  }
+
+  if (/^F\.?T\.?$/i.test(trimmed) || /^C$/i.test(trimmed) || /^full[\s-]?time$/i.test(trimmed) || /^completed$/i.test(trimmed)) {
+    return labels?.fullTime ?? (locale === 'fr' ? 'Temps réglementaire' : 'Full-time')
   }
 
   return trimmed
@@ -453,7 +470,7 @@ export const getMatchDisplayTime = (
 ) => {
   const displayStatus = getDisplayMatchStatus(match, nowMs)
   const espnDetail = getEspnStatusDetail(match, locale)
-  const liveStatusDetail = getLiveStatusDetail(espnDetail, locale)
+  const liveStatusDetail = getLiveStatusDetail(espnDetail, locale, labels)
 
   if (displayStatus === 'live') {
     if (isPausedLiveDetail(espnDetail)) {

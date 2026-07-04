@@ -4,7 +4,7 @@ import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { buildScheduleCalendarDays } from '../../lib/dashboard-schedule'
-import { formatMatchDate, getLiveStatusDetail, getLocalizedCountryName, getLocalizedText, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getLiveStatusDetail, getLocalizedCountryName, getLocalizedText, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -59,11 +59,11 @@ export const CompetitionDashboard = () => {
                 const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
                 const homeTeamLabel = homeTeam ? t.teams[homeTeam.id] ?? getLocalizedText(homeTeam.name, locale) ?? homeTeam.code : t.labels.tbd
                 const awayTeamLabel = awayTeam ? t.teams[awayTeam.id] ?? getLocalizedText(awayTeam.name, locale) ?? awayTeam.code : t.labels.tbd
-                const displayStatus = match.status
+                const displayStatus = getDisplayMatchStatus(match, nowMs)
                 const displayScore = hasDisplayScore(match, nowMs)
                 const homeScore = typeof match.home.score === 'number' ? match.home.score : null
                 const awayScore = typeof match.away.score === 'number' ? match.away.score : null
-                const liveDetail = getLiveStatusDetail(match.live?.shortDetail ?? match.live?.detail ?? null, locale)
+                const liveDetail = getLiveStatusDetail(match.live?.shortDetail ?? match.live?.detail ?? null, locale, t.labels)
                 const { localDateTime } = formatMatchDate(match.kickoff, locale, localTimeZone, t.labels.today)
                 const { localTime: venueLocalTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
                 const stadiumLabel = getLocalizedText(match.venue.stadium, locale)
