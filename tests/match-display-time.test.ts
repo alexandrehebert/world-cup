@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { getLiveStatusDetail, getMatchDisplayTime } from '../src/lib/format'
+import { getLiveStatusDetail, getLocalizedCountryName, getLocalizedText, getMatchDisplayTime } from '../src/lib/format'
 import { en } from '../src/translations/en'
 import { fr } from '../src/translations/fr'
 import type { MatchRecord } from '../src/types/tournament'
+import { buildCompetitionNotifications } from '../src/components/notifications/competition-notifications'
 
 const createFinishedMatch = (detail: string): MatchRecord => ({
   id: 'm-finished',
@@ -94,4 +95,48 @@ test('getLiveStatusDetail maps world rugby L1 and L2 to localized half-time labe
   assert.equal(getLiveStatusDetail('L2', 'fr'), '2e mi-temps')
   assert.equal(getLiveStatusDetail('L1', 'en'), '1st half')
   assert.equal(getLiveStatusDetail('L2', 'en'), '2nd half')
+})
+
+test('getLocalizedText returns the locale-specific country name when available', () => {
+  const country = { en: 'Germany', fr: 'Allemagne' }
+
+  assert.equal(getLocalizedText(country, 'fr'), 'Allemagne')
+  assert.equal(getLocalizedText(country, 'en'), 'Germany')
+})
+
+test('getLocalizedCountryName translates known venue countries', () => {
+  assert.equal(getLocalizedCountryName('United States', 'fr'), 'États-Unis')
+  assert.equal(getLocalizedCountryName('Wales', 'fr'), 'Pays de Galles')
+  assert.equal(getLocalizedCountryName('France', 'en'), 'France')
+})
+
+test('buildCompetitionNotifications uses localized team labels in notification text', () => {
+  const result = buildCompetitionNotifications({
+    upcomingMatches: [
+      {
+        id: 'm1',
+        stage: 'group',
+        home: { teamId: 'can', score: 1 },
+        away: { teamId: 'mar', score: 0 },
+        kickoff: '2026-07-04T15:00:00Z',
+        venue: { stadium: 'Estadio', city: 'Mexico City', country: 'Mexico', timeZone: 'UTC' },
+        status: 'finished',
+      },
+    ],
+    teamsById: {
+      can: { id: 'can', name: 'Canada', code: 'CAN', flagCode: 'ca' },
+      mar: { id: 'mar', name: 'Morocco', code: 'MAR', flagCode: 'ma' },
+    },
+    teamLabels: {
+      can: 'Canada',
+      mar: 'Maroc',
+    },
+    locale: 'fr',
+    labels: fr.labels,
+    nowMs: Date.now(),
+  })
+
+  const renderedText = result.notifications.flatMap((notification) => notification.tokens).map((token) => token.value).join(' ')
+  assert.match(renderedText, /Canada/)
+  assert.match(renderedText, /Maroc/)
 })

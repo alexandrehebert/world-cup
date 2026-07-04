@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getLiveStatusDetail, getMatchDisplayTime, getLocalizedText, hasDisplayScore } from '../../lib/format'
+import { buildScheduleCalendarDays } from '../../lib/dashboard-schedule'
+import { formatMatchDate, getLiveStatusDetail, getLocalizedCountryName, getMatchDisplayTime, getLocalizedText, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -18,44 +19,12 @@ export const CompetitionDashboard = () => {
   const { setSelectedMatchId } = useDashboard()
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
-  const { liveMatches, scheduledMatches, latestResults, notifications } = useCompetitionNotifications()
+  const { liveMatches, liveWidgetMatches, scheduledMatches, latestResults, notifications } = useCompetitionNotifications()
   const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
-  const scheduleCalendarDays = useMemo(() => {
-    const grouped = new Map<string, { label: string; weekday: string; day: string; matches: typeof scheduledMatches }>()
-
-    for (const match of scheduledMatches) {
-      const date = new Date(match.kickoff)
-      const dayKey = new Intl.DateTimeFormat('en-CA', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        timeZone: localTimeZone,
-      }).format(date)
-
-      if (!grouped.has(dayKey)) {
-        grouped.set(dayKey, {
-          label: new Intl.DateTimeFormat(dateLocale, {
-            day: 'numeric',
-            month: 'short',
-            timeZone: localTimeZone,
-          }).format(date),
-          weekday: new Intl.DateTimeFormat(dateLocale, {
-            weekday: 'short',
-            timeZone: localTimeZone,
-          }).format(date),
-          day: new Intl.DateTimeFormat(dateLocale, {
-            day: '2-digit',
-            timeZone: localTimeZone,
-          }).format(date),
-          matches: [],
-        })
-      }
-
-      grouped.get(dayKey)?.matches.push(match)
-    }
-
-    return [...grouped.values()].slice(0, 7)
-  }, [dateLocale, localTimeZone, scheduledMatches])
+  const scheduleCalendarDays = useMemo(
+    () => buildScheduleCalendarDays(scheduledMatches, dateLocale, localTimeZone),
+    [dateLocale, localTimeZone, scheduledMatches],
+  )
 
   return (
     <section className="space-y-4">
@@ -64,7 +33,7 @@ export const CompetitionDashboard = () => {
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="flex items-center gap-2 text-base font-semibold text-[var(--text-strong)]">
               <LivePulse className="h-3 w-3" />
-              {t.labels.liveNow}
+              {liveMatches.length > 0 ? t.labels.liveNow : t.labels.comingSoon}
             </h2>
             <Link
               to="/matches"
@@ -76,16 +45,17 @@ export const CompetitionDashboard = () => {
               <Icon name="arrow_forward" className="text-[16px]" />
             </Link>
           </div>
-          {liveMatches.length === 0 ? (
-            <p className="text-sm text-[var(--text-muted)]">{t.labels.noLiveMatches}</p>
+          {liveWidgetMatches.length === 0 ? (
+            <p className="text-sm text-[var(--text-muted)]">{t.labels.noScheduledMatches}</p>
           ) : (
             <div className="space-y-3">
-              {liveMatches.map((match) => {
+              {liveWidgetMatches.map((match) => {
                 const homeTeam = match.home.teamId ? teamsById[match.home.teamId] : undefined
                 const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
                 const homeTeamLabel = homeTeam ? t.teams[homeTeam.id] ?? getLocalizedText(homeTeam.name, locale) ?? homeTeam.code : t.labels.tbd
                 const awayTeamLabel = awayTeam ? t.teams[awayTeam.id] ?? getLocalizedText(awayTeam.name, locale) ?? awayTeam.code : t.labels.tbd
-                const displayTime = getMatchDisplayTime(match, t.labels, nowMs, locale) ?? t.labels.live
+                const displayStatus = match.status
+                const displayTime = getMatchDisplayTime(match, t.labels, nowMs, locale) ?? (displayStatus === 'live' ? t.labels.live : null)
                 const displayScore = hasDisplayScore(match, nowMs)
                 const homeScore = typeof match.home.score === 'number' ? match.home.score : null
                 const awayScore = typeof match.away.score === 'number' ? match.away.score : null
@@ -94,7 +64,7 @@ export const CompetitionDashboard = () => {
                 const { localTime: venueLocalTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
                 const stadiumLabel = getLocalizedText(match.venue.stadium, locale)
                 const cityLabel = getLocalizedText(match.venue.city, locale)
-                const countryLabel = getLocalizedText(match.venue.country, locale)
+                const countryLabel = getLocalizedCountryName(match.venue.country, locale)
                 const venueTimeZone = new Intl.DateTimeFormat('en-US', {
                   timeZone: match.venue.timeZone,
                   timeZoneName: 'shortOffset',
@@ -115,11 +85,11 @@ export const CompetitionDashboard = () => {
                           {match.stage === 'group' ? t.labels.stageGroup : match.stage === 'roundOf16' ? t.labels.stageRoundOf16 : match.stage === 'roundOf32' ? t.labels.stageRoundOf32 : match.stage === 'quarterFinal' ? t.labels.stageQuarterFinal : match.stage === 'semiFinal' ? t.labels.stageSemiFinal : match.stage === 'thirdPlace' ? t.labels.stageThirdPlace : t.labels.stageFinal}
                         </p>
                         <StatusPill
-                          status="live"
+                          status={displayStatus}
                           label={
                             <span className="inline-flex items-center gap-1.5">
-                              <LivePulse className="h-2.5 w-2.5" />
-                              <span>{t.labels.live}</span>
+                              {displayStatus === 'live' ? <LivePulse className="h-2.5 w-2.5" /> : null}
+                              <span>{displayStatus === 'live' ? t.labels.live : t.labels.scheduled}</span>
                             </span>
                           }
                         />
@@ -140,7 +110,7 @@ export const CompetitionDashboard = () => {
                               <p className="text-3xl font-black leading-none text-[var(--text-strong)] sm:text-4xl">
                                 {homeScore ?? 0} - {awayScore ?? 0}
                               </p>
-                              <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.live}</p>
+                              <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{displayStatus === 'live' ? t.labels.live : t.labels.scheduled}</p>
                               {displayTime ? <p className="text-sm font-semibold text-[var(--text-strong)]">{displayTime}</p> : null}
                             </>
                           ) : (

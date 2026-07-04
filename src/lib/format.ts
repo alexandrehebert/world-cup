@@ -205,6 +205,36 @@ export const getLocalizedText = (value: unknown, locale: LocaleCode): string | n
   return null
 }
 
+const LOCALIZED_COUNTRY_NAMES: Record<string, { en: string; fr: string }> = {
+  Argentina: { en: 'Argentina', fr: 'Argentine' },
+  Australia: { en: 'Australia', fr: 'Australie' },
+  Canada: { en: 'Canada', fr: 'Canada' },
+  England: { en: 'England', fr: 'Angleterre' },
+  France: { en: 'France', fr: 'France' },
+  Ireland: { en: 'Ireland', fr: 'Irlande' },
+  Italy: { en: 'Italy', fr: 'Italie' },
+  Japan: { en: 'Japan', fr: 'Japon' },
+  Mexico: { en: 'Mexico', fr: 'Mexique' },
+  'New Zealand': { en: 'New Zealand', fr: 'Nouvelle-Zélande' },
+  Scotland: { en: 'Scotland', fr: 'Écosse' },
+  'South Africa': { en: 'South Africa', fr: 'Afrique du Sud' },
+  'United States': { en: 'United States', fr: 'États-Unis' },
+  Wales: { en: 'Wales', fr: 'Pays de Galles' },
+}
+
+export const getLocalizedCountryName = (value: unknown, locale: LocaleCode): string | null => {
+  const countryName = getLocalizedText(value, locale)
+  if (!countryName) {
+    return null
+  }
+
+  if (locale === 'en') {
+    return countryName
+  }
+
+  return LOCALIZED_COUNTRY_NAMES[countryName]?.fr ?? countryName
+}
+
 const getEspnStatusDetail = (match: MatchRecord, locale: LocaleCode) => {
   const shortDetail = getLocalizedText(match.live?.shortDetail, locale)
   if (shortDetail) {

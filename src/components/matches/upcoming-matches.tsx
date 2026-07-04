@@ -5,7 +5,7 @@ import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { resolveCompetitionId } from '../../competitions'
 import { hidesGroupStageLabel } from '../../lib/competition-sections'
-import { formatMatchDate, getDisplayMatchStatus, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, getDisplayMatchStatus, getLocalizedCountryName, getLocalizedText, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
@@ -136,6 +136,10 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
               const homeIsFavorite = homeTeam ? isFavoriteTeam(homeTeam.id) : false
               const awayIsFavorite = awayTeam ? isFavoriteTeam(awayTeam.id) : false
               const hasFavorite = homeIsFavorite || awayIsFavorite
+              const stadiumLabel = getLocalizedText(match.venue.stadium, locale)
+              const cityLabel = getLocalizedText(match.venue.city, locale)
+              const countryLabel = getLocalizedCountryName(match.venue.country, locale)
+              const venueLabel = [stadiumLabel ?? match.venue.stadium, cityLabel, countryLabel].filter((value): value is string => Boolean(value)).join(' · ')
               const matchStageLabel = match.stage === 'group' && hideGroupStage ? null : stageLabel(match.stage, t.labels)
 
               return (
@@ -230,7 +234,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
                         {t.meta.localTime} · {displayLocalTime}
                       </p>
                       <p className={compact ? 'text-xs text-[var(--text-soft)]' : 'text-sm text-[var(--text-soft)]'}>
-                        {match.venue.stadium} · {match.venue.city}, {match.venue.country}
+                        {venueLabel}
                       </p>
                     </div>
                   </div>

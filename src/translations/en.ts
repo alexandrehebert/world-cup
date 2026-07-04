@@ -172,6 +172,7 @@ export const en: TranslationSet = {
     viewMatches: 'View matches',
     viewSchedule: 'View schedule',
     eventIsLive: 'is live now.',
+    eventStartsSoon: 'starts soon.',
     eventEnded: 'ended',
     noMatchesForTeam: 'No matches for this team.',
     groupPosition: 'Group position',

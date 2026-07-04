@@ -10,6 +10,7 @@ import { hidesGroupStageLabel } from '../../lib/competition-sections'
 import {
   formatMatchDate,
   getDisplayMatchStatus,
+  getLocalizedCountryName,
   getLocalizedText,
   getMatchDayKey,
   getMatchDisplayTime,
@@ -171,7 +172,7 @@ export const MatchesList = ({
               const hasFavorite = homeIsFavorite || awayIsFavorite
               const stadiumLabel = getLocalizedText(match.venue.stadium, locale)
               const cityLabel = getLocalizedText(match.venue.city, locale)
-              const countryLabel = getLocalizedText(match.venue.country, locale)
+              const countryLabel = getLocalizedCountryName(match.venue.country, locale)
               const locationLabel = [cityLabel, countryLabel].filter((value): value is string => Boolean(value)).join(', ')
               const venueLabel = [stadiumLabel, locationLabel].filter((value): value is string => Boolean(value)).join(' · ')
               const isPredictionOpen = match.status === 'scheduled' && new Date(match.kickoff).getTime() > nowMs

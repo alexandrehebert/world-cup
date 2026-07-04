@@ -3,7 +3,7 @@ import { useLocale } from '../../contexts/locale-context'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useNow } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, formatMatchTime, formatPlaceholder, formatUtcOffsetLabel, getDisplayMatchStatus, getMatchWinner } from '../../lib/format'
+import { formatMatchDate, formatMatchTime, formatPlaceholder, formatUtcOffsetLabel, getDisplayMatchStatus, getLocalizedCountryName, getLocalizedText, getMatchWinner } from '../../lib/format'
 import { getPotentialTeamsFromPlaceholder, getTopTeamFromPlaceholder } from '../../lib/bracket'
 import { alignSideRoundsByNextRound, getWinnerSourceMatchId } from '../../lib/bracket-layout'
 import { Icon } from '../../lib/icons'
@@ -1138,10 +1138,15 @@ export const BracketBoard = ({
                                 {localShortDate} · {localTime} {utcOffsetLabel}
                               </div>
                               <div className="truncate text-xs text-[var(--text-soft)]">
-                                {match.venue.stadium}
+                                {getLocalizedText(match.venue.stadium, locale) ?? match.venue.stadium}
                               </div>
                               <div className="truncate text-xs text-[var(--text-muted)]">
-                                {match.venue.city}, {match.venue.country}
+                                {[
+                                  getLocalizedText(match.venue.city, locale),
+                                  getLocalizedCountryName(match.venue.country, locale),
+                                ]
+                                  .filter((value): value is string => Boolean(value))
+                                  .join(', ')}
                               </div>
                             </div>
                           </div>

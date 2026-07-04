@@ -59,7 +59,7 @@ export const NotificationFeed = ({
               <div className="relative z-10 flex self-center justify-center" aria-hidden="true">
                 <span
                   className={`relative z-10 inline-flex h-3 w-3 rounded-full border-2 shadow-[0_0_0_2px_var(--surface)] ${
-                    notification.tone === 'live'
+                    notification.tone === 'live' || notification.tone === 'soon'
                       ? 'border-[var(--accent)] bg-[var(--surface)]'
                       : 'border-[var(--border-strong)] bg-[var(--surface)]'
                   }`}
@@ -118,6 +118,8 @@ export const NotificationFeed = ({
           className={`overflow-hidden rounded-[var(--radius-sm)] border px-3 py-2 text-sm ${
             notification.tone === 'live'
               ? 'border-[var(--accent-border)] bg-[var(--accent-muted)]'
+              : notification.tone === 'soon'
+                ? 'border-[var(--accent-border)] bg-[var(--surface-soft)]'
               : 'border-[var(--border)] bg-[var(--surface-soft)]'
           }`}
         >

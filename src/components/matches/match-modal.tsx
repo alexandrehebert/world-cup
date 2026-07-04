@@ -8,7 +8,7 @@ import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { resolveCompetitionId } from '../../competitions'
 import { hidesGroupStageLabel } from '../../lib/competition-sections'
-import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getLocalizedCountryName, getLocalizedText, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
 import { isAccountFeatureEnabled, isPredictionsFeatureEnabled } from '../../lib/features'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -243,6 +243,10 @@ export const MatchModal = () => {
     minute: '2-digit',
     timeZone: match.venue.timeZone,
   }).format(new Date(match.kickoff))
+  const venueStadiumLabel = getLocalizedText(match.venue.stadium, locale)
+  const venueCityLabel = getLocalizedText(match.venue.city, locale)
+  const venueCountryLabel = getLocalizedCountryName(match.venue.country, locale)
+  const venueLocation = [venueCityLabel, venueCountryLabel].filter((value): value is string => Boolean(value)).join(', ')
   const isPredictionOpen = match.status === 'scheduled' && new Date(match.kickoff).getTime() > nowMs
   const isSavingPrediction = savingMatchId === match.id
   const persistedOutcome = existingPrediction?.outcome
@@ -571,10 +575,8 @@ export const MatchModal = () => {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.meta.venue}</p>
-          <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{match.venue.stadium}</p>
-          <p className="mt-1 text-sm text-[var(--text)]">
-            {match.venue.city}, {match.venue.country}
-          </p>
+          <p className="mt-2 text-base font-semibold text-[var(--text-strong)]">{venueStadiumLabel ?? match.venue.stadium}</p>
+          {venueLocation ? <p className="mt-1 text-sm text-[var(--text)]">{venueLocation}</p> : null}
         </div>
 
         <div className="shrink-0 text-right">

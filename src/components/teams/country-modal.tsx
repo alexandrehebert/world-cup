@@ -8,6 +8,7 @@ import { hidesGroupStageLabel, usesStandingsSectionPath } from '../../lib/compet
 import {
   formatMatchDate,
   getDisplayMatchStatus,
+  getLocalizedCountryName,
   getLocalizedText,
   getMatchDisplayTime,
   hasDisplayScore,
@@ -115,7 +116,7 @@ export const CountryModal = () => {
     const displayDateTime = displayTiming ?? localDateTime
     const matchStageLabel = match.stage === 'group' && hideGroupStage ? null : stageLabel(match.stage, t.labels)
     const venueCity = getLocalizedText(match.venue.city, locale)
-    const venueCountry = getLocalizedText(match.venue.country, locale)
+    const venueCountry = getLocalizedCountryName(match.venue.country, locale)
     const venueLabel = [venueCity, venueCountry].filter(Boolean).join(', ')
 
     return (

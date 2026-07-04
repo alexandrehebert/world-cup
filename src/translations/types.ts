@@ -170,6 +170,7 @@ export interface TranslationSet {
     viewMatches: string
     viewSchedule: string
     eventIsLive: string
+    eventStartsSoon: string
     eventEnded: string
     noMatchesForTeam: string
     groupPosition: string
