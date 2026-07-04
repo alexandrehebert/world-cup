@@ -159,7 +159,7 @@ const knockoutMatches = [
   [86, 'roundOf32', 'roundOf32', '2026-07-03T22:00:00Z', 'Miami Gardens', '1st Group J', '1er Groupe J', '2nd Group H', '2e Groupe H'],
   [87, 'roundOf32', 'roundOf32', '2026-07-04T01:30:00Z', 'Kansas City', '1st Group K', '1er Groupe K', '3rd Group D·E·I·J·L', '3e Groupes D·E·I·J·L'],
   [88, 'roundOf32', 'roundOf32', '2026-07-03T18:00:00Z', 'Arlington', '2nd Group D', '2e Groupe D', '2nd Group G', '2e Groupe G'],
-  [89, 'roundOf16', 'roundOf16', '2026-07-04T22:00:00Z', 'Philadelphia', '1st Group E / 3rd Group A·B·C·D·F', '1er Groupe E / 3e Groupes A·B·C·D·F', '1st Group I / 3rd Group C·D·F·G·H', '1er Groupe I / 3e Groupes C·D·F·G·H'],
+  [89, 'roundOf16', 'roundOf16', '2026-07-04T21:00:00Z', 'Philadelphia', '1st Group E / 3rd Group A·B·C·D·F', '1er Groupe E / 3e Groupes A·B·C·D·F', '1st Group I / 3rd Group C·D·F·G·H', '1er Groupe I / 3e Groupes C·D·F·G·H'],
   [90, 'roundOf16', 'roundOf16', '2026-07-04T17:00:00Z', 'Houston', '2nd Group A / 2nd Group B', '2e Groupe A / 2e Groupe B', '1st Group F / 2nd Group C', '1er Groupe F / 2e Groupe C'],
   [91, 'roundOf16', 'roundOf16', '2026-07-05T20:00:00Z', 'East Rutherford', '1st Group C / 2nd Group F', '1er Groupe C / 2e Groupe F', '2nd Group E / 2nd Group I', '2e Groupe E / 2e Groupe I'],
   [92, 'roundOf16', 'roundOf16', '2026-07-06T00:00:00Z', 'Mexico City', '1st Group A / 3rd Group C·E·F·H·I', '1er Groupe A / 3e Groupes C·E·F·H·I', '1st Group L / 3rd Group E·H·I·J·K', '1er Groupe L / 3e Groupes E·H·I·J·K'],

@@ -25,6 +25,7 @@ export interface CompetitionNotificationsState {
   scheduledMatches: MatchRecord[]
   latestResults: MatchRecord[]
   notifications: NotificationItem[]
+  allNotifications: NotificationItem[]
 }
 
 const getTeamName = (
@@ -85,17 +86,22 @@ export const buildCompetitionNotifications = ({
   const latestResults = sortedMatches
     .filter((match) => getDisplayMatchStatus(match, nowMs) === 'finished')
     .sort((first, second) => second.kickoff.localeCompare(first.kickoff))
-    .slice(0, 5)
-  const startingSoonMatches = scheduledMatches.filter((match) => isStartingSoon(match, nowMs)).slice(0, 3)
+    .slice(0, 4)
+  const liveNotificationMatches = sortedMatches.filter((match) => getDisplayMatchStatus(match, nowMs) === 'live')
+  const startingSoonMatches = sortedMatches.filter((match) => isStartingSoon(match, nowMs))
+  const finishedNotificationMatches = sortedMatches
+    .filter((match) => getDisplayMatchStatus(match, nowMs) === 'finished')
+    .sort((first, second) => second.kickoff.localeCompare(first.kickoff))
   const liveWidgetMatches = liveMatches.length > 0 ? liveMatches.slice(0, 3) : (startingSoonMatches.length > 0 ? startingSoonMatches : scheduledMatches.slice(0, 3))
 
-  const items: NotificationItem[] = []
+  const widgetItems: NotificationItem[] = []
+  const detailedItems: NotificationItem[] = []
 
-  for (const match of liveMatches.slice(0, 3)) {
+  for (const match of liveNotificationMatches.slice(0, 3)) {
     const home = getTeamName(match, 'home', teamsById, teamLabels, locale, labels.home)
     const away = getTeamName(match, 'away', teamsById, teamLabels, locale, labels.away)
 
-    items.push({
+    const notification = {
       id: `live-${match.id}`,
       timestamp: match.kickoff,
       tone: 'live',
@@ -107,14 +113,17 @@ export const buildCompetitionNotifications = ({
         { type: 'match', value: labels.details, matchId: match.id },
         { type: 'text', value: '.' },
       ],
-    })
+    } satisfies NotificationItem
+
+    widgetItems.push(notification)
+    detailedItems.push(notification)
   }
 
-  for (const match of startingSoonMatches) {
+  for (const match of startingSoonMatches.slice(0, 3)) {
     const home = getTeamName(match, 'home', teamsById, teamLabels, locale, labels.home)
     const away = getTeamName(match, 'away', teamsById, teamLabels, locale, labels.away)
 
-    items.push({
+    const notification = {
       id: `soon-${match.id}`,
       timestamp: match.kickoff,
       tone: 'soon',
@@ -126,15 +135,18 @@ export const buildCompetitionNotifications = ({
         { type: 'match', value: labels.details, matchId: match.id },
         { type: 'text', value: '.' },
       ],
-    })
+    } satisfies NotificationItem
+
+    widgetItems.push(notification)
+    detailedItems.push(notification)
   }
 
-  for (const match of latestResults.slice(0, 3)) {
+  for (const match of finishedNotificationMatches) {
     const home = getTeamName(match, 'home', teamsById, teamLabels, locale, labels.home)
     const away = getTeamName(match, 'away', teamsById, teamLabels, locale, labels.away)
     const score = hasDisplayScore(match, nowMs) ? `${match.home.score ?? 0}-${match.away.score ?? 0}` : labels.finished
 
-    items.push({
+    detailedItems.push({
       id: `result-${match.id}`,
       timestamp: match.kickoff,
       tone: 'result',
@@ -149,7 +161,28 @@ export const buildCompetitionNotifications = ({
     })
   }
 
-  const notifications = items.sort((first, second) => second.timestamp.localeCompare(first.timestamp)).slice(0, 6)
+  for (const match of latestResults.slice(0, 3)) {
+    const home = getTeamName(match, 'home', teamsById, teamLabels, locale, labels.home)
+    const away = getTeamName(match, 'away', teamsById, teamLabels, locale, labels.away)
+    const score = hasDisplayScore(match, nowMs) ? `${match.home.score ?? 0}-${match.away.score ?? 0}` : labels.finished
+
+    widgetItems.push({
+      id: `result-${match.id}`,
+      timestamp: match.kickoff,
+      tone: 'result',
+      tokens: [
+        ...(home.teamId ? [{ type: 'team', value: home.teamName, teamId: home.teamId } as const] : [{ type: 'text', value: home.teamName } as const]),
+        { type: 'text', value: ` ${labels.vs.toLowerCase()} ` },
+        ...(away.teamId ? [{ type: 'team', value: away.teamName, teamId: away.teamId } as const] : [{ type: 'text', value: away.teamName } as const]),
+        { type: 'text', value: ` ${labels.eventEnded} ${score}. ` },
+        { type: 'match', value: labels.details, matchId: match.id },
+        { type: 'text', value: '.' },
+      ],
+    })
+  }
+
+  const allNotifications = detailedItems.sort((first, second) => second.timestamp.localeCompare(first.timestamp))
+  const notifications = widgetItems.sort((first, second) => second.timestamp.localeCompare(first.timestamp)).slice(0, 6)
 
   return {
     liveMatches,
@@ -157,6 +190,7 @@ export const buildCompetitionNotifications = ({
     scheduledMatches,
     latestResults,
     notifications,
+    allNotifications,
   }
 }
 

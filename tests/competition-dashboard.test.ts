@@ -32,11 +32,15 @@ test('buildScheduleCalendarDays limits the dashboard schedule widget to four day
     createMatch('m5', '2026-07-05T12:00:00Z'),
   ]
 
-  const scheduleCalendarDays = buildScheduleCalendarDays(scheduledMatches, 'en-GB', 'UTC')
+  const scheduleCalendarDays = buildScheduleCalendarDays(scheduledMatches, 'en-GB', 'UTC', 'Today', Date.parse('2026-07-04T08:00:00Z'))
 
   assert.equal(scheduleCalendarDays.length, 4)
   assert.deepEqual(
     scheduleCalendarDays.map((day) => day.label),
-    ['1 Jul', '2 Jul', '3 Jul', '4 Jul'],
+    ['1 Jul', '2 Jul', '3 Jul', 'Today'],
+  )
+  assert.deepEqual(
+    scheduleCalendarDays.map((day) => day.isToday),
+    [false, false, false, true],
   )
 })

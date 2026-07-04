@@ -168,6 +168,7 @@ export const en: TranslationSet = {
     noScheduledMatches: 'No scheduled matches.',
     noLatestResults: 'No completed matches yet.',
     noNotifications: 'No recent events.',
+    viewAllEvents: 'View all events',
     openMatch: 'Open match',
     viewMatches: 'View matches',
     viewSchedule: 'View schedule',

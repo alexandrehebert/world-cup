@@ -130,6 +130,18 @@ test('applyCanonicalVenueData does not override blob team IDs when canonical has
   assert.equal(merged.matches[0]?.away.teamId, 'col')
 })
 
+test('the France versus Paraguay round of 16 fixture keeps the corrected 5 PM kickoff', async () => {
+  const dataPath = path.join(process.cwd(), 'src', 'data', '2026-football-world-cup.json')
+  const raw = await fs.readFile(dataPath, 'utf8')
+  const data = JSON.parse(raw) as TournamentData
+  const match = data.matches.find((entry) => entry.id === 'm89')
+
+  assert.ok(match)
+  assert.equal(match?.kickoff, '2026-07-04T21:00:00Z')
+  assert.equal(match?.live?.detail, 'Sat, July 4th at 5:00 PM EDT')
+  assert.equal(match?.live?.startDate, '2026-07-04T21:00Z')
+})
+
 test('writeLocalTournamentData stores local sync data in gitignored runtime directory', async () => {
   const temporaryRuntimeDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wc-local-sync-'))
   const canonicalDataPath = path.join(process.cwd(), 'src', 'data', '2026-rugby-nations-championship.json')

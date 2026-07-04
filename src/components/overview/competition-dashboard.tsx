@@ -1,29 +1,34 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { buildScheduleCalendarDays } from '../../lib/dashboard-schedule'
-import { formatMatchDate, getLiveStatusDetail, getLocalizedCountryName, getMatchDisplayTime, getLocalizedText, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, getLiveStatusDetail, getLocalizedCountryName, getLocalizedText, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useCompetitionNotifications } from '../notifications/competition-notifications'
+import { EventsModal } from '../notifications/events-modal'
 import { NotificationFeed } from '../notifications/notifications-feed'
+
+const dashboardWidgetActionClassName =
+  'inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--accent-text)]'
 
 export const CompetitionDashboard = () => {
   const { t, locale } = useLocale()
   const { teamsById } = useTournament()
   const { setSelectedMatchId } = useDashboard()
+  const [isEventsModalOpen, setIsEventsModalOpen] = useState(false)
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
-  const { liveMatches, liveWidgetMatches, scheduledMatches, latestResults, notifications } = useCompetitionNotifications()
+  const { liveMatches, liveWidgetMatches, scheduledMatches, latestResults, notifications, allNotifications } = useCompetitionNotifications()
   const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
   const scheduleCalendarDays = useMemo(
-    () => buildScheduleCalendarDays(scheduledMatches, dateLocale, localTimeZone),
-    [dateLocale, localTimeZone, scheduledMatches],
+    () => buildScheduleCalendarDays(scheduledMatches, dateLocale, localTimeZone, t.labels.today, nowMs),
+    [dateLocale, localTimeZone, nowMs, scheduledMatches, t.labels.today],
   )
 
   return (
@@ -37,7 +42,7 @@ export const CompetitionDashboard = () => {
             </h2>
             <Link
               to="/matches"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--accent-text)]"
+              className={dashboardWidgetActionClassName}
               aria-label={t.labels.viewMatches}
               title={t.labels.viewMatches}
             >
@@ -55,7 +60,6 @@ export const CompetitionDashboard = () => {
                 const homeTeamLabel = homeTeam ? t.teams[homeTeam.id] ?? getLocalizedText(homeTeam.name, locale) ?? homeTeam.code : t.labels.tbd
                 const awayTeamLabel = awayTeam ? t.teams[awayTeam.id] ?? getLocalizedText(awayTeam.name, locale) ?? awayTeam.code : t.labels.tbd
                 const displayStatus = match.status
-                const displayTime = getMatchDisplayTime(match, t.labels, nowMs, locale) ?? (displayStatus === 'live' ? t.labels.live : null)
                 const displayScore = hasDisplayScore(match, nowMs)
                 const homeScore = typeof match.home.score === 'number' ? match.home.score : null
                 const awayScore = typeof match.away.score === 'number' ? match.away.score : null
@@ -111,7 +115,7 @@ export const CompetitionDashboard = () => {
                                 {homeScore ?? 0} - {awayScore ?? 0}
                               </p>
                               <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{displayStatus === 'live' ? t.labels.live : t.labels.scheduled}</p>
-                              {displayTime ? <p className="text-sm font-semibold text-[var(--text-strong)]">{displayTime}</p> : null}
+                              {liveDetail ? <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent-text)]">{liveDetail}</p> : null}
                             </>
                           ) : (
                             <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">{t.labels.vs}</p>
@@ -141,9 +145,6 @@ export const CompetitionDashboard = () => {
                         </p>
                       </div>
                     </div>
-                    {liveDetail ? (
-                      <p className="mt-3 text-xs uppercase tracking-[0.18em] text-[var(--accent-text)]">{liveDetail}</p>
-                    ) : null}
                   </button>
                 )
               })}
@@ -156,7 +157,7 @@ export const CompetitionDashboard = () => {
             <h2 className="text-base font-semibold text-[var(--text-strong)]">{t.labels.smallSchedule}</h2>
             <Link
               to="/matches"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--accent-text)]"
+              className={dashboardWidgetActionClassName}
               aria-label={t.labels.viewSchedule}
               title={t.labels.viewSchedule}
             >
@@ -169,10 +170,13 @@ export const CompetitionDashboard = () => {
           ) : (
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {scheduleCalendarDays.map((day) => (
-                <section key={`${day.weekday}-${day.day}`} className="border border-[var(--border)] bg-[var(--surface-soft)] p-2.5">
-                  <div className="mb-2 flex items-center justify-between border-b border-[var(--border)] pb-1.5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-soft)]">{day.weekday}</p>
-                    <p className="text-sm font-semibold text-[var(--text-strong)]">{day.label}</p>
+                <section
+                  key={`${day.weekday}-${day.day}`}
+                  className={`border p-2.5 ${day.isToday ? 'rounded-[var(--radius-sm)] border-[var(--accent-border)] bg-[color:color-mix(in_srgb,var(--accent-muted)_72%,var(--surface-soft)_28%)]' : 'border-[var(--border)] bg-[var(--surface-soft)]'}`}
+                >
+                  <div className={`mb-2 flex items-center justify-between border-b pb-1.5 ${day.isToday ? 'border-[var(--accent-border)]' : 'border-[var(--border)]'}`}>
+                    <p className={`text-xs font-semibold uppercase tracking-[0.16em] ${day.isToday ? 'text-[var(--accent-text)]' : 'text-[var(--text-soft)]'}`}>{day.weekday}</p>
+                    <p className={`text-sm font-semibold ${day.isToday ? 'text-[var(--accent-text)]' : 'text-[var(--text-strong)]'}`}>{day.label}</p>
                   </div>
                   <div className="space-y-1.5">
                     {day.matches.slice(0, 3).map((match) => {
@@ -211,7 +215,7 @@ export const CompetitionDashboard = () => {
             <h2 className="text-base font-semibold text-[var(--text-strong)]">{t.labels.latestResults}</h2>
             <Link
               to="/matches"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--accent-text)]"
+              className={dashboardWidgetActionClassName}
               aria-label={t.labels.viewMatches}
               title={t.labels.viewMatches}
             >
@@ -259,13 +263,34 @@ export const CompetitionDashboard = () => {
         </article>
 
         <article className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-[var(--text-strong)]">
-            <Icon name="notifications" className="text-[18px]" />
-            {t.labels.eventsSection}
-          </h2>
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="flex items-center gap-2 text-base font-semibold text-[var(--text-strong)]">
+              <Icon name="notifications" className="text-[18px]" />
+              {t.labels.eventsSection}
+            </h2>
+            <Link
+              to="#"
+              onClick={(event) => {
+                event.preventDefault()
+                setIsEventsModalOpen(true)
+              }}
+              className={dashboardWidgetActionClassName}
+              aria-label={t.labels.viewAllEvents}
+              title={t.labels.viewAllEvents}
+            >
+              <span>{t.labels.viewAllEvents}</span>
+              <Icon name="arrow_forward" className="text-[16px]" />
+            </Link>
+          </div>
           <NotificationFeed notifications={notifications} variant="timeline" />
         </article>
       </div>
+      {isEventsModalOpen ? (
+        <EventsModal
+          notifications={allNotifications}
+          onClose={() => setIsEventsModalOpen(false)}
+        />
+      ) : null}
     </section>
   )
 }

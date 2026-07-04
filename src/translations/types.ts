@@ -166,6 +166,7 @@ export interface TranslationSet {
     noScheduledMatches: string
     noLatestResults: string
     noNotifications: string
+    viewAllEvents: string
     openMatch: string
     viewMatches: string
     viewSchedule: string
