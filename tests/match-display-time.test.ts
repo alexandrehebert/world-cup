@@ -34,6 +34,31 @@ const createFinishedMatch = (detail: string): MatchRecord => ({
   },
 })
 
+const createLiveMatch = (detail: string): MatchRecord => ({
+  id: 'm-live',
+  stage: 'group',
+  home: {
+    teamId: 'fij',
+    score: 7,
+  },
+  away: {
+    teamId: 'wal',
+    score: 5,
+  },
+  kickoff: '2026-07-04T13:10:00Z',
+  venue: {
+    stadium: 'Cardiff City Stadium',
+    city: 'Cardiff',
+    country: 'Wales',
+    timeZone: 'UTC',
+  },
+  status: 'live',
+  live: {
+    detail,
+    shortDetail: detail,
+  },
+})
+
 test('getMatchDisplayTime maps FT-Pens to a clear localized status in English', () => {
   const displayTime = getMatchDisplayTime(createFinishedMatch('FT-Pens'), en.labels, Date.now(), 'en')
   assert.equal(displayTime, en.labels.afterPenalties)
@@ -52,4 +77,14 @@ test('getMatchDisplayTime maps AET to the localized extra-time status', () => {
 test('getMatchDisplayTime maps world rugby C status to localized full-time text', () => {
   const displayTime = getMatchDisplayTime(createFinishedMatch('C'), en.labels, Date.now(), 'en')
   assert.equal(displayTime, en.labels.fullTime)
+})
+
+test('getMatchDisplayTime maps world rugby L1 to a readable first-half label in English', () => {
+  const displayTime = getMatchDisplayTime(createLiveMatch('L1'), en.labels, Date.now(), 'en')
+  assert.equal(displayTime, '1st half')
+})
+
+test('getMatchDisplayTime maps world rugby L2 to a readable second-half label in French', () => {
+  const displayTime = getMatchDisplayTime(createLiveMatch('L2'), fr.labels, Date.now(), 'fr')
+  assert.equal(displayTime, '2e mi-temps')
 })

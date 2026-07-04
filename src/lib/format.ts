@@ -243,6 +243,28 @@ const getFinishedStatusDetail = (espnDetail: string | null, labels: TranslationS
   return trimmed
 }
 
+const getLiveStatusDetail = (
+  espnDetail: string | null,
+  locale: LocaleCode,
+) => {
+  if (!espnDetail) {
+    return null
+  }
+
+  const trimmed = espnDetail.trim()
+  const normalized = trimmed.toUpperCase().replace(/\s+/g, '')
+
+  if (normalized === 'L1' || normalized === '1H') {
+    return locale === 'fr' ? '1re mi-temps' : '1st half'
+  }
+
+  if (normalized === 'L2' || normalized === '2H') {
+    return locale === 'fr' ? '2e mi-temps' : '2nd half'
+  }
+
+  return trimmed
+}
+
 const parseDisplayClockToSeconds = (displayClock: string | undefined) => {
   if (!displayClock) {
     return null
@@ -401,10 +423,11 @@ export const getMatchDisplayTime = (
 ) => {
   const displayStatus = getDisplayMatchStatus(match, nowMs)
   const espnDetail = getEspnStatusDetail(match, locale)
+  const liveStatusDetail = getLiveStatusDetail(espnDetail, locale)
 
   if (displayStatus === 'live') {
     if (isPausedLiveDetail(espnDetail)) {
-      return isHalfTimeLiveDetail(espnDetail) ? labels.halfTime : espnDetail
+      return isHalfTimeLiveDetail(espnDetail) ? labels.halfTime : liveStatusDetail
     }
 
     const extrapolatedClock = getExtrapolatedLiveClock(match, nowMs, espnDetail)
@@ -412,8 +435,8 @@ export const getMatchDisplayTime = (
       return extrapolatedClock
     }
 
-    if (espnDetail) {
-      return espnDetail
+    if (liveStatusDetail) {
+      return liveStatusDetail
     }
 
     const displayClock = match.live?.displayClock?.trim()
