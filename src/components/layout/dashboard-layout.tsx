@@ -1,6 +1,6 @@
 import { cloneElement, isValidElement, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { resolveCompetitionId } from '../../competitions'
@@ -23,13 +23,15 @@ const baseTabs = [
   { to: '/agenda', labelKey: 'agenda', icon: 'calendar_month', iconClassName: '' },
   { to: '/groups', sectionId: 'groups', labelKey: 'groups', icon: 'groups', iconClassName: '' },
   { to: '/teams', labelKey: 'teams', icon: 'flag', iconClassName: '' },
-  { to: '/matches', labelKey: 'matches', icon: 'sports_soccer', iconClassName: '' },
+  { to: '/stadiums', labelKey: 'stadiums', icon: 'stadium', iconClassName: '' },
+  { to: '/matches', labelKey: 'matches', icon: 'stadium', iconClassName: '' },
   { to: '/bracket', labelKey: 'bracket', icon: 'account_tree', iconClassName: '-scale-x-100' },
   { to: '/predictions', labelKey: 'predictions', icon: 'edit_note', iconClassName: '' },
 ] as const
 
 export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   const { t } = useLocale()
+  const location = useLocation()
   const { meta, groups, bracketRounds } = useTournament()
   const competitionId = resolveCompetitionId(meta.competitionId)
   const hasGroups = hasGroupsSection(groups)
@@ -52,6 +54,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
     .filter((tab) => ('sectionId' in tab && tab.sectionId === 'groups' ? hasGroups : tab.to === '/bracket' ? hasBracket : true))
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const headerScrollTimeoutRef = useRef<number | null>(null)
+  const isStadiumsRoute = location.pathname === '/stadiums'
 
   useEffect(() => {
     const updateHeaderMode = () => {
@@ -95,8 +98,8 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
     : header
 
   return (
-    <div className="relative min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <div className="mx-auto flex w-full max-w-[1600px] flex-col px-4 sm:px-6 lg:px-8 xl:px-10">
+    <div className={`relative bg-[var(--bg)] text-[var(--text)] ${isStadiumsRoute ? 'min-h-screen lg:h-screen lg:overflow-hidden' : 'min-h-screen'}`}>
+      <div className={`mx-auto flex w-full max-w-[1600px] flex-col px-4 sm:px-6 lg:px-8 xl:px-10 ${isStadiumsRoute ? 'lg:h-full' : ''}`}>
         <div className="sticky top-0 z-30 bg-[var(--bg)]" style={{ overflowAnchor: 'none' }}>
           {renderedHeader}
 
@@ -131,11 +134,11 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
           </nav>
         </div>
 
-        <main className="min-w-0 py-6">
+        <main className={`min-w-0 py-6 ${isStadiumsRoute ? 'lg:flex-1 lg:min-h-0 lg:overflow-hidden lg:py-4' : ''}`}>
           <Outlet />
         </main>
 
-        <Footer />
+        {isStadiumsRoute ? <div className="lg:hidden"><Footer /></div> : <Footer />}
       </div>
 
       {isAccountFeatureEnabled ? <AuthModal /> : null}

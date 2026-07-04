@@ -7,6 +7,7 @@ export interface TranslationSet {
     overview: string
     groups: string
     teams: string
+    stadiums: string
     matches: string
     bracket: string
     predictions: string
@@ -17,6 +18,7 @@ export interface TranslationSet {
     upcomingMatches: string
     matches: string
     teams: string
+    stadiums: string
     bracket: string
     predictions: string
     leaderboard: string
@@ -207,6 +209,18 @@ export interface TranslationSet {
     filterEliminatedTeams: string
     noTeamsForFilters: string
     eliminated: string
+    stadiumLocation: string
+    stadiumSeatCapacity: string
+    stadiumTimeZone: string
+    seats: string
+    opened: string
+    firstKickoff: string
+    lastKickoff: string
+    unknown: string
+    noStadiumsForCompetition: string
+    stadiumMap: string
+    stadiumMapFocus: string
+    stadiumMapLegend: string
   }
   teams: Record<string, string>
   groups: Record<string, string>

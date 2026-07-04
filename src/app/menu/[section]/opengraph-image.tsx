@@ -35,6 +35,11 @@ const copyBySection: Record<string, MenuImageCopy> = {
     subheading: 'Open team details, fixtures, and group context.',
     accent: '#7fe5c5',
   },
+  stadiums: {
+    heading: 'Tournament Stadiums',
+    subheading: 'Venue locations, capacities, and hosting details.',
+    accent: '#8ec5ff',
+  },
   matches: {
     heading: 'Match Center',
     subheading: 'Live scores, status, and fixture details.',

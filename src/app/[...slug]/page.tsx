@@ -131,6 +131,13 @@ const getMenuMetaBySegment = (
     imageAlt: 'Tournament teams directory',
     canonical: '/teams',
   },
+  stadiums: {
+    title: `Stadiums | ${competitionDisplayName}`,
+    description: 'Browse tournament stadiums with locations, seat capacities, and hosting details.',
+    imagePath: '/menu/stadiums/opengraph-image',
+    imageAlt: 'Tournament stadium directory',
+    canonical: '/stadiums',
+  },
   matches: {
     title: `Matches | ${competitionDisplayName}`,
     description: `Follow live and upcoming ${sportLabel} matches with scores, status, and fixture details.`,

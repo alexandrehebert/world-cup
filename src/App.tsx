@@ -6,6 +6,7 @@ import { DashboardPage } from './views/dashboard-page'
 import { GroupsPage } from './views/groups-page'
 import { MatchesPage } from './views/matches-page'
 import { TeamsPage } from './views/teams-page'
+import { StadiumsPage } from './views/stadiums-page'
 import { BracketPage } from './views/bracket-page'
 import { PredictionsPage } from './views/predictions-page'
 import { LeaderboardPage } from './views/leaderboard-page'
@@ -42,6 +43,8 @@ function App() {
           element={useStandingsPath ? (hasGroups ? <GroupsPage /> : <Navigate to="/agenda" replace />) : <Navigate to="/groups" replace />}
         />
         <Route path="/teams" element={<TeamsPage />} />
+        <Route path="/stadiums" element={<StadiumsPage />} />
+        <Route path="/stadium" element={<Navigate to="/stadiums" replace />} />
         <Route path="/team/:teamCode" element={<TeamsPage />} />
         <Route path="/matches" element={<MatchesPage />} />
         <Route path="/match" element={<MatchesPage />} />
