@@ -9,6 +9,8 @@ const createTournamentData = (
     stadium: string
     homePlaceholder?: string
     awayPlaceholder?: string
+    homeTeamId?: string
+    awayTeamId?: string
   }>,
 ): TournamentData => ({
   meta: {
@@ -21,21 +23,32 @@ const createTournamentData = (
   teams: [],
   groups: [],
   bracketRounds: [],
-  matches: Object.entries(matchById).map(([id, match]) => ({
-    id,
-    stage: 'group',
-    groupId: 'A',
-    home: match.homePlaceholder ? { placeholder: match.homePlaceholder } : { teamId: 'a' },
-    away: match.awayPlaceholder ? { placeholder: match.awayPlaceholder } : { teamId: 'b' },
-    kickoff: '2026-06-11T19:00:00.000Z',
-    venue: {
-      stadium: match.stadium,
-      city: 'Mexico City',
-      country: 'Mexico',
-      timeZone: 'America/Mexico_City',
-    },
-    status: 'scheduled',
-  })),
+  matches: Object.entries(matchById).map(([id, match]) => {
+    const homeTeamId = match.homeTeamId ?? (match.homePlaceholder ? undefined : 'a')
+    const awayTeamId = match.awayTeamId ?? (match.awayPlaceholder ? undefined : 'b')
+
+    return {
+      id,
+      stage: 'group',
+      groupId: 'A',
+      home: {
+        ...(match.homePlaceholder ? { placeholder: match.homePlaceholder } : {}),
+        ...(homeTeamId ? { teamId: homeTeamId } : {}),
+      },
+      away: {
+        ...(match.awayPlaceholder ? { placeholder: match.awayPlaceholder } : {}),
+        ...(awayTeamId ? { teamId: awayTeamId } : {}),
+      },
+      kickoff: '2026-06-11T19:00:00.000Z',
+      venue: {
+        stadium: match.stadium,
+        city: 'Mexico City',
+        country: 'Mexico',
+        timeZone: 'America/Mexico_City',
+      },
+      status: 'scheduled',
+    }
+  }),
 })
 
 test('applyCanonicalVenueData replaces stale venue names using canonical local data', () => {
@@ -81,4 +94,35 @@ test('applyCanonicalVenueData restores stale bracket placeholders from canonical
 
   assert.equal(merged.matches[0]?.home.placeholder, 'W:semiFinal:1')
   assert.equal(merged.matches[0]?.away.placeholder, 'W:semiFinal:2')
+})
+
+test('applyCanonicalVenueData restores incorrect bracket team IDs from canonical local data', () => {
+  // Simulates the case where blob data has a wrong away team (e.g. 'ecu' instead of 'gha')
+  // due to a stale ESPN sync that matched the wrong event to a bracket match by kickoff time.
+  const blobData = createTournamentData({
+    m87: { stadium: 'Arrowhead Stadium', homeTeamId: 'col', awayTeamId: 'ecu', homePlaceholder: 'G1:K', awayPlaceholder: 'G3:DEIJL' },
+  })
+  const localData = createTournamentData({
+    m87: { stadium: 'Arrowhead Stadium', homeTeamId: 'col', awayTeamId: 'gha', homePlaceholder: 'G1:K', awayPlaceholder: 'G3:DEIJL' },
+  })
+
+  const merged = applyCanonicalVenueData(blobData, localData)
+
+  assert.equal(merged.matches[0]?.home.teamId, 'col')
+  assert.equal(merged.matches[0]?.away.teamId, 'gha')
+})
+
+test('applyCanonicalVenueData does not override blob team IDs when canonical has no teamId', () => {
+  // When canonical only has a placeholder (team not yet determined), blob's resolved teamId should be kept.
+  const blobData = createTournamentData({
+    m95: { stadium: 'SoFi Stadium', homeTeamId: 'arg', awayTeamId: 'col', homePlaceholder: 'W:roundOf32:14', awayPlaceholder: 'W:roundOf32:16' },
+  })
+  const localData = createTournamentData({
+    m95: { stadium: 'SoFi Stadium', homePlaceholder: 'W:roundOf32:14', awayPlaceholder: 'W:roundOf32:16' },
+  })
+
+  const merged = applyCanonicalVenueData(blobData, localData)
+
+  assert.equal(merged.matches[0]?.home.teamId, 'arg')
+  assert.equal(merged.matches[0]?.away.teamId, 'col')
 })

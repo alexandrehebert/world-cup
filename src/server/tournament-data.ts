@@ -39,6 +39,33 @@ export const applyCanonicalVenueData = (data: TournamentData, canonical: Tournam
       return match
     }
 
+    const homeNeedsUpdate =
+      match.home.placeholder !== canonicalMatch.home.placeholder ||
+      (!!canonicalMatch.home.teamId && canonicalMatch.home.teamId !== match.home.teamId)
+    const awayNeedsUpdate =
+      match.away.placeholder !== canonicalMatch.away.placeholder ||
+      (!!canonicalMatch.away.teamId && canonicalMatch.away.teamId !== match.away.teamId)
+
+    const nextHome = homeNeedsUpdate ? { ...match.home } : match.home
+    if (homeNeedsUpdate) {
+      if (match.home.placeholder !== canonicalMatch.home.placeholder) {
+        nextHome.placeholder = canonicalMatch.home.placeholder
+      }
+      if (canonicalMatch.home.teamId && canonicalMatch.home.teamId !== match.home.teamId) {
+        nextHome.teamId = canonicalMatch.home.teamId
+      }
+    }
+
+    const nextAway = awayNeedsUpdate ? { ...match.away } : match.away
+    if (awayNeedsUpdate) {
+      if (match.away.placeholder !== canonicalMatch.away.placeholder) {
+        nextAway.placeholder = canonicalMatch.away.placeholder
+      }
+      if (canonicalMatch.away.teamId && canonicalMatch.away.teamId !== match.away.teamId) {
+        nextAway.teamId = canonicalMatch.away.teamId
+      }
+    }
+
     const nextMatch = {
       ...match,
       venue:
@@ -48,14 +75,8 @@ export const applyCanonicalVenueData = (data: TournamentData, canonical: Tournam
         && match.venue.timeZone === canonicalMatch.venue.timeZone
           ? match.venue
           : canonicalMatch.venue,
-      home:
-        match.home.placeholder === canonicalMatch.home.placeholder
-          ? match.home
-          : { ...match.home, placeholder: canonicalMatch.home.placeholder },
-      away:
-        match.away.placeholder === canonicalMatch.away.placeholder
-          ? match.away
-          : { ...match.away, placeholder: canonicalMatch.away.placeholder },
+      home: nextHome,
+      away: nextAway,
     }
 
     const hasMatchChanges =
