@@ -5,27 +5,72 @@ import { getActiveCompetitionProfile, getCompetitionProfile } from '../competiti
 import type { CompetitionId } from '../competitions/types'
 import type { TournamentData } from '../types/tournament'
 
+const LOCAL_TOURNAMENT_DATA_DIR = '.local-data/tournament'
+
 const resolveLocalDataPath = (competitionId?: CompetitionId) => {
   const competition = competitionId ? getCompetitionProfile(competitionId) : getActiveCompetitionProfile()
   return path.join(process.cwd(), 'src', 'data', competition.localDataFile)
 }
 
+const resolveLocalRuntimeDataDir = () => {
+  const configuredDir = (process.env.LOCAL_TOURNAMENT_DATA_DIR ?? '').trim()
+  return configuredDir || LOCAL_TOURNAMENT_DATA_DIR
+}
+
+const resolveLocalRuntimeDataPath = (competitionId?: CompetitionId) => {
+  const competition = competitionId ? getCompetitionProfile(competitionId) : getActiveCompetitionProfile()
+  const runtimeDataDir = resolveLocalRuntimeDataDir()
+  const runtimeBasePath = path.isAbsolute(runtimeDataDir) ? runtimeDataDir : path.join(process.cwd(), runtimeDataDir)
+  return path.join(runtimeBasePath, competition.localDataFile)
+}
+
+const toCompetitionScopedData = (parsed: TournamentData, competitionId: CompetitionId): TournamentData => ({
+  ...parsed,
+  meta: {
+    ...parsed.meta,
+    competitionId,
+  },
+})
+
+const readTournamentDataFromPath = async (filePath: string, competitionId: CompetitionId): Promise<TournamentData> => {
+  const raw = await fs.readFile(filePath, 'utf8')
+  const parsed = JSON.parse(raw) as TournamentData
+  return toCompetitionScopedData(parsed, competitionId)
+}
+
+const isMissingDataFileError = (error: unknown) => {
+  if (!error || typeof error !== 'object') {
+    return false
+  }
+
+  const code = (error as NodeJS.ErrnoException).code
+  return code === 'ENOENT' || code === 'ENOTDIR'
+}
+
 export const readLocalTournamentData = async (competitionId?: CompetitionId): Promise<TournamentData> => {
   const competition = competitionId ? getCompetitionProfile(competitionId) : getActiveCompetitionProfile()
   const filePath = resolveLocalDataPath(competition.id)
-  const raw = await fs.readFile(filePath, 'utf8')
-  const parsed = JSON.parse(raw) as TournamentData
-  return {
-    ...parsed,
-    meta: {
-      ...parsed.meta,
-      competitionId: competition.id,
-    },
+  return readTournamentDataFromPath(filePath, competition.id)
+}
+
+const readLocalRuntimeTournamentData = async (competitionId?: CompetitionId): Promise<TournamentData> => {
+  const competition = competitionId ? getCompetitionProfile(competitionId) : getActiveCompetitionProfile()
+  const filePath = resolveLocalRuntimeDataPath(competition.id)
+
+  try {
+    return await readTournamentDataFromPath(filePath, competition.id)
+  } catch (error) {
+    if (isMissingDataFileError(error)) {
+      return readLocalTournamentData(competition.id)
+    }
+
+    throw error
   }
 }
 
 export const writeLocalTournamentData = async (data: TournamentData) => {
-  const filePath = resolveLocalDataPath()
+  const filePath = resolveLocalRuntimeDataPath()
+  await fs.mkdir(path.dirname(filePath), { recursive: true })
   await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8')
 }
 
@@ -103,7 +148,7 @@ export const loadTournamentData = async (competitionId?: CompetitionId): Promise
   const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN
 
   if (!blobReadWriteToken) {
-    return readLocalTournamentData(competition.id)
+    return readLocalRuntimeTournamentData(competition.id)
   }
 
   try {

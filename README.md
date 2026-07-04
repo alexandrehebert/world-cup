@@ -51,6 +51,7 @@ App runs on `http://localhost:3000` by default.
 - `MATCH_RESULTS_URL` (optional) - custom scoreboard endpoint (required for profiles without a built-in default feed URL)
 - `ESPN_LOOKBACK_DAYS` (optional) - lookback window for late score updates (default: `7`)
 - `CRON_SECRET` (optional) - manual/external cron authorization secret
+- `LOCAL_TOURNAMENT_DATA_DIR` (optional) - local sync write path when Blob is disabled (default: `.local-data/tournament`, gitignored)
 
 Default `MATCH_RESULTS_URL` for `world-cup-2026`:
 
