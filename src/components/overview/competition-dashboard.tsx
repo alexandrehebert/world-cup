@@ -15,7 +15,7 @@ import { EventsModal } from '../notifications/events-modal'
 import { NotificationFeed } from '../notifications/notifications-feed'
 
 const dashboardWidgetActionClassName =
-  'inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--accent-text)]'
+  'group inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--accent-text)]'
 
 export const CompetitionDashboard = () => {
   const { t, locale } = useLocale()
@@ -47,7 +47,7 @@ export const CompetitionDashboard = () => {
               title={t.labels.viewMatches}
             >
               <span>{t.labels.viewMatches}</span>
-              <Icon name="arrow_forward" className="text-[16px]" />
+              <Icon name="arrow_forward" className="text-[16px] transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
           </div>
           {liveWidgetMatches.length === 0 ? (
@@ -90,6 +90,7 @@ export const CompetitionDashboard = () => {
                         </p>
                         <StatusPill
                           status={displayStatus}
+                          className={displayStatus === 'live' ? 'bg-transparent' : ''}
                           label={
                             <span className="inline-flex items-center gap-1.5">
                               {displayStatus === 'live' ? <LivePulse className="h-2.5 w-2.5" /> : null}
@@ -156,13 +157,13 @@ export const CompetitionDashboard = () => {
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="text-base font-semibold text-[var(--text-strong)]">{t.labels.smallSchedule}</h2>
             <Link
-              to="/matches"
+              to="/agenda"
               className={dashboardWidgetActionClassName}
               aria-label={t.labels.viewSchedule}
               title={t.labels.viewSchedule}
             >
               <span>{t.labels.viewSchedule}</span>
-              <Icon name="arrow_forward" className="text-[16px]" />
+              <Icon name="arrow_forward" className="text-[16px] transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
           </div>
           {scheduleCalendarDays.length === 0 ? (
@@ -220,7 +221,7 @@ export const CompetitionDashboard = () => {
               title={t.labels.viewMatches}
             >
               <span>{t.labels.viewMatches}</span>
-              <Icon name="arrow_forward" className="text-[16px]" />
+              <Icon name="arrow_forward" className="text-[16px] transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
           </div>
           {latestResults.length === 0 ? (
@@ -279,7 +280,7 @@ export const CompetitionDashboard = () => {
               title={t.labels.viewAllEvents}
             >
               <span>{t.labels.viewAllEvents}</span>
-              <Icon name="arrow_forward" className="text-[16px]" />
+              <Icon name="arrow_forward" className="text-[16px] transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
           </div>
           <NotificationFeed notifications={notifications} variant="timeline" />
