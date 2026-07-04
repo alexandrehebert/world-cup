@@ -58,7 +58,12 @@ const readLocalRuntimeTournamentData = async (competitionId?: CompetitionId): Pr
   const filePath = resolveLocalRuntimeDataPath(competition.id)
 
   try {
-    return await readTournamentDataFromPath(filePath, competition.id)
+    const [runtimeData, canonicalData] = await Promise.all([
+      readTournamentDataFromPath(filePath, competition.id),
+      readLocalTournamentData(competition.id),
+    ])
+
+    return applyCanonicalVenueData(runtimeData, canonicalData)
   } catch (error) {
     if (isMissingDataFileError(error)) {
       return readLocalTournamentData(competition.id)
@@ -111,8 +116,11 @@ export const applyCanonicalVenueData = (data: TournamentData, canonical: Tournam
       }
     }
 
+    const kickoffNeedsUpdate = match.kickoff !== canonicalMatch.kickoff
+
     const nextMatch = {
       ...match,
+      kickoff: kickoffNeedsUpdate ? canonicalMatch.kickoff : match.kickoff,
       venue:
         match.venue.stadium === canonicalMatch.venue.stadium
         && match.venue.city === canonicalMatch.venue.city
@@ -125,7 +133,8 @@ export const applyCanonicalVenueData = (data: TournamentData, canonical: Tournam
     }
 
     const hasMatchChanges =
-      nextMatch.venue !== match.venue
+      kickoffNeedsUpdate
+      || nextMatch.venue !== match.venue
       || nextMatch.home !== match.home
       || nextMatch.away !== match.away
 

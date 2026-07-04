@@ -10,6 +10,7 @@ import type { TournamentData } from '../src/types/tournament'
 const createTournamentData = (
   matchById: Record<string, {
     stadium: string
+    kickoff?: string
     homePlaceholder?: string
     awayPlaceholder?: string
     homeTeamId?: string
@@ -42,7 +43,7 @@ const createTournamentData = (
         ...(match.awayPlaceholder ? { placeholder: match.awayPlaceholder } : {}),
         ...(awayTeamId ? { teamId: awayTeamId } : {}),
       },
-      kickoff: '2026-06-11T19:00:00.000Z',
+      kickoff: match.kickoff ?? '2026-06-11T19:00:00.000Z',
       venue: {
         stadium: match.stadium,
         city: 'Mexico City',
@@ -115,6 +116,19 @@ test('applyCanonicalVenueData restores incorrect bracket team IDs from canonical
   assert.equal(merged.matches[0]?.away.teamId, 'gha')
 })
 
+test('applyCanonicalVenueData restores stale kickoff times from canonical local data', () => {
+  const blobData = createTournamentData({
+    m89: { stadium: 'Lincoln Financial Field', kickoff: '2026-07-04T22:00:00Z' },
+  })
+  const localData = createTournamentData({
+    m89: { stadium: 'Lincoln Financial Field', kickoff: '2026-07-04T21:00:00Z' },
+  })
+
+  const merged = applyCanonicalVenueData(blobData, localData)
+
+  assert.equal(merged.matches[0]?.kickoff, '2026-07-04T21:00:00Z')
+})
+
 test('applyCanonicalVenueData does not override blob team IDs when canonical has no teamId', () => {
   // When canonical only has a placeholder (team not yet determined), blob's resolved teamId should be kept.
   const blobData = createTournamentData({
@@ -140,6 +154,52 @@ test('the France versus Paraguay round of 16 fixture keeps the corrected 5 PM ki
   assert.equal(match?.kickoff, '2026-07-04T21:00:00Z')
   assert.equal(match?.live?.detail, 'Sat, July 4th at 5:00 PM EDT')
   assert.equal(match?.live?.startDate, '2026-07-04T21:00Z')
+})
+
+test('loadTournamentData repairs stale runtime kickoff values with canonical local data when blob sync is disabled', async () => {
+  const temporaryRuntimeDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wc-local-sync-'))
+  const previousRuntimeDir = process.env.LOCAL_TOURNAMENT_DATA_DIR
+  const previousCompetitionId = process.env.COMPETITION_ID
+  const previousBlobToken = process.env.BLOB_READ_WRITE_TOKEN
+  const dataPath = path.join(process.cwd(), 'src', 'data', '2026-football-world-cup.json')
+  const raw = await fs.readFile(dataPath, 'utf8')
+  const runtimeData = JSON.parse(raw) as TournamentData
+  const staleMatch = runtimeData.matches.find((entry) => entry.id === 'm89')
+  assert.ok(staleMatch)
+  staleMatch.kickoff = '2026-07-04T22:00:00Z'
+
+  process.env.LOCAL_TOURNAMENT_DATA_DIR = temporaryRuntimeDir
+  process.env.COMPETITION_ID = 'world-cup-2026'
+  delete process.env.BLOB_READ_WRITE_TOKEN
+
+  try {
+    await writeLocalTournamentData(runtimeData)
+
+    const loaded = await loadTournamentData('world-cup-2026')
+    const loadedMatch = loaded.matches.find((entry) => entry.id === 'm89')
+    assert.ok(loadedMatch)
+    assert.equal(loadedMatch.kickoff, '2026-07-04T21:00:00Z')
+  } finally {
+    if (previousRuntimeDir === undefined) {
+      delete process.env.LOCAL_TOURNAMENT_DATA_DIR
+    } else {
+      process.env.LOCAL_TOURNAMENT_DATA_DIR = previousRuntimeDir
+    }
+
+    if (previousCompetitionId === undefined) {
+      delete process.env.COMPETITION_ID
+    } else {
+      process.env.COMPETITION_ID = previousCompetitionId
+    }
+
+    if (previousBlobToken === undefined) {
+      delete process.env.BLOB_READ_WRITE_TOKEN
+    } else {
+      process.env.BLOB_READ_WRITE_TOKEN = previousBlobToken
+    }
+
+    await fs.rm(temporaryRuntimeDir, { recursive: true, force: true })
+  }
 })
 
 test('writeLocalTournamentData stores local sync data in gitignored runtime directory', async () => {
