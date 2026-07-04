@@ -8,6 +8,7 @@ import {
   buildStadiumMapMarkers,
   buildStadiumSummaries,
   getStadiumMapViewport,
+  type StadiumMapViewport,
   WORLD_MAP_HEIGHT,
   WORLD_MAP_WIDTH,
 } from '../lib/stadiums'
@@ -17,6 +18,30 @@ const MAP_GRID_MERIDIANS = Math.floor(WORLD_MAP_WIDTH / MAP_GRID_CELL_SIZE)
 const MAP_GRID_PARALLELS = Math.floor(WORLD_MAP_HEIGHT / MAP_GRID_CELL_SIZE)
 const MAP_GRID_MERIDIAN_WARP = 30
 const MAP_GRID_PARALLEL_WARP = 20
+const SELECTED_STADIUM_ZOOM_FACTOR = 0.6
+const MAP_VIEWPORT_TRANSITION_DURATION_MS = 420
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
+
+const viewportEquals = (first: StadiumMapViewport, second: StadiumMapViewport) =>
+  first.x === second.x
+  && first.y === second.y
+  && first.width === second.width
+  && first.height === second.height
+
+const lerp = (start: number, end: number, progress: number) => start + (end - start) * progress
+
+const focusViewportOnMarker = (
+  viewport: StadiumMapViewport,
+  marker: { x: number; y: number },
+): StadiumMapViewport => {
+  const width = clamp(viewport.width * SELECTED_STADIUM_ZOOM_FACTOR, 26, WORLD_MAP_WIDTH)
+  const height = clamp(viewport.height * SELECTED_STADIUM_ZOOM_FACTOR, 13, WORLD_MAP_HEIGHT)
+  const x = clamp(marker.x - width / 2, 0, WORLD_MAP_WIDTH - width)
+  const y = clamp(marker.y - height / 2, 0, WORLD_MAP_HEIGHT - height)
+
+  return { x, y, width, height }
+}
 
 const getMeridianPath = (x: number) => {
   const horizontalRatio = (x - WORLD_MAP_WIDTH / 2) / (WORLD_MAP_WIDTH / 2)
@@ -45,7 +70,20 @@ export const StadiumsPage = () => {
   )
   const stadiums = useMemo(() => buildStadiumSummaries(matches), [matches])
   const mapMarkers = useMemo(() => buildStadiumMapMarkers(stadiums), [stadiums])
-  const mapViewport = useMemo(() => getStadiumMapViewport(mapMarkers), [mapMarkers])
+  const mapViewport = useMemo(() => {
+    if (!selectedStadiumKey) {
+      return getStadiumMapViewport(mapMarkers)
+    }
+
+    const selectedMarker = mapMarkers.find((marker) => marker.key === selectedStadiumKey)
+    if (!selectedMarker) {
+      return getStadiumMapViewport(mapMarkers)
+    }
+
+    return focusViewportOnMarker(getStadiumMapViewport([selectedMarker]), selectedMarker)
+  }, [mapMarkers, selectedStadiumKey])
+  const [animatedMapViewport, setAnimatedMapViewport] = useState<StadiumMapViewport>(mapViewport)
+  const animatedMapViewportRef = useRef<StadiumMapViewport>(mapViewport)
   const setStadiumCardRef = useCallback(
     (key: string) => (element: HTMLElement | null) => {
       stadiumCardRefs.current[key] = element
@@ -91,6 +129,48 @@ export const StadiumsPage = () => {
   }, [themePreference])
 
   useEffect(() => {
+    if (viewportEquals(animatedMapViewportRef.current, mapViewport)) {
+      return
+    }
+
+    let animationFrame = 0
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      animationFrame = window.requestAnimationFrame(() => {
+        animatedMapViewportRef.current = mapViewport
+        setAnimatedMapViewport(mapViewport)
+      })
+      return () => window.cancelAnimationFrame(animationFrame)
+    }
+
+    const initialViewport = animatedMapViewportRef.current
+    const animationStart = performance.now()
+    const easeInOutCubic = (value: number) =>
+      value < 0.5 ? 4 * value * value * value : 1 - ((-2 * value + 2) ** 3) / 2
+
+    const animate = (timestamp: number) => {
+      const elapsed = timestamp - animationStart
+      const progress = clamp(elapsed / MAP_VIEWPORT_TRANSITION_DURATION_MS, 0, 1)
+      const easedProgress = easeInOutCubic(progress)
+      const nextViewport: StadiumMapViewport = {
+        x: lerp(initialViewport.x, mapViewport.x, easedProgress),
+        y: lerp(initialViewport.y, mapViewport.y, easedProgress),
+        width: lerp(initialViewport.width, mapViewport.width, easedProgress),
+        height: lerp(initialViewport.height, mapViewport.height, easedProgress),
+      }
+      animatedMapViewportRef.current = nextViewport
+      setAnimatedMapViewport(nextViewport)
+
+      if (progress < 1) {
+        animationFrame = window.requestAnimationFrame(animate)
+      }
+    }
+
+    animationFrame = window.requestAnimationFrame(animate)
+    return () => window.cancelAnimationFrame(animationFrame)
+  }, [mapViewport])
+
+  useEffect(() => {
     updateListScrollShadow()
     window.addEventListener('resize', updateListScrollShadow)
     return () => window.removeEventListener('resize', updateListScrollShadow)
@@ -111,7 +191,7 @@ export const StadiumsPage = () => {
           <article className="overflow-hidden border border-[var(--border)] bg-[var(--surface)] lg:flex lg:min-h-0 lg:flex-col">
             <div className="relative lg:min-h-0 lg:flex-1">
               <svg
-                viewBox={`${mapViewport.x} ${mapViewport.y} ${mapViewport.width} ${mapViewport.height}`}
+                viewBox={`${animatedMapViewport.x} ${animatedMapViewport.y} ${animatedMapViewport.width} ${animatedMapViewport.height}`}
                 className="block h-auto w-full bg-[var(--surface-soft)] lg:h-full"
                 role="img"
                 aria-label={t.labels.stadiumMap}

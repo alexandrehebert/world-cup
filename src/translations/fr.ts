@@ -82,7 +82,7 @@ export const fr: TranslationSet = {
     close: 'Fermer',
     rounds: 'tours',
     comingSoon: 'À venir',
-    matchesHosted: 'matches accueillis',
+    matchesHosted: 'Matches accueillis',
     cities: 'villes',
     countries: 'pays',
     stageGroup: 'Phase de groupes',
