@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
+  buildCompetitionSwitcherPath,
   buildCompetitionYearFragment,
   getCompetitionFamilyLabel,
   getCompetitionSeasonDetails,
@@ -36,6 +37,11 @@ test('buildCompetitionYearFragment puts past championship year first in fragment
     }),
     '2025',
   )
+})
+
+test('buildCompetitionSwitcherPath keeps competition links on the home page', () => {
+  assert.equal(buildCompetitionSwitcherPath(null), '/')
+  assert.equal(buildCompetitionSwitcherPath('2025'), '/#2025')
 })
 
 test('parseCompetitionIdFromFragment resolves known year fragments', () => {

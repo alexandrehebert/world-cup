@@ -32,7 +32,7 @@ function App() {
         <Route index element={<DashboardPage />} />
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
         <Route path="/agenda" element={<OverviewPage />} />
-        <Route path="/overview" element={<Navigate to="/agenda" replace />} />
+        <Route path="/overview" element={<Navigate to="/" replace />} />
         <Route
           path="/groups"
           element={useStandingsPath ? <Navigate to={groupsSectionPath} replace /> : (hasGroups ? <GroupsPage /> : <Navigate to="/agenda" replace />)}

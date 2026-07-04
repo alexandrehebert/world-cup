@@ -43,7 +43,7 @@ export const getDashboardBasePathname = (pathname: string, matchModalReturnPathn
   }
 
   if (pathname === '/overview') {
-    return '/agenda'
+    return '/'
   }
 
   return pathname

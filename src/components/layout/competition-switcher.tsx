@@ -3,6 +3,7 @@ import { listCompetitionProfiles, parseCompetitionId } from '../../competitions'
 import type { CompetitionId } from '../../competitions/types'
 import { useLocale } from '../../contexts/locale-context'
 import {
+  buildCompetitionSwitcherPath,
   buildCompetitionYearFragment,
   getCompetitionFamilyLabel,
   getCompetitionSeasonDetails,
@@ -76,23 +77,23 @@ const resolveCompetitionUrl = (
       : undefined
     : undefined
   const yearFragment = buildCompetitionYearFragment(competitionId, mostRecentYearByFamily)
-  const agendaPath = yearFragment ? `/agenda#${yearFragment}` : '/agenda'
+  const competitionPath = buildCompetitionSwitcherPath(yearFragment)
 
   if (currentOrigin && activeCompetitionId && targetFamilyId === activeFamilyId) {
-    return `${currentOrigin}${agendaPath}`
+    return `${currentOrigin}${competitionPath}`
   }
 
   const configuredUrl = toBaseUrl(configuredSiteUrlById[competitionId])
   if (configuredUrl) {
-    return `${configuredUrl}${agendaPath}`
+    return `${configuredUrl}${competitionPath}`
   }
 
   if (isLocalOrigin(currentOrigin)) {
-    return `${LOCAL_SWITCH_URL_BY_ID[competitionId]}${agendaPath}`
+    return `${LOCAL_SWITCH_URL_BY_ID[competitionId]}${competitionPath}`
   }
 
   if (activeCompetitionId === competitionId && currentOrigin) {
-    return `${currentOrigin}${agendaPath}`
+    return `${currentOrigin}${competitionPath}`
   }
 
   return null

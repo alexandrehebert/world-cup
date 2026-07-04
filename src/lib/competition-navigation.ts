@@ -47,6 +47,10 @@ export const buildCompetitionYearFragment = (
   return String(year)
 }
 
+export const buildCompetitionSwitcherPath = (yearFragment: string | null): string => {
+  return yearFragment ? `/#${yearFragment}` : '/'
+}
+
 export const parseCompetitionIdFromFragment = (
   fragment: string,
   baseCompetitionId?: CompetitionId,
