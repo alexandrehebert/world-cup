@@ -7,7 +7,7 @@ import { resolveCompetitionId } from '../../competitions'
 import { getCompetitionBallIconNameById } from '../../lib/competition-branding'
 import { getStandingsSectionPath, usesStandingsSectionPath } from '../../lib/competition-sections'
 import { Icon } from '../../lib/icons'
-import { isPredictionsFeatureEnabled } from '../../lib/features'
+import { isAccountFeatureEnabled, isPredictionsFeatureEnabled } from '../../lib/features'
 import { hasBracketSection, hasGroupsSection } from '../../lib/tournament-sections'
 import { AuthModal } from '../auth/auth-modal'
 import { MatchModal } from '../matches/match-modal'
@@ -136,7 +136,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
         <Footer />
       </div>
 
-      <AuthModal />
+      {isAccountFeatureEnabled ? <AuthModal /> : null}
       <MatchModal />
       <CountryModal />
     </div>

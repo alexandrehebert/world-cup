@@ -7,6 +7,7 @@ import {
   isLocaleCode,
   isThemePreference,
 } from '../../../../lib/user-preferences'
+import { isAccountFeatureEnabled } from '../../../../lib/features'
 
 type LoginBody = {
   username?: string
@@ -14,6 +15,10 @@ type LoginBody = {
 }
 
 export async function POST(request: Request) {
+  if (!isAccountFeatureEnabled) {
+    return NextResponse.json({ error: 'Account feature is disabled' }, { status: 404 })
+  }
+
   try {
     const body = (await request.json()) as LoginBody
     const username = normalizeUsernameInput(body.username ?? '')

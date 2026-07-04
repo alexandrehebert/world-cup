@@ -18,7 +18,7 @@ import {
   isThemePreference,
   isValidTimeZone,
 } from '../lib/user-preferences'
-import { isPredictionsFeatureEnabled } from '../lib/features'
+import { isAccountFeatureEnabled, isPredictionsFeatureEnabled } from '../lib/features'
 import type { ClientBootstrapData } from '../types/bootstrap'
 import type { MatchOutcome, PredictionDistribution } from '../types/predictions'
 
@@ -56,9 +56,9 @@ export const loadClientBootstrapData = async (options?: { publicMatchId?: string
   const nowMs = Date.now()
   const cookieStore = await cookies()
   const headerStore = await headers()
-  const token = cookieStore.get(sessionCookieName)?.value
-  const session = parseSessionToken(token)
-  const storedUser = session ? await getUserById(session.id).catch(() => null) : null
+  const token = isAccountFeatureEnabled ? cookieStore.get(sessionCookieName)?.value : undefined
+  const session = isAccountFeatureEnabled ? parseSessionToken(token) : null
+  const storedUser = isAccountFeatureEnabled && session ? await getUserById(session.id).catch(() => null) : null
   const cookieLocale = cookieStore.get(LOCALE_COOKIE_NAME)?.value
   const cookieThemePreference = cookieStore.get(THEME_PREFERENCE_COOKIE_NAME)?.value
   const cookieTimeZone = cookieStore.get(TIME_ZONE_COOKIE_NAME)?.value
@@ -136,13 +136,15 @@ export const loadClientBootstrapData = async (options?: { publicMatchId?: string
 
   return {
     sessionResolved: true,
-    initialUser: storedUser
-      ? {
-          id: storedUser.id,
-          username: storedUser.username,
-          preferences: storedUser.preferences ?? {},
-        }
-      : session ?? null,
+    initialUser: isAccountFeatureEnabled
+      ? storedUser
+        ? {
+            id: storedUser.id,
+            username: storedUser.username,
+            preferences: storedUser.preferences ?? {},
+          }
+        : session ?? null
+      : null,
     initialLocale,
     initialThemePreference,
     initialNowMs: nowMs,

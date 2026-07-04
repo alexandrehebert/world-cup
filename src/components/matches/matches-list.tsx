@@ -17,6 +17,7 @@ import {
   getTodayMatchDayKey,
   hasDisplayScore,
 } from '../../lib/format'
+import { isAccountFeatureEnabled } from '../../lib/features'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -306,7 +307,7 @@ export const MatchesList = ({
                     </div>
                   </div>
 
-                  {showQuickPrediction && isPredictionOpen ? (
+                  {showQuickPrediction && isPredictionOpen && (user || isAccountFeatureEnabled) ? (
                     <div className="mt-3 border-t border-[var(--border)] pt-3">
                       {!user ? (
                         <div className="space-y-2">

@@ -3,6 +3,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { isAccountFeatureEnabled } from '../lib/features'
 import type { AuthUser, UserPreferences } from '../types/predictions'
 
 interface AuthContextValue {
@@ -39,12 +40,18 @@ export const AuthProvider = ({
   initialUser?: AuthUser | null
   sessionResolved?: boolean
 }) => {
-  const [user, setUser] = useState<AuthUser | null>(initialUser ?? null)
-  const [isLoading, setIsLoading] = useState(!sessionResolved)
+  const [user, setUser] = useState<AuthUser | null>(isAccountFeatureEnabled ? (initialUser ?? null) : null)
+  const [isLoading, setIsLoading] = useState(isAccountFeatureEnabled ? !sessionResolved : false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login')
 
   const refreshSession = useCallback(async () => {
+    if (!isAccountFeatureEnabled) {
+      setUser(null)
+      setIsLoading(false)
+      return
+    }
+
     try {
       const response = await fetch('/api/auth/me', {
         method: 'GET',
@@ -69,6 +76,10 @@ export const AuthProvider = ({
   }, [refreshSession, sessionResolved])
 
   const register = useCallback(async (username: string, password: string) => {
+    if (!isAccountFeatureEnabled) {
+      return { ok: false as const, error: 'Account feature is disabled' }
+    }
+
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       credentials: 'include',
@@ -88,6 +99,10 @@ export const AuthProvider = ({
   }, [])
 
   const login = useCallback(async (username: string, password: string) => {
+    if (!isAccountFeatureEnabled) {
+      return { ok: false as const, error: 'Account feature is disabled' }
+    }
+
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       credentials: 'include',
@@ -107,6 +122,11 @@ export const AuthProvider = ({
   }, [])
 
   const logout = useCallback(async () => {
+    if (!isAccountFeatureEnabled) {
+      setUser(null)
+      return
+    }
+
     await fetch('/api/auth/logout', {
       method: 'POST',
       credentials: 'include',
@@ -115,6 +135,10 @@ export const AuthProvider = ({
   }, [])
 
   const openAuthModal = useCallback((mode: 'login' | 'register' = 'login') => {
+    if (!isAccountFeatureEnabled) {
+      return
+    }
+
     setAuthModalMode(mode)
     setIsAuthModalOpen(true)
   }, [])
@@ -125,6 +149,10 @@ export const AuthProvider = ({
 
   const updateUserPreferences = useCallback(
     async (preferences: Partial<UserPreferences>) => {
+      if (!isAccountFeatureEnabled) {
+        return
+      }
+
       if (!user) {
         return
       }

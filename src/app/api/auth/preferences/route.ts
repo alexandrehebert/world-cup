@@ -7,11 +7,16 @@ import {
   isLocaleCode,
   isThemePreference,
 } from '../../../../lib/user-preferences'
+import { isAccountFeatureEnabled } from '../../../../lib/features'
 import type { UserPreferences } from '../../../../types/predictions'
 
 type PreferencesBody = Partial<UserPreferences>
 
 export async function PATCH(request: NextRequest) {
+  if (!isAccountFeatureEnabled) {
+    return NextResponse.json({ error: 'Account feature is disabled' }, { status: 404 })
+  }
+
   const token = request.cookies.get(sessionCookieName)?.value
   const session = parseSessionToken(token)
 

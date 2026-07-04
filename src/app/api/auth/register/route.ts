@@ -14,6 +14,7 @@ import {
   isLocaleCode,
   isThemePreference,
 } from '../../../../lib/user-preferences'
+import { isAccountFeatureEnabled } from '../../../../lib/features'
 
 type RegisterBody = {
   username?: string
@@ -21,6 +22,10 @@ type RegisterBody = {
 }
 
 export async function POST(request: Request) {
+  if (!isAccountFeatureEnabled) {
+    return NextResponse.json({ error: 'Account feature is disabled' }, { status: 404 })
+  }
+
   try {
     const body = (await request.json()) as RegisterBody
     const username = normalizeUsernameInput(body.username ?? '')

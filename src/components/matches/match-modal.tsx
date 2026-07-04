@@ -9,7 +9,7 @@ import { useTournament } from '../../contexts/tournament-context'
 import { resolveCompetitionId } from '../../competitions'
 import { hidesGroupStageLabel } from '../../lib/competition-sections'
 import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
-import { isPredictionsFeatureEnabled } from '../../lib/features'
+import { isAccountFeatureEnabled, isPredictionsFeatureEnabled } from '../../lib/features'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
@@ -463,7 +463,7 @@ export const MatchModal = () => {
         </div>
       </div>
 
-      {isPredictionsFeatureEnabled ? (
+      {isPredictionsFeatureEnabled && isAccountFeatureEnabled ? (
         <div className="space-y-3 border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
           <div className="flex items-start justify-between gap-3">
             <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">

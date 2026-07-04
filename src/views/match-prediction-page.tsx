@@ -14,6 +14,7 @@ import { useDashboard } from '../contexts/dashboard-context'
 import { hidesGroupStageLabel } from '../lib/competition-sections'
 import { getMatchStageFromSlug } from '../lib/match-path'
 import { formatMatchDate } from '../lib/format'
+import { isAccountFeatureEnabled } from '../lib/features'
 import { Icon } from '../lib/icons'
 import { inferOutcomeFromScores } from '../lib/predictions'
 import type { MatchOutcome, PredictionDistribution, PredictionRecord } from '../types/predictions'
@@ -446,7 +447,7 @@ export const MatchPredictionPage = () => {
               className={`w-full border bg-[var(--surface-strong)] px-3 py-2 text-sm text-[var(--text-strong)] ${isNameFieldError ? 'border-rose-400 ring-1 ring-rose-400' : 'border-[var(--border)]'} ${user ? '' : 'pr-28'}`}
               placeholder={t.labels.yourName}
             />
-            {!user ? (
+            {!user && isAccountFeatureEnabled ? (
               <button
                 type="button"
                 onClick={() => openAuthModal('login')}

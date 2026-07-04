@@ -49,15 +49,15 @@ export const FavoriteTeamsPicker = () => {
   }, [])
 
   return (
-    <div ref={pickerRef} className="relative w-full sm:w-auto">
+    <div ref={pickerRef} className="relative w-full sm:w-auto lg:max-w-[22rem] 2xl:max-w-none">
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex h-10 w-full cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto"
+        className="inline-flex h-10 w-full cursor-pointer items-center gap-2 border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)] sm:w-auto lg:max-w-[22rem] 2xl:max-w-none"
       >
         <Icon name="star" className="text-[18px] text-[var(--accent-text)]" />
-        <span>{t.labels.favoriteTeams}</span>
-        <span className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">
+        <span className="truncate">{t.labels.favoriteTeams}</span>
+        <span className="hidden text-xs uppercase tracking-[0.18em] text-[var(--text-soft)] xl:inline-flex">
           {favoriteTeamIds.length} {t.labels.favoritesCount}
         </span>
       </button>

@@ -40,6 +40,7 @@ App runs on `http://localhost:3000` by default.
 - `MONGODB_URI` - MongoDB connection string
 - `MONGODB_DB` (optional) - DB name (defaults to active competition profile DB)
 - `NEXT_PUBLIC_ENABLE_PREDICTIONS` (optional) - enables predictions when truthy (`true`, `1`, `yes`, `on`)
+- `NEXT_PUBLIC_ENABLE_ACCOUNT` (optional) - enables account/auth features when truthy (`true`, `1`, `yes`, `on`); disabled by default
 - `NEXT_PUBLIC_WORLD_CUP_SITE_URL` (optional) - site URL used by the competition switcher for World Cup
 - `NEXT_PUBLIC_NATIONS_CHAMPIONSHIP_SITE_URL` (optional) - site URL used by the competition switcher for Nations Championship
 - `NEXT_PUBLIC_SIX_NATIONS_CHAMPIONSHIP_SITE_URL` (optional) - site URL used by the competition switcher for Six Nations Championship
