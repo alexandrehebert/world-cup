@@ -2,6 +2,7 @@ import { Header } from './components/layout/header'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { DashboardLayout } from './components/layout/dashboard-layout'
 import { OverviewPage } from './views/overview-page'
+import { DashboardPage } from './views/dashboard-page'
 import { GroupsPage } from './views/groups-page'
 import { MatchesPage } from './views/matches-page'
 import { TeamsPage } from './views/teams-page'
@@ -29,7 +30,7 @@ function App() {
     <Routes>
       <Route element={<DashboardLayout header={<Header />} />}>
         <Route index element={<OverviewPage />} />
-        <Route path="/dashboard" element={<Navigate to="/overview" replace />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/overview" element={<OverviewPage />} />
         <Route
           path="/groups"

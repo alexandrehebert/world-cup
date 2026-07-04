@@ -155,6 +155,18 @@ export interface TranslationSet {
     upcomingMatchesSection: string
     pastMatchesSection: string
     liveMatchesSection: string
+    liveNow: string
+    smallSchedule: string
+    latestResults: string
+    eventsSection: string
+    notificationCenter: string
+    noLiveMatches: string
+    noScheduledMatches: string
+    noLatestResults: string
+    noNotifications: string
+    openMatch: string
+    eventIsLive: string
+    eventEnded: string
     noMatchesForTeam: string
     groupPosition: string
     shareLeaderboard: string

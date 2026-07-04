@@ -12,6 +12,8 @@ import { CompetitionSwitcher } from './competition-switcher'
 import { LocaleSwitcher } from './locale-switcher'
 import { ThemeToggle } from './theme-toggle'
 import { FavoriteTeamsPicker } from './favorite-teams-picker'
+import { NotificationFeed } from '../notifications/notifications-feed'
+import { useCompetitionNotifications } from '../notifications/competition-notifications'
 import type { TournamentMeta } from '../../types/tournament'
 
 const getUserInitial = (username: string) => username.trim().charAt(0).toUpperCase() || 'U'
@@ -25,13 +27,21 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
   const logoIconName = getCompetitionBallIconNameById(resolveCompetitionId(effectiveMeta?.competitionId))
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false)
   const [isMobileCompetitionMenuOpen, setIsMobileCompetitionMenuOpen] = useState(false)
+  const [isMobileNotificationsMenuOpen, setIsMobileNotificationsMenuOpen] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const [isCompetitionMenuOpen, setIsCompetitionMenuOpen] = useState(false)
+  const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false)
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null)
   const mobileCompetitionMenuRef = useRef<HTMLDivElement>(null)
+  const mobileNotificationsMenuRef = useRef<HTMLDivElement>(null)
   const accountMenuRef = useRef<HTMLDivElement>(null)
   const competitionMenuRef = useRef<HTMLDivElement>(null)
+  const notificationsMenuRef = useRef<HTMLDivElement>(null)
   const desktopMenuTriggerClassName = 'inline-flex h-10 cursor-pointer items-center border border-[var(--border)] bg-[var(--surface-soft)] text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]'
+  const compactMenuTriggerClassName =
+    'inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]'
+  const { notifications } = useCompetitionNotifications()
+  const notificationsCount = notifications.length
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -43,6 +53,10 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
         setIsMobileCompetitionMenuOpen(false)
       }
 
+      if (!mobileNotificationsMenuRef.current?.contains(event.target as Node)) {
+        setIsMobileNotificationsMenuOpen(false)
+      }
+
       if (!accountMenuRef.current?.contains(event.target as Node)) {
         setIsAccountMenuOpen(false)
       }
@@ -50,14 +64,20 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
       if (!competitionMenuRef.current?.contains(event.target as Node)) {
         setIsCompetitionMenuOpen(false)
       }
+
+      if (!notificationsMenuRef.current?.contains(event.target as Node)) {
+        setIsNotificationsMenuOpen(false)
+      }
     }
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsMobileAccountMenuOpen(false)
         setIsMobileCompetitionMenuOpen(false)
+        setIsMobileNotificationsMenuOpen(false)
         setIsAccountMenuOpen(false)
         setIsCompetitionMenuOpen(false)
+        setIsNotificationsMenuOpen(false)
       }
     }
 
@@ -115,6 +135,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 onClick={() => {
                   setIsMobileCompetitionMenuOpen((current) => !current)
                   setIsMobileAccountMenuOpen(false)
+                  setIsMobileNotificationsMenuOpen(false)
                 }}
                 className="inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
                 aria-label={t.labels.competition}
@@ -134,12 +155,48 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
               ) : null}
             </div>
 
+            <div ref={mobileNotificationsMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileNotificationsMenuOpen((current) => !current)
+                  setIsMobileCompetitionMenuOpen(false)
+                  setIsMobileAccountMenuOpen(false)
+                }}
+                className="relative inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
+                aria-label={t.labels.notificationCenter}
+                aria-expanded={isMobileNotificationsMenuOpen}
+                aria-controls="mobile-notifications-menu"
+              >
+                <Icon name={isMobileNotificationsMenuOpen ? 'close' : 'notifications'} className="text-[20px]" />
+                {notificationsCount > 0 ? (
+                  <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-bold text-[var(--surface)]">
+                    {notificationsCount}
+                  </span>
+                ) : null}
+              </button>
+
+              {isMobileNotificationsMenuOpen ? (
+                <div
+                  id="mobile-notifications-menu"
+                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[22rem] max-w-[calc(100vw-1.5rem)] rounded-md border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-xl"
+                >
+                  <NotificationFeed
+                    notifications={notifications}
+                    onAction={() => setIsMobileNotificationsMenuOpen(false)}
+                    className="max-h-72 space-y-2 overflow-y-auto pr-1"
+                  />
+                </div>
+              ) : null}
+            </div>
+
             <div ref={mobileAccountMenuRef} className="relative">
               <button
                 type="button"
                 onClick={() => {
                   setIsMobileAccountMenuOpen((current) => !current)
                   setIsMobileCompetitionMenuOpen(false)
+                  setIsMobileNotificationsMenuOpen(false)
                 }}
                 className="inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
                 aria-label={t.labels.settings}
@@ -231,6 +288,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 onClick={() => {
                   setIsCompetitionMenuOpen((current) => !current)
                   setIsAccountMenuOpen(false)
+                  setIsNotificationsMenuOpen(false)
                 }}
                 aria-expanded={isCompetitionMenuOpen}
                 aria-controls="desktop-competition-menu"
@@ -251,20 +309,55 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
               ) : null}
             </div>
 
+            <div ref={notificationsMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsNotificationsMenuOpen((current) => !current)
+                  setIsCompetitionMenuOpen(false)
+                  setIsAccountMenuOpen(false)
+                }}
+                aria-expanded={isNotificationsMenuOpen}
+                aria-controls="desktop-notifications-menu"
+                aria-label={t.labels.notificationCenter}
+                className={`${compactMenuTriggerClassName} relative`}
+              >
+                <Icon name={isNotificationsMenuOpen ? 'close' : 'notifications'} className="text-[20px]" />
+                {notificationsCount > 0 && !isNotificationsMenuOpen ? (
+                  <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-bold text-[var(--surface)]">
+                    {notificationsCount}
+                  </span>
+                ) : null}
+              </button>
+
+              {isNotificationsMenuOpen ? (
+                <div
+                  id="desktop-notifications-menu"
+                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[26rem] max-w-[80vw] border border-[var(--border)] bg-[var(--surface-strong)] p-3 shadow-xl"
+                >
+                  <NotificationFeed
+                    notifications={notifications}
+                    onAction={() => setIsNotificationsMenuOpen(false)}
+                    className="max-h-80 space-y-2 overflow-y-auto pr-1"
+                  />
+                </div>
+              ) : null}
+            </div>
+
             <div ref={accountMenuRef} className="relative">
               <button
                 type="button"
                 onClick={() => {
                   setIsAccountMenuOpen((current) => !current)
                   setIsCompetitionMenuOpen(false)
+                  setIsNotificationsMenuOpen(false)
                 }}
                 aria-expanded={isAccountMenuOpen}
                 aria-controls="desktop-settings-menu"
-                className={`${desktopMenuTriggerClassName} gap-2 px-2.5 2xl:px-3`}
+                aria-label={t.labels.settings}
+                className={compactMenuTriggerClassName}
               >
-                <Icon name="settings" className="text-[18px]" />
-                <span>{t.labels.settings}</span>
-                <Icon name={isAccountMenuOpen ? 'expand_less' : 'expand_more'} className="text-[18px] text-[var(--text-soft)]" />
+                <Icon name={isAccountMenuOpen ? 'close' : 'settings'} className="text-[20px]" />
               </button>
 
               {isAccountMenuOpen ? (
