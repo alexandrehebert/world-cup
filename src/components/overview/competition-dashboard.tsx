@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { formatMatchDate, getMatchDisplayTime, getLocalizedText, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, getLiveStatusDetail, getMatchDisplayTime, getLocalizedText, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -89,7 +89,7 @@ export const CompetitionDashboard = () => {
                 const displayScore = hasDisplayScore(match, nowMs)
                 const homeScore = typeof match.home.score === 'number' ? match.home.score : null
                 const awayScore = typeof match.away.score === 'number' ? match.away.score : null
-                const liveDetail = match.live?.shortDetail ?? match.live?.detail ?? null
+                const liveDetail = getLiveStatusDetail(match.live?.shortDetail ?? match.live?.detail ?? null, locale)
                 const { localDateTime } = formatMatchDate(match.kickoff, locale, localTimeZone, t.labels.today)
                 const { localTime: venueLocalTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
                 const stadiumLabel = getLocalizedText(match.venue.stadium, locale)

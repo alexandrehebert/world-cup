@@ -243,7 +243,7 @@ const getFinishedStatusDetail = (espnDetail: string | null, labels: TranslationS
   return trimmed
 }
 
-const getLiveStatusDetail = (
+export const getLiveStatusDetail = (
   espnDetail: string | null,
   locale: LocaleCode,
 ) => {

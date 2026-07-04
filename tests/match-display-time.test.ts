@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { getMatchDisplayTime } from '../src/lib/format'
+import { getLiveStatusDetail, getMatchDisplayTime } from '../src/lib/format'
 import { en } from '../src/translations/en'
 import { fr } from '../src/translations/fr'
 import type { MatchRecord } from '../src/types/tournament'
@@ -87,4 +87,11 @@ test('getMatchDisplayTime maps world rugby L1 to a readable first-half label in 
 test('getMatchDisplayTime maps world rugby L2 to a readable second-half label in French', () => {
   const displayTime = getMatchDisplayTime(createLiveMatch('L2'), fr.labels, Date.now(), 'fr')
   assert.equal(displayTime, '2e mi-temps')
+})
+
+test('getLiveStatusDetail maps world rugby L1 and L2 to localized half-time labels', () => {
+  assert.equal(getLiveStatusDetail('L1', 'fr'), '1re mi-temps')
+  assert.equal(getLiveStatusDetail('L2', 'fr'), '2e mi-temps')
+  assert.equal(getLiveStatusDetail('L1', 'en'), '1st half')
+  assert.equal(getLiveStatusDetail('L2', 'en'), '2nd half')
 })
