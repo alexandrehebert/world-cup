@@ -42,6 +42,10 @@ export const getDashboardBasePathname = (pathname: string, matchModalReturnPathn
     return '/predict'
   }
 
+  if (pathname === '/overview') {
+    return '/agenda'
+  }
+
   return pathname
 }
 

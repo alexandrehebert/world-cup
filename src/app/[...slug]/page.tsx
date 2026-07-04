@@ -106,15 +106,17 @@ const getMenuMetaBySegment = (
   const standingsDescription = standingsSectionSlug === 'standings'
     ? 'Track the latest table with points, score difference, and title race updates.'
     : 'Track every group table with points, goal difference, and qualification race updates.'
+  const agendaMeta: MenuPageMeta = {
+    title: `Agenda | ${competitionDisplayName}`,
+    description: 'Explore upcoming fixtures, venues, and kickoff times across the tournament agenda.',
+    imagePath: '/menu/agenda/opengraph-image',
+    imageAlt: 'Tournament agenda overview',
+    canonical: '/agenda',
+  }
 
   return ({
-  overview: {
-    title: `${competitionShortName} Schedule | ${competitionDisplayName}`,
-    description: 'Explore upcoming fixtures, venues, and kickoff times across the full tournament schedule.',
-    imagePath: '/menu/overview/opengraph-image',
-    imageAlt: 'Tournament schedule overview',
-    canonical: '/overview',
-  },
+  overview: agendaMeta,
+  agenda: agendaMeta,
   [standingsSectionSlug]: {
     title: `${standingsLabel} | ${competitionDisplayName}`,
     description: standingsDescription,

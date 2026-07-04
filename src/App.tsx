@@ -29,16 +29,17 @@ function App() {
   return (
     <Routes>
       <Route element={<DashboardLayout header={<Header />} />}>
-        <Route index element={<OverviewPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/overview" element={<OverviewPage />} />
+        <Route index element={<DashboardPage />} />
+        <Route path="/dashboard" element={<Navigate to="/" replace />} />
+        <Route path="/agenda" element={<OverviewPage />} />
+        <Route path="/overview" element={<Navigate to="/agenda" replace />} />
         <Route
           path="/groups"
-          element={useStandingsPath ? <Navigate to={groupsSectionPath} replace /> : (hasGroups ? <GroupsPage /> : <Navigate to="/overview" replace />)}
+          element={useStandingsPath ? <Navigate to={groupsSectionPath} replace /> : (hasGroups ? <GroupsPage /> : <Navigate to="/agenda" replace />)}
         />
         <Route
           path="/standings"
-          element={useStandingsPath ? (hasGroups ? <GroupsPage /> : <Navigate to="/overview" replace />) : <Navigate to="/groups" replace />}
+          element={useStandingsPath ? (hasGroups ? <GroupsPage /> : <Navigate to="/agenda" replace />) : <Navigate to="/groups" replace />}
         />
         <Route path="/teams" element={<TeamsPage />} />
         <Route path="/team/:teamCode" element={<TeamsPage />} />
@@ -47,37 +48,37 @@ function App() {
         <Route path="/match/tbd/:round/:slot" element={<MatchesPage />} />
         <Route path="/match/:stage/:homeCode/vs/:awayCode" element={<MatchesPage />} />
         <Route path="/match/:homeCode/vs/:awayCode" element={<MatchesPage />} />
-        <Route path="/bracket" element={hasBracket ? <BracketPage /> : <Navigate to="/overview" replace />} />
-        <Route path="/bracket/tbd/:round/:slot" element={hasBracket ? <BracketPage /> : <Navigate to="/overview" replace />} />
-        <Route path="/bracket/:stage/:homeCode/vs/:awayCode" element={hasBracket ? <BracketPage /> : <Navigate to="/overview" replace />} />
-        <Route path="/bracket/:homeCode/vs/:awayCode" element={hasBracket ? <BracketPage /> : <Navigate to="/overview" replace />} />
+        <Route path="/bracket" element={hasBracket ? <BracketPage /> : <Navigate to="/agenda" replace />} />
+        <Route path="/bracket/tbd/:round/:slot" element={hasBracket ? <BracketPage /> : <Navigate to="/agenda" replace />} />
+        <Route path="/bracket/:stage/:homeCode/vs/:awayCode" element={hasBracket ? <BracketPage /> : <Navigate to="/agenda" replace />} />
+        <Route path="/bracket/:homeCode/vs/:awayCode" element={hasBracket ? <BracketPage /> : <Navigate to="/agenda" replace />} />
         <Route
           path="/predictions"
-          element={isPredictionsFeatureEnabled ? <PredictionsPage /> : <Navigate to="/overview" replace />}
+          element={isPredictionsFeatureEnabled ? <PredictionsPage /> : <Navigate to="/agenda" replace />}
         />
         <Route
           path="/predict"
-          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/overview" replace />}
+          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/agenda" replace />}
         />
         <Route
           path="/predict/tbd/:round/:slot"
-          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/overview" replace />}
+          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/agenda" replace />}
         />
         <Route
           path="/predict/:stage/:homeCode/vs/:awayCode"
-          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/overview" replace />}
+          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/agenda" replace />}
         />
         <Route
           path="/predict/:homeCode/vs/:awayCode"
-          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/overview" replace />}
+          element={isPredictionsFeatureEnabled ? <MatchPredictionPage /> : <Navigate to="/agenda" replace />}
         />
         <Route
           path="/leaderboard"
-          element={isPredictionsFeatureEnabled ? <LeaderboardPage /> : <Navigate to="/overview" replace />}
+          element={isPredictionsFeatureEnabled ? <LeaderboardPage /> : <Navigate to="/agenda" replace />}
         />
         <Route
           path="/profile/:username"
-          element={isPredictionsFeatureEnabled ? <ProfilePage /> : <Navigate to="/overview" replace />}
+          element={isPredictionsFeatureEnabled ? <ProfilePage /> : <Navigate to="/agenda" replace />}
         />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

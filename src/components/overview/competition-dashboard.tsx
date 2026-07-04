@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
@@ -6,6 +7,7 @@ import { formatMatchDate, getMatchDisplayTime, getLocalizedText, hasDisplayScore
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
 import { FlagAvatar } from '../ui/flag-avatar'
+import { StatusPill } from '../ui/status-pill'
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useCompetitionNotifications } from '../notifications/competition-notifications'
 import { NotificationFeed } from '../notifications/notifications-feed'
@@ -59,10 +61,21 @@ export const CompetitionDashboard = () => {
     <section className="space-y-4">
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <article className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-[var(--text-strong)]">
-            <LivePulse className="h-3 w-3" />
-            {t.labels.liveNow}
-          </h2>
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="flex items-center gap-2 text-base font-semibold text-[var(--text-strong)]">
+              <LivePulse className="h-3 w-3" />
+              {t.labels.liveNow}
+            </h2>
+            <Link
+              to="/matches"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--accent-text)]"
+              aria-label={t.labels.viewMatches}
+              title={t.labels.viewMatches}
+            >
+              <span>{t.labels.viewMatches}</span>
+              <Icon name="arrow_forward" className="text-[16px]" />
+            </Link>
+          </div>
           {liveMatches.length === 0 ? (
             <p className="text-sm text-[var(--text-muted)]">{t.labels.noLiveMatches}</p>
           ) : (
@@ -98,35 +111,57 @@ export const CompetitionDashboard = () => {
                     className="w-full border border-[var(--border)] bg-[var(--calendar-live-bg)] px-3 py-3 text-left transition hover:bg-[var(--calendar-live-hover-bg)]"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
                         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">
                           {match.stage === 'group' ? t.labels.stageGroup : match.stage === 'roundOf16' ? t.labels.stageRoundOf16 : match.stage === 'roundOf32' ? t.labels.stageRoundOf32 : match.stage === 'quarterFinal' ? t.labels.stageQuarterFinal : match.stage === 'semiFinal' ? t.labels.stageSemiFinal : match.stage === 'thirdPlace' ? t.labels.stageThirdPlace : t.labels.stageFinal}
                         </p>
-                        <div className="mt-1 flex min-w-0 items-center gap-2">
-                          <LivePulse className="h-2.5 w-2.5 shrink-0" />
-                          <p className="truncate text-sm font-semibold text-[var(--text-strong)]">
-                            {homeTeamLabel} {t.labels.vs} {awayTeamLabel}
-                          </p>
+                        <StatusPill
+                          status="live"
+                          label={
+                            <span className="inline-flex items-center gap-1.5">
+                              <LivePulse className="h-2.5 w-2.5" />
+                              <span>{t.labels.live}</span>
+                            </span>
+                          }
+                        />
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                        <div className="min-w-0 p-2 text-center">
+                          <div className="mx-auto mb-2 w-fit">
+                            {homeTeam ? <FlagAvatar team={homeTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-dashed border-[var(--border)]" aria-hidden="true" />}
+                          </div>
+                          <p className="truncate text-base font-semibold text-[var(--text-strong)] sm:text-lg">{homeTeamLabel}</p>
+                          <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{homeTeam?.code ?? t.labels.tbd}</p>
+                      </div>
+
+                        <div className="flex flex-col items-center gap-1 px-2">
+                          {displayScore ? (
+                            <>
+                              <p className="text-3xl font-black leading-none text-[var(--text-strong)] sm:text-4xl">
+                                {homeScore ?? 0} - {awayScore ?? 0}
+                              </p>
+                              <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--text-soft)]">{t.labels.live}</p>
+                              {displayTime ? <p className="text-sm font-semibold text-[var(--text-strong)]">{displayTime}</p> : null}
+                            </>
+                          ) : (
+                            <p className="text-2xl font-black uppercase tracking-[0.28em] text-[var(--text-strong)] sm:text-3xl">{t.labels.vs}</p>
+                          )}
                         </div>
-                        <p className="mt-1 text-xs text-[var(--text-soft)]">{displayTime}</p>
+
+                        <div className="min-w-0 p-2 text-center">
+                          <div className="mx-auto mb-2 w-fit">
+                            {awayTeam ? <FlagAvatar team={awayTeam} className="h-14 w-14" /> : <span className="block h-14 w-14 rounded-full border border-dashed border-[var(--border)]" aria-hidden="true" />}
+                          </div>
+                          <p className="truncate text-base font-semibold text-[var(--text-strong)] sm:text-lg">{awayTeamLabel}</p>
+                          <p className="mt-1 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">{awayTeam?.code ?? t.labels.tbd}</p>
+                        </div>
                       </div>
-                      <div className="shrink-0 text-right">
-                        {displayScore ? (
-                          <p className="text-2xl font-bold leading-none text-[var(--text-strong)]">
-                            {homeScore ?? 0}
-                            <span className="px-1.5 text-[var(--text-soft)]">-</span>
-                            {awayScore ?? 0}
-                          </p>
-                        ) : (
-                          <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.labels.live}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      <div className="border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.meta.localTime}</p>
-                        <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">{venueLocalTime}</p>
-                        <p className="text-xs text-[var(--text-soft)]">{localDateTime}</p>
+
+                      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        <div className="border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.meta.localTime}</p>
+                          <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">{venueLocalTime}</p>
+                          <p className="text-xs text-[var(--text-soft)]">{localDateTime}</p>
                       </div>
                       <div className="border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2">
                         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.meta.venue}</p>
@@ -147,7 +182,18 @@ export const CompetitionDashboard = () => {
         </article>
 
         <article className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-          <h2 className="mb-3 text-base font-semibold text-[var(--text-strong)]">{t.labels.smallSchedule}</h2>
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="text-base font-semibold text-[var(--text-strong)]">{t.labels.smallSchedule}</h2>
+            <Link
+              to="/matches"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--accent-text)]"
+              aria-label={t.labels.viewSchedule}
+              title={t.labels.viewSchedule}
+            >
+              <span>{t.labels.viewSchedule}</span>
+              <Icon name="arrow_forward" className="text-[16px]" />
+            </Link>
+          </div>
           {scheduleCalendarDays.length === 0 ? (
             <p className="text-sm text-[var(--text-muted)]">{t.labels.noScheduledMatches}</p>
           ) : (
@@ -191,7 +237,18 @@ export const CompetitionDashboard = () => {
         </article>
 
         <article className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-          <h2 className="mb-3 text-base font-semibold text-[var(--text-strong)]">{t.labels.latestResults}</h2>
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="text-base font-semibold text-[var(--text-strong)]">{t.labels.latestResults}</h2>
+            <Link
+              to="/matches"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--accent-text)]"
+              aria-label={t.labels.viewMatches}
+              title={t.labels.viewMatches}
+            >
+              <span>{t.labels.viewMatches}</span>
+              <Icon name="arrow_forward" className="text-[16px]" />
+            </Link>
+          </div>
           {latestResults.length === 0 ? (
             <p className="text-sm text-[var(--text-muted)]">{t.labels.noLatestResults}</p>
           ) : (

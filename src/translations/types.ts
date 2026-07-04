@@ -2,6 +2,8 @@ export interface TranslationSet {
   locale: string
   appName: string
   sections: {
+    dashboard: string
+    agenda: string
     overview: string
     groups: string
     teams: string
@@ -165,6 +167,8 @@ export interface TranslationSet {
     noLatestResults: string
     noNotifications: string
     openMatch: string
+    viewMatches: string
+    viewSchedule: string
     eventIsLive: string
     eventEnded: string
     noMatchesForTeam: string
@@ -177,7 +181,7 @@ export interface TranslationSet {
     profileNotFound: string
     pageNotFoundTitle: string
     pageNotFoundMessage: string
-    goToOverview: string
+    goToDashboard: string
     noProfilePredictions: string
     doYourPrediction: string
     shareOnWhatsApp: string

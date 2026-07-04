@@ -11,7 +11,12 @@ type MenuImageCopy = { heading: string; subheading: string; accent: string }
 
 const copyBySection: Record<string, MenuImageCopy> = {
   overview: {
-    heading: 'Tournament Schedule',
+    heading: 'Tournament Agenda',
+    subheading: 'Track every upcoming fixture and kickoff.',
+    accent: '#7fe5c5',
+  },
+  agenda: {
+    heading: 'Tournament Agenda',
     subheading: 'Track every upcoming fixture and kickoff.',
     accent: '#7fe5c5',
   },

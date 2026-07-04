@@ -12,10 +12,10 @@ export const NotFoundPage = () => {
         <p>{t.labels.pageNotFoundMessage}</p>
         <button
           type="button"
-          onClick={() => navigate('/overview', { replace: true })}
+          onClick={() => navigate('/', { replace: true })}
           className="inline-flex items-center justify-center border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
         >
-          {t.labels.goToOverview}
+          {t.labels.goToDashboard}
         </button>
       </div>
     </section>

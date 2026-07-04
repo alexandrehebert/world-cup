@@ -19,7 +19,8 @@ const HEADER_COMPACT_EXIT_SCROLL = 24
 const HEADER_COMPACT_SETTLE_MS = 120
 
 const baseTabs = [
-  { to: '/overview', labelKey: 'overview', icon: 'calendar_month', iconClassName: '' },
+  { to: '/', labelKey: 'dashboard', icon: 'home', iconClassName: '' },
+  { to: '/agenda', labelKey: 'agenda', icon: 'calendar_month', iconClassName: '' },
   { to: '/groups', sectionId: 'groups', labelKey: 'groups', icon: 'groups', iconClassName: '' },
   { to: '/teams', labelKey: 'teams', icon: 'flag', iconClassName: '' },
   { to: '/matches', labelKey: 'matches', icon: 'sports_soccer', iconClassName: '' },
@@ -107,6 +108,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
               <NavLink
                 key={tab.to}
                 to={tab.to}
+                end={tab.to === '/'}
                 aria-label={useStandingsPath && 'sectionId' in tab && tab.sectionId === 'groups' ? t.labels.standings : t.sections[tab.labelKey]}
                 className={({ isActive }) =>
                   `-mb-px inline-flex cursor-pointer items-center justify-center gap-2 border-b-2 px-3 py-4 text-sm font-semibold transition sm:px-5 ${
@@ -121,7 +123,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
                     <Icon key={iconName} name={iconName} className={`text-[18px] ${tab.iconClassName ?? ''}`.trim()} />
                   ))}
                 </span>
-                <span className="hidden sm:inline">
+              <span className={tab.to === '/' ? 'sr-only' : 'hidden sm:inline'}>
                   {useStandingsPath && 'sectionId' in tab && tab.sectionId === 'groups' ? t.labels.standings : t.sections[tab.labelKey]}
                 </span>
               </NavLink>

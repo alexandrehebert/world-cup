@@ -76,23 +76,23 @@ const resolveCompetitionUrl = (
       : undefined
     : undefined
   const yearFragment = buildCompetitionYearFragment(competitionId, mostRecentYearByFamily)
-  const overviewPath = yearFragment ? `/overview#${yearFragment}` : '/overview'
+  const agendaPath = yearFragment ? `/agenda#${yearFragment}` : '/agenda'
 
   if (currentOrigin && activeCompetitionId && targetFamilyId === activeFamilyId) {
-    return `${currentOrigin}${overviewPath}`
+    return `${currentOrigin}${agendaPath}`
   }
 
   const configuredUrl = toBaseUrl(configuredSiteUrlById[competitionId])
   if (configuredUrl) {
-    return `${configuredUrl}${overviewPath}`
+    return `${configuredUrl}${agendaPath}`
   }
 
   if (isLocalOrigin(currentOrigin)) {
-    return `${LOCAL_SWITCH_URL_BY_ID[competitionId]}${overviewPath}`
+    return `${LOCAL_SWITCH_URL_BY_ID[competitionId]}${agendaPath}`
   }
 
   if (activeCompetitionId === competitionId && currentOrigin) {
-    return `${currentOrigin}${overviewPath}`
+    return `${currentOrigin}${agendaPath}`
   }
 
   return null

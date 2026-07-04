@@ -96,8 +96,8 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
         <div className="flex flex-col justify-center gap-2">
           <h1>
             <Link
-              to="/overview"
-              aria-label={locale === 'fr' ? "Aller à l'aperçu" : 'Go to overview'}
+              to="/"
+              aria-label={t.sections.dashboard}
               className={`inline-flex items-center font-extrabold leading-none tracking-[-0.04em] text-[var(--text-strong)] transition-all duration-200 ${
                 isCompact ? 'gap-2 text-2xl sm:text-3xl' : 'gap-2 text-2xl sm:text-3xl 2xl:gap-4 2xl:text-4xl'
               }`}
