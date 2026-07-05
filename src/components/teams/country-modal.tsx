@@ -18,6 +18,7 @@ import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
 import { ModalShell } from '../ui/modal-shell'
 import { StatusPill } from '../ui/status-pill'
+import { ModalMatchSections } from '../matches/modal-match-sections'
 import type { MatchRecord } from '../../types/tournament'
 
 const stageLabel = (
@@ -264,41 +265,30 @@ export const CountryModal = () => {
       {teamMatches.length === 0 ? (
         <p className="text-sm text-[var(--text-muted)]">{t.labels.noMatchesForTeam}</p>
       ) : (
-        <div className="space-y-4">
-          {liveMatches.length > 0 ? (
-            <div>
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-text)]">
-                <LivePulse className="h-2.5 w-2.5" />
-                {t.labels.liveMatchesSection}
-              </p>
-              <div className="overflow-hidden rounded-[var(--radius-sm)] divide-y divide-[var(--border)] border border-[var(--border)]">
-                {liveMatches.map(renderMatchRow)}
-              </div>
-            </div>
-          ) : null}
-
-          {upcomingMatches.length > 0 ? (
-            <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                {t.labels.upcomingMatchesSection}
-              </p>
-              <div className="overflow-hidden rounded-[var(--radius-sm)] divide-y divide-[var(--border)] border border-[var(--border)]">
-                {upcomingMatches.map(renderMatchRow)}
-              </div>
-            </div>
-          ) : null}
-
-          {pastMatches.length > 0 ? (
-            <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--text-soft)]">
-                {t.labels.pastMatchesSection}
-              </p>
-              <div className="overflow-hidden rounded-[var(--radius-sm)] divide-y divide-[var(--border)] border border-[var(--border)]">
-                {pastMatches.map(renderMatchRow)}
-              </div>
-            </div>
-          ) : null}
-        </div>
+        <ModalMatchSections
+          sections={[
+            {
+              key: 'live',
+              title: t.labels.liveMatchesSection,
+              items: liveMatches,
+              renderItem: renderMatchRow,
+              tone: 'live',
+              titlePrefix: <LivePulse className="h-2.5 w-2.5" />,
+            },
+            {
+              key: 'upcoming',
+              title: t.labels.upcomingMatchesSection,
+              items: upcomingMatches,
+              renderItem: renderMatchRow,
+            },
+            {
+              key: 'past',
+              title: t.labels.pastMatchesSection,
+              items: pastMatches,
+              renderItem: renderMatchRow,
+            },
+          ]}
+        />
       )}
     </ModalShell>
   )

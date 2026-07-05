@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useLocale } from '../contexts/locale-context'
 import { useTheme } from '../contexts/theme-context'
 import { useTournament } from '../contexts/tournament-context'
 import { formatMatchDate } from '../lib/format'
 import { Icon } from '../lib/icons'
 import {
+  buildStadiumSlugIndex,
   buildStadiumMapMarkers,
   buildStadiumSummaries,
   getStadiumMapViewport,
+  normalizeStadiumSlug,
   type StadiumMapViewport,
   WORLD_MAP_HEIGHT,
   WORLD_MAP_WIDTH,
@@ -74,8 +77,10 @@ export const StadiumsPage = () => {
   const { locale, t } = useLocale()
   const { themePreference } = useTheme()
   const { matches } = useTournament()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { stadiumSlug } = useParams<{ stadiumSlug?: string }>()
   const [viewMode, setViewMode] = useState<'map' | 'list'>('list')
-  const [selectedStadiumKey, setSelectedStadiumKey] = useState<string | null>(null)
   const [hoveredStadiumKey, setHoveredStadiumKey] = useState<string | null>(null)
   const [tooltipPosition, setTooltipPosition] = useState<'left' | 'right'>('right')
   const [mapSvgContainerDimensions, setMapSvgContainerDimensions] = useState({ width: 0, height: 0 })
@@ -88,6 +93,18 @@ export const StadiumsPage = () => {
     [locale],
   )
   const stadiums = useMemo(() => buildStadiumSummaries(matches), [matches])
+  const { keyToSlug, slugToKey } = useMemo(
+    () => buildStadiumSlugIndex(stadiums),
+    [stadiums],
+  )
+  const selectedStadiumKeyFromPath = useMemo(() => {
+    if (!stadiumSlug) {
+      return null
+    }
+
+    return slugToKey[normalizeStadiumSlug(stadiumSlug)] ?? null
+  }, [slugToKey, stadiumSlug])
+  const selectedStadiumKey = selectedStadiumKeyFromPath
   const selectedStadium = selectedStadiumKey
     ? (stadiums.find((s) => s.key === selectedStadiumKey) ?? null)
     : null
@@ -133,13 +150,26 @@ export const StadiumsPage = () => {
     setGridScrollShadow({ showTop, showBottom })
   }, [])
 
+  const setSelectedStadiumByKey = useCallback((nextStadiumKey: string | null) => {
+    const stadiumSlugFromKey = nextStadiumKey ? keyToSlug[nextStadiumKey] : null
+    const targetPathname = stadiumSlugFromKey ? `/stadiums/stadium/${encodeURIComponent(stadiumSlugFromKey)}` : '/stadiums'
+    const targetUrl = `${targetPathname}${location.search}`
+    const currentUrl = `${location.pathname}${location.search}`
+
+    if (targetUrl === currentUrl) {
+      return
+    }
+
+    navigate(targetUrl, { replace: true })
+  }, [keyToSlug, location.pathname, location.search, navigate])
+
   const handleMarkerClick = useCallback((markerKey: string) => {
     const marker = mapMarkers.find((m) => m.key === markerKey)
     if (!marker) return
 
     setTooltipPosition(marker.x < WORLD_MAP_WIDTH / 2 ? 'right' : 'left')
-    setSelectedStadiumKey(markerKey)
-  }, [mapMarkers])
+    setSelectedStadiumByKey(markerKey)
+  }, [mapMarkers, setSelectedStadiumByKey])
 
   const mapImageHref = useMemo(() => {
     if (themePreference === 'light') {
@@ -152,6 +182,23 @@ export const StadiumsPage = () => {
 
     return '/assets/world-stadiums-map-dark.svg'
   }, [themePreference])
+
+  useEffect(() => {
+    if (selectedStadiumKeyFromPath) {
+      const canonicalSlug = keyToSlug[selectedStadiumKeyFromPath]
+      const encodedPathSlug = encodeURIComponent(canonicalSlug)
+      const currentPathSlug = stadiumSlug ? encodeURIComponent(stadiumSlug) : null
+
+      if (currentPathSlug !== encodedPathSlug) {
+        navigate(`/stadiums/stadium/${encodedPathSlug}${location.search}`, { replace: true })
+        return
+      }
+    } else if (stadiumSlug) {
+      navigate(`/stadiums${location.search}`, { replace: true })
+      return
+    }
+
+  }, [keyToSlug, location.search, navigate, selectedStadiumKeyFromPath, stadiumSlug])
 
   useEffect(() => {
     if (viewportEquals(animatedMapViewportRef.current, mapViewport)) {
@@ -320,7 +367,7 @@ export const StadiumsPage = () => {
                  <StadiumTooltip
                    stadium={selectedStadium}
                    position={tooltipPosition}
-                   onClose={() => setSelectedStadiumKey(null)}
+                   onClose={() => setSelectedStadiumByKey(null)}
                    embedded
                    markerX={selectedMarker?.x}
                    markerY={selectedMarker?.y}
@@ -360,7 +407,7 @@ export const StadiumsPage = () => {
                 <button
                   key={stadium.key}
                   type="button"
-                  onClick={() => setSelectedStadiumKey(stadium.key)}
+                  onClick={() => setSelectedStadiumByKey(stadium.key)}
                   className={`border bg-[var(--surface)] transition-colors text-left ${selectedStadiumKey === stadium.key ? 'border-[var(--accent-border)]' : 'border-[var(--border)] hover:bg-[var(--surface-strong)]'}`}
                 >
                   <div className="flex items-start justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
@@ -406,7 +453,7 @@ export const StadiumsPage = () => {
           </div>
 
           {/* Stadium detail modal in list view */}
-          <StadiumModal stadium={selectedStadium} onClose={() => setSelectedStadiumKey(null)} />
+          <StadiumModal stadium={selectedStadium} onClose={() => setSelectedStadiumByKey(null)} />
         </>
       )}
     </section>

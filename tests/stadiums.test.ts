@@ -2,10 +2,13 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
+  buildStadiumSlug,
+  buildStadiumSlugIndex,
   buildStadiumMapMarkers,
   buildStadiumSummaries,
   getStadiumCatalogRecord,
   getStadiumMapViewport,
+  normalizeStadiumSlug,
   WORLD_MAP_HEIGHT,
   WORLD_MAP_WIDTH,
 } from '../src/lib/stadiums'
@@ -124,4 +127,66 @@ test('getStadiumMapViewport zooms on marker cluster while staying within world m
   assert.ok(viewport.y >= 0)
   assert.ok(viewport.x + viewport.width <= WORLD_MAP_WIDTH)
   assert.ok(viewport.y + viewport.height <= WORLD_MAP_HEIGHT)
+})
+
+test('buildStadiumSlug creates a kebab-case stadium-city-country slug', () => {
+  const slug = buildStadiumSlug({
+    stadium: 'AT&T Stadium',
+    city: 'Arlington',
+    country: 'United States',
+  })
+
+  assert.equal(slug, 'at-t-stadium-arlington-united-states')
+})
+
+test('buildStadiumSlugIndex creates stable unique slugs for duplicate venues', () => {
+  const first = {
+    key: 'national stadium|country-a',
+    stadium: 'National Stadium',
+    city: 'Capital',
+    country: 'Country A',
+    timeZone: 'UTC',
+    seatCapacity: null,
+    openedYear: null,
+    matchesHosted: 1,
+    firstKickoff: '2026-06-11T19:00:00Z',
+    lastKickoff: '2026-06-11T19:00:00Z',
+  } as const
+  const second = {
+    key: 'national stadium|country-b',
+    stadium: 'National Stadium',
+    city: 'Capital',
+    country: 'Country B',
+    timeZone: 'UTC',
+    seatCapacity: null,
+    openedYear: null,
+    matchesHosted: 1,
+    firstKickoff: '2026-06-12T19:00:00Z',
+    lastKickoff: '2026-06-12T19:00:00Z',
+  } as const
+  const duplicate = {
+    key: 'national stadium duplicate|country-a',
+    stadium: 'National Stadium',
+    city: 'Capital',
+    country: 'Country A',
+    timeZone: 'UTC',
+    seatCapacity: null,
+    openedYear: null,
+    matchesHosted: 1,
+    firstKickoff: '2026-06-13T19:00:00Z',
+    lastKickoff: '2026-06-13T19:00:00Z',
+  } as const
+
+  const { keyToSlug, slugToKey } = buildStadiumSlugIndex([first, second, duplicate])
+
+  assert.equal(keyToSlug[first.key], 'national-stadium-capital-country-a')
+  assert.equal(keyToSlug[second.key], 'national-stadium-capital-country-b')
+  assert.equal(keyToSlug[duplicate.key], 'national-stadium-capital-country-a-2')
+  assert.equal(slugToKey['national-stadium-capital-country-a'], first.key)
+  assert.equal(slugToKey['national-stadium-capital-country-a-2'], duplicate.key)
+})
+
+test('normalizeStadiumSlug keeps URL slug parsing resilient', () => {
+  assert.equal(normalizeStadiumSlug('  National---Stadium__Capital  '), 'national-stadium-capital')
+  assert.equal(normalizeStadiumSlug('***'), 'stadium')
 })

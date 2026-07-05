@@ -96,6 +96,37 @@ export type StadiumMapMarker = {
 }
 
 const normalizeVenueText = (value: string) => value.trim().toLowerCase().replace(/\s+/g, ' ')
+const normalizeStadiumSlugPart = (value: string) => value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+export const normalizeStadiumSlug = (value: string) => normalizeStadiumSlugPart(value) || 'stadium'
+
+export const buildStadiumSlug = (stadium: Pick<StadiumSummary, 'stadium' | 'city' | 'country'>) => {
+  const slugParts = [stadium.stadium, stadium.city, stadium.country]
+    .map((part) => normalizeStadiumSlugPart(part))
+    .filter((part) => part.length > 0)
+
+  return slugParts.length > 0 ? slugParts.join('-') : 'stadium'
+}
+
+export const buildStadiumSlugIndex = (stadiums: readonly StadiumSummary[]) => {
+  const keyToSlug: Record<string, string> = {}
+  const slugToKey: Record<string, string> = {}
+  const duplicateCounts = new Map<string, number>()
+
+  for (const stadium of stadiums) {
+    const baseSlug = buildStadiumSlug(stadium)
+    const count = (duplicateCounts.get(baseSlug) ?? 0) + 1
+    duplicateCounts.set(baseSlug, count)
+    const slug = count === 1 ? baseSlug : `${baseSlug}-${count}`
+
+    keyToSlug[stadium.key] = slug
+    if (!slugToKey[slug]) {
+      slugToKey[slug] = stadium.key
+    }
+  }
+
+  return { keyToSlug, slugToKey }
+}
+
 export const WORLD_MAP_WIDTH = 360
 export const WORLD_MAP_HEIGHT = 180
 const MAP_MIN_LONGITUDE = -180
