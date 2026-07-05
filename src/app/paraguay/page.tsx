@@ -4,7 +4,15 @@ import { Card } from '../../components/ui/card'
 
 export const metadata: Metadata = {
   title: 'Paraguay Dashboard',
-  description: 'An ironic dashboard for Paraguay in World Cup history.',
+  description: 'A stunning Paraguay performance dashboard for an absolutely trophy-packed World Cup history.',
+  openGraph: {
+    title: 'Paraguay Dashboard',
+    description: 'A stunning Paraguay performance dashboard for an absolutely trophy-packed World Cup history.',
+  },
+  twitter: {
+    title: 'Paraguay Dashboard',
+    description: 'A stunning Paraguay performance dashboard for an absolutely trophy-packed World Cup history.',
+  },
 }
 
 const stats = [
