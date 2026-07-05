@@ -1,37 +1,75 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { Metadata } from 'next'
+import { cookies, headers } from 'next/headers'
 import { Card } from '../../components/ui/card'
+import { LOCALE_COOKIE_NAME, isLocaleCode } from '../../lib/user-preferences'
+import { de } from '../../translations/de'
+import { en } from '../../translations/en'
+import { es } from '../../translations/es'
+import { fr } from '../../translations/fr'
+import { resolveLocaleFromLanguage } from '../../translations/intl'
+import type { TranslationSet } from '../../translations/types'
+import type { LocaleCode } from '../../types/tournament'
 
-export const metadata: Metadata = {
-  title: 'Paraguay Dashboard',
-  description: 'A stunning Paraguay performance dashboard for an absolutely trophy-packed World Cup history.',
-  openGraph: {
-    title: 'Paraguay Dashboard',
-    description: 'A stunning Paraguay performance dashboard for an absolutely trophy-packed World Cup history.',
-  },
-  twitter: {
-    title: 'Paraguay Dashboard',
-    description: 'A stunning Paraguay performance dashboard for an absolutely trophy-packed World Cup history.',
-  },
+const translationsByLocale: Record<LocaleCode, TranslationSet> = {
+  en,
+  fr,
+  es,
+  de,
 }
 
-const stats = [
-  { label: 'World Cup titles', value: '0', note: 'Still a pristine trophy cabinet.' },
-  { label: 'World Cup finals played', value: '0', note: 'No scheduling conflicts in July finals.' },
-  { label: 'Best finish', value: 'Quarter-finals (2010)', note: 'The golden run and the eternal throwback.' },
-  { label: 'World Cup golden boots', value: '0', note: 'The shelf remains dramatically available.' },
-  { label: 'World Cup final goals scored', value: '0', note: 'No finals, no goals, no stress.' },
-  { label: 'Current location', value: 'At home', note: 'Watching, commenting, and waiting for 2030 vibes.' },
-] as const
+const resolvePageLocale = async (): Promise<LocaleCode> => {
+  const cookieStore = await cookies()
+  const headerStore = await headers()
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE_NAME)?.value
 
-export default function ParaguayPage() {
+  if (isLocaleCode(cookieLocale)) {
+    return cookieLocale
+  }
+
+  return resolveLocaleFromLanguage(headerStore.get('accept-language'))
+}
+
+const getPageTranslations = async () => {
+  const locale = await resolvePageLocale()
+  return translationsByLocale[locale]
+}
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  const t = await getPageTranslations()
+
+  return {
+    title: t.labels.paraguayPageMetaTitle,
+    description: t.labels.paraguayPageMetaDescription,
+    openGraph: {
+      title: t.labels.paraguayPageMetaTitle,
+      description: t.labels.paraguayPageMetaDescription,
+    },
+    twitter: {
+      title: t.labels.paraguayPageMetaTitle,
+      description: t.labels.paraguayPageMetaDescription,
+    },
+  }
+}
+
+export default async function ParaguayPage() {
+  const t = await getPageTranslations()
+  const stats = [
+    { label: t.labels.paraguayModalStatWorldCups, value: '0', note: t.labels.paraguayPageStatWorldCupTitlesNote },
+    { label: t.labels.paraguayModalStatFinalsPlayed, value: '0', note: t.labels.paraguayPageStatFinalsPlayedNote },
+    { label: t.labels.paraguayPageStatBestFinishLabel, value: t.labels.paraguayPageStatBestFinishValue, note: t.labels.paraguayPageStatBestFinishNote },
+    { label: t.labels.paraguayPageStatGoldenBootsLabel, value: '0', note: t.labels.paraguayPageStatGoldenBootsNote },
+    { label: t.labels.paraguayPageStatFinalGoalsLabel, value: '0', note: t.labels.paraguayPageStatFinalGoalsNote },
+    { label: t.labels.paraguayModalStatCurrentLocation, value: t.labels.paraguayModalCurrentLocationValue, note: t.labels.paraguayPageStatCurrentLocationNote },
+  ] as const
+
   return (
     <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-10 md:px-8">
       <header className="mb-8 space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-text)]">Special Dashboard</p>
-        <h1 className="text-3xl font-extrabold text-[var(--text-strong)] md:text-5xl">Paraguay World Cup Command Center</h1>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-text)]">{t.labels.paraguayPageBadge}</p>
+        <h1 className="text-3xl font-extrabold text-[var(--text-strong)] md:text-5xl">{t.labels.paraguayPageHeading}</h1>
         <p className="max-w-3xl text-sm text-[var(--text-muted)] md:text-base">
-          A fully data-driven, scientifically accurate, mildly painful summary of Paraguay in World Cup history.
+          {t.labels.paraguayPageIntro}
         </p>
       </header>
 
@@ -46,9 +84,9 @@ export default function ParaguayPage() {
       </section>
 
       <Card className="mt-6 border border-[var(--accent-border)] bg-[var(--accent-muted)] p-5">
-        <h2 className="text-lg font-bold text-[var(--text-strong)]">Executive Summary</h2>
+        <h2 className="text-lg font-bold text-[var(--text-strong)]">{t.labels.paraguayPageExecutiveSummaryTitle}</h2>
         <p className="mt-2 text-sm text-[var(--text)]">
-          World Cups won: zero. Drama delivered: plenty. Hope for the next qualifiers: permanently enabled.
+          {t.labels.paraguayPageExecutiveSummaryBody}
         </p>
       </Card>
     </main>

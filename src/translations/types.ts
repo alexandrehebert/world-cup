@@ -188,6 +188,23 @@ export interface TranslationSet {
     paraguayModalCurrentLocationValue: string
     paraguayModalStatStatus: string
     paraguayModalStatusValue: string
+    paraguayPageMetaTitle: string
+    paraguayPageMetaDescription: string
+    paraguayPageBadge: string
+    paraguayPageHeading: string
+    paraguayPageIntro: string
+    paraguayPageStatWorldCupTitlesNote: string
+    paraguayPageStatFinalsPlayedNote: string
+    paraguayPageStatBestFinishLabel: string
+    paraguayPageStatBestFinishValue: string
+    paraguayPageStatBestFinishNote: string
+    paraguayPageStatGoldenBootsLabel: string
+    paraguayPageStatGoldenBootsNote: string
+    paraguayPageStatFinalGoalsLabel: string
+    paraguayPageStatFinalGoalsNote: string
+    paraguayPageStatCurrentLocationNote: string
+    paraguayPageExecutiveSummaryTitle: string
+    paraguayPageExecutiveSummaryBody: string
     groupPosition: string
     shareLeaderboard: string
     viewLeaderboard: string
