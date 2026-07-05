@@ -9,6 +9,7 @@ import { getDisplayMatchStatus, formatMatchDate } from '../../lib/format'
 import { isPredictionsFeatureEnabled } from '../../lib/features'
 import { getStandingsSectionSlug } from '../../lib/competition-sections'
 import { getMatchStageSlug, parseMatchSlugSegments } from '../../lib/match-path'
+import { findTeamByCode, getTeamCompetitionDetails, normalizeTeamCode } from '../../lib/team-share'
 import type { TournamentData } from '../../types/tournament'
 
 export const dynamic = 'force-dynamic'
@@ -94,6 +95,63 @@ const getMatchMeta = (
   ].filter(Boolean).join(' · ')
 
   return { title, description, match }
+}
+
+const getTeamStatusLabel = (status: ReturnType<typeof getTeamCompetitionDetails>['status'], competitionShortName: string) => {
+  if (status === 'champion') {
+    return `${competitionShortName} champion`
+  }
+
+  if (status === 'eliminated') {
+    return `Eliminated from the ${competitionShortName}`
+  }
+
+  return `Still in contention in the ${competitionShortName}`
+}
+
+const getTeamMeta = (
+  data: TournamentData,
+  teamCode: string,
+  competitionDisplayName: string,
+  competitionShortName: string,
+) => {
+  const team = findTeamByCode(data.teams, teamCode)
+
+  if (!team) {
+    return null
+  }
+
+  const details = getTeamCompetitionDetails({ teamId: team.id, data })
+  const teamsById = Object.fromEntries(data.teams.map((entry: TeamRecord) => [entry.id, entry]))
+  const nextOpponent = details.nextMatch
+    ? (details.nextMatch.home.teamId === team.id ? details.nextMatch.away.teamId : details.nextMatch.home.teamId)
+    : null
+  const latestOpponent = details.latestMatch
+    ? (details.latestMatch.home.teamId === team.id ? details.latestMatch.away.teamId : details.latestMatch.home.teamId)
+    : null
+  const nextOpponentLabel = nextOpponent ? (teamsById[nextOpponent]?.name ?? teamsById[nextOpponent]?.code ?? 'TBD') : null
+  const latestOpponentLabel = latestOpponent ? (teamsById[latestOpponent]?.name ?? teamsById[latestOpponent]?.code ?? 'TBD') : null
+  const nextKickoff = details.nextMatch ? formatMatchDate(details.nextMatch.kickoff, 'en', 'UTC').localTime : null
+  const latestTeamScore = details.latestMatch
+    ? (details.latestMatch.home.teamId === team.id ? details.latestMatch.home.score : details.latestMatch.away.score)
+    : null
+  const latestOpponentScore = details.latestMatch
+    ? (details.latestMatch.home.teamId === team.id ? details.latestMatch.away.score : details.latestMatch.home.score)
+    : null
+  const standingText = details.group && details.standing && details.standingIndex >= 0
+    ? `${details.group.label} · #${details.standingIndex + 1} (${details.standing.points} pts)`
+    : null
+  const statusText = getTeamStatusLabel(details.status, competitionShortName)
+  const upcomingText = details.nextMatch && nextOpponentLabel
+    ? `Next: vs ${nextOpponentLabel}${nextKickoff ? ` · ${nextKickoff} UTC` : ''}`
+    : null
+  const latestResultText = details.latestMatch && latestOpponentLabel && typeof latestTeamScore === 'number' && typeof latestOpponentScore === 'number'
+    ? `Last result: ${team.name} ${latestTeamScore}-${latestOpponentScore} ${latestOpponentLabel}`
+    : null
+  const title = `${team.name} | ${competitionDisplayName}`
+  const description = [statusText, standingText, upcomingText ?? latestResultText].filter(Boolean).join(' · ')
+
+  return { title, description, team }
 }
 
 const getMenuMetaBySegment = (
@@ -244,6 +302,49 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         card: 'summary',
         title,
         description,
+      },
+    }
+  }
+
+  if (firstSegment === 'team' && slug?.length === 2) {
+    const teamCode = slug[1]?.trim()
+
+    if (!teamCode) {
+      return defaultMeta
+    }
+
+    const tournamentData = await loadTournamentData()
+    const teamMeta = getTeamMeta(tournamentData, teamCode, competitionDisplayName, competitionShortName)
+
+    if (!teamMeta) {
+      return {
+        metadataBase,
+        title: `Team not found | ${competitionDisplayName}`,
+        description: 'The shared team link does not match a known team.',
+      }
+    }
+
+    const canonicalTeamCode = normalizeTeamCode(teamMeta.team.code)
+    const imagePath = `/team/${encodeURIComponent(canonicalTeamCode)}/opengraph-image`
+    const canonical = `/team/${encodeURIComponent(canonicalTeamCode)}`
+
+    return {
+      metadataBase,
+      title: teamMeta.title,
+      description: teamMeta.description,
+      alternates: { canonical },
+      openGraph: {
+        title: teamMeta.title,
+        description: teamMeta.description,
+        type: 'website',
+        url: canonical,
+        images: [{ url: imagePath, width: 1200, height: 630, alt: teamMeta.title }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: teamMeta.title,
+        description: teamMeta.description,
+        images: [imagePath],
       },
     }
   }
