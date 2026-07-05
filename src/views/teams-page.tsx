@@ -258,7 +258,7 @@ export const TeamsPage = () => {
             return (
               <div
                 key={team.id}
-                className={`relative overflow-hidden border border-[var(--border)] ${
+                className={`relative overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border)] ${
                   eliminated
                     ? 'past-match-stripes bg-[var(--surface-soft)] opacity-70 saturate-50 hover:opacity-90'
                     : isFavorite
