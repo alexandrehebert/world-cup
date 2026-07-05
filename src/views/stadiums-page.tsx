@@ -36,33 +36,22 @@ const lerp = (start: number, end: number, progress: number) => start + (end - st
 const focusViewportOnMarker = (
   viewport: StadiumMapViewport,
   marker: { x: number; y: number },
-  drawerPosition: 'left' | 'right',
+  tooltipPosition: 'left' | 'right',
   mapContainerWidth: number,
 ): StadiumMapViewport => {
   const width = clamp(viewport.width * SELECTED_STADIUM_ZOOM_FACTOR, 26, WORLD_MAP_WIDTH)
   const height = clamp(viewport.height * SELECTED_STADIUM_ZOOM_FACTOR, 13, WORLD_MAP_HEIGHT)
 
-  // Drawer width on desktop (sm: 384px = 24rem), plus margins (4px each side = 8px)
-  const drawerWidth = mapContainerWidth > 640 ? 384 + 8 : 0
-
-  // Calculate center position for marker in the remaining visible area
-  let centerScreenRatio: number
-  if (drawerWidth > 0) {
-    if (drawerPosition === 'right') {
-      // Drawer on right: remaining visible area is 0 to (mapContainerWidth - drawerWidth)
-      // Center position: (mapContainerWidth - drawerWidth) / 2
-      centerScreenRatio = (mapContainerWidth - drawerWidth) / (2 * mapContainerWidth)
+  const tooltipWidth = mapContainerWidth > 640 ? 320 + 12 : 0
+  let centerScreenRatio = 0.5
+  if (tooltipWidth > 0) {
+    if (tooltipPosition === 'right') {
+      centerScreenRatio = (mapContainerWidth - tooltipWidth) / (2 * mapContainerWidth)
     } else {
-      // Drawer on left: remaining visible area is drawerWidth to mapContainerWidth
-      // Center position: drawerWidth + (mapContainerWidth - drawerWidth) / 2
-      centerScreenRatio = (mapContainerWidth + drawerWidth) / (2 * mapContainerWidth)
+      centerScreenRatio = (mapContainerWidth + tooltipWidth) / (2 * mapContainerWidth)
     }
-  } else {
-    // Mobile or no drawer: center of screen
-    centerScreenRatio = 0.5
   }
 
-  // Position marker at the center of remaining visible area
   const x = clamp(marker.x - centerScreenRatio * width, 0, WORLD_MAP_WIDTH - width)
   const y = clamp(marker.y - height / 2, 0, WORLD_MAP_HEIGHT - height)
 
@@ -88,10 +77,10 @@ export const StadiumsPage = () => {
   const [viewMode, setViewMode] = useState<'map' | 'list'>('list')
   const [selectedStadiumKey, setSelectedStadiumKey] = useState<string | null>(null)
   const [hoveredStadiumKey, setHoveredStadiumKey] = useState<string | null>(null)
-  const [drawerPosition, setDrawerPosition] = useState<'left' | 'right'>('right')
-  const [mapContainerDimensions, setMapContainerDimensions] = useState({ width: 0, height: 0 })
+  const [tooltipPosition, setTooltipPosition] = useState<'left' | 'right'>('right')
+  const [mapSvgContainerDimensions, setMapSvgContainerDimensions] = useState({ width: 0, height: 0 })
   const stadiumGridRef = useRef<HTMLDivElement | null>(null)
-  const mapContainerRef = useRef<HTMLDivElement | null>(null)
+  const mapSvgContainerRef = useRef<HTMLDivElement | null>(null)
   const [gridScrollShadow, setGridScrollShadow] = useState({ showTop: false, showBottom: false })
 
   const numberFormatter = useMemo(
@@ -114,14 +103,14 @@ export const StadiumsPage = () => {
       return getStadiumMapViewport(mapMarkers)
     }
 
-    const mapContainerWidth = mapContainerDimensions.width || window.innerWidth
+    const mapContainerWidth = mapSvgContainerDimensions.width || window.innerWidth
     return focusViewportOnMarker(
       getStadiumMapViewport([selectedMarker]),
       selectedMarker,
-      drawerPosition,
+      tooltipPosition,
       mapContainerWidth,
     )
-  }, [mapMarkers, selectedStadiumKey, drawerPosition, mapContainerDimensions.width])
+  }, [mapMarkers, selectedStadiumKey, tooltipPosition, mapSvgContainerDimensions.width])
 
   const [animatedMapViewport, setAnimatedMapViewport] = useState<StadiumMapViewport>(mapViewport)
   const animatedMapViewportRef = useRef<StadiumMapViewport>(mapViewport)
@@ -145,15 +134,10 @@ export const StadiumsPage = () => {
   }, [])
 
   const handleMarkerClick = useCallback((markerKey: string) => {
-    // Find the marker to get its world map position
     const marker = mapMarkers.find((m) => m.key === markerKey)
     if (!marker) return
 
-    // Determine drawer position based on marker's absolute position on world map
-    // If marker is on left half of world map, open drawer on right
-    // If marker is on right half of world map, open drawer on left
-    const position = marker.x < WORLD_MAP_WIDTH / 2 ? 'right' : 'left'
-    setDrawerPosition(position)
+    setTooltipPosition(marker.x < WORLD_MAP_WIDTH / 2 ? 'right' : 'left')
     setSelectedStadiumKey(markerKey)
   }, [mapMarkers])
 
@@ -218,13 +202,13 @@ export const StadiumsPage = () => {
   }, [stadiums.length, updateListScrollShadow])
 
   useEffect(() => {
-    const mapContainer = mapContainerRef.current
-    if (!mapContainer) return
+    const mapSvgContainer = mapSvgContainerRef.current
+    if (!mapSvgContainer) return
 
     const updateDimensions = () => {
-      setMapContainerDimensions({
-        width: mapContainer.clientWidth,
-        height: mapContainer.clientHeight,
+      setMapSvgContainerDimensions({
+        width: mapSvgContainer.clientWidth,
+        height: mapSvgContainer.clientHeight,
       })
     }
 
@@ -233,7 +217,7 @@ export const StadiumsPage = () => {
 
     // Use ResizeObserver to track size changes
     const resizeObserver = new ResizeObserver(updateDimensions)
-    resizeObserver.observe(mapContainer)
+    resizeObserver.observe(mapSvgContainer)
 
     return () => resizeObserver.disconnect()
   }, [])
@@ -275,10 +259,9 @@ export const StadiumsPage = () => {
         <>
           {/* Map view */}
          <div
-           ref={mapContainerRef}
            className="relative min-h-0 flex-1 border border-[var(--border)] bg-[var(--surface)] flex flex-col"
          >
-           <div className="relative flex-1 min-h-0">
+           <div ref={mapSvgContainerRef} className="relative flex-1 min-h-0">
              <svg
                viewBox={`${animatedMapViewport.x} ${animatedMapViewport.y} ${animatedMapViewport.width} ${animatedMapViewport.height}`}
                className="block h-full w-full bg-[var(--surface-soft)]"
@@ -330,31 +313,30 @@ export const StadiumsPage = () => {
                  )
                })}
              </svg>
+             {/* Stadium detail tooltip in map view (positioned within SVG container) */}
+             {selectedStadium && (() => {
+               const selectedMarker = mapMarkers.find((m) => m.key === selectedStadiumKey)
+               return (
+                 <StadiumTooltip
+                   stadium={selectedStadium}
+                   position={tooltipPosition}
+                   onClose={() => setSelectedStadiumKey(null)}
+                   embedded
+                   markerX={selectedMarker?.x}
+                   markerY={selectedMarker?.y}
+                   viewportX={animatedMapViewport.x}
+                   viewportY={animatedMapViewport.y}
+                   viewportWidth={animatedMapViewport.width}
+                   viewportHeight={animatedMapViewport.height}
+                   containerWidth={mapSvgContainerDimensions.width}
+                   containerHeight={mapSvgContainerDimensions.height}
+                 />
+               )
+             })()}
            </div>
            <p className="border-t border-[var(--border)] px-4 py-2 text-xs text-[var(--text-soft)]">
              {t.labels.stadiumMapLegend}
            </p>
-
-           {/* Stadium detail tooltip in map view (embedded inside map) */}
-           {selectedStadium && (() => {
-             const selectedMarker = mapMarkers.find((m) => m.key === selectedStadiumKey)
-             return (
-               <StadiumTooltip
-                 stadium={selectedStadium}
-                 position={drawerPosition}
-                 onClose={() => setSelectedStadiumKey(null)}
-                 embedded
-                 markerX={selectedMarker?.x}
-                 markerY={selectedMarker?.y}
-                 viewportX={animatedMapViewport.x}
-                 viewportY={animatedMapViewport.y}
-                 viewportWidth={animatedMapViewport.width}
-                 viewportHeight={animatedMapViewport.height}
-                 containerWidth={mapContainerDimensions.width}
-                 containerHeight={mapContainerDimensions.height}
-               />
-             )
-           })()}
          </div>
         </>
       ) : (

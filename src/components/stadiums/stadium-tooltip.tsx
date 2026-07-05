@@ -58,7 +58,22 @@ export const StadiumTooltip = ({
 
   // Calculate tooltip position based on marker location
   const getTooltipPosition = () => {
-    if (!embedded || !markerX || markerY === undefined || !viewportX || viewportY === undefined || !viewportWidth || !viewportHeight || !containerWidth || !containerHeight) {
+    const hasPositioningData = (
+      markerX !== undefined
+      && markerY !== undefined
+      && viewportX !== undefined
+      && viewportY !== undefined
+      && viewportWidth !== undefined
+      && viewportHeight !== undefined
+      && containerWidth !== undefined
+      && containerHeight !== undefined
+      && viewportWidth > 0
+      && viewportHeight > 0
+      && containerWidth > 0
+      && containerHeight > 0
+    )
+
+    if (!embedded || !hasPositioningData) {
       // Fallback to fixed position
       return {
         top: '50%',
@@ -70,41 +85,35 @@ export const StadiumTooltip = ({
     }
 
     // Convert marker world coordinates to screen coordinates
+    // screenX and screenY are in pixels relative to the visible SVG container
     const screenX = ((markerX - viewportX) / viewportWidth) * containerWidth
     const screenY = ((markerY - viewportY) / viewportHeight) * containerHeight
 
     const tooltipWidth = 320 // w-80 = 320px
-    const tooltipHeight = 400 // approximate max-height
-    const offset = 16 // 1rem
+    const tooltipHeight = 300 // approximate
+    const gap = 12 // gap between marker and tooltip
 
-    // Position tooltip on the opposite side of where marker is
+    // Prefer the requested side first, then fall back to the opposite side.
     let left: number
-    let top: number
 
-    if (position === 'left') {
-      // Marker is on left side, place tooltip to the right
-      left = screenX + offset
-      // Ensure tooltip doesn't go off-screen right
-      if (left + tooltipWidth > containerWidth) {
-        left = containerWidth - tooltipWidth - offset
+    if (position === 'right') {
+      left = screenX + gap
+      if (left + tooltipWidth > containerWidth - gap) {
+        left = Math.max(gap, screenX - tooltipWidth - gap)
       }
     } else {
-      // Marker is on right side, place tooltip to the left
-      left = screenX - tooltipWidth - offset
-      // Ensure tooltip doesn't go off-screen left
-      if (left < 0) {
-        left = offset
+      left = screenX - tooltipWidth - gap
+      if (left < gap) {
+        left = Math.min(containerWidth - tooltipWidth - gap, screenX + gap)
       }
     }
 
-    // Vertically center on marker, with bounds checking
-    top = screenY - tooltipHeight / 2
-    if (top < 0) {
-      top = offset
-    }
-    if (top + tooltipHeight > containerHeight) {
-      top = containerHeight - tooltipHeight - offset
-    }
+    // Ensure stays in bounds with gap
+    left = Math.max(gap, Math.min(left, containerWidth - tooltipWidth - gap))
+
+    // Vertically position
+    let top = screenY - tooltipHeight / 2
+    top = Math.max(gap, Math.min(top, containerHeight - tooltipHeight - gap))
 
     return {
       top: `${top}px`,
