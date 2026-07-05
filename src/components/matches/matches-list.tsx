@@ -318,7 +318,7 @@ export const MatchesList = ({
                                 key={option.value}
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); openAuthModal('login') }}
-                                className="truncate bg-[var(--surface-soft)] px-2 py-1 text-xs font-semibold text-[var(--text)]"
+                                className="truncate rounded-[var(--radius-sm)] bg-[var(--surface-soft)] px-2 py-1 text-xs font-semibold text-[var(--text)]"
                                 title={option.label}
                               >
                                 {option.label}
@@ -340,7 +340,7 @@ export const MatchesList = ({
                                 e.stopPropagation()
                                 void savePrediction({ matchId: match.id, outcome: option.value })
                               }}
-                              className={`truncate px-2 py-1 text-xs font-semibold ${
+                              className={`truncate rounded-[var(--radius-sm)] px-2 py-1 text-xs font-semibold ${
                                 selectedOutcome === option.value
                                   ? 'bg-[var(--accent-muted)] text-[var(--accent-text)]'
                                   : 'bg-[var(--surface-soft)] text-[var(--text)]'
