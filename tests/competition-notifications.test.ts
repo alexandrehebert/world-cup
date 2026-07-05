@@ -33,7 +33,7 @@ const createMatch = (overrides: Partial<MatchRecord> & Pick<MatchRecord, 'id' | 
   ...overrides,
 })
 
-test('shows upcoming matches in the live widget when no matches are live', () => {
+test('shows starting-soon matches first while still including additional upcoming matches in the live widget', () => {
   const nowMs = Date.parse('2026-07-04T12:00:00.000Z')
   const soonMatch = createMatch({
     id: 'soon-match',
@@ -58,8 +58,9 @@ test('shows upcoming matches in the live widget when no matches are live', () =>
   })
 
   assert.equal(result.liveMatches.length, 0)
-  assert.equal(result.liveWidgetMatches.length, 1)
+  assert.equal(result.liveWidgetMatches.length, 2)
   assert.equal(result.liveWidgetMatches[0]?.id, 'soon-match')
+  assert.equal(result.liveWidgetMatches[1]?.id, 'later-match')
 })
 
 test('adds a starting-soon notification for matches that are about to begin', () => {

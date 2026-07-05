@@ -92,7 +92,14 @@ export const buildCompetitionNotifications = ({
   const finishedNotificationMatches = sortedMatches
     .filter((match) => getDisplayMatchStatus(match, nowMs) === 'finished')
     .sort((first, second) => second.kickoff.localeCompare(first.kickoff))
-  const liveWidgetMatches = liveMatches.length > 0 ? liveMatches.slice(0, 3) : (startingSoonMatches.length > 0 ? startingSoonMatches : scheduledMatches.slice(0, 3))
+  const liveWidgetMatches = liveMatches.length > 0
+    ? liveMatches.slice(0, 3)
+    : [
+      ...startingSoonMatches,
+      ...scheduledMatches.filter(
+        (match) => !startingSoonMatches.some((startingSoonMatch) => startingSoonMatch.id === match.id),
+      ),
+    ].slice(0, 3)
 
   const widgetItems: NotificationItem[] = []
   const detailedItems: NotificationItem[] = []
