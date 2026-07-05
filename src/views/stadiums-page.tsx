@@ -12,6 +12,7 @@ import {
   WORLD_MAP_HEIGHT,
   WORLD_MAP_WIDTH,
 } from '../lib/stadiums'
+import { StadiumTooltip } from '../components/stadiums/stadium-tooltip'
 import { StadiumModal } from '../components/stadiums/stadium-modal'
 
 const MAP_GRID_CELL_SIZE = 12
@@ -35,10 +36,34 @@ const lerp = (start: number, end: number, progress: number) => start + (end - st
 const focusViewportOnMarker = (
   viewport: StadiumMapViewport,
   marker: { x: number; y: number },
+  drawerPosition: 'left' | 'right',
+  mapContainerWidth: number,
 ): StadiumMapViewport => {
   const width = clamp(viewport.width * SELECTED_STADIUM_ZOOM_FACTOR, 26, WORLD_MAP_WIDTH)
   const height = clamp(viewport.height * SELECTED_STADIUM_ZOOM_FACTOR, 13, WORLD_MAP_HEIGHT)
-  const x = clamp(marker.x - width / 2, 0, WORLD_MAP_WIDTH - width)
+
+  // Drawer width on desktop (sm: 384px = 24rem), plus margins (4px each side = 8px)
+  const drawerWidth = mapContainerWidth > 640 ? 384 + 8 : 0
+
+  // Calculate center position for marker in the remaining visible area
+  let centerScreenRatio: number
+  if (drawerWidth > 0) {
+    if (drawerPosition === 'right') {
+      // Drawer on right: remaining visible area is 0 to (mapContainerWidth - drawerWidth)
+      // Center position: (mapContainerWidth - drawerWidth) / 2
+      centerScreenRatio = (mapContainerWidth - drawerWidth) / (2 * mapContainerWidth)
+    } else {
+      // Drawer on left: remaining visible area is drawerWidth to mapContainerWidth
+      // Center position: drawerWidth + (mapContainerWidth - drawerWidth) / 2
+      centerScreenRatio = (mapContainerWidth + drawerWidth) / (2 * mapContainerWidth)
+    }
+  } else {
+    // Mobile or no drawer: center of screen
+    centerScreenRatio = 0.5
+  }
+
+  // Position marker at the center of remaining visible area
+  const x = clamp(marker.x - centerScreenRatio * width, 0, WORLD_MAP_WIDTH - width)
   const y = clamp(marker.y - height / 2, 0, WORLD_MAP_HEIGHT - height)
 
   return { x, y, width, height }
@@ -63,7 +88,10 @@ export const StadiumsPage = () => {
   const [viewMode, setViewMode] = useState<'map' | 'list'>('list')
   const [selectedStadiumKey, setSelectedStadiumKey] = useState<string | null>(null)
   const [hoveredStadiumKey, setHoveredStadiumKey] = useState<string | null>(null)
+  const [drawerPosition, setDrawerPosition] = useState<'left' | 'right'>('right')
+  const [mapContainerDimensions, setMapContainerDimensions] = useState({ width: 0, height: 0 })
   const stadiumGridRef = useRef<HTMLDivElement | null>(null)
+  const mapContainerRef = useRef<HTMLDivElement | null>(null)
   const [gridScrollShadow, setGridScrollShadow] = useState({ showTop: false, showBottom: false })
 
   const numberFormatter = useMemo(
@@ -86,8 +114,14 @@ export const StadiumsPage = () => {
       return getStadiumMapViewport(mapMarkers)
     }
 
-    return focusViewportOnMarker(getStadiumMapViewport([selectedMarker]), selectedMarker)
-  }, [mapMarkers, selectedStadiumKey])
+    const mapContainerWidth = mapContainerDimensions.width || window.innerWidth
+    return focusViewportOnMarker(
+      getStadiumMapViewport([selectedMarker]),
+      selectedMarker,
+      drawerPosition,
+      mapContainerWidth,
+    )
+  }, [mapMarkers, selectedStadiumKey, drawerPosition, mapContainerDimensions.width])
 
   const [animatedMapViewport, setAnimatedMapViewport] = useState<StadiumMapViewport>(mapViewport)
   const animatedMapViewportRef = useRef<StadiumMapViewport>(mapViewport)
@@ -109,6 +143,19 @@ export const StadiumsPage = () => {
     const showBottom = gridElement.scrollTop + gridElement.clientHeight < gridElement.scrollHeight - 1
     setGridScrollShadow({ showTop, showBottom })
   }, [])
+
+  const handleMarkerClick = useCallback((markerKey: string) => {
+    // Find the marker to get its world map position
+    const marker = mapMarkers.find((m) => m.key === markerKey)
+    if (!marker) return
+
+    // Determine drawer position based on marker's absolute position on world map
+    // If marker is on left half of world map, open drawer on right
+    // If marker is on right half of world map, open drawer on left
+    const position = marker.x < WORLD_MAP_WIDTH / 2 ? 'right' : 'left'
+    setDrawerPosition(position)
+    setSelectedStadiumKey(markerKey)
+  }, [mapMarkers])
 
   const mapImageHref = useMemo(() => {
     if (themePreference === 'light') {
@@ -170,6 +217,27 @@ export const StadiumsPage = () => {
     return () => window.removeEventListener('resize', updateListScrollShadow)
   }, [stadiums.length, updateListScrollShadow])
 
+  useEffect(() => {
+    const mapContainer = mapContainerRef.current
+    if (!mapContainer) return
+
+    const updateDimensions = () => {
+      setMapContainerDimensions({
+        width: mapContainer.clientWidth,
+        height: mapContainer.clientHeight,
+      })
+    }
+
+    // Initial update
+    updateDimensions()
+
+    // Use ResizeObserver to track size changes
+    const resizeObserver = new ResizeObserver(updateDimensions)
+    resizeObserver.observe(mapContainer)
+
+    return () => resizeObserver.disconnect()
+  }, [])
+
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -206,64 +274,88 @@ export const StadiumsPage = () => {
       ) : viewMode === 'map' ? (
         <>
           {/* Map view */}
-          <div className="min-h-0 flex-1 border border-[var(--border)] bg-[var(--surface)] flex flex-col">
-            <div className="relative flex-1 min-h-0">
-              <svg
-                viewBox={`${animatedMapViewport.x} ${animatedMapViewport.y} ${animatedMapViewport.width} ${animatedMapViewport.height}`}
-                className="block h-full w-full bg-[var(--surface-soft)]"
-                role="img"
-                aria-label={t.labels.stadiumMap}
-              >
-                <g stroke="var(--border-strong)" opacity="0.18" strokeWidth="0.22">
-                  {Array.from({ length: MAP_GRID_MERIDIANS + 1 }, (_, index) => (
-                    <path
-                      key={`meridian-${index}`}
-                      d={getMeridianPath(index * MAP_GRID_CELL_SIZE)}
-                      fill="none"
-                    />
-                  ))}
-                  {Array.from({ length: MAP_GRID_PARALLELS + 1 }, (_, index) => (
-                    <path
-                      key={`parallel-${index}`}
-                      d={getParallelPath(index * MAP_GRID_CELL_SIZE)}
-                      fill="none"
-                    />
-                  ))}
-                </g>
-                <image href={mapImageHref} x="0" y="0" width={WORLD_MAP_WIDTH} height={WORLD_MAP_HEIGHT} opacity={1} />
-                {mapMarkers.map((marker) => {
-                  const isActive = selectedStadiumKey === marker.key
-                  const isHovered = hoveredStadiumKey === marker.key
+         <div
+           ref={mapContainerRef}
+           className="relative min-h-0 flex-1 border border-[var(--border)] bg-[var(--surface)] flex flex-col"
+         >
+           <div className="relative flex-1 min-h-0">
+             <svg
+               viewBox={`${animatedMapViewport.x} ${animatedMapViewport.y} ${animatedMapViewport.width} ${animatedMapViewport.height}`}
+               className="block h-full w-full bg-[var(--surface-soft)]"
+               role="img"
+               aria-label={t.labels.stadiumMap}
+             >
+               <g stroke="var(--border-strong)" opacity="0.18" strokeWidth="0.22">
+                 {Array.from({ length: MAP_GRID_MERIDIANS + 1 }, (_, index) => (
+                   <path
+                     key={`meridian-${index}`}
+                     d={getMeridianPath(index * MAP_GRID_CELL_SIZE)}
+                     fill="none"
+                   />
+                 ))}
+                 {Array.from({ length: MAP_GRID_PARALLELS + 1 }, (_, index) => (
+                   <path
+                     key={`parallel-${index}`}
+                     d={getParallelPath(index * MAP_GRID_CELL_SIZE)}
+                     fill="none"
+                   />
+                 ))}
+               </g>
+               <image href={mapImageHref} x="0" y="0" width={WORLD_MAP_WIDTH} height={WORLD_MAP_HEIGHT} opacity={1} />
+               {mapMarkers.map((marker) => {
+                 const isActive = selectedStadiumKey === marker.key
+                 const isHovered = hoveredStadiumKey === marker.key
+                 const isOtherSelected = selectedStadiumKey !== null && !isActive
 
-                  return (
-                    <g
-                      key={marker.key}
-                      transform={`translate(${marker.x}, ${marker.y})`}
-                      className="cursor-pointer"
-                      onClick={() => setSelectedStadiumKey(marker.key)}
-                      onMouseEnter={() => setHoveredStadiumKey(marker.key)}
-                      onMouseLeave={() => setHoveredStadiumKey(null)}
-                    >
-                      <title>{`${marker.stadium} · ${marker.city}, ${marker.country}`}</title>
-                      <circle r="1.2" fill={isActive || isHovered ? 'rgb(96 165 250 / 0.28)' : 'rgb(59 130 246 / 0.2)'} />
-                      <circle
-                        r="0.62"
-                        fill={isActive || isHovered ? 'rgb(37 99 235 / 0.98)' : 'rgb(30 64 175 / 0.95)'}
-                        stroke="rgb(219 234 254)"
-                        strokeWidth="0.25"
-                      />
-                    </g>
-                  )
-                })}
-              </svg>
-            </div>
-            <p className="border-t border-[var(--border)] px-4 py-2 text-xs text-[var(--text-soft)]">
-              {t.labels.stadiumMapLegend}
-            </p>
-          </div>
+                 return (
+                   <g
+                     key={marker.key}
+                     transform={`translate(${marker.x}, ${marker.y})`}
+                     className="cursor-pointer"
+                     onClick={() => handleMarkerClick(marker.key)}
+                     onMouseEnter={() => setHoveredStadiumKey(marker.key)}
+                     onMouseLeave={() => setHoveredStadiumKey(null)}
+                     opacity={isOtherSelected ? 0.3 : 1}
+                     style={{ transition: 'opacity 200ms ease-out' }}
+                   >
+                     <title>{`${marker.stadium} · ${marker.city}, ${marker.country}`}</title>
+                     <circle r="1.2" fill={isActive || isHovered ? 'rgb(96 165 250 / 0.28)' : 'rgb(59 130 246 / 0.2)'} />
+                     <circle
+                       r="0.62"
+                       fill={isActive || isHovered ? 'rgb(37 99 235 / 0.98)' : 'rgb(30 64 175 / 0.95)'}
+                       stroke="rgb(219 234 254)"
+                       strokeWidth="0.25"
+                     />
+                   </g>
+                 )
+               })}
+             </svg>
+           </div>
+           <p className="border-t border-[var(--border)] px-4 py-2 text-xs text-[var(--text-soft)]">
+             {t.labels.stadiumMapLegend}
+           </p>
 
-          {/* Stadium detail modal in map view */}
-          <StadiumModal stadium={selectedStadium} onClose={() => setSelectedStadiumKey(null)} />
+           {/* Stadium detail tooltip in map view (embedded inside map) */}
+           {selectedStadium && (() => {
+             const selectedMarker = mapMarkers.find((m) => m.key === selectedStadiumKey)
+             return (
+               <StadiumTooltip
+                 stadium={selectedStadium}
+                 position={drawerPosition}
+                 onClose={() => setSelectedStadiumKey(null)}
+                 embedded
+                 markerX={selectedMarker?.x}
+                 markerY={selectedMarker?.y}
+                 viewportX={animatedMapViewport.x}
+                 viewportY={animatedMapViewport.y}
+                 viewportWidth={animatedMapViewport.width}
+                 viewportHeight={animatedMapViewport.height}
+                 containerWidth={mapContainerDimensions.width}
+                 containerHeight={mapContainerDimensions.height}
+               />
+             )
+           })()}
+         </div>
         </>
       ) : (
         <>

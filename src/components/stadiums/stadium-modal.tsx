@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { useLocale } from '../../contexts/locale-context'
 import { useTheme } from '../../contexts/theme-context'
 import { formatMatchDate } from '../../lib/format'
-import { Icon } from '../../lib/icons'
 import {
   buildStadiumMapMarkers,
   getStadiumMapViewport,
@@ -89,40 +88,30 @@ export const StadiumModal = ({ stadium, onClose }: StadiumModalProps) => {
     >
       <div className="grid gap-5 lg:grid-cols-2">
         {/* Left column: Details */}
-        <div className="space-y-5">
-          {/* Stadium header */}
-          <div>
-            <h4 className="text-xl font-bold text-[var(--text-strong)] sm:text-2xl">{stadium.stadium}</h4>
-            <p className="mt-0.5 text-sm text-[var(--text-soft)]">
-              {stadium.city}, {stadium.country}
-            </p>
-          </div>
-
+        <div>
           {/* Stadium details */}
-          <div className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 text-sm">
-              <dt className="text-[var(--text-soft)]">{t.labels.stadiumLocation}</dt>
-              <dd className="text-[var(--text-strong)]">{stadium.city}, {stadium.country}</dd>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 text-sm">
+            <dt className="text-[var(--text-soft)]">{t.labels.stadiumLocation}</dt>
+            <dd className="text-[var(--text-strong)]">{stadium.city}, {stadium.country}</dd>
 
-              <dt className="text-[var(--text-soft)]">{t.labels.stadiumSeatCapacity}</dt>
-              <dd className="text-[var(--text-strong)]">{seatCapacityLabel}</dd>
+            <dt className="text-[var(--text-soft)]">{t.labels.stadiumSeatCapacity}</dt>
+            <dd className="text-[var(--text-strong)]">{seatCapacityLabel}</dd>
 
-              <dt className="text-[var(--text-soft)]">{t.labels.opened}</dt>
-              <dd className="text-[var(--text-strong)]">{openedYearLabel}</dd>
+            <dt className="text-[var(--text-soft)]">{t.labels.opened}</dt>
+            <dd className="text-[var(--text-strong)]">{openedYearLabel}</dd>
 
-              <dt className="text-[var(--text-soft)]">{t.labels.stadiumTimeZone}</dt>
-              <dd className="text-[var(--text-strong)]">{stadium.timeZone || t.labels.unknown}</dd>
+            <dt className="text-[var(--text-soft)]">{t.labels.stadiumTimeZone}</dt>
+            <dd className="text-[var(--text-strong)]">{stadium.timeZone || t.labels.unknown}</dd>
 
-              <dt className="text-[var(--text-soft)]">{t.labels.matchesHosted}</dt>
-              <dd className="text-[var(--text-strong)]">{numberFormatter.format(stadium.matchesHosted)}</dd>
+            <dt className="text-[var(--text-soft)]">{t.labels.matchesHosted}</dt>
+            <dd className="text-[var(--text-strong)]">{numberFormatter.format(stadium.matchesHosted)}</dd>
 
-              <dt className="text-[var(--text-soft)]">{t.labels.firstKickoff}</dt>
-              <dd className="text-[var(--text-strong)]">{firstKickoffLabel}</dd>
+            <dt className="text-[var(--text-soft)]">{t.labels.firstKickoff}</dt>
+            <dd className="text-[var(--text-strong)]">{firstKickoffLabel}</dd>
 
-              <dt className="text-[var(--text-soft)]">{t.labels.lastKickoff}</dt>
-              <dd className="text-[var(--text-strong)]">{lastKickoffLabel}</dd>
-            </dl>
-          </div>
+            <dt className="text-[var(--text-soft)]">{t.labels.lastKickoff}</dt>
+            <dd className="text-[var(--text-strong)]">{lastKickoffLabel}</dd>
+          </dl>
         </div>
 
         {/* Right column: Map preview (visible on larger screens) */}

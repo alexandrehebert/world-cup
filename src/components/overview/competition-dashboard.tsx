@@ -101,11 +101,6 @@ export const CompetitionDashboard = () => {
                   .formatToParts(new Date(match.kickoff))
                   .find((part) => part.type === 'timeZoneName')?.value?.replace('GMT', 'UTC').replace('UTC-0', 'UTC+0')
                   ?? 'UTC+0'
-                const kickoffTime = new Intl.DateTimeFormat(dateLocale, {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  timeZone: localTimeZone,
-                }).format(new Date(match.kickoff))
 
                 if (isFirstMatch) {
                   return (
