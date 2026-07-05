@@ -1,4 +1,4 @@
-export type LocaleCode = 'en' | 'fr' | 'es'
+export type LocaleCode = 'en' | 'fr' | 'es' | 'de'
 
 export type SectionKey = 'overview' | 'groups' | 'teams' | 'matches' | 'bracket' | 'predictions' | 'leaderboard'
 

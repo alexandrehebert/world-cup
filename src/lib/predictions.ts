@@ -61,6 +61,16 @@ const COUNTDOWN_UNITS: Record<LocaleCode, {
     minuteShort: 'min',
     hourJoiner: ' ',
   },
+  de: {
+    prefix: 'in',
+    minuteSingular: 'Minute',
+    minutePlural: 'Minuten',
+    daySingular: 'Tag',
+    dayPlural: 'Tage',
+    hourShort: 'Std.',
+    minuteShort: 'Min.',
+    hourJoiner: ' ',
+  },
 }
 
 export const getMatchDayKey = (kickoff: string, timeZone?: string) => {

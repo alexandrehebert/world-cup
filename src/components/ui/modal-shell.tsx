@@ -7,6 +7,7 @@ interface ModalShellProps {
   title: ReactNode
   onClose: () => void
   headerActions?: ReactNode
+  headerClassName?: string
   children: ReactNode
   footer?: ReactNode
   maxWidthClass?: string
@@ -17,6 +18,7 @@ export const ModalShell = ({
   title,
   onClose,
   headerActions,
+  headerClassName = '',
   children,
   footer,
   maxWidthClass = 'max-w-2xl',
@@ -64,7 +66,7 @@ export const ModalShell = ({
         className={`flex max-h-[calc(100dvh-2rem)] w-full ${maxWidthClass} flex-col overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-strong)] shadow-2xl shadow-slate-950/30 sm:max-h-[calc(100dvh-3rem)]`}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex shrink-0 items-center justify-between gap-3 rounded-none border-b border-[var(--border)] bg-[var(--surface)]/70 px-5 py-4 backdrop-blur sm:px-6">
+        <div className={`flex shrink-0 items-center justify-between gap-3 rounded-none border-b border-[var(--border)] bg-[var(--surface)]/70 px-5 py-4 backdrop-blur sm:px-6 ${headerClassName}`.trim()}>
           <h3 id={titleId} className="text-lg font-semibold text-[var(--text-strong)]">
             {title}
           </h3>

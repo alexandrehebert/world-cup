@@ -181,6 +181,13 @@ export interface TranslationSet {
     eventStartsSoon: string
     eventEnded: string
     noMatchesForTeam: string
+    paraguayModalStatsTitle: string
+    paraguayModalStatWorldCups: string
+    paraguayModalStatFinalsPlayed: string
+    paraguayModalStatCurrentLocation: string
+    paraguayModalCurrentLocationValue: string
+    paraguayModalStatStatus: string
+    paraguayModalStatusValue: string
     groupPosition: string
     shareLeaderboard: string
     viewLeaderboard: string

@@ -1,12 +1,14 @@
+import { de } from './de'
 import { en } from './en'
 import { es } from './es'
 import { fr } from './fr'
 import type { LocaleCode } from '../types/tournament'
 
-const SUPPORTED_LOCALES: LocaleCode[] = ['en', 'fr', 'es']
+const SUPPORTED_LOCALES: LocaleCode[] = ['en', 'fr', 'es', 'de']
 const DEFAULT_LOCALE: LocaleCode = 'en'
 
 const intlByLocale: Record<LocaleCode, { dateLocale: string; numberLocale: string }> = {
+  de: de.intl,
   en: en.intl,
   es: es.intl,
   fr: fr.intl,

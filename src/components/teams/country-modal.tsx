@@ -14,6 +14,7 @@ import {
   hasDisplayScore,
 } from '../../lib/format'
 import { Icon } from '../../lib/icons'
+import { isTeamEliminated } from '../../lib/team-status'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { LivePulse } from '../ui/live-pulse'
 import { ModalShell } from '../ui/modal-shell'
@@ -38,7 +39,7 @@ export const CountryModal = () => {
   const { selectedTeamId, setSelectedTeamId, setSelectedMatchId, getTeamSharePath, isFavoriteTeam, toggleFavoriteTeam } =
     useDashboard()
   const { locale, t } = useLocale()
-  const { meta, teamsById, groupsById, matches } = useTournament()
+  const { meta, teamsById, groupsById, groups, matches } = useTournament()
   const competitionId = resolveCompetitionId(meta.competitionId)
   const hideGroupStage = hidesGroupStageLabel(competitionId)
   const useStandingsHeader = usesStandingsSectionPath(competitionId)
@@ -58,6 +59,14 @@ export const CountryModal = () => {
 
   const teamLabel = t.teams[team.id] ?? team.name
   const isFavorite = isFavoriteTeam(team.id)
+  const isParaguayTeam = team.id === 'par' || team.code.trim().toUpperCase() === 'PAR'
+  const isEliminatedTeam = isTeamEliminated({
+    teamId: team.id,
+    matches,
+    nowMs,
+    competitionId: meta.competitionId,
+    groups,
+  })
 
   // Find the group this team belongs to (group stage only)
   const group = Object.values(groupsById).find((g) => g.teamIds.includes(team.id))
@@ -180,8 +189,18 @@ export const CountryModal = () => {
   return (
     <ModalShell
       titleId="country-modal-title"
-      title={teamLabel}
+      title={(
+        <span className="flex flex-wrap items-center gap-2">
+          <span>{teamLabel}</span>
+          {isEliminatedTeam ? (
+            <span className="border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-xs font-semibold text-[var(--text-muted)]">
+              {t.labels.eliminated}
+            </span>
+          ) : null}
+        </span>
+      )}
       onClose={closeModal}
+      headerClassName={isEliminatedTeam ? 'past-match-stripes' : undefined}
       headerActions={(
         <button
           type="button"
@@ -216,9 +235,42 @@ export const CountryModal = () => {
               />
             </button>
           </div>
-          <p className="mt-0.5 text-sm uppercase tracking-[0.22em] text-[var(--text-soft)]">{team.code}</p>
+          <p className="mt-1 text-sm uppercase tracking-[0.22em] text-[var(--text-soft)]">{team.code}</p>
         </div>
       </div>
+
+      {isParaguayTeam ? (
+        <div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--text-soft)]">
+                {t.labels.paraguayModalStatWorldCups}
+              </p>
+              <p className="mt-1 text-xl font-bold text-[var(--text-strong)]">0</p>
+            </div>
+            <div className="border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--text-soft)]">
+                {t.labels.paraguayModalStatFinalsPlayed}
+              </p>
+              <p className="mt-1 text-xl font-bold text-[var(--text-strong)]">0</p>
+            </div>
+            <div className="border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--text-soft)]">
+                {t.labels.paraguayModalStatCurrentLocation}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">
+                {t.labels.paraguayModalCurrentLocationValue}
+              </p>
+            </div>
+            <div className="border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--text-soft)]">
+                {t.labels.paraguayModalStatStatus}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">{t.labels.paraguayModalStatusValue}</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* Group standing */}
       {group && standing && standingIndex >= 0 ? (

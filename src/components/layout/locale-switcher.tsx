@@ -4,6 +4,7 @@ export const LocaleSwitcher = () => {
   const { locale, setLocale } = useLocale()
   const locales = [
     { code: 'en', label: 'English', flagCode: 'gb' },
+    { code: 'de', label: 'Deutsch', flagCode: 'de' },
     { code: 'es', label: 'Español', flagCode: 'es' },
     { code: 'fr', label: 'Français', flagCode: 'fr' },
   ] as const

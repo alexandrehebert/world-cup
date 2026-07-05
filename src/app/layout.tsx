@@ -83,7 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               const storedLocale = window.localStorage.getItem(localeStorageKey);
               const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
               const theme = stored === 'light' || stored === 'dark' || stored === 'colorblind' ? stored : systemTheme;
-              const supportedLocales = ['en', 'fr', 'es'];
+              const supportedLocales = ['en', 'fr', 'es', 'de'];
               const resolveLocale = (candidate) => supportedLocales.includes(candidate) ? candidate : null;
               const detectLocaleFromLanguage = (language) => {
                 const normalized = String(language || '').toLowerCase();

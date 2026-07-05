@@ -38,6 +38,14 @@ const FALLBACK_STATUS_DETAILS: Record<LocaleCode, {
     afterExtraTime: 'Tras prórroga',
     fullTime: 'Tiempo reglamentario',
   },
+  de: {
+    firstHalf: '1. Halbzeit',
+    secondHalf: '2. Halbzeit',
+    halfTime: 'Halbzeit',
+    afterPenalties: 'Nach Elfmeterschießen',
+    afterExtraTime: 'Nach Verlängerung',
+    fullTime: 'Reguläre Spielzeit',
+  },
 }
 
 export const getMatchDayKey = (kickoff: string, timeZone: string) =>
