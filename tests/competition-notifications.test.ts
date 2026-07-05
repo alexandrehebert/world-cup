@@ -121,6 +121,39 @@ test('keeps a short widget list while exposing the full events timeline', () => 
   assert.equal(result.allNotifications[0]?.id, 'result-finished-8')
 })
 
+test('includes upcoming matches in live widget when live matches exist', () => {
+  const nowMs = Date.parse('2026-07-04T12:00:00.000Z')
+  const liveMatch = createMatch({
+    id: 'live-1',
+    kickoff: '2026-07-04T11:55:00.000Z',
+    status: 'live',
+  })
+  const soonMatch = createMatch({
+    id: 'soon-1',
+    kickoff: '2026-07-04T12:20:00.000Z',
+    status: 'scheduled',
+  })
+  const laterMatch = createMatch({
+    id: 'later-1',
+    kickoff: '2026-07-04T14:00:00.000Z',
+    status: 'scheduled',
+  })
+
+  const result = buildCompetitionNotifications({
+    upcomingMatches: [liveMatch, laterMatch, soonMatch],
+    teamsById,
+    teamLabels: en.teams,
+    locale: 'en',
+    labels: en.labels,
+    nowMs,
+  })
+
+  assert.deepEqual(
+    result.liveWidgetMatches.map((match) => match.id),
+    ['live-1', 'soon-1', 'later-1'],
+  )
+})
+
 test('groups the events timeline by day in chronological order', () => {
   const dayGroups = buildEventTimelineDayGroups(
     [

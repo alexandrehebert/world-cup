@@ -104,7 +104,7 @@ export const CompetitionDashboard = () => {
 
                 if (isFirstMatch) {
                   return (
-                    <div key="first-match-container" className="mb-3">
+                    <div key="first-match-container" className={liveWidgetMatches.length > 1 ? 'mb-3' : undefined}>
                       <button
                         key={match.id}
                         type="button"
@@ -193,6 +193,7 @@ export const CompetitionDashboard = () => {
                       const awayTeam = match.away.teamId ? teamsById[match.away.teamId] : undefined
                       const homeTeamLabel = homeTeam ? t.teams[homeTeam.id] ?? getLocalizedText(homeTeam.name, locale) ?? homeTeam.code : t.labels.tbd
                       const awayTeamLabel = awayTeam ? t.teams[awayTeam.id] ?? getLocalizedText(awayTeam.name, locale) ?? awayTeam.code : t.labels.tbd
+                      const displayStatus = getDisplayMatchStatus(match, nowMs)
                       const displayScore = hasDisplayScore(match, nowMs)
                       const homeScore = typeof match.home.score === 'number' ? match.home.score : null
                       const awayScore = typeof match.away.score === 'number' ? match.away.score : null
@@ -203,7 +204,11 @@ export const CompetitionDashboard = () => {
                           key={match.id}
                           type="button"
                           onClick={() => setSelectedMatchId(match.id)}
-                          className="flex shrink-0 flex-col justify-between gap-1.5 border border-[var(--border)] bg-[var(--calendar-live-bg)] px-3 py-2.5 text-left transition hover:bg-[var(--calendar-live-hover-bg)]"
+                          className={`flex shrink-0 flex-col justify-between gap-1.5 border border-[var(--border)] px-3 py-2.5 text-left transition ${
+                            displayStatus === 'live'
+                              ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
+                              : 'bg-[var(--surface)] hover:bg-[var(--surface-muted)]'
+                          }`}
                           style={{ minWidth: '280px' }}
                         >
                           <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-soft)]">
