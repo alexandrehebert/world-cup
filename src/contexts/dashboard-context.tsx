@@ -49,6 +49,18 @@ export const getDashboardBasePathname = (pathname: string, matchModalReturnPathn
   return pathname
 }
 
+export const getSelectedMatchModalUrl = (
+  matchContextBasePath: string,
+  selectedMatchPath: string,
+  currentSearch: string,
+) => {
+  if (selectedMatchPath.startsWith('?')) {
+    return `${matchContextBasePath}${selectedMatchPath}`
+  }
+
+  return `${matchContextBasePath}/${selectedMatchPath}${currentSearch}`
+}
+
 const areFavoriteListsEqual = (first: string[], second: string[]) => {
   if (first.length !== second.length) {
     return false
@@ -478,9 +490,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     const targetUrl = selectedTeamCode
       ? `/team/${selectedTeamCode}`
       : selectedMatchPath
-        ? selectedMatchPath.startsWith('?')
-          ? `${matchContextBasePath}${selectedMatchPath}`
-          : `${matchContextBasePath}/${selectedMatchPath}`
+        ? getSelectedMatchModalUrl(matchContextBasePath, selectedMatchPath, currentSearch)
         : `${basePathname}${currentSearch}`
     const currentUrl = `${currentPathname}${currentSearch}`
 

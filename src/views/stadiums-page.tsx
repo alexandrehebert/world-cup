@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/theme-context'
 import { useTournament } from '../contexts/tournament-context'
 import { formatMatchDate } from '../lib/format'
 import { Icon } from '../lib/icons'
+import { buildStadiumNavigationState, getStadiumListScrollTopFromState } from '../lib/stadiums-navigation-state'
 import {
   buildStadiumSlugIndex,
   buildStadiumMapMarkers,
@@ -120,7 +121,7 @@ export const StadiumsPage = () => {
       return getStadiumMapViewport(mapMarkers)
     }
 
-    const mapContainerWidth = mapSvgContainerDimensions.width || window.innerWidth
+    const mapContainerWidth = mapSvgContainerDimensions.width || WORLD_MAP_WIDTH
     return focusViewportOnMarker(
       getStadiumMapViewport([selectedMarker]),
       selectedMarker,
@@ -160,8 +161,13 @@ export const StadiumsPage = () => {
       return
     }
 
-    navigate(targetUrl, { replace: true })
-  }, [keyToSlug, location.pathname, location.search, navigate])
+    const listScrollTop = stadiumGridRef.current?.scrollTop ?? 0
+    navigate(targetUrl, {
+      replace: true,
+      preventScrollReset: true,
+      state: buildStadiumNavigationState(location.state, listScrollTop),
+    })
+  }, [keyToSlug, location.pathname, location.search, location.state, navigate])
 
   const handleMarkerClick = useCallback((markerKey: string) => {
     const marker = mapMarkers.find((m) => m.key === markerKey)
@@ -190,15 +196,23 @@ export const StadiumsPage = () => {
       const currentPathSlug = stadiumSlug ? encodeURIComponent(stadiumSlug) : null
 
       if (currentPathSlug !== encodedPathSlug) {
-        navigate(`/stadiums/stadium/${encodedPathSlug}${location.search}`, { replace: true })
+        navigate(`/stadiums/stadium/${encodedPathSlug}${location.search}`, {
+          replace: true,
+          preventScrollReset: true,
+          state: location.state,
+        })
         return
       }
     } else if (stadiumSlug) {
-      navigate(`/stadiums${location.search}`, { replace: true })
+      navigate(`/stadiums${location.search}`, {
+        replace: true,
+        preventScrollReset: true,
+        state: location.state,
+      })
       return
     }
 
-  }, [keyToSlug, location.search, navigate, selectedStadiumKeyFromPath, stadiumSlug])
+  }, [keyToSlug, location.search, location.state, navigate, selectedStadiumKeyFromPath, stadiumSlug])
 
   useEffect(() => {
     if (viewportEquals(animatedMapViewportRef.current, mapViewport)) {
@@ -247,6 +261,29 @@ export const StadiumsPage = () => {
     window.addEventListener('resize', updateListScrollShadow)
     return () => window.removeEventListener('resize', updateListScrollShadow)
   }, [stadiums.length, updateListScrollShadow])
+
+  useEffect(() => {
+    if (viewMode !== 'list') {
+      return
+    }
+
+    const listScrollTop = getStadiumListScrollTopFromState(location.state)
+    if (listScrollTop === null) {
+      return
+    }
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      const gridElement = stadiumGridRef.current
+      if (!gridElement) {
+        return
+      }
+
+      gridElement.scrollTop = listScrollTop
+      updateListScrollShadow()
+    })
+
+    return () => window.cancelAnimationFrame(animationFrame)
+  }, [location.pathname, location.search, location.state, updateListScrollShadow, viewMode])
 
   useEffect(() => {
     const mapSvgContainer = mapSvgContainerRef.current
