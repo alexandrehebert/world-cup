@@ -187,6 +187,7 @@ export const fr: TranslationSet = {
     profileNotFound: 'Profil introuvable.',
     pageNotFoundTitle: 'Page introuvable',
     pageNotFoundMessage: "La page que tu cherches n'existe pas ou a été déplacée.",
+    teamParaguayEasterEggMessage: "Cette équipe n'existe pas ou a été renvoyée à la maison.",
     goToDashboard: 'Retour au tableau de bord',
     noProfilePredictions: 'Aucun pronostic enregistré pour le moment.',
     doYourPrediction: 'Fais ton pronostic',

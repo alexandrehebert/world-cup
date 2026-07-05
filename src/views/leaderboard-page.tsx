@@ -96,7 +96,7 @@ export const LeaderboardPage = () => {
             ) : (
               <tr>
                 <td className="px-4 py-4 text-[var(--text-muted)]" colSpan={4}>
-                  {locale === 'fr' ? 'Aucun joueur classé pour le moment.' : 'No ranked players yet.'}
+                  {locale === 'fr' ? 'Aucun joueur classé pour le moment.' : locale === 'es' ? 'Aún no hay jugadores clasificados.' : 'No ranked players yet.'}
                 </td>
               </tr>
             )}

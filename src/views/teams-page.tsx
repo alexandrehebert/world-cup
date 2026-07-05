@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { FlagAvatar } from '../components/ui/flag-avatar'
 import { useDashboard } from '../contexts/dashboard-context'
 import { useLocale } from '../contexts/locale-context'
@@ -9,6 +9,7 @@ import { resolveCompetitionId } from '../competitions'
 import { hidesGroupStageLabel, supportsTeamEliminationFilter, usesStandingsSectionPath } from '../lib/competition-sections'
 import { formatMatchDate, getDisplayMatchStatus, getLocalizedText } from '../lib/format'
 import { Icon } from '../lib/icons'
+import { isParaguayEasterEggTeamPath } from '../lib/team-route'
 import { isTeamEliminated } from '../lib/team-status'
 import type { MatchRecord } from '../types/tournament'
 
@@ -40,6 +41,8 @@ export const TeamsPage = () => {
   const showTeamStatusFilter = supportsTeamEliminationFilter(competitionId)
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
+  const { teamCode } = useParams()
+  const showParaguayEasterEgg = isParaguayEasterEggTeamPath(teamCode)
   const [searchParams, setSearchParams] = useSearchParams()
   const favoritesOnly = searchParams.get(FAVORITES_FILTER_PARAM) === '1'
   const statusFilterParam = searchParams.get(STATUS_FILTER_PARAM)
@@ -167,6 +170,12 @@ export const TeamsPage = () => {
       <div>
         <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.teams}</h2>
       </div>
+
+      {showParaguayEasterEgg ? (
+        <div className="border border-[var(--accent-border)] bg-[var(--accent-muted)] px-4 py-3 text-sm font-semibold text-[var(--text)]">
+          {t.labels.teamParaguayEasterEggMessage}
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="relative min-w-0 flex-1">

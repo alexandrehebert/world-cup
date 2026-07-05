@@ -27,7 +27,7 @@ export const CompetitionDashboard = () => {
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
   const { liveMatches, liveWidgetMatches, scheduledMatches, latestResults, notifications, allNotifications } = useCompetitionNotifications()
-  const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
+  const dateLocale = locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB'
   const scheduleCalendarDays = useMemo(
     () => buildScheduleCalendarDays(scheduledMatches, dateLocale, localTimeZone, t.labels.today, nowMs),
     [dateLocale, localTimeZone, nowMs, scheduledMatches, t.labels.today],

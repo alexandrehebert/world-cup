@@ -9,7 +9,7 @@ import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
 import type { MatchRecord } from '../../types/tournament'
 
-const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : 'en-GB')
+const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB')
 
 const startOfIsoWeekUtc = (date: Date) => {
   const utcDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
@@ -178,7 +178,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
     cells.push(null)
   }
 
-  const weekLabelPrefix = locale === 'fr' ? 'Semaine du tournoi' : 'Tournament Week'
+  const weekLabelPrefix = locale === 'fr' ? 'Semaine du tournoi' : locale === 'es' ? 'Semana del torneo' : 'Tournament Week'
 
   const monthAgendaItems: Array<
     | { type: 'separator'; key: string; weekNumber: number }

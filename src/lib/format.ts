@@ -4,6 +4,8 @@ import type { TranslationSet } from '../translations/types'
 const LIVE_INFERENCE_WINDOW_MS = 3 * 60 * 60 * 1000
 const HALF_TIME_DETAIL_PATTERN = /(^h\.?t\.?$|half[\s-]?time|mi-temps)/i
 
+export const getDateLocaleTag = (locale: LocaleCode) => (locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB')
+
 export const getMatchDayKey = (kickoff: string, timeZone: string) =>
   new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date(kickoff))
 
@@ -27,7 +29,7 @@ export const formatUtcOffsetLabel = (kickoff: string, timeZone: string) => {
 }
 
 export const formatMatchTime = (kickoff: string, locale: LocaleCode, timeZone?: string) => {
-  const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
+  const dateLocale = getDateLocaleTag(locale)
   const resolvedTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
 
   return new Intl.DateTimeFormat(dateLocale, {
@@ -39,7 +41,7 @@ export const formatMatchTime = (kickoff: string, locale: LocaleCode, timeZone?: 
 
 export const formatMatchDate = (kickoff: string, locale: LocaleCode, timeZone?: string, todayLabel?: string) => {
   const date = new Date(kickoff)
-  const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
+  const dateLocale = getDateLocaleTag(locale)
   const resolvedTimeZone = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
   const isToday = getDateKey(kickoff, resolvedTimeZone) === getTodayKey(resolvedTimeZone)
 
@@ -286,27 +288,27 @@ export const getLiveStatusDetail = (
   const normalized = trimmed.toUpperCase().replace(/\s+/g, '')
 
   if (normalized === 'L1' || normalized === '1H') {
-    return locale === 'fr' ? '1re mi-temps' : '1st half'
+    return locale === 'fr' ? '1re mi-temps' : locale === 'es' ? '1.ª parte' : '1st half'
   }
 
   if (normalized === 'L2' || normalized === '2H') {
-    return locale === 'fr' ? '2e mi-temps' : '2nd half'
+    return locale === 'fr' ? '2e mi-temps' : locale === 'es' ? '2.ª parte' : '2nd half'
   }
 
   if (HALF_TIME_DETAIL_PATTERN.test(trimmed) || normalized === 'HT') {
-    return labels?.halfTime ?? (locale === 'fr' ? 'Mi-temps' : 'Half-time')
+    return labels?.halfTime ?? (locale === 'fr' ? 'Mi-temps' : locale === 'es' ? 'Descanso' : 'Half-time')
   }
 
   if (/^F\.?T\.?[-\s]?P(?:EN|ENS)\.?$/i.test(trimmed) || /^pen(?:alty|alties)$/i.test(trimmed)) {
-    return labels?.afterPenalties ?? (locale === 'fr' ? 'Après tirs au but' : 'After penalties')
+    return labels?.afterPenalties ?? (locale === 'fr' ? 'Après tirs au but' : locale === 'es' ? 'Tras penales' : 'After penalties')
   }
 
   if (/^(?:F\.?T\.?[-\s]?)?A\.?E\.?T\.?$/i.test(trimmed) || /^after extra(?:[\s-]?time)?$/i.test(trimmed)) {
-    return labels?.afterExtraTime ?? (locale === 'fr' ? 'Après prolongations' : 'After extra time')
+    return labels?.afterExtraTime ?? (locale === 'fr' ? 'Après prolongations' : locale === 'es' ? 'Tras prórroga' : 'After extra time')
   }
 
   if (/^F\.?T\.?$/i.test(trimmed) || /^C$/i.test(trimmed) || /^full[\s-]?time$/i.test(trimmed) || /^completed$/i.test(trimmed)) {
-    return labels?.fullTime ?? (locale === 'fr' ? 'Temps réglementaire' : 'Full-time')
+    return labels?.fullTime ?? (locale === 'fr' ? 'Temps réglementaire' : locale === 'es' ? 'Tiempo reglamentario' : 'Full-time')
   }
 
   return trimmed

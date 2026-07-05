@@ -146,7 +146,7 @@ export const PredictionsPage = () => {
     const next = openMatches[0]
     if (!next) return null
     const countdown = formatNextKickoffCountdown(new Date(next.kickoff).getTime(), nowMs, locale)
-    return locale === 'fr' ? `Prochain match ${countdown}` : `Next match ${countdown}`
+    return locale === 'fr' ? `Prochain match ${countdown}` : locale === 'es' ? `Próximo partido ${countdown}` : `Next match ${countdown}`
   }, [locale, nowMs, openMatches])
 
   const todayKey = useMemo(() => getMatchDayKey(new Date(nowMs).toISOString()), [nowMs])
@@ -388,7 +388,7 @@ export const PredictionsPage = () => {
                     ) : (
                       <tr>
                         <td className="px-4 py-4 text-[var(--text-muted)]" colSpan={4}>
-                          {locale === 'fr' ? 'Aucun joueur classé pour le moment.' : 'No ranked players yet.'}
+                          {locale === 'fr' ? 'Aucun joueur classé pour le moment.' : locale === 'es' ? 'Aún no hay jugadores clasificados.' : 'No ranked players yet.'}
                         </td>
                       </tr>
                     )}

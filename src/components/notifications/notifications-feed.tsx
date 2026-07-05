@@ -1,9 +1,10 @@
 import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow } from '../../contexts/time-context'
+import type { LocaleCode } from '../../types/tournament'
 import type { NotificationItem } from './competition-notifications'
 
-const getRelativeTimeLabel = (timestamp: string, locale: 'en' | 'fr', nowMs: number) => {
+const getRelativeTimeLabel = (timestamp: string, locale: LocaleCode, nowMs: number) => {
   const eventMs = new Date(timestamp).getTime()
   if (!Number.isFinite(eventMs)) {
     return ''

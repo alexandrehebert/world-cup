@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { en } from '../translations/en'
+import { es } from '../translations/es'
 import { fr } from '../translations/fr'
 import { useAuth } from './auth-context'
 import { LOCALE_COOKIE_NAME, LOCALE_STORAGE_KEY } from '../lib/user-preferences'
@@ -9,6 +10,7 @@ import type { LocaleCode } from '../types/tournament'
 
 const dictionaries = {
   en,
+  es,
   fr,
 } as const
 
@@ -26,11 +28,21 @@ const detectLocale = (): LocaleCode => {
   }
 
   const storedLocale = typeof localStorage === 'undefined' ? null : localStorage.getItem(LOCALE_STORAGE_KEY)
-  if (storedLocale === 'en' || storedLocale === 'fr') {
+  if (storedLocale === 'en' || storedLocale === 'fr' || storedLocale === 'es') {
     return storedLocale
   }
 
-  return navigator.language.toLowerCase().startsWith('fr') ? 'fr' : 'en'
+  const browserLocale = navigator.language.toLowerCase()
+
+  if (browserLocale.startsWith('fr')) {
+    return 'fr'
+  }
+
+  if (browserLocale.startsWith('es')) {
+    return 'es'
+  }
+
+  return 'en'
 }
 
 export const LocaleProvider = ({

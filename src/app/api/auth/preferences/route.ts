@@ -36,7 +36,7 @@ export async function PATCH(request: NextRequest) {
       nextPreferences.themePreference = body.themePreference
     }
 
-    if (body.locale === 'en' || body.locale === 'fr') {
+    if (body.locale === 'en' || body.locale === 'fr' || body.locale === 'es') {
       nextPreferences.locale = body.locale
     }
 

@@ -49,7 +49,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const initialTheme = isThemePreference(cookieTheme) ? cookieTheme : undefined
   const initialColorScheme = initialTheme ? resolveThemeColorScheme(initialTheme) : undefined
   const acceptLanguageHeader = headerStore.get('accept-language') ?? ''
-  const initialLocale = isLocaleCode(cookieLocale) ? cookieLocale : (acceptLanguageHeader.toLowerCase().startsWith('fr') ? 'fr' : 'en')
+  const normalizedAcceptLanguage = acceptLanguageHeader.toLowerCase()
+  const initialLocale = isLocaleCode(cookieLocale)
+    ? cookieLocale
+    : normalizedAcceptLanguage.startsWith('fr')
+      ? 'fr'
+      : normalizedAcceptLanguage.startsWith('es')
+        ? 'es'
+        : 'en'
 
   return (
     <html
@@ -80,9 +87,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               const storedLocale = window.localStorage.getItem(localeStorageKey);
               const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
               const theme = stored === 'light' || stored === 'dark' || stored === 'colorblind' ? stored : systemTheme;
-              const locale = storedLocale === 'en' || storedLocale === 'fr'
+              const locale = storedLocale === 'en' || storedLocale === 'fr' || storedLocale === 'es'
                 ? storedLocale
-                : (navigator.language.toLowerCase().startsWith('fr') ? 'fr' : 'en');
+                : (navigator.language.toLowerCase().startsWith('fr')
+                  ? 'fr'
+                  : navigator.language.toLowerCase().startsWith('es')
+                    ? 'es'
+                    : 'en');
 
               document.documentElement.setAttribute('data-theme', theme);
               document.documentElement.lang = locale;

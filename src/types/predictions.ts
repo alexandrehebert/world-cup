@@ -1,7 +1,7 @@
 export type PredictionType = 'outcome' | 'score'
 export type MatchOutcome = 'home' | 'draw' | 'away'
 export type UserThemePreference = 'light' | 'dark' | 'colorblind'
-export type UserLocalePreference = 'en' | 'fr'
+export type UserLocalePreference = 'en' | 'fr' | 'es'
 
 export interface UserPreferences {
   favoriteTeamIds: string[]

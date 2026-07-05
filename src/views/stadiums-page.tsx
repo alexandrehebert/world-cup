@@ -90,7 +90,7 @@ export const StadiumsPage = () => {
   const [gridScrollShadow, setGridScrollShadow] = useState({ showTop: false, showBottom: false })
 
   const numberFormatter = useMemo(
-    () => new Intl.NumberFormat(locale === 'fr' ? 'fr-CA' : 'en-US'),
+    () => new Intl.NumberFormat(locale === 'fr' ? 'fr-CA' : locale === 'es' ? 'es-ES' : 'en-US'),
     [locale],
   )
   const stadiums = useMemo(() => buildStadiumSummaries(matches), [matches])

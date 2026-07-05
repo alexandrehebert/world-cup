@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { getDashboardBasePathname, getSelectedMatchModalUrl } from '../src/contexts/dashboard-context'
+import { getDashboardBasePathname, getSelectedMatchModalUrl, getSelectedTeamModalUrl } from '../src/contexts/dashboard-context'
 
 test('getDashboardBasePathname falls back to matches when closing direct match routes', () => {
   assert.equal(getDashboardBasePathname('/match/group/ENG/vs/FRA', null), '/matches')
@@ -14,6 +14,8 @@ test('getDashboardBasePathname restores the originating page for match modal clo
 test('getDashboardBasePathname keeps existing team and section fallbacks', () => {
   assert.equal(getDashboardBasePathname('/team/FRA', null), '/teams')
   assert.equal(getDashboardBasePathname('/team/FRA', '/agenda'), '/agenda')
+  assert.equal(getDashboardBasePathname('/team/paraguay', null), '/team/paraguay')
+  assert.equal(getDashboardBasePathname('/team/PARAGUAY', null), '/team/PARAGUAY')
   assert.equal(getDashboardBasePathname('/bracket/final/FRA/vs/ENG', null), '/bracket')
   assert.equal(getDashboardBasePathname('/predict/group/FRA/vs/ENG', null), '/predict')
   assert.equal(getDashboardBasePathname('/overview', null), '/')
@@ -30,5 +32,12 @@ test('getSelectedMatchModalUrl keeps query-only match routes unchanged', () => {
   assert.equal(
     getSelectedMatchModalUrl('/match', '?match=abc123', '?view=condensed'),
     '/match?match=abc123',
+  )
+})
+
+test('getSelectedTeamModalUrl keeps active search params for team routes', () => {
+  assert.equal(
+    getSelectedTeamModalUrl('FRA', '?q=fra&status=active&favorites=1'),
+    '/team/FRA?q=fra&status=active&favorites=1',
   )
 })

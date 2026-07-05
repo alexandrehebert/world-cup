@@ -15,7 +15,7 @@ export const buildEventTimelineDayGroups = (
   todayLabel: string,
   nowMs: number,
 ): EventTimelineDayGroup[] => {
-  const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
+  const dateLocale = locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB'
   const todayKey = getMatchDayKey(new Date(nowMs).toISOString(), timeZone)
   const dayGroups = new Map<string, EventTimelineDayGroup>()
 

@@ -114,7 +114,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
             isCompact ? 'max-h-0 opacity-0' : 'max-h-16 text-sm leading-6 opacity-100 sm:text-base'
           }`}>
             {effectiveMeta
-              ? `${effectiveMeta.host} · ${effectiveMeta.season} · ${new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+              ? `${effectiveMeta.host} · ${effectiveMeta.season} · ${new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB', {
                   dateStyle: 'medium',
                   timeStyle: 'short',
                   timeZone,
@@ -383,7 +383,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                             <div className="min-w-0">
                               <p className="truncate text-sm font-semibold text-[var(--text-strong)]">{user.username}</p>
                               <p className="text-xs text-[var(--text-muted)]">
-                                {locale === 'fr' ? 'Connecté' : 'Signed in'}
+                                {locale === 'fr' ? 'Connecté' : locale === 'es' ? 'Conectado' : 'Signed in'}
                               </p>
                             </div>
                           </div>

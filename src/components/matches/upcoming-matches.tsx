@@ -11,7 +11,7 @@ import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
 import type { MatchRecord } from '../../types/tournament'
 
-const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : 'en-GB')
+const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB')
 
 const getMatchDayKey = (kickoff: string, timeZone?: string) => {
   const date = new Date(kickoff)

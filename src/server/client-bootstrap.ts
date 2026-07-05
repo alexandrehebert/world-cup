@@ -65,7 +65,12 @@ export const loadClientBootstrapData = async (options?: { publicMatchId?: string
   const preferredLocale = storedUser?.preferences?.locale
   const preferredThemePreference = storedUser?.preferences?.themePreference
   const acceptLanguageHeader = headerStore.get('accept-language') ?? ''
-  const headerLocale = acceptLanguageHeader.toLowerCase().startsWith('fr') ? 'fr' : 'en'
+  const normalizedAcceptLanguage = acceptLanguageHeader.toLowerCase()
+  const headerLocale = normalizedAcceptLanguage.startsWith('fr')
+    ? 'fr'
+    : normalizedAcceptLanguage.startsWith('es')
+      ? 'es'
+      : 'en'
   const initialLocale = isLocaleCode(preferredLocale)
     ? preferredLocale
     : isLocaleCode(cookieLocale)

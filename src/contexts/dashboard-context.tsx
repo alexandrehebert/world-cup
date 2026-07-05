@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom'
 import { useAuth } from './auth-context'
 import { useTournament } from './tournament-context'
 import { isPredictionsFeatureEnabled } from '../lib/features'
+import { isParaguayEasterEggTeamPath } from '../lib/team-route'
 import {
   buildLegacyMatchPathKey,
   buildMatchPathKey,
@@ -31,6 +32,10 @@ export const getDashboardBasePathname = (pathname: string, matchModalReturnPathn
   }
 
   if (isTeamPath(pathname)) {
+    if (isParaguayEasterEggTeamPath(getTeamPathCode(pathname) ?? undefined)) {
+      return pathname
+    }
+
     return matchModalReturnPathname ?? '/teams'
   }
 
@@ -60,6 +65,11 @@ export const getSelectedMatchModalUrl = (
 
   return `${matchContextBasePath}/${selectedMatchPath}${currentSearch}`
 }
+
+export const getSelectedTeamModalUrl = (
+  selectedTeamCode: string,
+  currentSearch: string,
+) => `/team/${selectedTeamCode}${currentSearch}`
 
 const areFavoriteListsEqual = (first: string[], second: string[]) => {
   if (first.length !== second.length) {
@@ -488,7 +498,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
           : '/match'
     const basePathname = getDashboardBasePathname(currentPathname, modalReturnPathnameRef.current)
     const targetUrl = selectedTeamCode
-      ? `/team/${selectedTeamCode}`
+      ? getSelectedTeamModalUrl(selectedTeamCode, currentSearch)
       : selectedMatchPath
         ? getSelectedMatchModalUrl(matchContextBasePath, selectedMatchPath, currentSearch)
         : `${basePathname}${currentSearch}`

@@ -92,7 +92,7 @@ export const AuthModal = () => {
       >
         <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-5 py-4">
           <h3 id="auth-modal-title" className="text-base font-semibold text-[var(--text-strong)]">
-            {locale === 'fr' ? 'Connexion requise' : 'Sign in required'}
+            {locale === 'fr' ? 'Connexion requise' : locale === 'es' ? 'Inicio de sesión requerido' : 'Sign in required'}
           </h3>
           <button
             type="button"
@@ -108,6 +108,8 @@ export const AuthModal = () => {
           <p className="text-sm text-[var(--text-muted)]">
             {locale === 'fr'
               ? 'Connecte-toi ou crée un compte pour enregistrer tes pronostics.'
+              : locale === 'es'
+                ? 'Inicia sesión o crea una cuenta para guardar tus pronósticos.'
               : 'Sign in or create an account to save your predictions.'}
           </p>
 

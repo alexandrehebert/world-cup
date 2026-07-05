@@ -10,7 +10,7 @@ export const TIME_ZONE_COOKIE_NAME = 'time-zone'
 export const isThemePreference = (value: unknown): value is UserThemePreference =>
   value === 'light' || value === 'dark' || value === 'colorblind'
 
-export const isLocaleCode = (value: unknown): value is LocaleCode => value === 'en' || value === 'fr'
+export const isLocaleCode = (value: unknown): value is LocaleCode => value === 'en' || value === 'fr' || value === 'es'
 export const isValidTimeZone = (value: unknown): value is string => {
   if (typeof value !== 'string' || value.trim().length === 0) {
     return false

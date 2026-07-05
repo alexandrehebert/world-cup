@@ -187,6 +187,7 @@ export const en: TranslationSet = {
     profileNotFound: 'Profile not found.',
     pageNotFoundTitle: 'Page not found',
     pageNotFoundMessage: 'The page you are looking for does not exist or has moved.',
+    teamParaguayEasterEggMessage: 'Team does not exist or has been moved back home.',
     goToDashboard: 'Go to dashboard',
     noProfilePredictions: 'No predictions recorded yet.',
     doYourPrediction: 'Do your prediction',

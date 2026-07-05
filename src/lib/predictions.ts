@@ -17,7 +17,7 @@ export const inferOutcomeFromScores = (homeRaw: string, awayRaw: string): MatchO
 }
 
 export const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) =>
-  locale === 'fr' ? 'fr-FR' : 'en-GB'
+  locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB'
 
 export const getMatchDayKey = (kickoff: string, timeZone?: string) => {
   const date = new Date(kickoff)
@@ -41,7 +41,9 @@ export const formatNextKickoffCountdown = (
   if (minutes < 60) {
     return locale === 'fr'
       ? `dans ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
-      : `in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+      : locale === 'es'
+        ? `en ${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`
+        : `in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
   }
 
   const hours = Math.floor(minutes / 60)
@@ -49,12 +51,16 @@ export const formatNextKickoffCountdown = (
   if (hours < 24) {
     return locale === 'fr'
       ? `dans ${hours} h${remainingMinutes > 0 ? ` ${remainingMinutes} min` : ''}`
-      : `in ${hours}h${remainingMinutes > 0 ? ` ${remainingMinutes}m` : ''}`
+      : locale === 'es'
+        ? `en ${hours} h${remainingMinutes > 0 ? ` ${remainingMinutes} min` : ''}`
+        : `in ${hours}h${remainingMinutes > 0 ? ` ${remainingMinutes}m` : ''}`
   }
 
   const days = Math.floor(hours / 24)
   const remainingHours = hours % 24
   return locale === 'fr'
     ? `dans ${days} ${days === 1 ? 'jour' : 'jours'}${remainingHours > 0 ? ` ${remainingHours} h` : ''}`
-    : `in ${days} ${days === 1 ? 'day' : 'days'}${remainingHours > 0 ? ` ${remainingHours}h` : ''}`
+    : locale === 'es'
+      ? `en ${days} ${days === 1 ? 'día' : 'días'}${remainingHours > 0 ? ` ${remainingHours} h` : ''}`
+      : `in ${days} ${days === 1 ? 'day' : 'days'}${remainingHours > 0 ? ` ${remainingHours}h` : ''}`
 }

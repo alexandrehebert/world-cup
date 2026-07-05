@@ -8,7 +8,7 @@ import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { resolveCompetitionId } from '../../competitions'
 import { hidesGroupStageLabel } from '../../lib/competition-sections'
-import { formatMatchDate, formatPlaceholder, getDisplayMatchStatus, getLocalizedCountryName, getLocalizedText, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, formatPlaceholder, getDateLocaleTag, getDisplayMatchStatus, getLocalizedCountryName, getLocalizedText, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
 import { isAccountFeatureEnabled, isPredictionsFeatureEnabled } from '../../lib/features'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -237,8 +237,7 @@ export const MatchModal = () => {
   const { localTime } = formatMatchDate(match.kickoff, locale, match.venue.timeZone, t.labels.today)
   const displayTime = displayStatus === 'live' ? getMatchDisplayTime(match, t.labels, nowMs, locale) : localTime
   const venueUtcOffset = getUtcOffsetLabel(match.kickoff, match.venue.timeZone)
-  const dateLocaleByLanguage = { en: 'en-GB', fr: 'fr-FR' } as const
-  const venueClock = new Intl.DateTimeFormat(dateLocaleByLanguage[locale], {
+  const venueClock = new Intl.DateTimeFormat(getDateLocaleTag(locale), {
     hour: '2-digit',
     minute: '2-digit',
     timeZone: match.venue.timeZone,

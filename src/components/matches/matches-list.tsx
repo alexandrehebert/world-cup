@@ -26,7 +26,7 @@ import { StatusPill } from '../ui/status-pill'
 import type { MatchRecord } from '../../types/tournament'
 import type { MatchOutcome } from '../../types/predictions'
 
-const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : 'en-GB')
+const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB')
 
 const statusLabel = (status: MatchRecord['status'], labels: ReturnType<typeof useLocale>['t']['labels']) => {
   if (status === 'live') {
@@ -152,6 +152,8 @@ export const MatchesList = ({
               const minuteLabel =
                 locale === 'fr'
                   ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
+                  : locale === 'es'
+                    ? `en ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minuto' : 'minutos'}`
                   : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
               const displayStatus = getDisplayMatchStatus(match, nowMs)
               const isLive = displayStatus === 'live'
@@ -183,7 +185,7 @@ export const MatchesList = ({
 
               const quickOptions: Array<{ value: MatchOutcome; label: string }> = [
                 { value: 'home', label: homeTeamLabel },
-                { value: 'draw', label: locale === 'fr' ? 'Nul' : 'Draw' },
+                { value: 'draw', label: locale === 'fr' ? 'Nul' : locale === 'es' ? 'Empate' : 'Draw' },
                 { value: 'away', label: awayTeamLabel },
               ]
 
@@ -326,7 +328,7 @@ export const MatchesList = ({
                             ))}
                           </div>
                           <p className="text-xs text-[var(--text-muted)]">
-                            {locale === 'fr' ? 'Connecte-toi pour pronostiquer.' : 'Sign in to predict.'}
+                            {locale === 'fr' ? 'Connecte-toi pour pronostiquer.' : locale === 'es' ? 'Inicia sesión para pronosticar.' : 'Sign in to predict.'}
                           </p>
                         </div>
                       ) : (

@@ -185,6 +185,7 @@ export interface TranslationSet {
     profileNotFound: string
     pageNotFoundTitle: string
     pageNotFoundMessage: string
+    teamParaguayEasterEggMessage: string
     goToDashboard: string
     noProfilePredictions: string
     doYourPrediction: string
