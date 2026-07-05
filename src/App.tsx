@@ -44,6 +44,7 @@ function App() {
         />
         <Route path="/teams" element={<TeamsPage />} />
         <Route path="/stadiums" element={<StadiumsPage />} />
+        <Route path="/stadiums/stadium/:stadiumSlug" element={<StadiumsPage />} />
         <Route path="/stadium" element={<Navigate to="/stadiums" replace />} />
         <Route path="/team/:teamCode" element={<TeamsPage />} />
         <Route path="/matches" element={<MatchesPage />} />

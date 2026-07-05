@@ -177,7 +177,7 @@ export const StadiumsPage = () => {
   }, [stadiums.length, updateListScrollShadow])
 
   return (
-    <section className="space-y-4 lg:flex lg:h-full lg:min-h-0 lg:flex-col lg:space-y-3">
+    <section className="flex min-h-0 flex-1 flex-col gap-4 lg:min-h-0">
       <div>
         <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.stadiums}</h2>
       </div>
@@ -187,7 +187,7 @@ export const StadiumsPage = () => {
           {t.labels.noStadiumsForCompetition}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(420px,58%)_minmax(0,1fr)]">
+        <div className="min-h-0 flex-1 grid grid-cols-1 gap-4 lg:auto-rows-fr lg:grid-cols-[minmax(420px,58%)_minmax(0,1fr)]">
           <article className="overflow-hidden border border-[var(--border)] bg-[var(--surface)] lg:flex lg:min-h-0 lg:flex-col">
             <div className="relative lg:min-h-0 lg:flex-1">
               <svg

@@ -134,7 +134,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
           </nav>
         </div>
 
-        <main className={`min-w-0 py-6 ${isStadiumsRoute ? 'lg:flex-1 lg:min-h-0 lg:overflow-hidden lg:py-4' : ''}`}>
+        <main className={`min-w-0 py-6 ${isStadiumsRoute ? 'lg:flex-1 lg:min-h-0 lg:overflow-hidden lg:flex lg:flex-col' : ''}`}>
           <Outlet />
         </main>
 

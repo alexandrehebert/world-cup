@@ -8,6 +8,7 @@ type StadiumCatalogRecord = {
 }
 
 const STADIUM_CATALOG: Readonly<Record<string, StadiumCatalogRecord>> = {
+  // Football World Cup 2026
   'at&t stadium': { seatCapacity: 80_000, openedYear: 2009, latitude: 32.7473, longitude: -97.0945 },
   'arrowhead stadium': { seatCapacity: 76_416, openedYear: 1972, latitude: 39.0489, longitude: -94.4849 },
   'bc place': { seatCapacity: 54_500, openedYear: 1983, latitude: 49.2776, longitude: -123.1119 },
@@ -17,13 +18,41 @@ const STADIUM_CATALOG: Readonly<Record<string, StadiumCatalogRecord>> = {
   'estadio bbva': { seatCapacity: 53_500, openedYear: 2015, latitude: 25.6698, longitude: -100.2441 },
   'gillette stadium': { seatCapacity: 65_878, openedYear: 2002, latitude: 42.0909, longitude: -71.2643 },
   'hard rock stadium': { seatCapacity: 65_326, openedYear: 1987, latitude: 25.958, longitude: -80.2389 },
-  "levi's stadium": { seatCapacity: 68_500, openedYear: 2014, latitude: 37.403, longitude: -121.97 },
+  'levi\'s stadium': { seatCapacity: 68_500, openedYear: 2014, latitude: 37.403, longitude: -121.97 },
   'lincoln financial field': { seatCapacity: 67_594, openedYear: 2003, latitude: 39.9008, longitude: -75.1675 },
   'lumen field': { seatCapacity: 68_740, openedYear: 2002, latitude: 47.5952, longitude: -122.3316 },
   'mercedes-benz stadium': { seatCapacity: 71_000, openedYear: 2017, latitude: 33.7554, longitude: -84.4008 },
   'metlife stadium': { seatCapacity: 82_500, openedYear: 2010, latitude: 40.8135, longitude: -74.0745 },
   'nrg stadium': { seatCapacity: 72_220, openedYear: 2002, latitude: 29.6847, longitude: -95.4107 },
   'sofi stadium': { seatCapacity: 70_240, openedYear: 2020, latitude: 33.9535, longitude: -118.3392 },
+  // Rugby competitions
+  'allianz stadium': { seatCapacity: 61_194, openedYear: 2011, latitude: 45.0972, longitude: 7.3929 },
+  'aviva stadium': { seatCapacity: 51_700, openedYear: 2010, latitude: 53.3439, longitude: -6.2263 },
+  'bluenergy stadium': { seatCapacity: 25_144, openedYear: 1976, latitude: 46.0603, longitude: 13.2415 },
+  'brisbane stadium': { seatCapacity: 52_959, openedYear: 2022, latitude: -27.4829, longitude: 153.0089 },
+  'cardiff city stadium': { seatCapacity: 33_280, openedYear: 1912, latitude: 51.4387, longitude: -3.1951 },
+  'eden park': { seatCapacity: 50_000, openedYear: 1913, latitude: -37.1756, longitude: 174.8336 },
+  'emirates airline park': { seatCapacity: 61_507, openedYear: 1982, latitude: -26.1331, longitude: 28.2366 },
+  'estadio mario alberto kempes': { seatCapacity: 61_686, openedYear: 1970, latitude: -31.3929, longitude: -64.2897 },
+  'estadio del bicentenario': { seatCapacity: 22_274, openedYear: 1980, latitude: -31.4065, longitude: -68.4357 },
+  'estadio único madre de ciudades': { seatCapacity: 35_000, openedYear: 1973, latitude: -27.7829, longitude: -64.2594 },
+  'groupama stadium': { seatCapacity: 59_286, openedYear: 2016, latitude: 45.7647, longitude: 4.9320 },
+  'hbf park': { seatCapacity: 20_500, openedYear: 1961, latitude: -31.9794, longitude: 115.8209 },
+  'hill dickinson stadium': { seatCapacity: 18_500, openedYear: 2022, latitude: 53.4309, longitude: -2.9613 },
+  'hollywoodbets kings park': { seatCapacity: 55_000, openedYear: 1882, latitude: -29.8517, longitude: 31.0240 },
+  'loftus versfeld': { seatCapacity: 50_000, openedYear: 1923, latitude: -25.5568, longitude: 28.2399 },
+  'murrayfield': { seatCapacity: 67_800, openedYear: 1925, latitude: 55.9425, longitude: -3.2359 },
+  'national olympic stadium': { seatCapacity: 68_023, openedYear: 2019, latitude: 35.6764, longitude: 139.7532 },
+  'newcastle stadium': { seatCapacity: 48_000, openedYear: 2023, latitude: -32.8293, longitude: 151.7776 },
+  'one new zealand stadium': { seatCapacity: 42_500, openedYear: 2021, latitude: -43.5308, longitude: 172.6221 },
+  'principality stadium': { seatCapacity: 74_500, openedYear: 1999, latitude: 51.4787, longitude: -3.1824 },
+  'prince chichibu memorial stadium': { seatCapacity: 24_000, openedYear: 1963, latitude: 35.6654, longitude: 139.7245 },
+  'sky stadium': { seatCapacity: 34_500, openedYear: 2000, latitude: -41.3247, longitude: 174.7758 },
+  'stade de france': { seatCapacity: 81_338, openedYear: 1998, latitude: 48.9263, longitude: 2.3608 },
+  'stade pierre-mauroy': { seatCapacity: 50_000, openedYear: 2012, latitude: 50.6103, longitude: 3.1359 },
+  'stadio luigi ferraris': { seatCapacity: 36_599, openedYear: 1911, latitude: 44.4169, longitude: 8.9539 },
+  'stadio olimpico': { seatCapacity: 70_698, openedYear: 1937, latitude: 41.9349, longitude: 12.4566 },
+  'sydney football stadium': { seatCapacity: 45_500, openedYear: 2022, latitude: -33.8468, longitude: 151.2251 },
 }
 
 const COUNTRY_CENTROIDS: Readonly<Record<string, { latitude: number; longitude: number }>> = {
