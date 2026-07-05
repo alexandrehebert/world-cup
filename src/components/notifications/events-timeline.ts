@@ -1,6 +1,7 @@
 import { getMatchDayKey } from '../../lib/format'
 import type { LocaleCode } from '../../types/tournament'
 import type { NotificationItem } from './competition-notifications'
+import { getIntlDateLocale } from '../../translations/intl'
 
 export interface EventTimelineDayGroup {
   dayKey: string
@@ -15,7 +16,7 @@ export const buildEventTimelineDayGroups = (
   todayLabel: string,
   nowMs: number,
 ): EventTimelineDayGroup[] => {
-  const dateLocale = locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB'
+  const dateLocale = getIntlDateLocale(locale)
   const todayKey = getMatchDayKey(new Date(nowMs).toISOString(), timeZone)
   const dayGroups = new Map<string, EventTimelineDayGroup>()
 

@@ -12,7 +12,7 @@ type LeaderboardResponse = {
 }
 
 export const LeaderboardPage = () => {
-  const { locale, t } = useLocale()
+  const { t } = useLocale()
   const { initialEntries } = useLeaderboardBootstrap()
   const navigate = useNavigate()
   const [entries, setEntries] = useState<RankedLeaderboardEntry[]>(initialEntries)
@@ -96,7 +96,7 @@ export const LeaderboardPage = () => {
             ) : (
               <tr>
                 <td className="px-4 py-4 text-[var(--text-muted)]" colSpan={4}>
-                  {locale === 'fr' ? 'Aucun joueur classé pour le moment.' : locale === 'es' ? 'Aún no hay jugadores clasificados.' : 'No ranked players yet.'}
+                  {t.labels.noRankedPlayersYet}
                 </td>
               </tr>
             )}

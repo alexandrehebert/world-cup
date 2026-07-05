@@ -21,6 +21,7 @@ import {
 import { isAccountFeatureEnabled, isPredictionsFeatureEnabled } from '../lib/features'
 import type { ClientBootstrapData } from '../types/bootstrap'
 import type { MatchOutcome, PredictionDistribution } from '../types/predictions'
+import { resolveLocaleFromLanguage } from '../translations/intl'
 
 const DEFAULT_LEADERBOARD_LIMIT = 100
 const GUEST_PREDICTOR_ID_REGEX = /^[a-z0-9_-]{16,64}$/
@@ -65,12 +66,7 @@ export const loadClientBootstrapData = async (options?: { publicMatchId?: string
   const preferredLocale = storedUser?.preferences?.locale
   const preferredThemePreference = storedUser?.preferences?.themePreference
   const acceptLanguageHeader = headerStore.get('accept-language') ?? ''
-  const normalizedAcceptLanguage = acceptLanguageHeader.toLowerCase()
-  const headerLocale = normalizedAcceptLanguage.startsWith('fr')
-    ? 'fr'
-    : normalizedAcceptLanguage.startsWith('es')
-      ? 'es'
-      : 'en'
+  const headerLocale = resolveLocaleFromLanguage(acceptLanguageHeader)
   const initialLocale = isLocaleCode(preferredLocale)
     ? preferredLocale
     : isLocaleCode(cookieLocale)

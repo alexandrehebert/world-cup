@@ -47,6 +47,10 @@ export interface TranslationSet {
     utcTime: string
     venue: string
   }
+  intl: {
+    dateLocale: string
+    numberLocale: string
+  }
   labels: {
     language: string
     competition: string
@@ -172,6 +176,7 @@ export interface TranslationSet {
     openMatch: string
     viewMatches: string
     viewSchedule: string
+    nextMatchPrefix: string
     eventIsLive: string
     eventStartsSoon: string
     eventEnded: string
@@ -181,6 +186,7 @@ export interface TranslationSet {
     viewLeaderboard: string
     viewProfile: string
     myProfile: string
+    signedInStatus: string
     loadingProfile: string
     profileNotFound: string
     pageNotFoundTitle: string
@@ -196,6 +202,8 @@ export interface TranslationSet {
     currentPredictions: string
     noPredictionsYet: string
     predictionSaved: string
+    saveMyPrediction: string
+    yourPredictionHeading: string
     bracketPathTeam: string
     bracketPathHint: string
     bracketPathOpponent: string
@@ -222,6 +230,12 @@ export interface TranslationSet {
     stadiumMap: string
     stadiumMapFocus: string
     stadiumMapLegend: string
+    noRankedPlayersYet: string
+    authRequiredTitle: string
+    authRequiredMessage: string
+    signInToPredict: string
+    tournamentWeekPrefix: string
+    sharePredictionWhatsappTemplate: string
     list: string
     map: string
   }

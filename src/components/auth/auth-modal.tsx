@@ -7,7 +7,7 @@ import { Icon } from '../../lib/icons'
 type AuthResult = { ok: true } | { ok: false; error: string }
 
 export const AuthModal = () => {
-  const { locale, t } = useLocale()
+  const { t } = useLocale()
   const {
     user,
     isLoading,
@@ -92,7 +92,7 @@ export const AuthModal = () => {
       >
         <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-5 py-4">
           <h3 id="auth-modal-title" className="text-base font-semibold text-[var(--text-strong)]">
-            {locale === 'fr' ? 'Connexion requise' : locale === 'es' ? 'Inicio de sesión requerido' : 'Sign in required'}
+            {t.labels.authRequiredTitle}
           </h3>
           <button
             type="button"
@@ -106,11 +106,7 @@ export const AuthModal = () => {
 
         <div className="space-y-4 p-5">
           <p className="text-sm text-[var(--text-muted)]">
-            {locale === 'fr'
-              ? 'Connecte-toi ou crée un compte pour enregistrer tes pronostics.'
-              : locale === 'es'
-                ? 'Inicia sesión o crea una cuenta para guardar tus pronósticos.'
-              : 'Sign in or create an account to save your predictions.'}
+            {t.labels.authRequiredMessage}
           </p>
 
           <div className="flex gap-2">

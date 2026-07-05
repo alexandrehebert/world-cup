@@ -100,7 +100,7 @@ const resolveCompetitionUrl = (
 }
 
 export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetitionId?: string }) => {
-  const { locale, t } = useLocale()
+  const { t } = useLocale()
   const currentOrigin = getCurrentOrigin()
 
   const groupedOptions = useMemo(() => {
@@ -189,14 +189,8 @@ export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetition
   }, [activeCompetitionId, currentOrigin])
 
   const getSportLabel = (sportLabel: string) => {
-    if (sportLabel === 'football') {
-      return locale === 'fr' ? 'Football' : 'Football'
-    }
-
-    if (sportLabel === 'rugby') {
-      return locale === 'fr' ? 'Rugby' : 'Rugby'
-    }
-
+    if (sportLabel === 'football') return 'Football'
+    if (sportLabel === 'rugby') return 'Rugby'
     return sportLabel.charAt(0).toUpperCase() + sportLabel.slice(1)
   }
 

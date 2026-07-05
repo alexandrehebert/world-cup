@@ -3,13 +3,12 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
-import { getDisplayMatchStatus, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
+import { getDateLocaleTag, getDisplayMatchStatus, getMatchDisplayTime, getMatchWinner, hasDisplayScore } from '../../lib/format'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
 import type { MatchRecord } from '../../types/tournament'
-
-const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB')
+import { formatNextKickoffCountdown } from '../../lib/predictions'
 
 const startOfIsoWeekUtc = (date: Date) => {
   const utcDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
@@ -80,7 +79,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
   const { teamsById } = useTournament()
   const nowMs = useNow()
   const timeZone = useTimeZone()
-  const dateLocale = getDateLocale(locale)
+  const dateLocale = getDateLocaleTag(locale)
   const localTimeZone = timeZone
 
   const calendarData = useMemo(() => {
@@ -178,7 +177,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
     cells.push(null)
   }
 
-  const weekLabelPrefix = locale === 'fr' ? 'Semaine du tournoi' : locale === 'es' ? 'Semana del torneo' : 'Tournament Week'
+  const weekLabelPrefix = t.labels.tournamentWeekPrefix
 
   const monthAgendaItems: Array<
     | { type: 'separator'; key: string; weekNumber: number }
@@ -430,10 +429,7 @@ export const MatchesCalendar = ({ matches }: { matches: MatchRecord[] }) => {
                     match.status === 'scheduled' &&
                     minutesUntilKickoff > 0 &&
                     minutesUntilKickoff < 60
-                  const minuteLabel =
-                    locale === 'fr'
-                      ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
-                      : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
+                  const minuteLabel = formatNextKickoffCountdown(new Date(match.kickoff).getTime(), nowMs, locale)
                   const displayTiming = getMatchDisplayTime(match, t.labels, nowMs, locale)
                   const footerValue = displayTiming ?? (isVerySoon ? minuteLabel : kickoffTime)
                   const footerStatus =

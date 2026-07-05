@@ -24,6 +24,7 @@ import {
 import type { StadiumSummary } from '../../lib/stadiums'
 import type { MatchRecord } from '../../types/tournament'
 import { ModalShell } from '../ui/modal-shell'
+import { getIntlNumberLocale } from '../../translations/intl'
 
 interface StadiumModalProps {
   stadium: StadiumSummary | null
@@ -63,7 +64,7 @@ export const StadiumModal = ({ stadium, onClose }: StadiumModalProps) => {
   const localTimeZone = useTimeZone()
 
   const numberFormatter = useMemo(
-    () => new Intl.NumberFormat(locale === 'fr' ? 'fr-CA' : locale === 'es' ? 'es-ES' : 'en-US'),
+    () => new Intl.NumberFormat(getIntlNumberLocale(locale)),
     [locale],
   )
 

@@ -5,13 +5,12 @@ import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { resolveCompetitionId } from '../../competitions'
 import { hidesGroupStageLabel } from '../../lib/competition-sections'
-import { formatMatchDate, getDisplayMatchStatus, getLocalizedCountryName, getLocalizedText, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, getDateLocaleTag, getDisplayMatchStatus, getLocalizedCountryName, getLocalizedText, getMatchDisplayTime, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
+import { formatNextKickoffCountdown } from '../../lib/predictions'
 import { FlagAvatar } from '../ui/flag-avatar'
 import { StatusPill } from '../ui/status-pill'
 import type { MatchRecord } from '../../types/tournament'
-
-const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB')
 
 const getMatchDayKey = (kickoff: string, timeZone?: string) => {
   const date = new Date(kickoff)
@@ -78,7 +77,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
     [favoriteTeamIds, matches],
   )
   const groupedMatches = useMemo(() => {
-    const dateLocale = getDateLocale(locale)
+    const dateLocale = getDateLocaleTag(locale)
     const groups = new Map<string, { dayLabel: string; matches: MatchRecord[] }>()
     const todayKey = getMatchDayKey(new Date(nowMs).toISOString(), localTimeZone)
 
@@ -122,10 +121,7 @@ export const UpcomingMatches = ({ matches, compact = false }: { matches: MatchRe
               const { localDateTime, localTime } = formatMatchDate(match.kickoff, locale, localTimeZone, t.labels.today)
               const minutesUntilKickoff = Math.ceil((new Date(match.kickoff).getTime() - nowMs) / 60000)
               const isVerySoon = match.status === 'scheduled' && minutesUntilKickoff > 0 && minutesUntilKickoff < 60
-              const minuteLabel =
-                locale === 'fr'
-                  ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
-                  : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
+              const minuteLabel = formatNextKickoffCountdown(new Date(match.kickoff).getTime(), nowMs, locale)
               const displayTiming = getMatchDisplayTime(match, t.labels, nowMs, locale)
               const displayDateTime = displayTiming ?? (isVerySoon ? minuteLabel : localDateTime)
               const displayLocalTime = isVerySoon ? minuteLabel : localTime

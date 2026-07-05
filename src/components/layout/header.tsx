@@ -15,6 +15,7 @@ import { FavoriteTeamsPicker } from './favorite-teams-picker'
 import { NotificationFeed } from '../notifications/notifications-feed'
 import { useCompetitionNotifications } from '../notifications/competition-notifications'
 import type { TournamentMeta } from '../../types/tournament'
+import { getIntlDateLocale } from '../../translations/intl'
 
 const getUserInitial = (username: string) => username.trim().charAt(0).toUpperCase() || 'U'
 
@@ -114,7 +115,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
             isCompact ? 'max-h-0 opacity-0' : 'max-h-16 text-sm leading-6 opacity-100 sm:text-base'
           }`}>
             {effectiveMeta
-              ? `${effectiveMeta.host} · ${effectiveMeta.season} · ${new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB', {
+              ? `${effectiveMeta.host} · ${effectiveMeta.season} · ${new Intl.DateTimeFormat(getIntlDateLocale(locale), {
                   dateStyle: 'medium',
                   timeStyle: 'short',
                   timeZone,
@@ -383,7 +384,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                             <div className="min-w-0">
                               <p className="truncate text-sm font-semibold text-[var(--text-strong)]">{user.username}</p>
                               <p className="text-xs text-[var(--text-muted)]">
-                                {locale === 'fr' ? 'Connecté' : locale === 'es' ? 'Conectado' : 'Signed in'}
+                                {t.labels.signedInStatus}
                               </p>
                             </div>
                           </div>

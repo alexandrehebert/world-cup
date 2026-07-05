@@ -13,7 +13,7 @@ import { resolveCompetitionId } from '../competitions'
 import { useDashboard } from '../contexts/dashboard-context'
 import { hidesGroupStageLabel } from '../lib/competition-sections'
 import { getMatchStageFromSlug } from '../lib/match-path'
-import { formatMatchDate } from '../lib/format'
+import { formatMatchDate, getDateLocaleTag } from '../lib/format'
 import { isAccountFeatureEnabled } from '../lib/features'
 import { Icon } from '../lib/icons'
 import { inferOutcomeFromScores } from '../lib/predictions'
@@ -300,11 +300,10 @@ export const MatchPredictionPage = () => {
   const shareOnWhatsApp = () => {
     if (!match || typeof window === 'undefined') return
     const url = window.location.href
-    const text = locale === 'fr'
-      ? `Fais ton pronostic pour ${homeLabel} vs ${awayLabel} : ${url}`
-      : locale === 'es'
-        ? `Haz tu pronóstico para ${homeLabel} vs ${awayLabel}: ${url}`
-      : `Do your prediction for ${homeLabel} vs ${awayLabel}: ${url}`
+    const text = t.labels.sharePredictionWhatsappTemplate
+      .replace('{home}', homeLabel)
+      .replace('{away}', awayLabel)
+      .replace('{url}', url)
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer')
   }
 
@@ -368,7 +367,7 @@ export const MatchPredictionPage = () => {
           isPredictionOpen && hasPredictionChanges ? (
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs font-semibold text-[var(--text-muted)]">
-                {locale === 'fr' ? 'Enregistrer mon pronostic' : locale === 'es' ? 'Guardar mi pronóstico' : 'Save my prediction'}
+                {t.labels.saveMyPrediction}
               </p>
               <div className="flex items-center gap-2">
                 <button
@@ -436,7 +435,7 @@ export const MatchPredictionPage = () => {
           </div>
         </div>
         <h3 className="text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-          {locale === 'fr' ? 'Ton pronostic' : locale === 'es' ? 'Tu pronóstico' : 'Your prediction'}
+          {t.labels.yourPredictionHeading}
         </h3>
         <div className="space-y-2">
           <div className="relative">
@@ -516,7 +515,7 @@ export const MatchPredictionPage = () => {
               <div className="min-w-0 space-y-1">
                 <p className="truncate text-sm font-semibold text-[var(--text-strong)]">{prediction.displayName}</p>
                 <p className="text-xs text-[var(--text-muted)]">
-                  {new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB', { dateStyle: 'short', timeStyle: 'short', timeZone }).format(new Date(prediction.updatedAt))}
+                  {new Intl.DateTimeFormat(getDateLocaleTag(locale), { dateStyle: 'short', timeStyle: 'short', timeZone }).format(new Date(prediction.updatedAt))}
                 </p>
                 {currentOutcome !== null ? (
                   <p className={`inline-flex items-center gap-1 text-[11px] font-semibold ${

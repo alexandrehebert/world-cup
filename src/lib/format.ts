@@ -1,10 +1,44 @@
 import type { LocaleCode, MatchRecord } from '../types/tournament'
 import type { TranslationSet } from '../translations/types'
+import { getIntlDateLocale } from '../translations/intl'
 
 const LIVE_INFERENCE_WINDOW_MS = 3 * 60 * 60 * 1000
 const HALF_TIME_DETAIL_PATTERN = /(^h\.?t\.?$|half[\s-]?time|mi-temps)/i
 
-export const getDateLocaleTag = (locale: LocaleCode) => (locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB')
+export const getDateLocaleTag = (locale: LocaleCode) => getIntlDateLocale(locale)
+const FALLBACK_STATUS_DETAILS: Record<LocaleCode, {
+  firstHalf: string
+  secondHalf: string
+  halfTime: string
+  afterPenalties: string
+  afterExtraTime: string
+  fullTime: string
+}> = {
+  en: {
+    firstHalf: '1st half',
+    secondHalf: '2nd half',
+    halfTime: 'Half-time',
+    afterPenalties: 'After penalties',
+    afterExtraTime: 'After extra time',
+    fullTime: 'Full-time',
+  },
+  fr: {
+    firstHalf: '1re mi-temps',
+    secondHalf: '2e mi-temps',
+    halfTime: 'Mi-temps',
+    afterPenalties: 'Après tirs au but',
+    afterExtraTime: 'Après prolongations',
+    fullTime: 'Temps réglementaire',
+  },
+  es: {
+    firstHalf: '1.ª parte',
+    secondHalf: '2.ª parte',
+    halfTime: 'Descanso',
+    afterPenalties: 'Tras penales',
+    afterExtraTime: 'Tras prórroga',
+    fullTime: 'Tiempo reglamentario',
+  },
+}
 
 export const getMatchDayKey = (kickoff: string, timeZone: string) =>
   new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date(kickoff))
@@ -286,29 +320,30 @@ export const getLiveStatusDetail = (
 
   const trimmed = espnDetail.trim()
   const normalized = trimmed.toUpperCase().replace(/\s+/g, '')
+  const fallbackDetails = FALLBACK_STATUS_DETAILS[locale]
 
   if (normalized === 'L1' || normalized === '1H') {
-    return locale === 'fr' ? '1re mi-temps' : locale === 'es' ? '1.ª parte' : '1st half'
+    return fallbackDetails.firstHalf
   }
 
   if (normalized === 'L2' || normalized === '2H') {
-    return locale === 'fr' ? '2e mi-temps' : locale === 'es' ? '2.ª parte' : '2nd half'
+    return fallbackDetails.secondHalf
   }
 
   if (HALF_TIME_DETAIL_PATTERN.test(trimmed) || normalized === 'HT') {
-    return labels?.halfTime ?? (locale === 'fr' ? 'Mi-temps' : locale === 'es' ? 'Descanso' : 'Half-time')
+    return labels?.halfTime ?? fallbackDetails.halfTime
   }
 
   if (/^F\.?T\.?[-\s]?P(?:EN|ENS)\.?$/i.test(trimmed) || /^pen(?:alty|alties)$/i.test(trimmed)) {
-    return labels?.afterPenalties ?? (locale === 'fr' ? 'Après tirs au but' : locale === 'es' ? 'Tras penales' : 'After penalties')
+    return labels?.afterPenalties ?? fallbackDetails.afterPenalties
   }
 
   if (/^(?:F\.?T\.?[-\s]?)?A\.?E\.?T\.?$/i.test(trimmed) || /^after extra(?:[\s-]?time)?$/i.test(trimmed)) {
-    return labels?.afterExtraTime ?? (locale === 'fr' ? 'Après prolongations' : locale === 'es' ? 'Tras prórroga' : 'After extra time')
+    return labels?.afterExtraTime ?? fallbackDetails.afterExtraTime
   }
 
   if (/^F\.?T\.?$/i.test(trimmed) || /^C$/i.test(trimmed) || /^full[\s-]?time$/i.test(trimmed) || /^completed$/i.test(trimmed)) {
-    return labels?.fullTime ?? (locale === 'fr' ? 'Temps réglementaire' : locale === 'es' ? 'Tiempo reglamentario' : 'Full-time')
+    return labels?.fullTime ?? fallbackDetails.fullTime
   }
 
   return trimmed

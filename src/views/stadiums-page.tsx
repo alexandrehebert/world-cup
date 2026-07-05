@@ -18,6 +18,7 @@ import {
 } from '../lib/stadiums'
 import { StadiumTooltip } from '../components/stadiums/stadium-tooltip'
 import { StadiumModal } from '../components/stadiums/stadium-modal'
+import { getIntlNumberLocale } from '../translations/intl'
 
 const MAP_GRID_CELL_SIZE = 12
 const MAP_GRID_MERIDIANS = Math.floor(WORLD_MAP_WIDTH / MAP_GRID_CELL_SIZE)
@@ -90,7 +91,7 @@ export const StadiumsPage = () => {
   const [gridScrollShadow, setGridScrollShadow] = useState({ showTop: false, showBottom: false })
 
   const numberFormatter = useMemo(
-    () => new Intl.NumberFormat(locale === 'fr' ? 'fr-CA' : locale === 'es' ? 'es-ES' : 'en-US'),
+    () => new Intl.NumberFormat(getIntlNumberLocale(locale)),
     [locale],
   )
   const stadiums = useMemo(() => buildStadiumSummaries(matches), [matches])

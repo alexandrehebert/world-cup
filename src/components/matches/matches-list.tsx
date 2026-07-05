@@ -9,6 +9,7 @@ import { resolveCompetitionId } from '../../competitions'
 import { hidesGroupStageLabel } from '../../lib/competition-sections'
 import {
   formatMatchDate,
+  getDateLocaleTag,
   getDisplayMatchStatus,
   getLocalizedCountryName,
   getLocalizedText,
@@ -25,8 +26,7 @@ import { LivePulse } from '../ui/live-pulse'
 import { StatusPill } from '../ui/status-pill'
 import type { MatchRecord } from '../../types/tournament'
 import type { MatchOutcome } from '../../types/predictions'
-
-const getDateLocale = (locale: ReturnType<typeof useLocale>['locale']) => (locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB')
+import { formatNextKickoffCountdown } from '../../lib/predictions'
 
 const statusLabel = (status: MatchRecord['status'], labels: ReturnType<typeof useLocale>['t']['labels']) => {
   if (status === 'live') {
@@ -91,7 +91,7 @@ export const MatchesList = ({
     [favoriteTeamIds, matches],
   )
   const groupedMatches = useMemo(() => {
-    const dateLocale = getDateLocale(locale)
+    const dateLocale = getDateLocaleTag(locale)
     const groups = new Map<string, { dayKey: string; dayLabel: string; matches: MatchRecord[] }>()
     const todayKey = getTodayMatchDayKey(nowMs, localTimeZone)
 
@@ -149,12 +149,7 @@ export const MatchesList = ({
               )
               const minutesUntilKickoff = Math.ceil((new Date(match.kickoff).getTime() - nowMs) / 60000)
               const isVerySoon = match.status === 'scheduled' && minutesUntilKickoff > 0 && minutesUntilKickoff < 60
-              const minuteLabel =
-                locale === 'fr'
-                  ? `dans ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
-                  : locale === 'es'
-                    ? `en ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minuto' : 'minutos'}`
-                  : `in ${minutesUntilKickoff} ${minutesUntilKickoff === 1 ? 'minute' : 'minutes'}`
+              const minuteLabel = formatNextKickoffCountdown(new Date(match.kickoff).getTime(), nowMs, locale)
               const displayStatus = getDisplayMatchStatus(match, nowMs)
               const isLive = displayStatus === 'live'
               const isFinished = displayStatus === 'finished'
@@ -185,7 +180,7 @@ export const MatchesList = ({
 
               const quickOptions: Array<{ value: MatchOutcome; label: string }> = [
                 { value: 'home', label: homeTeamLabel },
-                { value: 'draw', label: locale === 'fr' ? 'Nul' : locale === 'es' ? 'Empate' : 'Draw' },
+                { value: 'draw', label: t.labels.draw },
                 { value: 'away', label: awayTeamLabel },
               ]
 
@@ -328,7 +323,7 @@ export const MatchesList = ({
                             ))}
                           </div>
                           <p className="text-xs text-[var(--text-muted)]">
-                            {locale === 'fr' ? 'Connecte-toi pour pronostiquer.' : locale === 'es' ? 'Inicia sesión para pronosticar.' : 'Sign in to predict.'}
+                            {t.labels.signInToPredict}
                           </p>
                         </div>
                       ) : (

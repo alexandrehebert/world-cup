@@ -4,7 +4,7 @@ import { useLocale } from '../../contexts/locale-context'
 import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { buildScheduleCalendarDays } from '../../lib/dashboard-schedule'
-import { formatMatchDate, getDisplayMatchStatus, getLiveStatusDetail, getLocalizedCountryName, getLocalizedText, hasDisplayScore } from '../../lib/format'
+import { formatMatchDate, getDateLocaleTag, getDisplayMatchStatus, getLiveStatusDetail, getLocalizedCountryName, getLocalizedText, hasDisplayScore } from '../../lib/format'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -27,7 +27,7 @@ export const CompetitionDashboard = () => {
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
   const { liveMatches, liveWidgetMatches, scheduledMatches, latestResults, notifications, allNotifications } = useCompetitionNotifications()
-  const dateLocale = locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : 'en-GB'
+  const dateLocale = getDateLocaleTag(locale)
   const scheduleCalendarDays = useMemo(
     () => buildScheduleCalendarDays(scheduledMatches, dateLocale, localTimeZone, t.labels.today, nowMs),
     [dateLocale, localTimeZone, nowMs, scheduledMatches, t.labels.today],

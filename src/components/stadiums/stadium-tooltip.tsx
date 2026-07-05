@@ -10,6 +10,7 @@ import {
   WORLD_MAP_WIDTH,
 } from '../../lib/stadiums'
 import type { StadiumSummary } from '../../lib/stadiums'
+import { getIntlNumberLocale } from '../../translations/intl'
 
 interface StadiumTooltipProps {
   stadium: StadiumSummary | null
@@ -142,7 +143,7 @@ export const StadiumTooltip = ({
   }, [onClose])
 
   const numberFormatter = useMemo(
-    () => new Intl.NumberFormat(locale === 'fr' ? 'fr-CA' : locale === 'es' ? 'es-ES' : 'en-US'),
+    () => new Intl.NumberFormat(getIntlNumberLocale(locale)),
     [locale],
   )
 

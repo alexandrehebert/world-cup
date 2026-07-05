@@ -15,6 +15,7 @@ import {
   isThemePreference,
   resolveThemeColorScheme,
 } from '../lib/user-preferences'
+import { resolveLocaleFromLanguage } from '../translations/intl'
 import './globals.css'
 import 'flag-icons/css/flag-icons.min.css'
 
@@ -49,14 +50,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const initialTheme = isThemePreference(cookieTheme) ? cookieTheme : undefined
   const initialColorScheme = initialTheme ? resolveThemeColorScheme(initialTheme) : undefined
   const acceptLanguageHeader = headerStore.get('accept-language') ?? ''
-  const normalizedAcceptLanguage = acceptLanguageHeader.toLowerCase()
   const initialLocale = isLocaleCode(cookieLocale)
     ? cookieLocale
-    : normalizedAcceptLanguage.startsWith('fr')
-      ? 'fr'
-      : normalizedAcceptLanguage.startsWith('es')
-        ? 'es'
-        : 'en'
+    : resolveLocaleFromLanguage(acceptLanguageHeader)
 
   return (
     <html
@@ -87,13 +83,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               const storedLocale = window.localStorage.getItem(localeStorageKey);
               const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
               const theme = stored === 'light' || stored === 'dark' || stored === 'colorblind' ? stored : systemTheme;
-              const locale = storedLocale === 'en' || storedLocale === 'fr' || storedLocale === 'es'
-                ? storedLocale
-                : (navigator.language.toLowerCase().startsWith('fr')
-                  ? 'fr'
-                  : navigator.language.toLowerCase().startsWith('es')
-                    ? 'es'
-                    : 'en');
+              const supportedLocales = ['en', 'fr', 'es'];
+              const resolveLocale = (candidate) => supportedLocales.includes(candidate) ? candidate : null;
+              const detectLocaleFromLanguage = (language) => {
+                const normalized = String(language || '').toLowerCase();
+                const matched = supportedLocales.find((code) => code !== 'en' && normalized.startsWith(code));
+                return matched || 'en';
+              };
+              const locale = resolveLocale(storedLocale) || detectLocaleFromLanguage(navigator.language);
 
               document.documentElement.setAttribute('data-theme', theme);
               document.documentElement.lang = locale;

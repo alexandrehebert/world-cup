@@ -7,6 +7,7 @@ import { useAuth } from './auth-context'
 import { LOCALE_COOKIE_NAME, LOCALE_STORAGE_KEY } from '../lib/user-preferences'
 import type { TranslationSet } from '../translations/types'
 import type { LocaleCode } from '../types/tournament'
+import { getSupportedLocaleOrNull, resolveLocaleFromLanguage } from '../translations/intl'
 
 const dictionaries = {
   en,
@@ -28,21 +29,7 @@ const detectLocale = (): LocaleCode => {
   }
 
   const storedLocale = typeof localStorage === 'undefined' ? null : localStorage.getItem(LOCALE_STORAGE_KEY)
-  if (storedLocale === 'en' || storedLocale === 'fr' || storedLocale === 'es') {
-    return storedLocale
-  }
-
-  const browserLocale = navigator.language.toLowerCase()
-
-  if (browserLocale.startsWith('fr')) {
-    return 'fr'
-  }
-
-  if (browserLocale.startsWith('es')) {
-    return 'es'
-  }
-
-  return 'en'
+  return getSupportedLocaleOrNull(storedLocale) ?? resolveLocaleFromLanguage(navigator.language)
 }
 
 export const LocaleProvider = ({
