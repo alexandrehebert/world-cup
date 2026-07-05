@@ -12,6 +12,7 @@ import {
   WORLD_MAP_HEIGHT,
   WORLD_MAP_WIDTH,
 } from '../lib/stadiums'
+import { StadiumModal } from '../components/stadiums/stadium-modal'
 
 const MAP_GRID_CELL_SIZE = 12
 const MAP_GRID_MERIDIANS = Math.floor(WORLD_MAP_WIDTH / MAP_GRID_CELL_SIZE)
@@ -59,16 +60,21 @@ export const StadiumsPage = () => {
   const { locale, t } = useLocale()
   const { themePreference } = useTheme()
   const { matches } = useTournament()
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('list')
   const [selectedStadiumKey, setSelectedStadiumKey] = useState<string | null>(null)
-  const stadiumCardRefs = useRef<Record<string, HTMLElement | null>>({})
-  const stadiumListRef = useRef<HTMLDivElement | null>(null)
-  const [listScrollShadow, setListScrollShadow] = useState({ showTop: false, showBottom: false })
+  const [hoveredStadiumKey, setHoveredStadiumKey] = useState<string | null>(null)
+  const stadiumGridRef = useRef<HTMLDivElement | null>(null)
+  const [gridScrollShadow, setGridScrollShadow] = useState({ showTop: false, showBottom: false })
 
   const numberFormatter = useMemo(
     () => new Intl.NumberFormat(locale === 'fr' ? 'fr-CA' : 'en-US'),
     [locale],
   )
   const stadiums = useMemo(() => buildStadiumSummaries(matches), [matches])
+  const selectedStadium = selectedStadiumKey
+    ? (stadiums.find((s) => s.key === selectedStadiumKey) ?? null)
+    : null
+
   const mapMarkers = useMemo(() => buildStadiumMapMarkers(stadiums), [stadiums])
   const mapViewport = useMemo(() => {
     if (!selectedStadiumKey) {
@@ -82,40 +88,28 @@ export const StadiumsPage = () => {
 
     return focusViewportOnMarker(getStadiumMapViewport([selectedMarker]), selectedMarker)
   }, [mapMarkers, selectedStadiumKey])
+
   const [animatedMapViewport, setAnimatedMapViewport] = useState<StadiumMapViewport>(mapViewport)
   const animatedMapViewportRef = useRef<StadiumMapViewport>(mapViewport)
-  const setStadiumCardRef = useCallback(
-    (key: string) => (element: HTMLElement | null) => {
-      stadiumCardRefs.current[key] = element
-    },
-    [],
-  )
-  const toggleStadiumSelection = useCallback((key: string, scrollToCard = false) => {
-    setSelectedStadiumKey((currentKey) => {
-      const nextKey = currentKey === key ? null : key
-      if (nextKey && scrollToCard) {
-        stadiumCardRefs.current[key]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-      return nextKey
-    })
-  }, [])
+
   const updateListScrollShadow = useCallback(() => {
-    const listElement = stadiumListRef.current
-    if (!listElement) {
-      setListScrollShadow({ showTop: false, showBottom: false })
+    const gridElement = stadiumGridRef.current
+    if (!gridElement) {
+      setGridScrollShadow({ showTop: false, showBottom: false })
       return
     }
 
-    const hasOverflow = listElement.scrollHeight - listElement.clientHeight > 1
+    const hasOverflow = gridElement.scrollHeight - gridElement.clientHeight > 1
     if (!hasOverflow) {
-      setListScrollShadow({ showTop: false, showBottom: false })
+      setGridScrollShadow({ showTop: false, showBottom: false })
       return
     }
 
-    const showTop = listElement.scrollTop > 1
-    const showBottom = listElement.scrollTop + listElement.clientHeight < listElement.scrollHeight - 1
-    setListScrollShadow({ showTop, showBottom })
+    const showTop = gridElement.scrollTop > 1
+    const showBottom = gridElement.scrollTop + gridElement.clientHeight < gridElement.scrollHeight - 1
+    setGridScrollShadow({ showTop, showBottom })
   }, [])
+
   const mapImageHref = useMemo(() => {
     if (themePreference === 'light') {
       return '/assets/world-stadiums-map-light.svg'
@@ -177,22 +171,46 @@ export const StadiumsPage = () => {
   }, [stadiums.length, updateListScrollShadow])
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col gap-4 lg:min-h-0">
-      <div>
+    <section className="flex min-h-0 flex-1 flex-col gap-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.stadiums}</h2>
+        <div className="inline-flex h-10 shrink-0 items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-soft)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" role="group" aria-label={t.headings.stadiums}>
+          {([
+            { value: 'list' as const, label: t.labels.list, icon: 'list' },
+            { value: 'map' as const, label: t.labels.map, icon: 'map' },
+          ] as const).map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => setViewMode(item.value)}
+              className={`inline-flex h-8 w-8 items-center justify-center px-0 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]/40 sm:w-auto sm:gap-1 sm:px-3 ${
+                viewMode === item.value
+                  ? 'border border-[var(--tab-active-border)] bg-[var(--tab-active-bg)] text-[var(--tab-active-text)]'
+                  : 'border border-transparent text-[var(--text-muted)] hover:bg-[var(--tab-idle-hover-bg)] hover:text-[var(--text)]'
+              }`}
+              aria-pressed={viewMode === item.value}
+              aria-label={item.label}
+              title={item.label}
+            >
+              <Icon name={item.icon} className="text-[14px] sm:hidden" />
+              <span className="hidden sm:inline">{item.label}</span>
+            </button>
+           ))}
+        </div>
       </div>
 
       {stadiums.length === 0 ? (
         <div className="bg-[var(--surface)] px-6 py-6 text-center text-sm text-[var(--text-muted)]">
           {t.labels.noStadiumsForCompetition}
         </div>
-      ) : (
-        <div className="min-h-0 flex-1 grid grid-cols-1 gap-4 lg:auto-rows-fr lg:grid-cols-[minmax(420px,58%)_minmax(0,1fr)]">
-          <article className="overflow-hidden border border-[var(--border)] bg-[var(--surface)] lg:flex lg:min-h-0 lg:flex-col">
-            <div className="relative lg:min-h-0 lg:flex-1">
+      ) : viewMode === 'map' ? (
+        <>
+          {/* Map view */}
+          <div className="min-h-0 flex-1 border border-[var(--border)] bg-[var(--surface)] flex flex-col">
+            <div className="relative flex-1 min-h-0">
               <svg
                 viewBox={`${animatedMapViewport.x} ${animatedMapViewport.y} ${animatedMapViewport.width} ${animatedMapViewport.height}`}
-                className="block h-auto w-full bg-[var(--surface-soft)] lg:h-full"
+                className="block h-full w-full bg-[var(--surface-soft)]"
                 role="img"
                 aria-label={t.labels.stadiumMap}
               >
@@ -215,23 +233,26 @@ export const StadiumsPage = () => {
                 <image href={mapImageHref} x="0" y="0" width={WORLD_MAP_WIDTH} height={WORLD_MAP_HEIGHT} opacity={1} />
                 {mapMarkers.map((marker) => {
                   const isActive = selectedStadiumKey === marker.key
+                  const isHovered = hoveredStadiumKey === marker.key
 
                   return (
-                  <g
-                    key={marker.key}
-                    transform={`translate(${marker.x}, ${marker.y})`}
-                    className="cursor-pointer"
-                    onClick={() => toggleStadiumSelection(marker.key, true)}
-                  >
-                    <title>{`${marker.stadium} · ${marker.city}, ${marker.country}`}</title>
-                    <circle r="1.2" fill={isActive ? 'rgb(96 165 250 / 0.28)' : 'rgb(59 130 246 / 0.2)'} />
-                    <circle
-                      r="0.62"
-                      fill={isActive ? 'rgb(37 99 235 / 0.98)' : 'rgb(30 64 175 / 0.95)'}
-                      stroke="rgb(219 234 254)"
-                      strokeWidth="0.25"
-                    />
-                  </g>
+                    <g
+                      key={marker.key}
+                      transform={`translate(${marker.x}, ${marker.y})`}
+                      className="cursor-pointer"
+                      onClick={() => setSelectedStadiumKey(marker.key)}
+                      onMouseEnter={() => setHoveredStadiumKey(marker.key)}
+                      onMouseLeave={() => setHoveredStadiumKey(null)}
+                    >
+                      <title>{`${marker.stadium} · ${marker.city}, ${marker.country}`}</title>
+                      <circle r="1.2" fill={isActive || isHovered ? 'rgb(96 165 250 / 0.28)' : 'rgb(59 130 246 / 0.2)'} />
+                      <circle
+                        r="0.62"
+                        fill={isActive || isHovered ? 'rgb(37 99 235 / 0.98)' : 'rgb(30 64 175 / 0.95)'}
+                        stroke="rgb(219 234 254)"
+                        strokeWidth="0.25"
+                      />
+                    </g>
                   )
                 })}
               </svg>
@@ -239,72 +260,80 @@ export const StadiumsPage = () => {
             <p className="border-t border-[var(--border)] px-4 py-2 text-xs text-[var(--text-soft)]">
               {t.labels.stadiumMapLegend}
             </p>
-          </article>
+          </div>
 
-          <div className="relative lg:min-h-0">
+          {/* Stadium detail modal in map view */}
+          <StadiumModal stadium={selectedStadium} onClose={() => setSelectedStadiumKey(null)} />
+        </>
+      ) : (
+        <>
+          {/* List view */}
+          <div className="relative min-h-0 flex-1">
             <div
-              ref={stadiumListRef}
+              ref={stadiumGridRef}
               onScroll={updateListScrollShadow}
-              className="grid grid-cols-1 gap-3 lg:h-full lg:min-h-0 lg:content-start lg:overflow-y-auto lg:pr-1"
+              className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 overflow-y-auto min-h-0 h-full content-start pr-1"
             >
               {stadiums.map((stadium) => {
-                const isActive = selectedStadiumKey === stadium.key
-                const firstKickoffLabel = formatMatchDate(stadium.firstKickoff, locale, stadium.timeZone || undefined, t.labels.today).localDateTime
-                const lastKickoffLabel = formatMatchDate(stadium.lastKickoff, locale, stadium.timeZone || undefined, t.labels.today).localDateTime
-                const seatCapacityLabel = stadium.seatCapacity
-                  ? `${numberFormatter.format(stadium.seatCapacity)} ${t.labels.seats}`
-                  : t.labels.unknown
-                const openedYearLabel = stadium.openedYear ? String(stadium.openedYear) : t.labels.unknown
+              const firstKickoffLabel = formatMatchDate(stadium.firstKickoff, locale, stadium.timeZone || undefined, t.labels.today).localDateTime
+              const lastKickoffLabel = formatMatchDate(stadium.lastKickoff, locale, stadium.timeZone || undefined, t.labels.today).localDateTime
+              const seatCapacityLabel = stadium.seatCapacity
+                ? `${numberFormatter.format(stadium.seatCapacity)} ${t.labels.seats}`
+                : t.labels.unknown
+              const openedYearLabel = stadium.openedYear ? String(stadium.openedYear) : t.labels.unknown
 
-                return (
-                  <article
-                    key={stadium.key}
-                    ref={setStadiumCardRef(stadium.key)}
-                    className={`border bg-[var(--surface)] transition-colors ${isActive ? 'border-[var(--accent-border)]' : 'border-[var(--border)]'}`}
-                    onClick={() => toggleStadiumSelection(stadium.key)}
-                  >
-                    <div className="flex items-start justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
-                      <div className="min-w-0">
-                        <h3 className="truncate text-base font-semibold text-[var(--text-strong)]">{stadium.stadium}</h3>
-                        <p className="truncate text-xs text-[var(--text-soft)]">{stadium.city}, {stadium.country}</p>
-                      </div>
-                      <Icon name="stadium" className="text-[18px] text-[var(--accent-text)]" />
+              return (
+                <button
+                  key={stadium.key}
+                  type="button"
+                  onClick={() => setSelectedStadiumKey(stadium.key)}
+                  className={`border bg-[var(--surface)] transition-colors text-left ${selectedStadiumKey === stadium.key ? 'border-[var(--accent-border)]' : 'border-[var(--border)] hover:bg-[var(--surface-strong)]'}`}
+                >
+                  <div className="flex items-start justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
+                    <div className="min-w-0">
+                      <h3 className="truncate text-base font-semibold text-[var(--text-strong)]">{stadium.stadium}</h3>
+                      <p className="truncate text-xs text-[var(--text-soft)]">{stadium.city}, {stadium.country}</p>
                     </div>
+                    <Icon name="stadium" className="shrink-0 text-[18px] text-[var(--accent-text)]" />
+                  </div>
 
-                    <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 px-4 py-3 text-sm">
-                      <dt className="text-[var(--text-soft)]">{t.labels.stadiumLocation}</dt>
-                      <dd className="text-[var(--text-strong)]">{stadium.city}, {stadium.country}</dd>
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 px-4 py-3 text-sm">
+                    <dt className="text-[var(--text-soft)]">{t.labels.stadiumLocation}</dt>
+                    <dd className="text-[var(--text-strong)]">{stadium.city}, {stadium.country}</dd>
 
-                      <dt className="text-[var(--text-soft)]">{t.labels.stadiumSeatCapacity}</dt>
-                      <dd className="text-[var(--text-strong)]">{seatCapacityLabel}</dd>
+                    <dt className="text-[var(--text-soft)]">{t.labels.stadiumSeatCapacity}</dt>
+                    <dd className="text-[var(--text-strong)]">{seatCapacityLabel}</dd>
 
-                      <dt className="text-[var(--text-soft)]">{t.labels.opened}</dt>
-                      <dd className="text-[var(--text-strong)]">{openedYearLabel}</dd>
+                    <dt className="text-[var(--text-soft)]">{t.labels.opened}</dt>
+                    <dd className="text-[var(--text-strong)]">{openedYearLabel}</dd>
 
-                      <dt className="text-[var(--text-soft)]">{t.labels.stadiumTimeZone}</dt>
-                      <dd className="text-[var(--text-strong)]">{stadium.timeZone || t.labels.unknown}</dd>
+                    <dt className="text-[var(--text-soft)]">{t.labels.stadiumTimeZone}</dt>
+                    <dd className="text-[var(--text-strong)]">{stadium.timeZone || t.labels.unknown}</dd>
 
-                      <dt className="text-[var(--text-soft)]">{t.labels.matchesHosted}</dt>
-                      <dd className="text-[var(--text-strong)]">{numberFormatter.format(stadium.matchesHosted)}</dd>
+                    <dt className="text-[var(--text-soft)]">{t.labels.matchesHosted}</dt>
+                    <dd className="text-[var(--text-strong)]">{numberFormatter.format(stadium.matchesHosted)}</dd>
 
-                      <dt className="text-[var(--text-soft)]">{t.labels.firstKickoff}</dt>
-                      <dd className="text-[var(--text-strong)]">{firstKickoffLabel}</dd>
+                    <dt className="text-[var(--text-soft)]">{t.labels.firstKickoff}</dt>
+                    <dd className="text-[var(--text-strong)]">{firstKickoffLabel}</dd>
 
-                      <dt className="text-[var(--text-soft)]">{t.labels.lastKickoff}</dt>
-                      <dd className="text-[var(--text-strong)]">{lastKickoffLabel}</dd>
-                    </dl>
-                  </article>
-                )
-              })}
-            </div>
-            <div
-              className={`pointer-events-none absolute inset-x-0 top-0 hidden h-6 bg-gradient-to-b from-[var(--bg)] to-transparent transition-opacity duration-200 lg:block ${listScrollShadow.showTop ? 'opacity-100' : 'opacity-0'}`}
-            />
-            <div
-              className={`pointer-events-none absolute inset-x-0 bottom-0 hidden h-6 bg-gradient-to-t from-[var(--bg)] to-transparent transition-opacity duration-200 lg:block ${listScrollShadow.showBottom ? 'opacity-100' : 'opacity-0'}`}
-            />
+                    <dt className="text-[var(--text-soft)]">{t.labels.lastKickoff}</dt>
+                    <dd className="text-[var(--text-strong)]">{lastKickoffLabel}</dd>
+                  </dl>
+                </button>
+              )
+            })}
           </div>
-        </div>
+          <div
+            className={`pointer-events-none absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-[var(--bg)] to-transparent transition-opacity duration-200 ${gridScrollShadow.showTop ? 'opacity-100' : 'opacity-0'}`}
+          />
+          <div
+            className={`pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-[var(--bg)] to-transparent transition-opacity duration-200 ${gridScrollShadow.showBottom ? 'opacity-100' : 'opacity-0'}`}
+          />
+          </div>
+
+          {/* Stadium detail modal in list view */}
+          <StadiumModal stadium={selectedStadium} onClose={() => setSelectedStadiumKey(null)} />
+        </>
       )}
     </section>
   )

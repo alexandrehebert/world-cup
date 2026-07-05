@@ -223,6 +223,8 @@ export const fr: TranslationSet = {
     stadiumMap: 'Carte des stades hôtes',
     stadiumMapFocus: 'Carte du monde complète avec zoom automatique sur les stades de la compétition en cours.',
     stadiumMapLegend: 'Cartes des stades de la compétition',
+    list: 'Liste',
+    map: 'Carte',
   },
   teams: {
     mex: 'Mexique',

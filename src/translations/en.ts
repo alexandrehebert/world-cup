@@ -223,6 +223,8 @@ export const en: TranslationSet = {
     stadiumMap: 'Host stadium map',
     stadiumMapFocus: 'Full world map with automatic zoom on current competition stadium locations.',
     stadiumMapLegend: 'Competition stadium map',
+    list: 'List',
+    map: 'Map',
   },
   teams: {
     mex: 'Mexico',

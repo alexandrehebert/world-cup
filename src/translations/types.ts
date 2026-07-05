@@ -221,6 +221,8 @@ export interface TranslationSet {
     stadiumMap: string
     stadiumMapFocus: string
     stadiumMapLegend: string
+    list: string
+    map: string
   }
   teams: Record<string, string>
   groups: Record<string, string>
