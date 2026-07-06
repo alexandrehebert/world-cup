@@ -1,4 +1,5 @@
 import type { MatchRecord } from '../types/tournament'
+import { isSearchMatch } from './search'
 
 type StadiumCatalogRecord = {
   seatCapacity: number
@@ -126,6 +127,31 @@ export const buildStadiumSlugIndex = (stadiums: readonly StadiumSummary[]) => {
 
   return { keyToSlug, slugToKey }
 }
+
+export const getStadiumSearchValues = (stadium: StadiumSummary) => {
+  const candidateValues = [
+    stadium.stadium,
+    stadium.city,
+    stadium.country,
+    stadium.timeZone,
+    String(stadium.matchesHosted),
+    stadium.firstKickoff,
+    stadium.lastKickoff,
+  ]
+
+  if (stadium.seatCapacity !== null) {
+    candidateValues.push(String(stadium.seatCapacity))
+  }
+
+  if (stadium.openedYear !== null) {
+    candidateValues.push(String(stadium.openedYear))
+  }
+
+  return candidateValues
+}
+
+export const isStadiumSearchMatch = (query: string, stadium: StadiumSummary) =>
+  isSearchMatch(query, getStadiumSearchValues(stadium))
 
 export const WORLD_MAP_WIDTH = 360
 export const WORLD_MAP_HEIGHT = 180

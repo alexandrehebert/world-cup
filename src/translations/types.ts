@@ -249,8 +249,10 @@ export interface TranslationSet {
     opened: string
     firstKickoff: string
     lastKickoff: string
+    searchStadiumsPlaceholder: string
     unknown: string
     noStadiumsForCompetition: string
+    noStadiumsForSearch: string
     stadiumMap: string
     stadiumMapFocus: string
     stadiumMapLegend: string

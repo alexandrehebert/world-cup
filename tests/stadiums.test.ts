@@ -8,6 +8,7 @@ import {
   buildStadiumSummaries,
   getStadiumCatalogRecord,
   getStadiumMapViewport,
+  isStadiumSearchMatch,
   normalizeStadiumSlug,
   WORLD_MAP_HEIGHT,
   WORLD_MAP_WIDTH,
@@ -189,4 +190,22 @@ test('buildStadiumSlugIndex creates stable unique slugs for duplicate venues', (
 test('normalizeStadiumSlug keeps URL slug parsing resilient', () => {
   assert.equal(normalizeStadiumSlug('  National---Stadium__Capital  '), 'national-stadium-capital')
   assert.equal(normalizeStadiumSlug('***'), 'stadium')
+})
+
+test('isStadiumSearchMatch matches across stadium metadata fields', () => {
+  const summaries = buildStadiumSummaries([
+    createMatch({
+      id: 'm1',
+      kickoff: '2026-06-11T19:00:00Z',
+      venue: { stadium: 'SoFi Stadium', city: 'Inglewood', country: 'United States', timeZone: 'America/Los_Angeles' },
+    }),
+  ])
+  const stadium = summaries[0]
+
+  assert.equal(isStadiumSearchMatch('inglewood', stadium), true)
+  assert.equal(isStadiumSearchMatch('los angeles', stadium), true)
+  assert.equal(isStadiumSearchMatch('70240', stadium), true)
+  assert.equal(isStadiumSearchMatch('2020', stadium), true)
+  assert.equal(isStadiumSearchMatch('2026-06-11', stadium), true)
+  assert.equal(isStadiumSearchMatch('dublin', stadium), false)
 })

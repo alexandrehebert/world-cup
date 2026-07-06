@@ -12,7 +12,7 @@ import { LivePulse } from '../ui/live-pulse'
 import type { GroupRecord, MatchRecord, ParticipantRef, StandingRecord } from '../../types/tournament'
 
 const MIN_NODE_HEIGHT = 216
-const CONDENSED_NODE_HEIGHT = 48
+const CONDENSED_NODE_HEIGHT = 52
 const CONDENSED_CONNECTOR_WIDTH = 16
 const BASE_GAP = 20
 const CONNECTOR_WIDTH = 32
@@ -427,14 +427,14 @@ export const BracketBoard = ({
       const team = teamId ? teamsById[teamId] : undefined
       if (!team) {
         return (
-          <span className={`inline-flex h-7 w-7 items-center justify-center rounded-[8px] border border-dashed border-[var(--border)] p-[2px] ${isEliminated ? 'opacity-55' : ''}`}>
+          <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] border border-dashed border-[var(--border)] p-[2px] ${isEliminated ? 'opacity-55' : ''}`}>
             <span className="h-full w-full rounded-[6px] border border-dashed border-[var(--border)]/60" />
           </span>
         )
       }
 
       return (
-        <span className={`inline-flex h-7 w-7 items-center justify-center rounded-[8px] border border-[var(--border)] p-[2px] ${isEliminated ? 'opacity-55' : ''}`}>
+        <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] border border-[var(--border)] p-[2px] ${isEliminated ? 'opacity-55' : ''}`}>
           <span className="inline-flex h-full w-full items-center overflow-hidden rounded-[6px]">
             <span className={`fi fi-${team.flagCode} flag-avatar-fill`} aria-hidden="true" />
           </span>
@@ -469,17 +469,17 @@ export const BracketBoard = ({
             <LivePulse className="h-2.5 w-2.5" />
           </span>
         ) : null}
-        <div className="flex h-full items-center justify-between gap-2 px-1">
+        <div className="grid h-full grid-cols-[28px_minmax(0,1fr)_28px] items-center gap-1">
           {renderFlag(homeTeamId, homeEliminated)}
           {shouldShowScoreline ? (
-            <span className="inline-flex flex-col items-center text-[10px] text-[var(--text-soft)]">
-              <span className="font-semibold tabular-nums">{centerScoreLabel}</span>
+            <span className="inline-flex min-w-0 max-w-full flex-col items-center whitespace-nowrap text-[10px] leading-tight text-[var(--text-soft)]">
+              <span className="max-w-full overflow-hidden text-ellipsis font-semibold tabular-nums whitespace-nowrap">{centerScoreLabel}</span>
               {centerPenaltyLabel ? (
-                <span className="text-[9px] tabular-nums">{centerPenaltyLabel}</span>
+                <span className="max-w-full overflow-hidden text-ellipsis text-[9px] tabular-nums whitespace-nowrap">{centerPenaltyLabel}</span>
               ) : null}
             </span>
           ) : (
-            <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{centerScoreLabel}</span>
+            <span className="inline-flex w-full justify-center whitespace-nowrap text-[10px] uppercase tracking-[0.2em] text-[var(--text-soft)]">{centerScoreLabel}</span>
           )}
           {renderFlag(awayTeamId, awayEliminated)}
         </div>
@@ -514,7 +514,7 @@ export const BracketBoard = ({
             return (
               <div
                 key={`${centerConnectionSide}-${round.id}`}
-                className="flex w-[112px] min-w-[112px] flex-col lg:min-w-0 lg:flex-1 lg:w-auto"
+                className="flex w-[132px] min-w-[132px] flex-col lg:min-w-0 lg:flex-1 lg:w-auto"
               >
                 <p className="border-b border-[var(--border)] pb-1 text-[10px] font-semibold whitespace-nowrap uppercase tracking-[0.2em] text-[var(--accent-text)]">
                   {getRoundLabel(round.id)}
@@ -814,7 +814,7 @@ export const BracketBoard = ({
           <div className="flex min-w-max items-start gap-2 lg:min-w-0 lg:w-full">
             {renderCondensedTreeSide(leftSplitRounds, 'right')}
 
-            <div className="flex w-[112px] min-w-[112px] flex-col lg:min-w-0 lg:flex-1 lg:w-auto">
+            <div className="flex w-[132px] min-w-[132px] flex-col lg:min-w-0 lg:flex-1 lg:w-auto">
               <p className="border-b border-[var(--border)] pb-1 text-[10px] font-semibold whitespace-nowrap uppercase tracking-[0.2em] text-[var(--accent-text)]">
                 {t.labels.stageFinal}
               </p>

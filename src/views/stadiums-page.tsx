@@ -11,6 +11,7 @@ import {
   buildStadiumMapMarkers,
   buildStadiumSummaries,
   getStadiumMapViewport,
+  isStadiumSearchMatch,
   normalizeStadiumSlug,
   type StadiumMapViewport,
   WORLD_MAP_HEIGHT,
@@ -87,6 +88,7 @@ export const StadiumsPage = () => {
   const [hoveredStadiumKey, setHoveredStadiumKey] = useState<string | null>(null)
   const [tooltipPosition, setTooltipPosition] = useState<'left' | 'right'>('right')
   const [mapSvgContainerDimensions, setMapSvgContainerDimensions] = useState({ width: 0, height: 0 })
+  const [searchQuery, setSearchQuery] = useState('')
   const stadiumGridRef = useRef<HTMLDivElement | null>(null)
   const mapSvgContainerRef = useRef<HTMLDivElement | null>(null)
   const [gridScrollShadow, setGridScrollShadow] = useState({ showTop: false, showBottom: false })
@@ -96,6 +98,13 @@ export const StadiumsPage = () => {
     [locale],
   )
   const stadiums = useMemo(() => buildStadiumSummaries(matches), [matches])
+  const filteredStadiums = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return stadiums
+    }
+
+    return stadiums.filter((stadium) => isStadiumSearchMatch(searchQuery, stadium))
+  }, [searchQuery, stadiums])
   const { keyToSlug, slugToKey } = useMemo(
     () => buildStadiumSlugIndex(stadiums),
     [stadiums],
@@ -109,10 +118,10 @@ export const StadiumsPage = () => {
   }, [slugToKey, stadiumSlug])
   const selectedStadiumKey = selectedStadiumKeyFromPath
   const selectedStadium = selectedStadiumKey
-    ? (stadiums.find((s) => s.key === selectedStadiumKey) ?? null)
+    ? (filteredStadiums.find((s) => s.key === selectedStadiumKey) ?? null)
     : null
 
-  const mapMarkers = useMemo(() => buildStadiumMapMarkers(stadiums), [stadiums])
+  const mapMarkers = useMemo(() => buildStadiumMapMarkers(filteredStadiums), [filteredStadiums])
   const mapViewport = useMemo(() => {
     if (!selectedStadiumKey) {
       return getStadiumMapViewport(mapMarkers)
@@ -192,6 +201,12 @@ export const StadiumsPage = () => {
   }, [themePreference])
 
   useEffect(() => {
+    if (selectedStadiumKey && !filteredStadiums.some((stadium) => stadium.key === selectedStadiumKey)) {
+      setSelectedStadiumByKey(null)
+    }
+  }, [filteredStadiums, selectedStadiumKey, setSelectedStadiumByKey])
+
+  useEffect(() => {
     if (selectedStadiumKeyFromPath) {
       const canonicalSlug = keyToSlug[selectedStadiumKeyFromPath]
       const encodedPathSlug = encodeURIComponent(canonicalSlug)
@@ -262,7 +277,7 @@ export const StadiumsPage = () => {
     updateListScrollShadow()
     window.addEventListener('resize', updateListScrollShadow)
     return () => window.removeEventListener('resize', updateListScrollShadow)
-  }, [stadiums.length, updateListScrollShadow])
+  }, [filteredStadiums.length, updateListScrollShadow])
 
   useEffect(() => {
     if (viewMode !== 'list') {
@@ -310,8 +325,21 @@ export const StadiumsPage = () => {
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-4">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
         <h2 className="text-2xl font-semibold text-[var(--text-strong)]">{t.headings.stadiums}</h2>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="relative min-w-0 flex-1">
+          <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[var(--text-soft)]" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder={t.labels.searchStadiumsPlaceholder}
+            aria-label={t.labels.searchStadiumsPlaceholder}
+            className="h-10 w-full border border-[var(--border)] bg-[var(--surface)] pl-10 pr-3 text-sm text-[var(--text-strong)] outline-none transition focus:border-[var(--accent-border)]"
+          />
+        </div>
         <div className="inline-flex h-10 shrink-0 items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-soft)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" role="group" aria-label={t.headings.stadiums}>
           {([
             { value: 'list' as const, label: t.labels.list, icon: 'list' },
@@ -340,6 +368,10 @@ export const StadiumsPage = () => {
       {stadiums.length === 0 ? (
         <div className="bg-[var(--surface)] px-6 py-6 text-center text-sm text-[var(--text-muted)]">
           {t.labels.noStadiumsForCompetition}
+        </div>
+      ) : filteredStadiums.length === 0 ? (
+        <div className="bg-[var(--surface)] px-6 py-6 text-center text-sm text-[var(--text-muted)]">
+          {t.labels.noStadiumsForSearch}
         </div>
       ) : viewMode === 'map' ? (
         <>
@@ -434,7 +466,7 @@ export const StadiumsPage = () => {
               onScroll={updateListScrollShadow}
               className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 auto-rows-max overflow-y-auto min-h-0 h-full pr-1"
             >
-              {stadiums.map((stadium) => {
+              {filteredStadiums.map((stadium) => {
               const firstKickoffLabel = formatMatchDate(stadium.firstKickoff, locale, stadium.timeZone || undefined, t.labels.today).localDateTime
               const lastKickoffLabel = formatMatchDate(stadium.lastKickoff, locale, stadium.timeZone || undefined, t.labels.today).localDateTime
 
