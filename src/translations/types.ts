@@ -250,6 +250,7 @@ export interface TranslationSet {
     firstKickoff: string
     lastKickoff: string
     searchStadiumsPlaceholder: string
+    clearStadiumSearch: string
     unknown: string
     noStadiumsForCompetition: string
     noStadiumsForSearch: string

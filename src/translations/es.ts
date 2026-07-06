@@ -252,6 +252,7 @@ export const es: TranslationSet = {
     firstKickoff: 'Primer inicio',
     lastKickoff: 'Último inicio',
     searchStadiumsPlaceholder: 'Buscar estadios',
+    clearStadiumSearch: 'Limpiar búsqueda de estadios',
     unknown: 'Desconocido',
     noStadiumsForCompetition: 'No hay datos de estadios disponibles para esta competición.',
     noStadiumsForSearch: 'Ningún estadio coincide con tu búsqueda.',

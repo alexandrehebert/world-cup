@@ -89,6 +89,7 @@ export const StadiumsPage = () => {
   const [tooltipPosition, setTooltipPosition] = useState<'left' | 'right'>('right')
   const [mapSvgContainerDimensions, setMapSvgContainerDimensions] = useState({ width: 0, height: 0 })
   const [searchQuery, setSearchQuery] = useState('')
+  const stadiumSearchInputRef = useRef<HTMLInputElement | null>(null)
   const stadiumGridRef = useRef<HTMLDivElement | null>(null)
   const mapSvgContainerRef = useRef<HTMLDivElement | null>(null)
   const [gridScrollShadow, setGridScrollShadow] = useState({ showTop: false, showBottom: false })
@@ -332,13 +333,28 @@ export const StadiumsPage = () => {
         <div className="relative min-w-0 flex-1">
           <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[var(--text-soft)]" />
           <input
+            ref={stadiumSearchInputRef}
             type="text"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder={t.labels.searchStadiumsPlaceholder}
             aria-label={t.labels.searchStadiumsPlaceholder}
-            className="h-10 w-full border border-[var(--border)] bg-[var(--surface)] pl-10 pr-3 text-sm text-[var(--text-strong)] outline-none transition focus:border-[var(--accent-border)]"
+            className="h-10 w-full border border-[var(--border)] bg-[var(--surface)] pl-10 pr-10 text-sm text-[var(--text-strong)] outline-none transition focus:border-[var(--accent-border)]"
           />
+          {searchQuery.trim() ? (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('')
+                stadiumSearchInputRef.current?.focus()
+              }}
+              className="absolute right-2 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center text-[var(--text-soft)] transition hover:text-[var(--text)]"
+              aria-label={t.labels.clearStadiumSearch}
+              title={t.labels.clearStadiumSearch}
+            >
+              <Icon name="close" className="text-[18px]" />
+            </button>
+          ) : null}
         </div>
         <div className="inline-flex h-10 shrink-0 items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-soft)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" role="group" aria-label={t.headings.stadiums}>
           {([
