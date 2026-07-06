@@ -174,20 +174,10 @@ export const CompetitionDashboard = () => {
                           </div>
                         </div>
 
-                        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                          <div className="border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.meta.localTime}</p>
-                            <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">{venueLocalTime}</p>
-                            <p className="text-xs text-[var(--text-soft)]">{localDateTime}</p>
+                        <div className="mt-3 border-t border-[var(--border)] pt-2 text-xs text-[var(--text-soft)]">
+                          <p>{venueLocalTime} · {localDateTime}</p>
+                          <p>{stadiumLabel ?? t.labels.tbd} · {[cityLabel, countryLabel].filter(Boolean).join(' · ')} · {venueTimeZone}</p>
                         </div>
-                        <div className="border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-soft)]">{t.meta.venue}</p>
-                          <p className="mt-1 text-sm font-semibold text-[var(--text-strong)]">{stadiumLabel ?? t.labels.tbd}</p>
-                          <p className="text-xs text-[var(--text-soft)]">
-                            {[cityLabel, countryLabel].filter(Boolean).join(' · ')} · {venueTimeZone}
-                          </p>
-                        </div>
-                      </div>
                       </button>
                     </div>
                   )
@@ -222,7 +212,7 @@ export const CompetitionDashboard = () => {
                           className={`flex shrink-0 flex-col justify-between gap-1.5 border border-[var(--border)] px-3 py-2.5 text-left transition ${
                             displayStatus === 'live'
                               ? 'bg-[var(--calendar-live-bg)] hover:bg-[var(--calendar-live-hover-bg)]'
-                              : 'bg-[var(--surface)] hover:bg-[var(--surface-muted)]'
+                              : 'bg-[var(--surface)] hover:bg-[var(--surface-soft)]'
                           }`}
                           style={{ minWidth: '280px' }}
                         >
@@ -306,7 +296,7 @@ export const CompetitionDashboard = () => {
                           key={match.id}
                           type="button"
                           onClick={() => setSelectedMatchId(match.id)}
-                          className="flex w-full items-center justify-between gap-2 bg-[var(--surface)] px-2 py-1.5 text-left transition hover:bg-[var(--surface-strong)]"
+                          className="flex w-full items-center justify-between gap-2 bg-[var(--surface)] px-2 py-1.5 text-left transition hover:bg-[var(--surface-soft)]"
                         >
                           <span className="truncate text-xs text-[var(--text)]">
                             {(homeTeam ? t.teams[homeTeam.id] ?? homeTeam.name : t.labels.tbd)} {t.labels.vs}{' '}
@@ -359,7 +349,7 @@ export const CompetitionDashboard = () => {
                     key={match.id}
                     type="button"
                     onClick={() => setSelectedMatchId(match.id)}
-                    className="w-full border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-left transition hover:border-[var(--border-strong)]"
+                    className="w-full border border-[var(--border)] bg-[var(--surface)] p-3 text-left transition hover:bg-[var(--surface-soft)]"
                   >
                     <div className="mb-2 flex items-center justify-between gap-2">
                       <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--text-soft)]">{t.labels.finished}</p>
