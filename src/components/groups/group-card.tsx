@@ -3,6 +3,7 @@ import { useDashboard } from '../../contexts/dashboard-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { resolveCompetitionId } from '../../competitions'
 import { usesStandingsSectionPath } from '../../lib/competition-sections'
+import { getGradientColors } from '../../lib/stadium-images'
 import { Icon } from '../../lib/icons'
 import { FlagAvatar } from '../ui/flag-avatar'
 
@@ -15,10 +16,16 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
   const hasPendingStandingsMatches = useStandingsHeader && matches.some((match) => match.stage === 'group' && match.status !== 'finished')
   const group = groupsById[groupId]
   const anyFavoriteInGroup = favoriteTeamIds.length > 0 && group.standings.some((s) => favoriteTeamIds.includes(s.teamId))
+  const [gradientColor1, gradientColor2] = getGradientColors(groupId)
 
   return (
     <div className="border border-[var(--border)] bg-[var(--surface)]">
-      <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] px-5 py-4">
+      <div 
+        className="relative flex items-center justify-between gap-4 border-b border-[var(--border)] px-5 py-4 overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(135deg, ${gradientColor1} 0%, ${gradientColor2} 100%)`
+        }}
+      >
         <h3 className="text-lg font-bold text-[var(--text-strong)]">{useStandingsHeader ? t.labels.standings : (t.groups[group.id] ?? group.label)}</h3>
         {useStandingsHeader ? null : (
           <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-text)]">

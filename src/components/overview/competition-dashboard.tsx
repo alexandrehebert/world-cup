@@ -5,6 +5,7 @@ import { useNow, useTimeZone } from '../../contexts/time-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { buildScheduleCalendarDays } from '../../lib/dashboard-schedule'
 import { formatMatchDate, getDateLocaleTag, getDisplayMatchStatus, getLiveStatusDetail, getLocalizedCountryName, getLocalizedText, hasDisplayScore } from '../../lib/format'
+import { getGradientWithFadeOut } from '../../lib/stadium-images'
 import { Icon } from '../../lib/icons'
 import { LivePulse } from '../ui/live-pulse'
 import { FlagAvatar } from '../ui/flag-avatar'
@@ -28,6 +29,10 @@ export const CompetitionDashboard = () => {
   const localTimeZone = useTimeZone()
   const { liveMatches, liveWidgetMatches, scheduledMatches, latestResults, notifications, allNotifications } = useCompetitionNotifications()
   const dateLocale = getDateLocaleTag(locale)
+  const gradientFadeOut1 = getGradientWithFadeOut('live-matches')
+  const gradientFadeOut2 = getGradientWithFadeOut('latest-results')
+  const gradientFadeOut3 = getGradientWithFadeOut('schedule')
+  const gradientFadeOut4 = getGradientWithFadeOut('upcoming')
   const scheduleCalendarDays = useMemo(
     () => buildScheduleCalendarDays(scheduledMatches, dateLocale, localTimeZone, t.labels.today, nowMs),
     [dateLocale, localTimeZone, nowMs, scheduledMatches, t.labels.today],
@@ -58,12 +63,22 @@ export const CompetitionDashboard = () => {
   return (
     <section className="space-y-4">
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <article className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="flex items-center gap-2 text-base font-semibold text-[var(--text-strong)]">
-              <LivePulse className="h-3 w-3" />
-              {liveMatches.length > 0 ? t.labels.liveNow : t.labels.comingSoon}
-            </h2>
+        <article 
+          className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5 relative overflow-hidden"
+          style={{
+            backgroundImage: gradientFadeOut1,
+            backgroundAttachment: 'local'
+          }}
+        >
+          <div 
+            className="mb-3 flex items-center justify-between gap-3 relative z-10"
+          >
+            <div>
+              <h2 className="flex items-center gap-2 text-base font-semibold text-[var(--text-strong)]">
+                <LivePulse className="h-3 w-3" />
+                {liveMatches.length > 0 ? t.labels.liveNow : t.labels.comingSoon}
+              </h2>
+            </div>
             <Link
               to="/matches"
               className={dashboardWidgetActionClassName}
@@ -240,9 +255,19 @@ export const CompetitionDashboard = () => {
           )}
         </article>
 
-        <article className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="text-base font-semibold text-[var(--text-strong)]">{t.labels.smallSchedule}</h2>
+        <article 
+          className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5 relative overflow-hidden"
+          style={{
+            backgroundImage: gradientFadeOut3,
+            backgroundAttachment: 'local'
+          }}
+        >
+          <div 
+            className="mb-3 flex items-center justify-between gap-3 relative z-10"
+          >
+            <div>
+              <h2 className="text-base font-semibold text-[var(--text-strong)]">{t.labels.smallSchedule}</h2>
+            </div>
             <Link
               to="/agenda"
               className={dashboardWidgetActionClassName}
@@ -298,9 +323,19 @@ export const CompetitionDashboard = () => {
           )}
         </article>
 
-        <article className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="text-base font-semibold text-[var(--text-strong)]">{t.labels.latestResults}</h2>
+        <article 
+          className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5 relative overflow-hidden"
+          style={{
+            backgroundImage: gradientFadeOut2,
+            backgroundAttachment: 'local'
+          }}
+        >
+          <div 
+            className="mb-3 flex items-center justify-between gap-3 relative z-10"
+          >
+            <div>
+              <h2 className="text-base font-semibold text-[var(--text-strong)]">{t.labels.latestResults}</h2>
+            </div>
             <Link
               to="/matches"
               className={dashboardWidgetActionClassName}
@@ -350,12 +385,22 @@ export const CompetitionDashboard = () => {
           )}
         </article>
 
-        <article className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="flex items-center gap-2 text-base font-semibold text-[var(--text-strong)]">
-              <Icon name="notifications" className="text-[18px]" />
-              {t.labels.eventsSection}
-            </h2>
+        <article 
+          className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5 relative overflow-hidden"
+          style={{
+            backgroundImage: gradientFadeOut4,
+            backgroundAttachment: 'local'
+          }}
+        >
+          <div 
+            className="mb-3 flex items-center justify-between gap-3 relative z-10"
+          >
+            <div>
+              <h2 className="flex items-center gap-2 text-base font-semibold text-[var(--text-strong)]">
+                <Icon name="notifications" className="text-[18px]" />
+                {t.labels.eventsSection}
+              </h2>
+            </div>
             <Link
               to="#"
               onClick={(event) => {

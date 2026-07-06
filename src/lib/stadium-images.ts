@@ -58,14 +58,14 @@ function hashStadiumKeyToColor(stadiumKey: string): [string, string] {
     hash = hash & hash
   }
 
-  // Color palette using theme colors: mix of surface and accent colors with low opacity
+  // Color palette using theme colors: mix of surface and accent colors with subtle opacity
   const colors = [
-    'rgba(0, 217, 143, 0.15)',
-    'rgba(40, 127, 207, 0.15)',
-    'rgba(130, 170, 225, 0.15)',
-    'rgba(154, 204, 255, 0.15)',
-    'rgba(0, 217, 143, 0.20)',
+    'rgba(0, 217, 143, 0.12)',
     'rgba(40, 127, 207, 0.12)',
+    'rgba(130, 170, 225, 0.10)',
+    'rgba(154, 204, 255, 0.10)',
+    'rgba(0, 217, 143, 0.13)',
+    'rgba(40, 127, 207, 0.11)',
   ]
 
   const index = Math.abs(hash) % colors.length
@@ -86,6 +86,18 @@ export const getStadiumBackgroundGradient = (stadiumKey: string): string => {
 
   const [color1, color2] = hashStadiumKeyToColor(stadiumKey)
   return `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`
+}
+
+// Get gradient colors for use in fade overlays
+export const getGradientColors = (key: string): [string, string] => {
+  return hashStadiumKeyToColor(key)
+}
+
+// Get gradient with fade-out effect for widget headers
+export const getGradientWithFadeOut = (key: string): string => {
+  const [color1, color2] = hashStadiumKeyToColor(key)
+  // Create a vertical gradient that blends from the diagonal gradient colors to transparent
+  return `linear-gradient(180deg, ${color1} 0%, ${color2} 50%, rgba(255, 255, 255, 0) 100%)`
 }
 
 export const getStadiumBackgroundStyle = (
