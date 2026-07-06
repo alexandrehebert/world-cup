@@ -58,14 +58,14 @@ function hashStadiumKeyToColor(stadiumKey: string): [string, string] {
     hash = hash & hash
   }
 
-  // Color palette using theme colors: mix of surface and accent colors with subtle opacity
+  // Color palette using theme colors: mix of surface and accent colors with very subtle opacity
   const colors = [
-    'rgba(0, 217, 143, 0.12)',
-    'rgba(40, 127, 207, 0.12)',
-    'rgba(130, 170, 225, 0.10)',
-    'rgba(154, 204, 255, 0.10)',
-    'rgba(0, 217, 143, 0.13)',
-    'rgba(40, 127, 207, 0.11)',
+    'rgba(0, 217, 143, 0.06)',
+    'rgba(40, 127, 207, 0.06)',
+    'rgba(130, 170, 225, 0.05)',
+    'rgba(154, 204, 255, 0.05)',
+    'rgba(0, 217, 143, 0.07)',
+    'rgba(40, 127, 207, 0.05)',
   ]
 
   const index = Math.abs(hash) % colors.length
