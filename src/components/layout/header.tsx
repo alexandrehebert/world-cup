@@ -149,7 +149,7 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
               {isMobileCompetitionMenuOpen ? (
                 <div
                   id="mobile-competition-menu"
-                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-72 rounded-md border border-[var(--border)] bg-[var(--surface-strong)] p-0 shadow-xl"
+                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[22rem] max-w-[calc(100vw-1.5rem)] rounded-md border border-[var(--border)] bg-[var(--surface-strong)] p-0 shadow-xl"
                 >
                   <CompetitionSwitcher activeCompetitionId={effectiveMeta?.competitionId} />
                 </div>

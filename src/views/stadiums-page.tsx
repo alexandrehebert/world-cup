@@ -18,6 +18,7 @@ import {
 } from '../lib/stadiums'
 import { StadiumTooltip } from '../components/stadiums/stadium-tooltip'
 import { StadiumModal } from '../components/stadiums/stadium-modal'
+import { StadiumItem } from '../components/stadiums/stadium-item'
 import { getIntlNumberLocale } from '../translations/intl'
 
 const MAP_GRID_CELL_SIZE = 12
@@ -431,54 +432,33 @@ export const StadiumsPage = () => {
             <div
               ref={stadiumGridRef}
               onScroll={updateListScrollShadow}
-              className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 overflow-y-auto min-h-0 h-full content-start pr-1"
+              className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 auto-rows-max overflow-y-auto min-h-0 h-full pr-1"
             >
               {stadiums.map((stadium) => {
               const firstKickoffLabel = formatMatchDate(stadium.firstKickoff, locale, stadium.timeZone || undefined, t.labels.today).localDateTime
               const lastKickoffLabel = formatMatchDate(stadium.lastKickoff, locale, stadium.timeZone || undefined, t.labels.today).localDateTime
-              const seatCapacityLabel = stadium.seatCapacity
-                ? `${numberFormatter.format(stadium.seatCapacity)} ${t.labels.seats}`
-                : t.labels.unknown
-              const openedYearLabel = stadium.openedYear ? String(stadium.openedYear) : t.labels.unknown
 
               return (
-                <button
+                <StadiumItem
                   key={stadium.key}
-                  type="button"
+                  stadium={stadium}
+                  isSelected={selectedStadiumKey === stadium.key}
                   onClick={() => setSelectedStadiumByKey(stadium.key)}
-                  className={`border bg-[var(--surface)] transition-colors text-left ${selectedStadiumKey === stadium.key ? 'border-[var(--accent-border)]' : 'border-[var(--border)] hover:bg-[var(--surface-strong)]'}`}
-                >
-                  <div className="flex items-start justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
-                    <div className="min-w-0">
-                      <h3 className="truncate text-base font-semibold text-[var(--text-strong)]">{stadium.stadium}</h3>
-                      <p className="truncate text-xs text-[var(--text-soft)]">{stadium.city}, {stadium.country}</p>
-                    </div>
-                    <Icon name="stadium" className="shrink-0 text-[18px] text-[var(--accent-text)]" />
-                  </div>
-
-                  <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 px-4 py-3 text-sm">
-                    <dt className="text-[var(--text-soft)]">{t.labels.stadiumLocation}</dt>
-                    <dd className="text-[var(--text-strong)]">{stadium.city}, {stadium.country}</dd>
-
-                    <dt className="text-[var(--text-soft)]">{t.labels.stadiumSeatCapacity}</dt>
-                    <dd className="text-[var(--text-strong)]">{seatCapacityLabel}</dd>
-
-                    <dt className="text-[var(--text-soft)]">{t.labels.opened}</dt>
-                    <dd className="text-[var(--text-strong)]">{openedYearLabel}</dd>
-
-                    <dt className="text-[var(--text-soft)]">{t.labels.stadiumTimeZone}</dt>
-                    <dd className="text-[var(--text-strong)]">{stadium.timeZone || t.labels.unknown}</dd>
-
-                    <dt className="text-[var(--text-soft)]">{t.labels.matchesHosted}</dt>
-                    <dd className="text-[var(--text-strong)]">{numberFormatter.format(stadium.matchesHosted)}</dd>
-
-                    <dt className="text-[var(--text-soft)]">{t.labels.firstKickoff}</dt>
-                    <dd className="text-[var(--text-strong)]">{firstKickoffLabel}</dd>
-
-                    <dt className="text-[var(--text-soft)]">{t.labels.lastKickoff}</dt>
-                    <dd className="text-[var(--text-strong)]">{lastKickoffLabel}</dd>
-                  </dl>
-                </button>
+                  labels={{
+                    stadiumLocation: t.labels.stadiumLocation,
+                    stadiumSeatCapacity: t.labels.stadiumSeatCapacity,
+                    opened: t.labels.opened,
+                    stadiumTimeZone: t.labels.stadiumTimeZone,
+                    matchesHosted: t.labels.matchesHosted,
+                    firstKickoff: t.labels.firstKickoff,
+                    lastKickoff: t.labels.lastKickoff,
+                    unknown: t.labels.unknown,
+                    seats: t.labels.seats,
+                  }}
+                  numberFormatter={numberFormatter}
+                  firstKickoffLabel={firstKickoffLabel}
+                  lastKickoffLabel={lastKickoffLabel}
+                />
               )
             })}
           </div>

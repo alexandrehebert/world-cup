@@ -203,15 +203,15 @@ export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetition
       {groupedOptions.map((group) => (
         <div
           key={group.sportLabel}
-          className="relative space-y-1 overflow-hidden"
+          className="relative space-y-1 overflow-hidden p-3"
         >
-          <div className="relative z-10 flex items-center gap-2 px-2 pt-1.5">
+          <div className="z-10 flex items-center gap-2">
             <span className="h-px flex-1 bg-[var(--border)]" />
             <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
               {getSportLabel(group.sportLabel)}
             </span>
           </div>
-          <div className="relative grid gap-1 px-2 pt-1 pb-2">
+          <div className="space-y-1">
             <span
               aria-hidden="true"
               className="pointer-events-none absolute right-0 top-0 z-0 h-24 w-24 translate-x-1/2 -translate-y-1/2 bg-[var(--text-soft)] opacity-[0.08]"
@@ -228,7 +228,7 @@ export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetition
             />
             {group.options.map((option) => (
               option.entries.length > 1 ? (
-                <div key={option.familyId} className="relative z-10 border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
+                <div key={option.familyId} className="z-10 border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
                   <p className="mb-2 text-xs font-semibold text-[var(--text)]">
                     {option.familyLabel}
                   </p>
@@ -259,14 +259,14 @@ export const CompetitionSwitcher = ({ activeCompetitionId }: { activeCompetition
                 <a
                   key={option.entries[0].id}
                   href={option.entries[0].href}
-                  className="relative z-10 block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)]"
+                  className="z-10 block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-strong)]"
                 >
                   {option.entries[0].label}
                 </a>
               ) : (
                 <span
                   key={option.entries[0].id}
-                  className="relative z-10 block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] opacity-70"
+                  className="z-10 block border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] opacity-70"
                   aria-disabled="true"
                   title={t.labels.competition}
                 >
