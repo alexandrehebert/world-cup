@@ -29,6 +29,7 @@ App runs on `http://localhost:3000` by default.
 - `npm run start` - run production server
 - `npm run lint` - lint with Next ESLint integration
 - `npm test` - run test suite
+- `npm run test:espn-fixtures` - live-check future canonical World Cup kickoff times against ESPN scoreboard
 - `npm run dev:vite` / `npm run build:vite` - legacy Vite entrypoints
 
 ## Environment variables
