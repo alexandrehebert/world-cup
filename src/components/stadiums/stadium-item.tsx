@@ -1,6 +1,5 @@
 import { getStadiumBackgroundGradient } from '../../lib/stadium-images'
 import type { StadiumSummary } from '../../lib/stadiums'
-import { Icon } from '../../lib/icons'
 
 interface StadiumItemProps {
   stadium: StadiumSummary
@@ -49,7 +48,7 @@ export const StadiumItem = ({
     >
       {/* Header with Gradient Background */}
       <div
-        className="flex items-start justify-between gap-3 border-b border-[var(--border)] px-4 py-3"
+        className="border-b border-[var(--border)] px-4 py-3"
         style={{
           backgroundImage: gradientBg,
           backgroundSize: 'cover',
@@ -64,10 +63,6 @@ export const StadiumItem = ({
             {stadium.city}, {stadium.country}
           </p>
         </div>
-        <Icon
-          name="stadium"
-          className="shrink-0 text-[18px] text-[var(--accent-text)]"
-        />
       </div>
 
       {/* Details */}

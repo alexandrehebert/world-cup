@@ -45,9 +45,36 @@ const focusViewportOnMarker = (
   marker: { x: number; y: number },
   tooltipPosition: 'left' | 'right',
   mapContainerWidth: number,
+  mapContainerHeight: number,
 ): StadiumMapViewport => {
-  const width = clamp(viewport.width * SELECTED_STADIUM_ZOOM_FACTOR, 26, WORLD_MAP_WIDTH)
-  const height = clamp(viewport.height * SELECTED_STADIUM_ZOOM_FACTOR, 13, WORLD_MAP_HEIGHT)
+  const targetAspectRatio = (
+    mapContainerWidth > 0 && mapContainerHeight > 0
+      ? mapContainerWidth / mapContainerHeight
+      : WORLD_MAP_WIDTH / WORLD_MAP_HEIGHT
+  )
+  const minimumWidth = 26
+  const minimumHeight = 13
+
+  let width = clamp(viewport.width * SELECTED_STADIUM_ZOOM_FACTOR, minimumWidth, WORLD_MAP_WIDTH)
+  let height = width / targetAspectRatio
+
+  if (height < minimumHeight) {
+    height = minimumHeight
+    width = height * targetAspectRatio
+  }
+
+  if (width > WORLD_MAP_WIDTH) {
+    width = WORLD_MAP_WIDTH
+    height = width / targetAspectRatio
+  }
+
+  if (height > WORLD_MAP_HEIGHT) {
+    height = WORLD_MAP_HEIGHT
+    width = height * targetAspectRatio
+  }
+
+  width = clamp(width, minimumWidth, WORLD_MAP_WIDTH)
+  height = clamp(height, minimumHeight, WORLD_MAP_HEIGHT)
 
   const tooltipWidth = mapContainerWidth > 640 ? 320 + 12 : 0
   let centerScreenRatio = 0.5
@@ -139,8 +166,9 @@ export const StadiumsPage = () => {
       selectedMarker,
       tooltipPosition,
       mapContainerWidth,
+      mapSvgContainerDimensions.height,
     )
-  }, [mapMarkers, selectedStadiumKey, tooltipPosition, mapSvgContainerDimensions.width])
+  }, [mapMarkers, selectedStadiumKey, tooltipPosition, mapSvgContainerDimensions.width, mapSvgContainerDimensions.height])
 
   const [animatedMapViewport, setAnimatedMapViewport] = useState<StadiumMapViewport>(mapViewport)
   const animatedMapViewportRef = useRef<StadiumMapViewport>(mapViewport)
@@ -395,10 +423,10 @@ export const StadiumsPage = () => {
          <div
            className="relative min-h-0 flex-1 border border-[var(--border)] bg-[var(--surface)] flex flex-col"
          >
-           <div ref={mapSvgContainerRef} className="relative flex-1 min-h-0">
+           <div ref={mapSvgContainerRef} className="relative flex-1 min-h-[18rem] overflow-hidden">
              <svg
                viewBox={`${animatedMapViewport.x} ${animatedMapViewport.y} ${animatedMapViewport.width} ${animatedMapViewport.height}`}
-               className="block h-full w-full bg-[var(--surface-soft)]"
+               className="absolute inset-0 block h-full w-full bg-[var(--surface-soft)]"
                role="img"
                aria-label={t.labels.stadiumMap}
              >
