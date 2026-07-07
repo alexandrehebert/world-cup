@@ -166,6 +166,16 @@ test('the Argentina versus Egypt round of 16 fixture keeps the corrected noon ET
   assert.equal(match?.kickoff, '2026-07-07T16:00:00Z')
 })
 
+test('the Switzerland versus Colombia round of 16 fixture keeps the corrected 4 PM ET kickoff', async () => {
+  const dataPath = path.join(process.cwd(), 'src', 'data', '2026-football-world-cup.json')
+  const raw = await fs.readFile(dataPath, 'utf8')
+  const data = JSON.parse(raw) as TournamentData
+  const match = data.matches.find((entry) => entry.id === 'm96')
+
+  assert.ok(match)
+  assert.equal(match?.kickoff, '2026-07-07T20:00:00Z')
+})
+
 test('loadTournamentData repairs stale runtime kickoff values with canonical local data when blob sync is disabled', async () => {
   const temporaryRuntimeDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wc-local-sync-'))
   const previousRuntimeDir = process.env.LOCAL_TOURNAMENT_DATA_DIR

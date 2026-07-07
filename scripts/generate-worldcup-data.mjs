@@ -166,7 +166,7 @@ const knockoutMatches = [
   [93, 'roundOf16', 'roundOf16', '2026-07-06T19:00:00Z', 'Arlington', '2nd Group K / 2nd Group L', '2e Groupe K / 2e Groupe L', '1st Group H / 2nd Group J', '1er Groupe H / 2e Groupe J'],
   [94, 'roundOf16', 'roundOf16', '2026-07-07T00:00:00Z', 'Seattle', '1st Group D / 3rd Group B·E·F·I·J', '1er Groupe D / 3e Groupes B·E·F·I·J', '1st Group G / 3rd Group A·E·H·I·J', '1er Groupe G / 3e Groupes A·E·H·I·J'],
   [95, 'roundOf16', 'roundOf16', '2026-07-07T19:00:00Z', 'Atlanta', '1st Group J / 2nd Group H', '1er Groupe J / 2e Groupe H', '2nd Group D / 2nd Group G', '2e Groupe D / 2e Groupe G'],
-  [96, 'roundOf16', 'roundOf16', '2026-07-08T00:00:00Z', 'Vancouver', '1st Group B / 3rd Group E·F·G·I·J', '1er Groupe B / 3e Groupes E·F·G·I·J', '1st Group K / 3rd Group D·E·I·J·L', '1er Groupe K / 3e Groupes D·E·I·J·L'],
+  [96, 'roundOf16', 'roundOf16', '2026-07-07T20:00:00Z', 'Vancouver', '1st Group B / 3rd Group E·F·G·I·J', '1er Groupe B / 3e Groupes E·F·G·I·J', '1st Group K / 3rd Group D·E·I·J·L', '1er Groupe K / 3e Groupes D·E·I·J·L'],
   [97, 'quarterFinal', 'quarterFinal', '2026-07-09T20:00:00Z', 'Foxborough', 'Winner Round of 16 1', 'Vainqueur Huitième de finale 1', 'Winner Round of 16 2', 'Vainqueur Huitième de finale 2'],
   [98, 'quarterFinal', 'quarterFinal', '2026-07-10T19:00:00Z', 'Inglewood', 'Winner Round of 16 5', 'Vainqueur Huitième de finale 5', 'Winner Round of 16 6', 'Vainqueur Huitième de finale 6'],
   [99, 'quarterFinal', 'quarterFinal', '2026-07-11T21:00:00Z', 'Miami Gardens', 'Winner Round of 16 3', 'Vainqueur Huitième de finale 3', 'Winner Round of 16 4', 'Vainqueur Huitième de finale 4'],
