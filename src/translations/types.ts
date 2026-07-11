@@ -9,6 +9,7 @@ export interface TranslationSet {
     teams: string
     stadiums: string
     matches: string
+    finalPhase: string
     bracket: string
     predictions: string
     leaderboard: string
@@ -19,6 +20,7 @@ export interface TranslationSet {
     matches: string
     teams: string
     stadiums: string
+    finalPhase: string
     bracket: string
     predictions: string
     leaderboard: string
@@ -236,6 +238,7 @@ export interface TranslationSet {
     bracketViewDetailed: string
     bracketViewCondensed: string
     bracketPathSearchPlaceholder: string
+    finalPhaseGrandFinal: string
     penalties: string
     filterAll: string
     filterActiveTeams: string

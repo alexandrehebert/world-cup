@@ -129,8 +129,8 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
             <FavoriteTeamsPicker />
           </div>
 
-          <div className="flex items-center gap-2 lg:hidden">
-            <div ref={mobileCompetitionMenuRef} className="relative">
+          <div ref={mobileCompetitionMenuRef} className="relative flex items-center gap-2 lg:hidden">
+            <div className="relative">
               <button
                 type="button"
                 onClick={() => {
@@ -145,15 +145,6 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
               >
                 <Icon name={isMobileCompetitionMenuOpen ? 'close' : 'emoji_events'} className="text-[20px]" />
               </button>
-
-              {isMobileCompetitionMenuOpen ? (
-                <div
-                  id="mobile-competition-menu"
-                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[22rem] max-w-[calc(100vw-1.5rem)] rounded-md border border-[var(--border)] bg-[var(--surface-strong)] p-0 shadow-xl"
-                >
-                  <CompetitionSwitcher activeCompetitionId={effectiveMeta?.competitionId} />
-                </div>
-              ) : null}
             </div>
 
             <div ref={mobileNotificationsMenuRef} className="relative">
@@ -280,6 +271,15 @@ export const Header = ({ meta, isCompact = false }: { meta?: TournamentMeta; isC
                 </div>
               ) : null}
             </div>
+
+            {isMobileCompetitionMenuOpen ? (
+              <div
+                id="mobile-competition-menu"
+                className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[22rem] max-w-[calc(100vw-1.5rem)] rounded-md border border-[var(--border)] bg-[var(--surface-strong)] p-0 shadow-xl"
+              >
+                <CompetitionSwitcher activeCompetitionId={effectiveMeta?.competitionId} />
+              </div>
+            ) : null}
           </div>
 
           <div className="hidden lg:inline-flex lg:shrink-0 lg:items-center lg:gap-2 2xl:gap-3">

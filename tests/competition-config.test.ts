@@ -7,10 +7,11 @@ import {
   getStandingsSectionPath,
   getStandingsSectionSlug,
   hidesGroupStageLabel,
+  usesFinalPhaseSectionPath,
   supportsTeamEliminationFilter,
   usesStandingsSectionPath,
 } from '../src/lib/competition-sections'
-import { hasBracketSection, hasGroupsSection } from '../src/lib/tournament-sections'
+import { hasBracketSection, hasFinalPhaseSection, hasGroupsSection } from '../src/lib/tournament-sections'
 
 test('resolveCompetitionId falls back to world cup when the value is not recognized', () => {
   assert.equal(resolveCompetitionId(undefined), 'world-cup-2026')
@@ -106,6 +107,27 @@ test('sections visibility depends on available data', () => {
     ]),
     true,
   )
+
+  assert.equal(
+    hasFinalPhaseSection([
+      {
+        id: 'group-a',
+        label: 'Group A',
+        teamIds: [],
+        standings: [{ teamId: 'a', played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }],
+        matchIds: [],
+      },
+      {
+        id: 'group-b',
+        label: 'Group B',
+        teamIds: [],
+        standings: [{ teamId: 'b', played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }],
+        matchIds: [],
+      },
+    ]),
+    true,
+  )
+  assert.equal(hasFinalPhaseSection([]), false)
 })
 
 test('six nations competition uses standings section path', () => {
@@ -113,16 +135,19 @@ test('six nations competition uses standings section path', () => {
   assert.equal(getStandingsSectionPath('nations-championship-2026'), '/standings')
   assert.equal(getStandingsSectionSlug('nations-championship-2026'), 'standings')
   assert.equal(hidesGroupStageLabel('nations-championship-2026'), true)
+  assert.equal(usesFinalPhaseSectionPath('nations-championship-2026'), true)
   assert.equal(supportsTeamEliminationFilter('nations-championship-2026'), false)
   assert.equal(usesStandingsSectionPath('six-nations-championship-2025'), true)
   assert.equal(getStandingsSectionPath('six-nations-championship-2025'), '/standings')
   assert.equal(getStandingsSectionSlug('six-nations-championship-2025'), 'standings')
   assert.equal(hidesGroupStageLabel('six-nations-championship-2025'), true)
+  assert.equal(usesFinalPhaseSectionPath('six-nations-championship-2025'), false)
   assert.equal(supportsTeamEliminationFilter('six-nations-championship-2025'), false)
   assert.equal(usesStandingsSectionPath('six-nations-championship-2026'), true)
   assert.equal(getStandingsSectionPath('six-nations-championship-2026'), '/standings')
   assert.equal(getStandingsSectionSlug('six-nations-championship-2026'), 'standings')
   assert.equal(hidesGroupStageLabel('six-nations-championship-2026'), true)
+  assert.equal(usesFinalPhaseSectionPath('six-nations-championship-2026'), false)
   assert.equal(supportsTeamEliminationFilter('six-nations-championship-2026'), false)
 })
 

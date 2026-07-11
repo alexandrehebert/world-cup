@@ -81,6 +81,9 @@ export const writeLocalTournamentData = async (data: TournamentData) => {
 
 export const applyCanonicalVenueData = (data: TournamentData, canonical: TournamentData): TournamentData => {
   const canonicalMatchById = new Map(canonical.matches.map((match) => [match.id, match]))
+  const canonicalGroupByTeamSet = new Map(
+    canonical.groups.map((group) => [[...group.teamIds].sort().join('|'), group] as const),
+  )
   let hasChanges = false
 
   const nextMatches = data.matches.map((match) => {
@@ -142,13 +145,55 @@ export const applyCanonicalVenueData = (data: TournamentData, canonical: Tournam
     return nextMatch
   })
 
+  const groupIdRemap = new Map<string, string>()
+  const nextGroups = data.groups.map((group) => {
+    const teamSetKey = [...group.teamIds].sort().join('|')
+    const canonicalGroup = canonicalGroupByTeamSet.get(teamSetKey)
+    if (!canonicalGroup) {
+      return group
+    }
+
+    const idChanged = group.id !== canonicalGroup.id
+    const labelChanged = group.label !== canonicalGroup.label
+    if (!idChanged && !labelChanged) {
+      return group
+    }
+
+    if (idChanged) {
+      groupIdRemap.set(group.id, canonicalGroup.id)
+    }
+
+    hasChanges = true
+    return {
+      ...group,
+      id: canonicalGroup.id,
+      label: canonicalGroup.label,
+    }
+  })
+
+  const nextMatchesWithCanonicalGroups = groupIdRemap.size === 0
+    ? nextMatches
+    : nextMatches.map((match) => {
+        const canonicalGroupId = match.groupId ? groupIdRemap.get(match.groupId) : undefined
+        if (!canonicalGroupId || canonicalGroupId === match.groupId) {
+          return match
+        }
+
+        hasChanges = true
+        return {
+          ...match,
+          groupId: canonicalGroupId,
+        }
+      })
+
   if (!hasChanges) {
     return data
   }
 
   return {
     ...data,
-    matches: nextMatches,
+    groups: nextGroups,
+    matches: nextMatchesWithCanonicalGroups,
   }
 }
 

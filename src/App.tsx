@@ -8,6 +8,7 @@ import { MatchesPage } from './views/matches-page'
 import { TeamsPage } from './views/teams-page'
 import { StadiumsPage } from './views/stadiums-page'
 import { BracketPage } from './views/bracket-page'
+import { FinalPhasePage } from './views/final-phase-page'
 import { PredictionsPage } from './views/predictions-page'
 import { LeaderboardPage } from './views/leaderboard-page'
 import { ProfilePage } from './views/profile-page'
@@ -15,15 +16,16 @@ import { MatchPredictionPage } from './views/match-prediction-page'
 import { NotFoundPage } from './views/not-found-page'
 import { resolveCompetitionId } from './competitions'
 import { isPredictionsFeatureEnabled } from './lib/features'
-import { getStandingsSectionPath, usesStandingsSectionPath } from './lib/competition-sections'
+import { getStandingsSectionPath, usesFinalPhaseSectionPath, usesStandingsSectionPath } from './lib/competition-sections'
 import { useTournament } from './contexts/tournament-context'
-import { hasBracketSection, hasGroupsSection } from './lib/tournament-sections'
+import { hasBracketSection, hasFinalPhaseSection, hasGroupsSection } from './lib/tournament-sections'
 
 function App() {
   const { meta, groups, bracketRounds } = useTournament()
   const competitionId = resolveCompetitionId(meta.competitionId)
   const hasGroups = hasGroupsSection(groups)
   const hasBracket = hasBracketSection(bracketRounds)
+  const hasFinalPhase = usesFinalPhaseSectionPath(competitionId) && hasFinalPhaseSection(groups)
   const groupsSectionPath = getStandingsSectionPath(competitionId)
   const useStandingsPath = usesStandingsSectionPath(competitionId)
 
@@ -52,6 +54,7 @@ function App() {
         <Route path="/match/tbd/:round/:slot" element={<MatchesPage />} />
         <Route path="/match/:stage/:homeCode/vs/:awayCode" element={<MatchesPage />} />
         <Route path="/match/:homeCode/vs/:awayCode" element={<MatchesPage />} />
+        <Route path="/final-phase" element={hasFinalPhase ? <FinalPhasePage /> : <Navigate to="/agenda" replace />} />
         <Route path="/bracket" element={hasBracket ? <BracketPage /> : <Navigate to="/agenda" replace />} />
         <Route path="/bracket/tbd/:round/:slot" element={hasBracket ? <BracketPage /> : <Navigate to="/agenda" replace />} />
         <Route path="/bracket/:stage/:homeCode/vs/:awayCode" element={hasBracket ? <BracketPage /> : <Navigate to="/agenda" replace />} />

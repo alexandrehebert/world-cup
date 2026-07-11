@@ -5,10 +5,10 @@ import { useLocale } from '../../contexts/locale-context'
 import { useTournament } from '../../contexts/tournament-context'
 import { resolveCompetitionId } from '../../competitions'
 import { getCompetitionBallIconNameById } from '../../lib/competition-branding'
-import { getStandingsSectionPath, usesStandingsSectionPath } from '../../lib/competition-sections'
+import { getStandingsSectionPath, usesFinalPhaseSectionPath, usesStandingsSectionPath } from '../../lib/competition-sections'
 import { Icon } from '../../lib/icons'
 import { isAccountFeatureEnabled, isPredictionsFeatureEnabled } from '../../lib/features'
-import { hasBracketSection, hasGroupsSection } from '../../lib/tournament-sections'
+import { hasBracketSection, hasFinalPhaseSection, hasGroupsSection } from '../../lib/tournament-sections'
 import { AuthModal } from '../auth/auth-modal'
 import { MatchModal } from '../matches/match-modal'
 import { CountryModal } from '../teams/country-modal'
@@ -25,6 +25,7 @@ const baseTabs = [
   { to: '/teams', labelKey: 'teams', icon: 'flag', iconClassName: '' },
   { to: '/stadiums', labelKey: 'stadiums', icon: 'stadium', iconClassName: '' },
   { to: '/matches', labelKey: 'matches', icon: 'stadium', iconClassName: '' },
+  { to: '/final-phase', sectionId: 'finalPhase', labelKey: 'finalPhase', icon: 'emoji_events', iconClassName: '' },
   { to: '/bracket', labelKey: 'bracket', icon: 'account_tree', iconClassName: '-scale-x-100' },
   { to: '/predictions', labelKey: 'predictions', icon: 'edit_note', iconClassName: '' },
 ] as const
@@ -36,6 +37,7 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
   const competitionId = resolveCompetitionId(meta.competitionId)
   const hasGroups = hasGroupsSection(groups)
   const hasBracket = hasBracketSection(bracketRounds)
+  const hasFinalPhase = usesFinalPhaseSectionPath(competitionId) && hasFinalPhaseSection(groups)
   const groupsSectionPath = getStandingsSectionPath(competitionId)
   const useStandingsPath = usesStandingsSectionPath(competitionId)
   const matchesIconName = getCompetitionBallIconNameById(competitionId)
@@ -51,7 +53,17 @@ export const DashboardLayout = ({ header }: { header: ReactNode }) => {
     return tab
   })
   const navigationTabs = (isPredictionsFeatureEnabled ? tabs : tabs.filter((tab) => tab.to !== '/predictions'))
-    .filter((tab) => ('sectionId' in tab && tab.sectionId === 'groups' ? hasGroups : tab.to === '/bracket' ? hasBracket : true))
+    .filter((tab) => (
+      'sectionId' in tab
+        ? tab.sectionId === 'groups'
+          ? hasGroups
+          : tab.sectionId === 'finalPhase'
+            ? hasFinalPhase
+            : true
+        : tab.to === '/bracket'
+          ? hasBracket
+          : true
+    ))
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const headerScrollTimeoutRef = useRef<number | null>(null)
   const isStadiumsRoute = location.pathname === '/stadiums'

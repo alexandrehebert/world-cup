@@ -144,6 +144,61 @@ test('applyCanonicalVenueData does not override blob team IDs when canonical has
   assert.equal(merged.matches[0]?.away.teamId, 'col')
 })
 
+test('applyCanonicalVenueData restores canonical conference labels and group IDs', () => {
+  const blobData = createTournamentData({
+    m1: { stadium: 'Twickenham' },
+    m2: { stadium: 'Eden Park' },
+  })
+  blobData.groups = [
+    {
+      id: 'group-1',
+      label: 'Group 1',
+      teamIds: ['eng', 'fra'],
+      standings: [],
+      matchIds: ['m1'],
+    },
+    {
+      id: 'group-2',
+      label: 'Group 2',
+      teamIds: ['nzl', 'rsa'],
+      standings: [],
+      matchIds: ['m2'],
+    },
+  ]
+  blobData.matches[0]!.groupId = 'group-1'
+  blobData.matches[1]!.groupId = 'group-2'
+
+  const localData = createTournamentData({
+    m1: { stadium: 'Twickenham' },
+    m2: { stadium: 'Eden Park' },
+  })
+  localData.groups = [
+    {
+      id: 'european-conference',
+      label: 'European Conference',
+      teamIds: ['eng', 'fra'],
+      standings: [],
+      matchIds: ['m1'],
+    },
+    {
+      id: 'sanzaar-pacific-conference',
+      label: 'Pacific Conference',
+      teamIds: ['nzl', 'rsa'],
+      standings: [],
+      matchIds: ['m2'],
+    },
+  ]
+
+  const merged = applyCanonicalVenueData(blobData, localData)
+
+  assert.equal(merged.groups[0]?.id, 'european-conference')
+  assert.equal(merged.groups[0]?.label, 'European Conference')
+  assert.equal(merged.groups[1]?.id, 'sanzaar-pacific-conference')
+  assert.equal(merged.groups[1]?.label, 'Pacific Conference')
+  assert.equal(merged.matches[0]?.groupId, 'european-conference')
+  assert.equal(merged.matches[1]?.groupId, 'sanzaar-pacific-conference')
+})
+
 test('the France versus Paraguay round of 16 fixture keeps the corrected 5 PM kickoff', async () => {
   const dataPath = path.join(process.cwd(), 'src', 'data', '2026-football-world-cup.json')
   const raw = await fs.readFile(dataPath, 'utf8')
@@ -280,4 +335,16 @@ test('writeLocalTournamentData stores local sync data in gitignored runtime dire
     }
     await fs.rm(temporaryRuntimeDir, { recursive: true, force: true })
   }
+})
+
+test('nations championship canonical data is split into two conferences', async () => {
+  const canonicalDataPath = path.join(process.cwd(), 'src', 'data', '2026-rugby-nations-championship.json')
+  const canonicalRaw = await fs.readFile(canonicalDataPath, 'utf8')
+  const canonical = JSON.parse(canonicalRaw) as TournamentData
+
+  assert.equal(canonical.groups.length, 2)
+  assert.equal(canonical.groups[0]?.label, 'European Conference')
+  assert.equal(canonical.groups[1]?.label, 'Pacific Conference')
+  assert.deepEqual(canonical.groups[0]?.teamIds, ['eng', 'fra', 'ire', 'ita', 'sco', 'wal'])
+  assert.deepEqual(canonical.groups[1]?.teamIds, ['arg', 'aus', 'fij', 'jpn', 'nzl', 'rsa'])
 })

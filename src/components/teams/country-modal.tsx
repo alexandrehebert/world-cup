@@ -43,6 +43,7 @@ export const CountryModal = () => {
   const competitionId = resolveCompetitionId(meta.competitionId)
   const hideGroupStage = hidesGroupStageLabel(competitionId)
   const useStandingsHeader = usesStandingsSectionPath(competitionId)
+  const showGroupLabel = !useStandingsHeader || groups.length > 1
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
   const [isCopied, setIsCopied] = useState(false)
@@ -276,7 +277,7 @@ export const CountryModal = () => {
       {group && standing && standingIndex >= 0 ? (
         <div className="border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
           <p className="mb-3 text-xs uppercase tracking-[0.22em] text-[var(--text-soft)]">
-            {useStandingsHeader ? t.labels.standings : `${t.groups[group.id] ?? group.label} — ${t.labels.groupPosition}`}
+            {showGroupLabel ? `${t.groups[group.id] ?? group.label} — ${t.labels.groupPosition}` : t.labels.standings}
           </p>
           <div className="grid grid-cols-[1.8fr_repeat(4,minmax(0,0.35fr))_0.5fr] gap-1 border-b border-[var(--border)] pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-soft)]">
             <span>{useStandingsHeader ? t.sections.teams : t.labels.standings}</span>

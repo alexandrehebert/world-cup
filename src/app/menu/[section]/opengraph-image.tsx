@@ -50,6 +50,11 @@ const copyBySection: Record<string, MenuImageCopy> = {
     subheading: 'From Round of 32 all the way to the final.',
     accent: '#f4c542',
   },
+  'final-phase': {
+    heading: 'Final Phase',
+    subheading: 'Grand final and placement matches between conference ranks.',
+    accent: '#f4c542',
+  },
   leaderboard: {
     heading: 'Predictions Leaderboard',
     subheading: 'See who leads the prediction challenge.',

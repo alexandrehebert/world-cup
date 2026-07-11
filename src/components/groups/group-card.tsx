@@ -10,9 +10,10 @@ import { FlagAvatar } from '../ui/flag-avatar'
 export const GroupCard = ({ groupId }: { groupId: string }) => {
   const { t } = useLocale()
   const { isFavoriteTeam, favoriteTeamIds, setSelectedTeamId } = useDashboard()
-  const { meta, groupsById, teamsById, matches } = useTournament()
+  const { meta, groups, groupsById, teamsById, matches } = useTournament()
   const competitionId = resolveCompetitionId(meta.competitionId)
   const useStandingsHeader = usesStandingsSectionPath(competitionId)
+  const showGroupLabel = !useStandingsHeader || groups.length > 1
   const hasPendingStandingsMatches = useStandingsHeader && matches.some((match) => match.stage === 'group' && match.status !== 'finished')
   const group = groupsById[groupId]
   const anyFavoriteInGroup = favoriteTeamIds.length > 0 && group.standings.some((s) => favoriteTeamIds.includes(s.teamId))
@@ -26,7 +27,9 @@ export const GroupCard = ({ groupId }: { groupId: string }) => {
           backgroundImage: `linear-gradient(135deg, ${gradientColor1} 0%, ${gradientColor2} 100%)`
         }}
       >
-        <h3 className="text-lg font-bold text-[var(--text-strong)]">{useStandingsHeader ? t.labels.standings : (t.groups[group.id] ?? group.label)}</h3>
+        <h3 className="text-lg font-bold text-[var(--text-strong)]">
+          {showGroupLabel ? (t.groups[group.id] ?? group.label) : t.labels.standings}
+        </h3>
         {useStandingsHeader ? null : (
           <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-text)]">
             {group.id}

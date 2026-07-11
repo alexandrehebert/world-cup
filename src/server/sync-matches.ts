@@ -712,6 +712,12 @@ const buildWorldRugbyCatalog = (data: TournamentData, payload: WorldRugbySyncPay
       .map((code) => teamsByCode.get(code)?.id)
       .filter((teamId): teamId is string => typeof teamId === 'string')
     const teamIdSet = new Set(teamIds)
+    const intraGroupMatchIds = mergedMatches
+      .filter((match) => match.stage === 'group' && teamIdSet.has(match.home.teamId ?? '') && teamIdSet.has(match.away.teamId ?? ''))
+      .map((match) => match.id)
+    const crossConferenceMatchIds = mergedMatches
+      .filter((match) => match.stage === 'group' && (teamIdSet.has(match.home.teamId ?? '') || teamIdSet.has(match.away.teamId ?? '')))
+      .map((match) => match.id)
     const groupId = String(table.id ?? `group-${index + 1}`)
     const standings = rows
       .map((row) => {
@@ -739,9 +745,7 @@ const buildWorldRugbyCatalog = (data: TournamentData, payload: WorldRugbySyncPay
       label: table.label ?? table.name ?? `Group ${index + 1}`,
       teamIds,
       standings,
-      matchIds: mergedMatches
-        .filter((match) => match.stage === 'group' && teamIdSet.has(match.home.teamId ?? '') && teamIdSet.has(match.away.teamId ?? ''))
-        .map((match) => match.id),
+      matchIds: intraGroupMatchIds.length > 0 ? intraGroupMatchIds : crossConferenceMatchIds,
     }
   })
   const fallbackTeamIds = mergedTeams.map((team) => team.id)
@@ -931,8 +935,11 @@ export const recomputeGroups = (groups: TournamentData['groups'], matches: Tourn
     )
 
     const groupTeamIds = new Set(group.teamIds)
-    const isGroupMatch = (match: TournamentData['matches'][number]) => {
-      if (match.stage !== 'group' || match.status !== 'finished') {
+    const isFinishedGroupStageMatch = (match: TournamentData['matches'][number]) => {
+      return match.stage === 'group' && match.status === 'finished'
+    }
+    const isDirectGroupMatch = (match: TournamentData['matches'][number]) => {
+      if (!isFinishedGroupStageMatch(match)) {
         return false
       }
 
@@ -947,6 +954,34 @@ export const recomputeGroups = (groups: TournamentData['groups'], matches: Tourn
         groupTeamIds.has(match.away.teamId)
       )
     }
+    const isCrossConferenceGroupMatch = (match: TournamentData['matches'][number]) => {
+      if (!isFinishedGroupStageMatch(match)) {
+        return false
+      }
+
+      if (match.groupId === group.id) {
+        return false
+      }
+
+      if (typeof match.home?.teamId !== 'string' || typeof match.away?.teamId !== 'string') {
+        return false
+      }
+
+      return groupTeamIds.has(match.home.teamId) !== groupTeamIds.has(match.away.teamId)
+    }
+
+    const hasDirectGroupMatches = matches.some(isDirectGroupMatch)
+    const isGroupMatch = (match: TournamentData['matches'][number]) => {
+      if (isDirectGroupMatch(match)) {
+        return true
+      }
+
+      if (!hasDirectGroupMatches && isCrossConferenceGroupMatch(match)) {
+        return true
+      }
+
+      return false
+    }
 
     for (const match of matches) {
       if (!isGroupMatch(match)) {
@@ -958,7 +993,7 @@ export const recomputeGroups = (groups: TournamentData['groups'], matches: Tourn
       const homeScore = match.home?.score
       const awayScore = match.away?.score
 
-      if (!homeId || !awayId || !byTeamId.has(homeId) || !byTeamId.has(awayId)) {
+      if (!homeId || !awayId) {
         continue
       }
 
@@ -969,30 +1004,38 @@ export const recomputeGroups = (groups: TournamentData['groups'], matches: Tourn
       const home = byTeamId.get(homeId)
       const away = byTeamId.get(awayId)
 
-      if (!home || !away) {
+      if (!home && !away) {
         continue
       }
 
-      home.played += 1
-      away.played += 1
-      home.goalsFor += homeScore
-      home.goalsAgainst += awayScore
-      away.goalsFor += awayScore
-      away.goalsAgainst += homeScore
+      if (home) {
+        home.played += 1
+        home.goalsFor += homeScore
+        home.goalsAgainst += awayScore
+        if (homeScore > awayScore) {
+          home.won += 1
+          home.points += 3
+        } else if (homeScore < awayScore) {
+          home.lost += 1
+        } else {
+          home.drawn += 1
+          home.points += 1
+        }
+      }
 
-      if (homeScore > awayScore) {
-        home.won += 1
-        away.lost += 1
-        home.points += 3
-      } else if (homeScore < awayScore) {
-        away.won += 1
-        home.lost += 1
-        away.points += 3
-      } else {
-        home.drawn += 1
-        away.drawn += 1
-        home.points += 1
-        away.points += 1
+      if (away) {
+        away.played += 1
+        away.goalsFor += awayScore
+        away.goalsAgainst += homeScore
+        if (awayScore > homeScore) {
+          away.won += 1
+          away.points += 3
+        } else if (awayScore < homeScore) {
+          away.lost += 1
+        } else {
+          away.drawn += 1
+          away.points += 1
+        }
       }
     }
 

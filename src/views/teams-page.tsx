@@ -38,6 +38,7 @@ export const TeamsPage = () => {
   const competitionId = resolveCompetitionId(meta.competitionId)
   const hideGroupStage = hidesGroupStageLabel(competitionId)
   const useStandingsHeader = usesStandingsSectionPath(competitionId)
+  const showGroupLabel = !useStandingsHeader || groups.length > 1
   const showTeamStatusFilter = supportsTeamEliminationFilter(competitionId)
   const nowMs = useNow()
   const localTimeZone = useTimeZone()
@@ -252,7 +253,9 @@ export const TeamsPage = () => {
               latestOpponentScore,
               nextMatchFormatted,
             } = entry
-            const groupLabel = groupInfo ? (useStandingsHeader ? t.labels.standings : (t.groups[groupInfo.id] ?? groupInfo.id)) : null
+            const groupLabel = groupInfo
+              ? (showGroupLabel ? (t.groups[groupInfo.id] ?? groupsById[groupInfo.id]?.label ?? groupInfo.id) : t.labels.standings)
+              : null
             const standingPosition = groupInfo ? groupInfo.standingIndex + 1 : null
 
             return (

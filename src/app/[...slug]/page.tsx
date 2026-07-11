@@ -210,6 +210,13 @@ const getMenuMetaBySegment = (
     imageAlt: 'Tournament knockout bracket',
     canonical: '/bracket',
   },
+  'final-phase': {
+    title: `Final Phase | ${competitionDisplayName}`,
+    description: `Explore the final phase fixtures based on conference standings, including the ${competitionShortName} grand final pairing.`,
+    imagePath: '/menu/final-phase/opengraph-image',
+    imageAlt: 'Tournament final phase fixtures',
+    canonical: '/final-phase',
+  },
   ...(isPredictionsFeatureEnabled
     ? {
         predictions: {
