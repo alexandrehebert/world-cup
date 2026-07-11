@@ -11,6 +11,7 @@ import { isTeamEliminated } from '../lib/team-status'
 type BracketViewMode = 'detailed' | 'condensed'
 const FORECAST_TEAM_FILTER_PARAM = 'team'
 const VIEW_MODE_FILTER_PARAM = 'view'
+const PAST_ROUNDS_FILTER_PARAM = 'pastRounds'
 
 export const BracketPage = () => {
   const { t } = useLocale()
@@ -23,6 +24,7 @@ export const BracketPage = () => {
   const [isTeamMenuOpen, setIsTeamMenuOpen] = useState(false)
   const teamFilterRef = useRef<HTMLDivElement>(null)
   const teamInputRef = useRef<HTMLInputElement>(null)
+  const pastRoundsFilterLabel = `${t.labels.previous} ${t.labels.rounds}`
   const { teamIdToCode, codeToTeamId } = useMemo(() => {
     const idToCode: Record<string, string> = {}
     const codeToId: Record<string, string> = {}
@@ -61,6 +63,7 @@ export const BracketPage = () => {
     ? forecastTeamId
     : ''
   const viewMode = searchParams.get(VIEW_MODE_FILTER_PARAM) === 'condensed' ? 'condensed' : 'detailed'
+  const isPastRoundsVisible = searchParams.get(PAST_ROUNDS_FILTER_PARAM) === '1'
   const setForecastTeamId = (nextTeamId: string) => {
     if (nextTeamId && eliminatedTeamIds.has(nextTeamId)) {
       return
@@ -84,6 +87,17 @@ export const BracketPage = () => {
       nextParams.set(VIEW_MODE_FILTER_PARAM, 'condensed')
     } else {
       nextParams.delete(VIEW_MODE_FILTER_PARAM)
+    }
+
+    setSearchParams(nextParams, { replace: true })
+  }
+  const setPastRoundsVisible = (nextPastRoundsVisible: boolean) => {
+    const nextParams = new URLSearchParams(searchParams)
+
+    if (nextPastRoundsVisible) {
+      nextParams.set(PAST_ROUNDS_FILTER_PARAM, '1')
+    } else {
+      nextParams.delete(PAST_ROUNDS_FILTER_PARAM)
     }
 
     setSearchParams(nextParams, { replace: true })
@@ -323,6 +337,22 @@ export const BracketPage = () => {
               <span className="hidden sm:inline">{t.labels.bracketViewCondensed}</span>
             </button>
           </div>
+          {viewMode === 'detailed' ? (
+            <button
+              type="button"
+              onClick={() => setPastRoundsVisible(!isPastRoundsVisible)}
+              className={`inline-flex h-10 shrink-0 items-center border border-[var(--border)] px-3 text-xs font-semibold transition ${
+                isPastRoundsVisible
+                  ? 'bg-[var(--tab-active-bg)] text-[var(--tab-active-text)]'
+                  : 'bg-[var(--surface-soft)] text-[var(--text-muted)] hover:bg-[var(--tab-idle-hover-bg)] hover:text-[var(--text)]'
+              }`}
+              aria-pressed={isPastRoundsVisible}
+              aria-label={pastRoundsFilterLabel}
+              title={pastRoundsFilterLabel}
+            >
+              {pastRoundsFilterLabel}
+            </button>
+          ) : null}
         </div>
       </div>
       <BracketBoard
@@ -330,6 +360,7 @@ export const BracketPage = () => {
         forecastTeamId={effectiveForecastTeamId || undefined}
         viewMode={viewMode}
         kalshiProbabilitiesByPairKey={kalshiProbabilitiesByPairKey}
+        isPastRoundsCollapsed={!isPastRoundsVisible}
       />
     </section>
   )

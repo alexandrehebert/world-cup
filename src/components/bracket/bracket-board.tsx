@@ -52,12 +52,25 @@ type PlaceholderResolutionContext = {
   kalshiProbabilitiesByPairKey: Record<string, Record<string, number>>
 }
 
+type BracketRound = { id: string; matchIds: string[] }
+
 const getRoundSlotKey = (roundId: string, slotIndex: number) => `${roundId}:${slotIndex}`
 const getTeamCodePairKey = (firstTeamCode: string, secondTeamCode: string) => {
   return [firstTeamCode, secondTeamCode].sort().join('|')
 }
 
 const hasNumericScore = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
+
+const isRoundComplete = (round: BracketRound, matchesById: Record<string, MatchRecord>, nowMs: number) => {
+  if (round.matchIds.length === 0) {
+    return false
+  }
+
+  return round.matchIds.every((matchId) => {
+    const match = matchesById[matchId]
+    return match ? getDisplayMatchStatus(match, nowMs) === 'finished' : false
+  })
+}
 
 const getBracketCardWinner = (match: MatchRecord): 'home' | 'away' | null => {
   return getMatchWinner(match)
@@ -202,7 +215,7 @@ const getProjectedTeamIdFromParticipant = (
 
 const getForecastPathToFinal = (
   forecastTeamId: string,
-  rounds: { id: string; matchIds: string[] }[],
+  rounds: BracketRound[],
   context: PlaceholderResolutionContext,
 ): ForecastPath => {
   const projectedOpponentByMatchId = new Map<string, string | undefined>()
@@ -282,11 +295,13 @@ export const BracketBoard = ({
   forecastTeamId,
   viewMode = 'detailed',
   kalshiProbabilitiesByPairKey = {},
+  isPastRoundsCollapsed = true,
 }: {
-  rounds: { id: string; matchIds: string[] }[]
+  rounds: BracketRound[]
   forecastTeamId?: string
   viewMode?: BracketViewMode
   kalshiProbabilitiesByPairKey?: Record<string, Record<string, number>>
+  isPastRoundsCollapsed?: boolean
 }) => {
   const { locale, t } = useLocale()
   const { isFavoriteTeam, setSelectedMatchId } = useDashboard()
@@ -657,8 +672,8 @@ export const BracketBoard = ({
               </div>
             )
           })}
-        </div>
-      </div>
+            </div>
+          </div>
     )
   }
 
@@ -715,6 +730,34 @@ export const BracketBoard = ({
     () => alignSideRoundsByNextRound(mainRounds, matchesById, mainRoundMatchIdsById),
     [mainRounds, matchesById, mainRoundMatchIdsById],
   )
+  const completedRoundIds = useMemo(
+    () =>
+      new Set(
+        orderedMainRounds
+          .filter((round) => isRoundComplete(round, matchesById, nowMs))
+          .map((round) => round.id),
+      ),
+    [orderedMainRounds, matchesById, nowMs],
+  )
+  const pastMainRounds = useMemo(
+    () => orderedMainRounds.filter((round) => completedRoundIds.has(round.id)),
+    [completedRoundIds, orderedMainRounds],
+  )
+  const activeMainRounds = useMemo(
+    () => orderedMainRounds.filter((round) => !completedRoundIds.has(round.id)),
+    [completedRoundIds, orderedMainRounds],
+  )
+  const visibleMainRounds = useMemo(() => {
+    if (!isPastRoundsCollapsed || pastMainRounds.length === 0) {
+      return orderedMainRounds
+    }
+
+    if (activeMainRounds.length > 0) {
+      return activeMainRounds
+    }
+
+    return orderedMainRounds.length > 0 ? [orderedMainRounds[orderedMainRounds.length - 1]] : []
+  }, [activeMainRounds, isPastRoundsCollapsed, orderedMainRounds, pastMainRounds.length])
   const preFinalRounds = useMemo(
     () => orderedMainRounds.filter((round) => round.id !== 'final'),
     [orderedMainRounds],
@@ -790,7 +833,7 @@ export const BracketBoard = ({
     [preFinalRounds.length],
   )
   const nodeHeight = useMemo(() => Math.max(MIN_NODE_HEIGHT, measuredNodeHeight), [measuredNodeHeight])
-  const firstRoundMatchCount = orderedMainRounds.at(0)?.matchIds.length ?? 0
+  const firstRoundMatchCount = visibleMainRounds.at(0)?.matchIds.length ?? 0
   const boardTrackHeight = Math.max(nodeHeight, firstRoundMatchCount * nodeHeight + Math.max(0, firstRoundMatchCount - 1) * BASE_GAP)
 
   useLayoutEffect(() => {
@@ -805,7 +848,7 @@ export const BracketBoard = ({
     const maxCardHeight = Math.max(...mainRoundCards.map((card) => card.scrollHeight))
     const nextHeight = Math.max(MIN_NODE_HEIGHT, maxCardHeight)
     setMeasuredNodeHeight((previousHeight) => (previousHeight === nextHeight ? previousHeight : nextHeight))
-  }, [orderedMainRounds, locale, t, matchesById, teamsById, groupsById])
+  }, [visibleMainRounds, locale, t, matchesById, teamsById, groupsById])
 
   if (viewMode === 'condensed') {
     return (
@@ -866,12 +909,13 @@ export const BracketBoard = ({
   }
 
   return (
-    <div className="overflow-x-auto pb-2">
-      <div ref={boardRef} className="flex min-w-full items-start" style={{ gap: `${CONNECTOR_WIDTH}px` }}>
-          {orderedMainRounds.map((round, roundIndex) => {
+    <div className="flex items-start gap-3 pb-2">
+      <div className="overflow-x-auto grow">
+        <div ref={boardRef} className="flex min-w-full items-start" style={{ gap: `${CONNECTOR_WIDTH}px` }}>
+          {visibleMainRounds.map((round, roundIndex) => {
             const metrics = getRoundMetrics(roundIndex, nodeHeight)
             const hasPreviousRound = roundIndex > 0
-            const hasNextRound = roundIndex < mainRounds.length - 1
+            const hasNextRound = roundIndex < visibleMainRounds.length - 1
             const isFinalRound = round.id === 'final'
 
             return (
@@ -1160,7 +1204,6 @@ export const BracketBoard = ({
                     )}
                   </div>
                 </div>
-
                 {isFinalRound && thirdPlaceRound && thirdPlaceRound.matchIds.length > 0 ? (
                   <div className="mt-auto pt-8">
                     <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
@@ -1301,6 +1344,7 @@ export const BracketBoard = ({
               </div>
             )
           })}
+        </div>
       </div>
     </div>
   )
